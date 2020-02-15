@@ -1,0 +1,17 @@
+plugins/modules/mongodb_parameter.py use-argspec-type-path
+plugins/modules/mongodb_parameter.py validate-modules:doc-choices-do-not-match-spec
+plugins/modules/mongodb_parameter.py validate-modules:doc-missing-type
+plugins/modules/mongodb_parameter.py validate-modules:no-default-for-required-parameter
+plugins/modules/mongodb_parameter.py validate-modules:nonexistent-parameter-documented
+plugins/modules/mongodb_parameter.py validate-modules:parameter-type-not-in-doc
+plugins/modules/mongodb_replicaset.py use-argspec-type-path
+plugins/modules/mongodb_replicaset.py validate-modules:parameter-list-no-elements
+plugins/modules/mongodb_shard.py use-argspec-type-path
+plugins/modules/mongodb_shard.py validate-modules:doc-missing-type
+plugins/modules/mongodb_shard.py validate-modules:doc-required-mismatch
+plugins/modules/mongodb_shard.py validate-modules:parameter-type-not-in-doc
+plugins/modules/mongodb_user.py use-argspec-type-path
+plugins/modules/mongodb_user.py validate-modules:doc-missing-type
+plugins/modules/mongodb_user.py validate-modules:parameter-list-no-elements
+plugins/modules/mongodb_user.py validate-modules:parameter-type-not-in-doc
+plugins/modules/mongodb_user.py validate-modules:undocumented-parameter
