@@ -23,28 +23,6 @@ jobs:
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python 3.6
 
-  units:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-        with:
-          path: ansible_collections/community/mongodb
-
-      - name: Set up Python 3.6
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.6
-
-      - name: Install ansible-base
-        run: pip install git+https://github.com/ansible-collection-migration/ansible-base.git --disable-pip-version-check
-
-      - name: Run unit tests
-        run: ansible-test units --docker -v --color --python 3.6 --coverage
-
-      - name: Upload Coverage data
-        run: tests/coverage.sh
-
   integration:
     runs-on: ubuntu-latest
     strategy:

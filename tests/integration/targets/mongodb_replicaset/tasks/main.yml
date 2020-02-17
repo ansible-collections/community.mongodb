@@ -52,7 +52,7 @@
   shell: pkill -{{ kill_signal }} mongod;
 - name: Getting pids for mongod
   register: pids_of_mongod
-  community._general.pids:
+  community.general.pids:
     name: mongod
 - name: Wait for all mongod processes to exit
   wait_for:
