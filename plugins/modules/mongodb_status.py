@@ -191,9 +191,9 @@ def replicaset_good(statuses):
     msg = "Unset"
     status = None
     if len(statuses) % 2 == 1:  # Odd number of servers is good
-        if statuses.count("PRIMARY") == 1:
+        if (statuses.count("PRIMARY") == 1
                 and (statuses.count("SECONDARY")
-                     + statuses.count("ARBITER") % 2 == 0):
+                     + statuses.count("ARBITER") % 2 == 0)):
             status = True
             msg = "replicaset is in a converged state"
         else:
