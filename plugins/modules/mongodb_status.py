@@ -150,7 +150,7 @@ def replicaset_status(client):
     Return the replicaset status document from MongoDB
     # https://docs.mongodb.com/manual/reference/command/replSetGetStatus/
     """
-    return client.admin.command('replSetGetStatus')
+    return client.admin.command('replSetGetStatus')[0]
 
 
 def replicaset_members(replicaset_document):
@@ -219,6 +219,7 @@ def replicaset_status_poll(client, module):
 
     while iterations < poll:
         try:
+            iterations += 1
             replicaset_document = replicaset_document(client)
             replicaset_members = replicaset_members(replicaset_document)
             friendly_document = replicaset_friendly_document(replicaset_members)
@@ -230,6 +231,7 @@ def replicaset_status_poll(client, module):
                               "iterations": iterations,
                               "msg": msg,
                               "replicaset": friendly_document}
+                break
             else:
                 failures += 1
                 return_doc = {"failures": failures,
@@ -237,11 +239,18 @@ def replicaset_status_poll(client, module):
                               "iterations": iterations,
                               "msg": msg,
                               "replicaset": friendly_document}
-                time.sleep(interval)
+                if iterations == poll:
+                    break
+                else:
+                    time.sleep(interval)
         except Exception:
             failures += 1
-            time.sleep(interval)
+            if iterations == poll:
+                break
+            else:
+                time.sleep(interval)
 
+        return_doc['failures'] = failures
         return status, return_doc['msg'], return_doc
 
 
