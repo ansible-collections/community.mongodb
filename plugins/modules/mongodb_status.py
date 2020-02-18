@@ -91,6 +91,7 @@ mongodb_replicaset:
 '''
 
 from copy import deepcopy
+import time
 
 import os
 import ssl as ssl_lib
@@ -189,9 +190,9 @@ def replicaset_good(statuses):
     """
     msg = "Unset"
     status = None
-    if len(statues) % 2 == 1:  # Odd number of servers is good
-        if statuses.count("PRIMARY") == 1 \
-                and (statuses.count("SECONDARY") \
+    if len(statuses) % 2 == 1:  # Odd number of servers is good
+        if statuses.count("PRIMARY") == 1
+                and (statuses.count("SECONDARY")
                      + statuses.count("ARBITER") % 2 == 0):
             status = True
             msg = "replicaset is in a converged state"
@@ -216,7 +217,7 @@ def replicaset_status_poll(client, module):
     interval = module.params['interval']
     return_doc = {}
 
-    while iteration < poll:
+    while iterations < poll:
         try:
             replicaset_document = replicaset_document(client)
             replicaset_members = replicaset_members(replicaset_document)
@@ -224,18 +225,18 @@ def replicaset_status_poll(client, module):
             replicaset_statuses = replicaset_statuses(friendly_document)
             status, msg = replicaset_good(replicaset_statuses)
             if status:  # replicaset looks good
-                return_doc = { "failures": failures,
-                               "poll": poll,
-                               "iterations": iterations,
-                               "msg": msg,
-                               "replicaset": friendly_document}
+                return_doc = {"failures": failures,
+                              "poll": poll,
+                              "iterations": iterations,
+                              "msg": msg,
+                              "replicaset": friendly_document}
             else:
                 failures += 1
-                return_doc = { "failures": failures,
-                               "poll": poll,
-                               "iterations": iterations,
-                               "msg": msg,
-                               "replicaset": friendly_document}
+                return_doc = {"failures": failures,
+                              "poll": poll,
+                              "iterations": iterations,
+                              "msg": msg,
+                              "replicaset": friendly_document}
                 time.sleep(interval)
         except Exception:
             failures += 1
@@ -279,7 +280,7 @@ def main():
             ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
             poll=dict(type='int', default=1),
             interval=dict(type='int', default=30)),
-            supports_check_mode=False)
+        supports_check_mode=False)
 
     if HAS_PYMONGO is False:
         module.fail_json(msg='the python pymongo module is required')
@@ -293,7 +294,6 @@ def main():
     ssl = module.params['ssl']
     poll = module.params['poll']
     interval = module.params['interval']
-
 
     result = dict(
         changed=False,
