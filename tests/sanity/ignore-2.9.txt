@@ -16,4 +16,3 @@ plugins/modules/mongodb_user.py validate-modules:parameter-list-no-elements
 plugins/modules/mongodb_user.py validate-modules:parameter-type-not-in-doc
 plugins/modules/mongodb_user.py validate-modules:undocumented-parameter
 plugins/modules/mongodb_status.py use-argspec-type-path
-plugins/modules/mongodb_status.py validate-modules:parameter-list-no-elements
