@@ -145,12 +145,13 @@ def check_compatibility(module, client):
         module.fail_json(msg=' (Note: you must be on mongodb 2.4+ and pymongo 2.5+ to use the roles param)')
 
 
-def replicaset_status(client):
+def replicaset_status(client, module):
     """
     Return the replicaset status document from MongoDB
     # https://docs.mongodb.com/manual/reference/command/replSetGetStatus/
     """
-    return client.admin.command('replSetGetStatus')[0]
+    rs = client.admin.command('replSetGetStatus')
+    return rs
 
 
 def replicaset_members(replicaset_document):
@@ -166,34 +167,36 @@ def replicaset_friendly_document(members_document):
     only the info this module requires: name & stateStr
     """
     friendly_document = {}
+
     for member in members_document:
         friendly_document[member["name"]] = member["stateStr"]
     return friendly_document
 
 
-def replicaset_statuses(members_document):
+def replicaset_statuses(members_document, module):
     """
     Return a list of the statuses
     """
     statuses = []
     for member in members_document:
-        statuses.append(member["stateStr"])
+        statuses.append(members_document[member])
     return statuses
 
 
-def replicaset_good(statuses):
+def replicaset_good(statuses, module):
     """
     Returns true if the replicaset is in a "good" condition.
     Good is defined as an odd number of servers >= 3, with
     max one primary, and any even amount of
     secondary and arbiter servers
     """
+    module.debug(msg=str(statuses))
     msg = "Unset"
     status = None
     if len(statuses) % 2 == 1:  # Odd number of servers is good
         if (statuses.count("PRIMARY") == 1
-                and (statuses.count("SECONDARY")
-                     + statuses.count("ARBITER") % 2 == 0)):
+                and ((statuses.count("SECONDARY")
+                     + statuses.count("ARBITER")) % 2 == 0)):
             status = True
             msg = "replicaset is in a converged state"
         else:
@@ -215,16 +218,17 @@ def replicaset_status_poll(client, module):
     failures = 0  # Number of failures when querying the replicaset
     poll = module.params['poll']
     interval = module.params['interval']
+    status = None
     return_doc = {}
 
     while iterations < poll:
         try:
             iterations += 1
-            replicaset_document = replicaset_document(client)
-            replicaset_members = replicaset_members(replicaset_document)
-            friendly_document = replicaset_friendly_document(replicaset_members)
-            replicaset_statuses = replicaset_statuses(friendly_document)
-            status, msg = replicaset_good(replicaset_statuses)
+            replicaset_document = replicaset_status(client, module)
+            members = replicaset_members(replicaset_document)
+            friendly_document = replicaset_friendly_document(members)
+            statuses = replicaset_statuses(friendly_document, module)
+            status, msg = replicaset_good(statuses, module)
             if status:  # replicaset looks good
                 return_doc = {"failures": failures,
                               "poll": poll,
@@ -238,20 +242,24 @@ def replicaset_status_poll(client, module):
                               "poll": poll,
                               "iterations": iterations,
                               "msg": msg,
-                              "replicaset": friendly_document}
+                              "replicaset": friendly_document,
+                              "failed": True }
                 if iterations == poll:
                     break
                 else:
                     time.sleep(interval)
-        except Exception:
+        except Exception as e:
             failures += 1
+            return_doc['failed'] = True
+            return_doc['msg'] = str(e)
+            status = False
             if iterations == poll:
                 break
             else:
                 time.sleep(interval)
 
-        return_doc['failures'] = failures
-        return status, return_doc['msg'], return_doc
+    return_doc['failures'] = failures
+    return status, return_doc['msg'], return_doc
 
 
 def load_mongocnf():
@@ -356,9 +364,9 @@ def main():
         module.fail_json(msg="Parameter 'replica_set' must not be an empty string")
 
     try:
-        status, msg, return_doc = replicaset_status_poll(client, module)
+        status, msg, return_doc = replicaset_status_poll(client, module)  # Sort out the return doc
     except Exception as e:
-        module.fail_json(msg='Unable to query replica_set info: %s' % to_native(e))
+        module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
 
     if status is False:
         module.fail_json(msg=msg, return_doc=return_doc, changed=False)
