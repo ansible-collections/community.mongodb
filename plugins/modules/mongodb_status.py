@@ -243,7 +243,7 @@ def replicaset_status_poll(client, module):
                               "iterations": iterations,
                               "msg": msg,
                               "replicaset": friendly_document,
-                              "failed": True }
+                              "failed": True}
                 if iterations == poll:
                     break
                 else:
