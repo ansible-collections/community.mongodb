@@ -216,7 +216,7 @@ def replicaset_find(client):
     """
     doc = client['admin'].command('isMaster')
     if 'setName' in doc.keys():
-        return doc['setName']
+        return str(doc['setName'])
     return False
 
 
@@ -352,70 +352,52 @@ def main():
 
     try:
         client = MongoClient(**connection_params)
+
         rs = replicaset_find(client)
 
-        if rs:
+        # Everything after the next else will need to be changed as we're using
+        # isMaster that does not require auth...
+        if isinstance(rs, str):
             if replica_set == rs:
+                result['changed'] = False
+                result['replica_set'] = rs
                 module.exit_json(**result)
             else:
-                module.fail_json(msg="The replica_set name of '{0}' does not match the expected: '{1}'".format(replica_set, rs))
+                module.fail_json(msg="The replica_set name of {0} does not match the expected: {1}".format(rs, replica_set))
         else:  # replicaset does not exit
-                try:
-                    check_compatibility(module, client)
-                except Exception as excep:
-                    if "not authorized on" not in str(excep) and "there are no users authenticated" not in str(excep):
-                        raise excep
-                    if login_user is None or login_password is None:
-                        raise excep
-                    client.admin.authenticate(login_user, login_password, source=login_database)
-                    check_compatibility(module, client)
 
-                if login_user is None and login_password is None:
-                    mongocnf_creds = load_mongocnf()
-                    if mongocnf_creds is not False:
-                        login_user = mongocnf_creds['user']
-                        login_password = mongocnf_creds['password']
-                elif login_password is None or login_user is None:
-                    module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
+            # Some validation stuff
+            if len(replica_set) == 0:
+                module.fail_json(msg="Parameter replica_set must not be an empty string")
 
+            if module.check_mode is False:
                 try:
-                    client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-                except Exception as excep:
-                    if "not authorized on" in str(excep) or "command listDatabases requires authentication" in str(excep):
-                        if login_user is not None and login_password is not None:
+                    # If we have auth details use then otherwise attempt without
+                    if login_user is None and login_password is None:
+                        mongocnf_creds = load_mongocnf()
+                        if mongocnf_creds is not False:
+                            login_user = mongocnf_creds['user']
+                            login_password = mongocnf_creds['password']
+                    elif login_password is None or login_user is None:
+                        module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
+
+                    if login_user is not None and login_password is not None:
+                        try:
                             client.admin.authenticate(login_user, login_password, source=login_database)
-                        else:
-                            raise excep
-                    else:
-                        raise excep
-
-                if len(replica_set) == 0:
-                    module.fail_json(msg="Parameter 'replica_set' must not be an empty string")
-
-                try:
-                    rs = replicaset_find(client)
+                            check_compatibility(module, client)  # run if we are authenticated
+                        except Exception as excep:
+                            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+                    replicaset_add(module, client, replica_set, members,
+                                   arbiter_at_index, protocol_version,
+                                   chaining_allowed, heartbeat_timeout_secs,
+                                   election_timeout_millis)
+                    result['changed'] = True
                 except Exception as e:
-                    module.fail_json(msg='Unable to query replica_set info: %s' % to_native(e))
+                    module.fail_json(msg='Unable to create replica_set: %s' % to_native(e))
+            else:
+                result['changed'] = True
 
-                if not rs:
-                    if not module.check_mode:
-                        try:
-                            replicaset_add(module, client, replica_set, members, arbiter_at_index, protocol_version,
-                                           chaining_allowed, heartbeat_timeout_secs, election_timeout_millis)
-                            result['changed'] = True
-                        except Exception as e:
-                            module.fail_json(msg='Unable to create replica_set: %s' % to_native(e))
-                else:
-                    if not module.check_mode:
-                        try:
-                            rs = replicaset_find(client)
-                        except Exception as e:
-                            module.fail_json(msg='Unable to query replica_set info: %s' % to_native(e))
-                        if rs is not None and rs != replica_set:
-                            module.fail_json(msg="The replica_set name of '{0}' does not match the expected: '{1}'".format(rs, replica_set))
-                    result['changed'] = False
-
-                module.exit_json(**result)
+            module.exit_json(**result)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 

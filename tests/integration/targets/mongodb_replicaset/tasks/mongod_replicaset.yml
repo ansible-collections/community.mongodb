@@ -14,9 +14,7 @@
 - name: Create keyfile
   copy:
     dest: '{{ remote_tmp_dir }}/my.key'
-    content: 'fd2CUrbXBJpB4rt74A6F
-
-      '
+    content: 'fd2CUrbXBJpB4rt74A6F'
     owner: '{{ mongodb_user }}'
     group: '{{ mongodb_user }}'
     mode: '0600'
