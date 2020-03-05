@@ -1,7 +1,7 @@
-mongodb_repository
-==================
+mongodb_install
+===============
 
-Configures a repository for MongoDB on Debian and RedHat based platforms.
+Install MongoDB packages on Debian and RedHat based platforms.
 
 Requirements
 ------------
@@ -34,7 +34,7 @@ passed in as parameters) is always nice for users too:
 
     - hosts: servers
       roles:
-         - { role: mongodb_repository, x: 42 }
+         - { role: mongodb_install, x: 42 }
 
 License
 -------
