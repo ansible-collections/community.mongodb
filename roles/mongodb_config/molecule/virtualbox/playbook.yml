@@ -1,6 +1,8 @@
 ---
 - name: Converge
   hosts: all
+  become: yes
+
   roles:
     - role: mongodb_repository
     - role: mongodb_install

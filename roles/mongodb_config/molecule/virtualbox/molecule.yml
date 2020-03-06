@@ -1,0 +1,34 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+lint:
+  name: yamllint
+  options:
+    config-data:
+      line-length: disable
+platforms:
+  - name: centos-7
+    box: centos/7
+  - name: ubuntu-16
+    box: ubuntu/xenial64
+  - name: ubuntu-18
+    box: ubuntu/bionic64
+  - name: debian-buster
+    box: debian/buster64
+  - name: debian-stretch
+    box: debian/contrib-stretch64  # Standard debian/stretch64 had issues: Unable to locate package linux-headers-4.9.0-9-amd64
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+    enabled: false
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+    options:
+      ignore: 'E501'
