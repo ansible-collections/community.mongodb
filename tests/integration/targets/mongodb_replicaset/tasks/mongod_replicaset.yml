@@ -2,6 +2,7 @@
   set_fact:
     mongodb_user: mongod
   when: ansible_os_family == "RedHat"
+
 - name: Create directories for mongod processes
   file:
     path: '{{ remote_tmp_dir }}/mongod{{ item }}'
@@ -11,6 +12,7 @@
     mode: '0755'
     recurse: true
   with_items: '{{ mongodb_nodes }}'
+
 - name: Create keyfile
   copy:
     dest: '{{ remote_tmp_dir }}/my.key'
@@ -19,6 +21,7 @@
     group: '{{ mongodb_user }}'
     mode: '0600'
   when: mongod_auth == True
+
 - name: Spawn mongod process without auth
   command: mongod --shardsvr --smallfiles {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
@@ -27,6 +30,7 @@
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
   when: mongod_auth == False
+
 - name: Spawn mongod process with auth
   command: mongod --shardsvr --smallfiles {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
@@ -35,6 +39,7 @@
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
   when: mongod_auth == True
+
 - name: Wait for mongod to start responding
   wait_for:
     port: '{{ item }}'

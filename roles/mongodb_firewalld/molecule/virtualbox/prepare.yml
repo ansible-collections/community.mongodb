@@ -1,0 +1,10 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Run apt-get update
+      shell: apt-get update
+      when: ansible_os_family == "Debian"

@@ -23,10 +23,12 @@ options:
   login_user:
     description:
     - The username to authenticate with.
+    - If auth is not enabled do not supply this value.
     type: str
   login_password:
     description:
     - The password to authenticate with.
+    - If auth is not enabled do not supply this value.
     type: str
   login_database:
     description:
