@@ -30,7 +30,7 @@ def test_mongod_cnf_file(host):
 
     assert f.exists
     assert f.user == mongodb_user
-    assert f.group == mongodb_user
+    assert f.group == mongodb_group
 
 
 def test_mongod_service(host):
