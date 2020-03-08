@@ -19,13 +19,11 @@ storage:
 
 # how the process runs
 processManagement:
-  fork: true  # fork and run in background
-  pidFilePath: {{ pid_file }}  # location of pidfile
   timeZoneInfo: /usr/share/zoneinfo
 
 # network interfaces
 net:
-  port: {{ port }}
+  port: {{ mongod_port }}
   bindIp: {{ bind_ip }}
 
 

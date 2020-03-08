@@ -9,13 +9,6 @@
     path: is_docker.txt
   register: is_docker
 
-- name: Ensure pid_file dir exists
-  file:
-    path: "{{ pid_file | dirname }}"
-    state: directory
-    owner: "{{ mongodb_user }}"
-    group: "{{ mongodb_group }}"
-
 - name: Ensure db_path dir exists
   file:
     path: "{{ db_path }}"
@@ -23,9 +16,9 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
 
-- name: Open port 27017
+- name: Open port for mongod
   firewalld:
-    port: "{{ port }}"
+    port: "{{ mongod_port }}"
     permanent: yes
     state: enabled
     immediate: yes

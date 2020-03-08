@@ -1,10 +1,9 @@
 ---
 # defaults file for mongodb_mongod
-port: 27018
+mongod_port: 27018
 mongod_service: "mongod"
 mongodb_user: "mongod"
 mongodb_group: "mongod"
-pid_file: /var/run/mongodb/mongod.pid
 bind_ip: 0.0.0.0
 repl_set_name: rs0
 authorization: enabled

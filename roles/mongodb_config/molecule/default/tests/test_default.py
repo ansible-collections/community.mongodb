@@ -42,7 +42,7 @@ def test_mongod_service(host):
 
 
 def test_mongod_port(host):
-    port = include_vars(host)['ansible_facts']['port']
+    port = include_vars(host)['ansible_facts']['config_port']
     s = host.socket("tcp://0.0.0.0:{0}".format(port))
 
     assert s.is_listening

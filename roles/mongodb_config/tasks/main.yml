@@ -9,13 +9,6 @@
     path: is_docker.txt
   register: is_docker
 
-- name: Ensure pid_file dir exists
-  file:
-    path: "{{ pid_file | dirname }}"
-    state: directory
-    owner: root
-    group: root
-
 - name: Ensure db_path dir exists
   file:
     path: "{{ db_path }}"
@@ -25,7 +18,7 @@
 
 - name: Open port for mongo config srv
   firewalld:
-    port: "{{ port }}"
+    port: "{{ config_port }}"
     permanent: yes
     state: enabled
     immediate: yes
