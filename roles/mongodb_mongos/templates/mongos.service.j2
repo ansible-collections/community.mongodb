@@ -6,7 +6,6 @@ After=network.target
 [Service]
 User={{ mongodb_user }}
 Group={{ mongodb_group }}
-Type=forking
 PIDFile={{ pid_file }}
 PermissionsStartOnly=true
 ExecStartPre=/usr/local/bin/mongos_pre.sh

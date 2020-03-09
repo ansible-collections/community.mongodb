@@ -29,6 +29,18 @@ platforms:
     image: debian:stretch
     command: /sbin/init
     privileged: True
+  - name: config1
+    image: ubuntu:16.04
+    command: /sbin/init
+    privileged: True
+#  - name: config2
+#    image: ubuntu:16.04
+#    command: /sbin/init
+#    privileged: True
+#  - name: config3
+#    image: ubuntu:16.04
+#    command: /sbin/init
+#    privileged: True
 provisioner:
   name: ansible
   lint:

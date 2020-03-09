@@ -7,7 +7,7 @@ mongodb_group: "mongod"
 pid_file: /var/run/mongodb/mongod.pid
 bind_ip: 0.0.0.0
 config_repl_set_name: cfg
-authorization: enabled
+authorization: disabled
 openssl_keyfile_content: |
   Z2CeA9BMcoY5AUWoegjv/XWL2MA1SQcL4HvmRjYaTjSp/xosJy+LL2X3OQb1xVWC
   rO2e6Tu6A3R4muunitI6Vr0IKeU5UbTpR0N4hSU6HDrV9z2PIEWlkQqKh01ZRLEY
