@@ -27,6 +27,7 @@
         login_host: localhost
         login_port: 27019
         replica_set: cfg
+        validate: no
         members:
           - config1:27019
           #- config2:27019
