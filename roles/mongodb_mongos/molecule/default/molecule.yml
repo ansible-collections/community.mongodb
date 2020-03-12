@@ -19,22 +19,16 @@ platforms:
     command: /sbin/init
     privileged: True
     networks:
-      - name: mongos
-    network_mode: mongos
-    dns_servers:
-      - 127.0.0.11
-      - 8.8.8.8
+      - name: "mymongos"
+    network_mode: "mongos"
   - name: ubuntu_18
     hostname: ubuntu_18
     image: ubuntu:18.04
     command: /sbin/init
     privileged: True
     networks:
-      - name: mongos
-    network_mode: mongos
-    dns_servers:
-      - 127.0.0.11
-      - 8.8.8.8
+      - name: "mymongos"
+    network_mode: "mongos"
   #- name: debian_buster ERROR: Failed to load nf_conntrack module
   #  image: debian:buster
   #  command: /sbin/init
@@ -45,44 +39,32 @@ platforms:
     command: /sbin/init
     privileged: True
     networks:
-      - name: mongos
-    network_mode: mongos
-    dns_servers:
-      - 127.0.0.11
-      - 8.8.8.8
+      - name: "mymongos"
+    network_mode: "mongos"
   - name: config1
     hostname: config1
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
-      - name: mongos
-    network_mode: mongos
-    dns_servers:
-      - 127.0.0.11
-      - 8.8.8.8
+      - name: "mymongos"
+    network_mode: "mongos"
   - name: config2
     hostname: config2
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
-      - name: mongos
-    network_mode: mongos
-    dns_servers:
-      - 127.0.0.11
-      - 8.8.8.8
+      - name: "mymongos"
+    network_mode: "mongos"
   - name: config3
     hostname: config3
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
-      - name: mongos
-    network_mode: mongos
-    dns_servers:
-      - 127.0.0.11
-      - 8.8.8.8
+      - name: "mymongos"
+    network_mode: "mongos"
 provisioner:
   name: ansible
   lint:
