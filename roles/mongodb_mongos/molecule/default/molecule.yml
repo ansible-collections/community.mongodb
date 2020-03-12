@@ -20,6 +20,7 @@ platforms:
     privileged: True
     networks:
       - name: mongos
+    network_mode: mongos
     attachable: yes
   - name: ubuntu_18
     hostname: ubuntu_18
@@ -28,7 +29,7 @@ platforms:
     privileged: True
     networks:
       - name: mongos
-    attachable: yes
+    network_mode: mongos
   #- name: debian_buster ERROR: Failed to load nf_conntrack module
   #  image: debian:buster
   #  command: /sbin/init
@@ -40,7 +41,7 @@ platforms:
     privileged: True
     networks:
       - name: mongos
-    attachable: yes
+    network_mode: mongos
   - name: config1
     hostname: config1
     image: ubuntu:16.04
@@ -48,7 +49,7 @@ platforms:
     privileged: True
     networks:
       - name: mongos
-    attachable: yes
+    network_mode: mongos
   - name: config2
     hostname: config2
     image: ubuntu:16.04
@@ -56,7 +57,7 @@ platforms:
     privileged: True
     networks:
       - name: mongos
-    attachable: yes
+    network_mode: mongos
   - name: config3
     hostname: config3
     image: ubuntu:16.04
@@ -64,7 +65,7 @@ platforms:
     privileged: True
     networks:
       - name: mongos
-    attachable: yes
+    network_mode: mongos
 provisioner:
   name: ansible
   lint:

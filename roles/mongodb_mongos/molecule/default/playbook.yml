@@ -30,6 +30,6 @@
         validate: no
         members:
           - config1:27019
-          #- config2:27019
-          #- config3:27019
+          - config2:27019
+          - config3:27019
       when: ansible_hostname == "config1"
