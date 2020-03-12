@@ -21,7 +21,9 @@ platforms:
     networks:
       - name: mongos
     network_mode: mongos
-    attachable: yes
+    dns_servers:
+      - 127.0.0.11
+      - 8.8.8.8
   - name: ubuntu_18
     hostname: ubuntu_18
     image: ubuntu:18.04
@@ -30,6 +32,9 @@ platforms:
     networks:
       - name: mongos
     network_mode: mongos
+    dns_servers:
+      - 127.0.0.11
+      - 8.8.8.8
   #- name: debian_buster ERROR: Failed to load nf_conntrack module
   #  image: debian:buster
   #  command: /sbin/init
@@ -42,6 +47,9 @@ platforms:
     networks:
       - name: mongos
     network_mode: mongos
+    dns_servers:
+      - 127.0.0.11
+      - 8.8.8.8
   - name: config1
     hostname: config1
     image: ubuntu:16.04
@@ -50,6 +58,9 @@ platforms:
     networks:
       - name: mongos
     network_mode: mongos
+    dns_servers:
+      - 127.0.0.11
+      - 8.8.8.8
   - name: config2
     hostname: config2
     image: ubuntu:16.04
@@ -58,6 +69,9 @@ platforms:
     networks:
       - name: mongos
     network_mode: mongos
+    dns_servers:
+      - 127.0.0.11
+      - 8.8.8.8
   - name: config3
     hostname: config3
     image: ubuntu:16.04
@@ -66,6 +80,9 @@ platforms:
     networks:
       - name: mongos
     network_mode: mongos
+    dns_servers:
+      - 127.0.0.11
+      - 8.8.8.8
 provisioner:
   name: ansible
   lint:
