@@ -5,3 +5,27 @@
     - role: mongodb_repository
     - role: mongodb_install
     - role: mongodb_mongod
+
+  tasks:
+
+    - name: Install python stuff
+      package:
+        name: ["python-setuptools", "python-pip"]
+      when: ansible_hostname == "ubuntu_16"
+
+    - name: Install pymongo
+      pip:
+        name: pymongo
+      when: ansible_hostname == "ubuntu_16"
+
+    - name: Init replicaset
+      mongodb_replicaset:
+        login_host: localhost
+        login_port: 27018
+        replica_set: rs0
+        validate: yes
+        members:
+          - ubuntu_16:27018
+          - ubuntu_18:27018
+          - debian_stretch:27018
+      when: ansible_hostname == "ubuntu_16"
