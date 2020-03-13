@@ -4,7 +4,6 @@
   become: yes
 
   roles:
-    #- role: mongodb_firewalld
     - role: mongodb_repository
     - { role: mongodb_install, when: "'config' in ansible_hostname" }
     - { role: mongodb_config, when: "'config' in ansible_hostname" }
