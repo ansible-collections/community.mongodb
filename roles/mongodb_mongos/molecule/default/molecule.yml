@@ -45,20 +45,6 @@ platforms:
     networks:
       - name: "mymongos"
     network_mode: "mymongos"
-  - name: config2
-    image: ubuntu:16.04
-    command: /sbin/init
-    privileged: True
-    networks:
-      - name: "mymongos"
-    network_mode: "mymongos"
-  - name: config3
-    image: ubuntu:16.04
-    command: /sbin/init
-    privileged: True
-    networks:
-      - name: "mymongos"
-    network_mode: "mymongos"
 provisioner:
   name: ansible
   lint:
