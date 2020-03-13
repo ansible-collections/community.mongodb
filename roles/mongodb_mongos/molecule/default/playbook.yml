@@ -6,9 +6,9 @@
   roles:
     #- role: mongodb_firewalld
     - role: mongodb_repository
-    - { role: mongodb_mongos, when: "'config' not in ansible_hostname" }
     - { role: mongodb_install, when: "'config' in ansible_hostname" }
     - { role: mongodb_config, when: "'config' in ansible_hostname" }
+    - { role: mongodb_mongos, when: "'config' not in ansible_hostname" }
 
   tasks:
 
@@ -33,3 +33,9 @@
           - config2:27019
           - config3:27019
       when: ansible_hostname == "config1"
+
+    - name: Restart the mongos service
+      service:
+        name: mongos
+        state: started
+      when: "config" not in ansible_hostname

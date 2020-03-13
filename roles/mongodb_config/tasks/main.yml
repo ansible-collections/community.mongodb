@@ -4,25 +4,12 @@
   include_vars:
     file: "{{ ansible_os_family }}.yml"
 
-- name: Check is_docker.txt file exists
-  stat:
-    path: is_docker.txt
-  register: is_docker
-
 - name: Ensure db_path dir exists
   file:
     path: "{{ db_path }}"
     state: directory
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
-
-- name: Open port for mongo config srv
-  firewalld:
-    port: "{{ config_port }}"
-    permanent: yes
-    state: enabled
-    immediate: yes
-  when: is_docker.stat.exists == False
 
 - name: Copy config file
   template:

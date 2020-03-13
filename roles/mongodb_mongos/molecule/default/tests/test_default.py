@@ -34,6 +34,7 @@ def test_mongod_cnf_file(host):
 
 
 def test_mongod_service(host):
+
     mongos_service = include_vars(host)['ansible_facts']['mongos_service']
     s = host.service(mongos_service)
 

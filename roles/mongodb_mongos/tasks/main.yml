@@ -4,11 +4,6 @@
   include_vars:
     file: "{{ ansible_os_family }}.yml"
 
-- name: Check is_docker.txt file exists
-  stat:
-    path: is_docker.txt
-  register: is_docker
-
 - name: Create mongodb_group
   group:
     name: "{{ mongodb_group }}"
@@ -52,20 +47,6 @@
 - name: Ensure mongos package is installed
   package:
     name: "{{ mongos_package }}"
-
-- set_fact:
-    mypy: "python3"
-  when: ansible_os_family == "Debian"
-
-- name: Open port for mongos
-  firewalld:
-    port: "{{ mongos_port }}/tcp"
-    permanent: yes
-    state: enabled
-    immediate: yes
-  when: is_docker.stat.exists == False
-  vars:
-    ansible_python_interpreter: "{{ mypy }}"
 
 - name: Start mongos service
   service:
