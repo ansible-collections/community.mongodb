@@ -38,4 +38,4 @@
       service:
         name: mongos
         state: started
-      when: "config" not in ansible_hostname
+      when: "'config' not in ansible_hostname"
