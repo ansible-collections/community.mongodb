@@ -24,7 +24,7 @@ def include_vars(host):
 
 
 def test_mongod_cnf_file(host):
-    if host.ansible.get_variables()['inventory_hostname'] == 'config1':
+    if host.ansible.get_variables()['inventory_hostname'] != 'config1':
         mongodb_user = include_vars(host)['ansible_facts']['mongodb_user']
         mongodb_group = include_vars(host)['ansible_facts']['mongodb_group']
         f = host.file('/etc/mongos.conf')
@@ -36,7 +36,7 @@ def test_mongod_cnf_file(host):
 
 def test_mongod_service(host):
 
-    if host.ansible.get_variables()['inventory_hostname'] == 'config1':
+    if host.ansible.get_variables()['inventory_hostname'] != 'config1':
         mongos_service = include_vars(host)['ansible_facts']['mongos_service']
         s = host.service(mongos_service)
 
@@ -45,7 +45,7 @@ def test_mongod_service(host):
 
 
 def test_mongod_port(host):
-    if host.ansible.get_variables()['inventory_hostname'] == 'config1':
+    if host.ansible.get_variables()['inventory_hostname'] != 'config1':
         port = include_vars(host)['ansible_facts']['mongos_port']
         s = host.socket("tcp://0.0.0.0:{0}".format(port))
 
