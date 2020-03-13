@@ -14,57 +14,51 @@ platforms:
   #  command: /sbin/init
   #  privileged: True
   - name: ubuntu_16
-    hostname: ubuntu_16
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
-    network_mode: "mongos"
+    network_mode: "mymongos"
   - name: ubuntu_18
-    hostname: ubuntu_18
     image: ubuntu:18.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
-    network_mode: "mongos"
+    network_mode: "mymongos"
   #- name: debian_buster ERROR: Failed to load nf_conntrack module
   #  image: debian:buster
   #  command: /sbin/init
   #  privileged: True
   - name: debian_stretch
-    hostname: debian_stretch
     image: debian:stretch
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
-    network_mode: "mongos"
+    network_mode: "mymongos"
   - name: config1
-    hostname: config1
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
-    network_mode: "mongos"
+    network_mode: "mymongos"
   - name: config2
-    hostname: config2
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
-    network_mode: "mongos"
+    network_mode: "mymongos"
   - name: config3
-    hostname: config3
     image: ubuntu:16.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
-    network_mode: "mongos"
+    network_mode: "mymongos"
 provisioner:
   name: ansible
   lint:

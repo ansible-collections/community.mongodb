@@ -9,4 +9,4 @@ bind_ip: 0.0.0.0
 mypy: python
 mongos_package: "mongodb-org-mongos"
 config_repl_set_name: cfg
-config_servers: "config1:27019;config2:27019;config3:27019"
+config_servers: "config1:27019, config2:27019, config3:27019"
