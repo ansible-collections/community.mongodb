@@ -43,6 +43,8 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  env:
+    ANSIBLE_LIBRARY: "{{ playbook_dir }}/../../../plugins/modules/"
 verifier:
   name: testinfra
   lint:
