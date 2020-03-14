@@ -7,7 +7,7 @@
     - role: mongodb_mongod
 
   environment:
-    ANSIBLE_LIBRARY: "{%raw%}{{CWD}}{%endraw%}/../../../plugins/modules/"
+    ANSIBLE_LIBRARY: "{{ playbook_dir }}/../../../plugins/modules/"
 
   tasks:
 
