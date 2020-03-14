@@ -11,7 +11,7 @@ set -e;
 
 echo $(pwd);
 
-export ANSIBLE_LIBRARY="$(pwd)/../../../plugins/modules/";
+export ANSIBLE_LIBRARY="/home/travis/build/ansible-collections/mongodb/plugins/modules/";
 
 FILES=$(git diff --name-only HEAD~1 | wc -l | xargs);
 
