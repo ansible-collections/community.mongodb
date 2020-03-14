@@ -1,7 +1,7 @@
 mongodb_mongod
 ==============
 
-Performs tasks relevant to the setup of a mongod server..
+Performs tasks relevant to the setup of a mongod server.
 
 Requirements
 ------------

@@ -6,10 +6,6 @@
 # roles/ when appropriate according to commits.            #
 ############################################################
 
-cd ./plugins/modules;
-export ANSIBLE_LIBRARY="$(pwd)";
-cd ../../;
-
 set -u;
 set -e;
 

@@ -6,6 +6,9 @@
     - role: mongodb_install
     - role: mongodb_mongod
 
+  environment:
+    ANSIBLE_LIBRARY: ../../../plugins/modules/
+
   tasks:
 
     - name: Install python stuff
