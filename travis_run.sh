@@ -7,7 +7,7 @@
 ############################################################
 
 cd ./plugins/modules;
-export ANSIBLE_LIBRARY="$ANSIBLE_LIBRARY:$(pwd)";
+export ANSIBLE_LIBRARY="$(pwd)";
 cd ../../;
 
 set -u;
