@@ -26,6 +26,7 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
     mode: 0400
+  when: authorization == "enabled"
 
 - name: Start mongod service
   service:

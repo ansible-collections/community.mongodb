@@ -26,10 +26,11 @@ net:
   port: {{ mongod_port }}
   bindIp: {{ bind_ip }}
 
-
-#security:
-#    authorization: {{ authorization }}
-#    keyFile: /etc/keyfile
+{% if authorization == "enabled" %}
+security:
+    authorization: {{ authorization }}
+    keyFile: /etc/keyfile
+{% endif %}
 
 #operationProfiling:
 

@@ -6,7 +6,7 @@ mongodb_user: "mongod"
 mongodb_group: "mongod"
 bind_ip: 0.0.0.0
 repl_set_name: rs0
-authorization: disabled
+authorization: "enabled"
 openssl_keyfile_content: |
   Z2CeA9BMcoY5AUWoegjv/XWL2MA1SQcL4HvmRjYaTjSp/xosJy+LL2X3OQb1xVWC
   rO2e6Tu6A3R4muunitI6Vr0IKeU5UbTpR0N4hSU6HDrV9z2PIEWlkQqKh01ZRLEY
@@ -24,3 +24,5 @@ openssl_keyfile_content: |
   D3xVuE3WvrhldY5EOsaTt2ZXZx5REmJDIW1KcnvQKiVDJ2QzP5xdXYA0hh3TdTVE
   sb4UreMw/WyBpANiICMlJRBgSd0f0VGMlYzLX2BL14YpNnLhmoQqKzfBN6v2XAEG
   mJfrCUVuP1nBEklk23lYkNi/ohe+aodNjdN+2DHp42sGZHYP
+mongodb_admin_user: admin
+mongodb_admin_pwd: admin
