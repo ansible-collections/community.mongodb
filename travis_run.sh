@@ -6,12 +6,12 @@
 # roles/ when appropriate according to commits.            #
 ############################################################
 
-set -u;
-set -e;
-
 cd ./plugins/modules;
 export ANSIBLE_LIBRARY="$ANSIBLE_LIBRARY:$(pwd)";
 cd ../../;
+
+set -u;
+set -e;
 
 FILES=$(git diff --name-only HEAD~1 | wc -l | xargs);
 
