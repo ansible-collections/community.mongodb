@@ -4,7 +4,7 @@
 
 - name: Getting pids for mongod
   register: pids_of_mongod
-  community.general.pids:
+  pids:
     name: mongod
 
 - name: Wait for all mongod processes to exit
@@ -20,6 +20,6 @@
     state: absent
   with_items:
   - mongod3001
-  
+
 - name: Remove all mongod sock files
   shell: rm -Rf /tmp/mongodb*.sock
