@@ -46,8 +46,6 @@ jobs:
         run: ansible-galaxy collection install community.general -p ../../
       - name: Run integration tests on Python ${{ matrix.python_version }}
         run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
-        env:
-          ANSIBLE_COLLECTIONS_PATHS: /home/runner/.ansible/collections:/usr/share/ansible/collections
 
       - name: Upload Coverage data
         run: tests/coverage.sh
