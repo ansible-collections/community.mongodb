@@ -44,10 +44,6 @@ jobs:
 
       - name: Install community.general
         run: ansible-galaxy collection install community.general -p ../../
-
-      - name: Where is the pids module?
-        run: ansible-doc -l
-
       - name: Run integration tests on Python ${{ matrix.python_version }}
         run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
         env:
