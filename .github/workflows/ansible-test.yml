@@ -40,7 +40,7 @@ jobs:
           python-version: ${{ matrix.python_version }}
 
       - name: Install community.general
-        run: ansible-galaxy collection install community-general -p ansible_collections
+        run: ansible-galaxy collection install community.general -p ansible_collections
 
       - name: Install ansible-base
         run: pip install git+https://github.com/ansible-collection-migration/ansible-base.git --disable-pip-version-check
