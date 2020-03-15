@@ -43,10 +43,12 @@
 - name: Kill all mongod processes
   command: pkill  -{{ kill_signal }} mongod
   ignore_errors: true
+  
 - name: Getting pids for mongod
   register: pids_of_mongod
-  community.general.pids:
+  pids:
     name: mongod
+
 - name: Wait for all mongod processes to exit
   wait_for:
     path: /proc/{{ item }}/status
