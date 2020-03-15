@@ -43,7 +43,7 @@ jobs:
         run: pip install git+https://github.com/ansible-collection-migration/ansible-base.git --disable-pip-version-check
 
       - name: Install community.general
-        run: ansible-galaxy collection install community.general
+        run: ansible-galaxy collection install community.general -p /root/ansible
 
       - name: Where is the pids module?
         run: ansible-doc -l

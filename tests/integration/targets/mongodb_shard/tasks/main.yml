@@ -260,7 +260,7 @@
 
 - name: Getting pids for mongod
   register: pids_of_mongod
-  ansible_collections.community.general.pids:
+  community.general.pids::
     name: mongod
 
 - name: Wait for all mongod processes to exit
