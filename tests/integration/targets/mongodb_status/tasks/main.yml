@@ -157,13 +157,15 @@
     election_timeout_millis: 1000
     heartbeat_timeout_secs: 1
 
-- name: Check the status of the replicaset with mongodb_status module (auth)
+- name: Check the status of the replicaset with mongodb_status module (auth) - 2
   mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset2 }}'
+    poll: 99
+    interval: 1
 
 - name: Get replicaset info
   command: mongo admin --eval "rs.status()" --port 3001
@@ -181,7 +183,7 @@
 - name: Kill one instance to make the replicaset status bad
   shell: lsof -ti tcp:3003 | xargs kill && sleep 5
 
-- name: Check the status of the replicaset with mongodb_status module (auth)
+- name: Check the status of the replicaset with mongodb_status module (auth) - 3
   mongodb_status:
     login_host: localhost
     login_port: 3001
