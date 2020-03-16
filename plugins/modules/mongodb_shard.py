@@ -19,62 +19,62 @@ description:
 author: Rhys Campbell (@rhysmeister)
 options:
     login_user:
-        description:
-            - The MongoDB user to login with.
-        required: false
-        type: str
+      description:
+        - The MongoDB user to login with.
+      required: false
+      type: str
     login_password:
-        description:
-            - The login user's password used to authenticate with.
-        required: false
-        type: str
+      description:
+        - The login user's password used to authenticate with.
+      required: false
+      type: str
     login_database:
-        description:
-            - The database where login credentials are stored.
-        required: false
-        type: str
-        default: admin
+      description:
+        - The database where login credentials are stored.
+      required: false
+      type: str
+      default: admin
     login_host:
-        description:
-            - The host to login to.
-            - This must be a mongos.
-        required: false
-        type: str
-        default: localhost
+      description:
+        - The host to login to.
+        - This must be a mongos.
+      required: false
+      type: str
+      default: localhost
     login_port:
-        description:
-            - The MongoDB port to login to.
-        required: false
-        type: int
-        default: 27017
+      description:
+        - The MongoDB port to login to.
+      required: false
+      type: int
+      default: 27017
     shard:
-        description:
-            - The shard connection string.
-            - Should be supplied in the form <replicaset>/host:port as detailed
-              in U(https://docs.mongodb.com/manual/tutorial/add-shards-to-shard-cluster/).
-            - For example rs0/example1.mongodb.com:27017.
-        required: true
-        type: str
+      description:
+        - The shard connection string.
+        - Should be supplied in the form <replicaset>/host:port as detailed
+          in U(https://docs.mongodb.com/manual/tutorial/add-shards-to-shard-cluster/).
+        - For example rs0/example1.mongodb.com:27017.
+      required: true
+      type: str
     ssl:
-        description:
-            - Whether to use an SSL connection when connecting to the database.
-        default: False
-        type: bool
+      description:
+        - Whether to use an SSL connection when connecting to the database.
+      default: False
+      type: bool
     ssl_cert_reqs:
-        description:
-            - Specifies whether a certificate is required from the other side of the connection,
-              and whether it will be validated if provided.
-        required: false
-        type: str
-        default: CERT_REQUIRED
-        choices: [CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED]
+      description:
+        - Specifies whether a certificate is required from the other side of the connection,
+          and whether it will be validated if provided.
+      required: false
+      type: str
+      default: CERT_REQUIRED
+      choices: [CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED]
     state:
-        description:
-            - Whether the shard should be present or absent from the Cluster.
-        required: false
-        type: str
-        default: present
-        choices: [absent, present]
+      description:
+        - Whether the shard should be present or absent from the Cluster.
+      required: false
+      type: str
+      default: present
+      choices: [absent, present]
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
