@@ -96,6 +96,7 @@ import time
 import os
 import ssl as ssl_lib
 from distutils.version import LooseVersion
+import traceback
 
 try:
     from pymongo.errors import ConnectionFailure
