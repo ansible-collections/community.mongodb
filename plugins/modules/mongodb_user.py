@@ -22,83 +22,82 @@ short_description: Adds or removes a user from a MongoDB database
 description:
     - Adds or removes a user from a MongoDB database.
 options:
-    login_user:
-        description:
-            - The MongoDB username used to authenticate with.
-        type: str
-    login_password:
-        description:
-            - The login user's password used to authenticate with.
-        type: str
-    login_host:
-        description:
-            - The host running the database.
-        default: localhost
-        type: str
-    login_port:
-        description:
-            - The MongoDB port to connect to.
-        default: '27017'
-        type: str
-    login_database:
-        description:
-            - The database where login credentials are stored.
-        type: str
-    replica_set:
-        description:
-            - Replica set to connect to (automatically connects to primary for writes).
-        type: str
-    database:
-        description:
-            - The name of the database to add/remove the user from.
-        required: true
-        type: str
-        aliases: [db]
-    name:
-        description:
-            - The name of the user to add or remove.
-        required: true
-        aliases: [user]
-        type: str
-    password:
-        description:
-            - The password to use for the user.
-        type: str
-        aliases: [pass]
-    ssl:
-        description:
-            - Whether to use an SSL connection when connecting to the database.
-        type: bool
-    ssl_cert_reqs:
-        description:
-            - Specifies whether a certificate is required from the other side of the connection,
-              and whether it will be validated if provided.
-        default: CERT_REQUIRED
-        choices: [CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED]
-        type: str
-    roles:
-        type: list
-        elements: raw
-        description:
-            - >
-              The database user roles valid values could either be one or more of the following strings:
-              'read', 'readWrite', 'dbAdmin', 'userAdmin', 'clusterAdmin', 'readAnyDatabase', 'readWriteAnyDatabase', 'userAdminAnyDatabase',
-              'dbAdminAnyDatabase'
-            - "Or the following dictionary '{ db: DATABASE_NAME, role: ROLE_NAME }'."
-            - "This param requires pymongo 2.5+. If it is a string, mongodb 2.4+ is also required. If it is a dictionary, mongo 2.6+ is required."
-    state:
-        description:
-            - The database user state.
-        default: present
-        choices: [absent, present]
-        type: str
-    update_password:
-        default: always
-        choices: [always, on_create]
-        description:
-          - C(always) will update passwords if they differ.
-          - C(on_create) will only set the password for newly created users.
-        type: str
+  login_user:
+    description:
+      - The MongoDB username used to authenticate with.
+    type: str
+  login_password:
+    description:
+      - The login user's password used to authenticate with.
+    type: str
+  login_host:
+    description:
+      - The host running the database.
+    default: localhost
+    type: str
+  login_port:
+    description:
+      - The MongoDB port to connect to.
+    default: '27017'
+    type: str
+  login_database:
+    description:
+      - The database where login credentials are stored.
+    type: str
+  replica_set:
+    description:
+      - Replica set to connect to (automatically connects to primary for writes).
+    type: str
+  database:
+    description:
+      - The name of the database to add/remove the user from.
+    required: true
+    type: str
+    aliases: [db]
+  name:
+    description:
+      - The name of the user to add or remove.
+    required: true
+    aliases: [user]
+    type: str
+  password:
+    description:
+      - The password to use for the user.
+    type: str
+    aliases: [pass]
+  ssl:
+    description:
+      - Whether to use an SSL connection when connecting to the database.
+    type: bool
+  ssl_cert_reqs:
+    description:
+      - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
+    default: CERT_REQUIRED
+    choices: [CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED]
+    type: str
+  roles:
+    type: list
+    elements: raw
+    description:
+      - >
+          The database user roles valid values could either be one or more of the following strings:
+          'read', 'readWrite', 'dbAdmin', 'userAdmin', 'clusterAdmin', 'readAnyDatabase', 'readWriteAnyDatabase', 'userAdminAnyDatabase',
+          'dbAdminAnyDatabase'
+      - "Or the following dictionary '{ db: DATABASE_NAME, role: ROLE_NAME }'."
+      - "This param requires pymongo 2.5+. If it is a string, mongodb 2.4+ is also required. If it is a dictionary, mongo 2.6+ is required."
+  state:
+    description:
+      - The database user state.
+    default: present
+    choices: [absent, present]
+    type: str
+  update_password:
+    default: always
+    choices: [always, on_create]
+    description:
+      - C(always) will update passwords if they differ.
+      - C(on_create) will only set the password for newly created users.
+    type: str
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
