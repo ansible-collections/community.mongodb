@@ -354,7 +354,10 @@ def main():
     except Exception as excep:
         if "not authorized on" in str(excep) or "command listDatabases requires authentication" in str(excep):
             if login_user is not None and login_password is not None:
-                client.admin.authenticate(login_user, login_password, source=login_database)
+                try:
+                    client.admin.authenticate(login_user, login_password, source=login_database)
+                except Exception as excep:
+                    module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
             else:
                 raise excep
         else:
