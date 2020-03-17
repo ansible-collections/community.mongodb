@@ -185,7 +185,7 @@
     name: lsof
 
 - name: Kill one instance to make the replicaset status bad
-  shell: lsof -ti tcp:3003 | xargs kill && sleep 10
+  shell: lsof -ti tcp:3003 | xargs kill && sleep 10 && ps -ef | grep mongod
 
 - name: Check the status of the replicaset with mongodb_status module (auth) - 3
   mongodb_status:
@@ -194,6 +194,8 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset2 }}'
+    poll: 99
+    interval: 1
   register: bad_status
   ignore_errors: yes
 

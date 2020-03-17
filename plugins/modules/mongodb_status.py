@@ -360,9 +360,9 @@ def main():
                 except Exception as excep:
                     module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
             else:
-                raise excep
+                module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
         else:
-            raise excep
+            module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
 
     if len(replica_set) == 0:
         module.fail_json(msg="Parameter 'replica_set' must not be an empty string")
