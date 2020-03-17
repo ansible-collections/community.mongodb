@@ -237,7 +237,7 @@
       - "good_status.iterations > 1"
       - "good_status.replicaset['localhost:3001'] == 'PRIMARY'"
       - "good_status.replicaset['localhost:3002'] == 'SECONDARY'"
-      - "good_status.replicaset['localhost:3003'] == 'SECONDARY"
+      - "good_status.replicaset['localhost:3003'] == 'SECONDARY'"
       - "good_status.failed == False"
 
 # Test with auth enabled
