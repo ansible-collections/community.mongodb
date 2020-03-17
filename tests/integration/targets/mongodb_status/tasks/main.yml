@@ -157,7 +157,7 @@
     election_timeout_millis: 1000
     heartbeat_timeout_secs: 1
 
-- name: Check the status of the replicaset with mongodb_status module (auth) - 2
+- name: Check the status of the replicaset with mongodb_status module (no auth) - 2
   mongodb_status:
     login_host: localhost
     login_port: 3001
@@ -240,325 +240,114 @@
       - "good_status.replicaset['localhost:3003'] == 'SECONDARY'"
       - "good_status.failed == False"
 
-# Test with auth enabled
+- include_tasks: mongod_teardown.yml
 
-#- include_tasks: mongod_teardown.yml
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset3 }}'
 
-#- set_fact:
-#    current_replicaset: '{{ mongodb_replicaset3 }}'
-#
-#- set_fact:
-#    mongod_auth: false
+- set_fact:
+    mongod_auth: True
 
-#- name: Launch mongod processes
-#  include_tasks: mongod_replicaset.yml
+- name: Launch mongod processes
+  include_tasks: mongod_replicaset.yml
 
-#- name: Create replicaset with module
-#  mongodb_replicaset:
-#    login_user: admin
-#    login_password: secret
-#    login_host: localhost
-#    login_port: 3001
-#    login_database: admin
-#    replica_set: '{{ mongodb_replicaset3 }}'
-#    members: localhost:3001,localhost:3002,localhost:3003
-#    election_timeout_millis: 1000
+- name: Create replicaset with module
+  mongodb_replicaset:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset3 }}'
+    members:
+      - localhost:3001
+      - localhost:3002
+      - localhost:3003
 
-#- name: Get replicaset info
-#  command: mongo admin --eval "rs.status()" --port 3001
-#  register: mongo_output
+- name: Check the replicaset has a good status (with auth)
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    replica_set: '{{ mongodb_replicaset3 }}'
+    poll: 99
+    interval: 1
+  register: good_status
 
-#- name: Assert replicaset name is in mongo_output
-#  assert:
-#    that:
-#    - mongo_output.changed == true
-#    - '''{{ mongodb_replicaset3 }}'' in mongo_output.stdout'
-#    - '''localhost:3001'' in mongo_output.stdout'
-#    - '''localhost:3002'' in mongo_output.stdout'
-#    - '''localhost:3003'' in mongo_output.stdout'
+- debug:
+    var: good_status
 
-#- include_tasks: mongod_teardown.yml
+- name: Assert that replicaset is good - mongodb_replicaset3
+  assert:
+    that:
+      - "good_status.msg == 'replicaset is in a converged state'"
+      - "good_status.iterations > 1"
+      - "good_status.replicaset['localhost:3001'] == 'PRIMARY'"
+      - "good_status.replicaset['localhost:3002'] == 'SECONDARY'"
+      - "good_status.replicaset['localhost:3003'] == 'SECONDARY'"
+      - "good_status.failed == False"
 
-#- set_fact:
-#    current_replicaset: '{{ mongodb_replicaset4 }}'
+- name: Kill one instance to make the replicaset status bad
+  shell: mongo admin --port 3002 --eval 'db.shutdownServer()'
 
-#- set_fact:
-    # mongod_auth: false
+- pause:
+    seconds: 5
 
-# - name: Launch mongod processes
-#   include_tasks: mongod_replicaset.yml
-#
-# - name: Create replicaset with module
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     arbiter_at_index: 2
-#     replica_set: '{{ mongodb_replicaset4 }}'
-#     members: localhost:3001,localhost:3002,localhost:3003
-#     election_timeout_millis: 1000
-#
-# - name: Ensure host reaches primary before proceeding 3001
-#   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-#
-# - name: Get replicaset info
-#   command: mongo admin --eval "rs.status()" --port 3001
-#   register: mongo_output
-#
-# - name: Assert replicaset name is in mongo_output
-#   assert:
-#     that:
-#     - mongo_output.changed == true
-#     - '''{{ mongodb_replicaset4 }}'' in mongo_output.stdout'
-#     - '''localhost:3001'' in mongo_output.stdout'
-#     - '''localhost:3002'' in mongo_output.stdout'
-#     - '''localhost:3003'' in mongo_output.stdout'
-#     - '''ARBITER'' in mongo_output.stdout'
-#
-# - include_tasks: mongod_teardown.yml
-#
-# - set_fact:
-#     current_replicaset: '{{ mongodb_replicaset5 }}'
-#
-# - set_fact:
-#     mongod_auth: false
-#
-# - name: Launch mongod processes
-#   include_tasks: mongod_replicaset.yml
-#
-# - name: Create replicaset with module
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     chaining_allowed: false
-#     replica_set: '{{ mongodb_replicaset5 }}'
-#     election_timeout_millis: 1000
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#
-# - name: Get replicaset info
-#   command: mongo admin --eval "rs.conf()" --port 3001
-#   register: mongo_output
-#
-# - name: Assert replicaset name is in mongo_output
-#   assert:
-#     that:
-#     - mongo_output.changed == true
-#     - '''{{ mongodb_replicaset5 }}'' in mongo_output.stdout'
-#     - '''localhost:3001'' in mongo_output.stdout'
-#     - '''localhost:3002'' in mongo_output.stdout'
-#     - '''localhost:3003'' in mongo_output.stdout'
-#     - '''chainingAllowed" : false,'' in mongo_output.stdout'
-#
-# - include_tasks: mongod_teardown.yml
-#
-# - set_fact:
-#     current_replicaset: '{{ mongodb_replicaset6 }}'
-#
-# - set_fact:
-#     mongodb_nodes:
-#     - 3001
-#     - 3002
-#     - 3003
-#     - 3004
-#     - 3005
-#
-# - set_fact:
-#     mongod_auth: false
-#
-# - name: Launch mongod processes
-#   include_tasks: mongod_replicaset.yml
-#
-# - name: Create replicaset with module
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     replica_set: '{{ mongodb_replicaset6 }}'
-#     election_timeout_millis: 1000
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#     - localhost:3004
-#     - localhost:3005
-#
-# - name: Get replicaset info
-#   command: mongo admin --eval "rs.conf()" --port 3001
-#   register: mongo_output
-#
-# - name: Assert replicaset name is in mongo_output
-#   assert:
-#     that:
-#     - mongo_output.changed == true
-#     - '''{{ mongodb_replicaset6 }}'' in mongo_output.stdout'
-#     - '''localhost:3001'' in mongo_output.stdout'
-#     - '''localhost:3002'' in mongo_output.stdout'
-#     - '''localhost:3003'' in mongo_output.stdout'
-#     - '''localhost:3004'' in mongo_output.stdout'
-#     - '''localhost:3005'' in mongo_output.stdout'
-#
-# - include_tasks: mongod_teardown.yml
-#
-# - set_fact:
-#     current_replicaset: '{{ mongodb_replicaset7 }}'
-#
-# - set_fact:
-#     mongod_auth: false
-#
-# - set_fact:
-#     mongodb_nodes:
-#     - 3001
-#     - 3002
-#     - 3003
-#
-# - name: Launch mongod processes
-#   include_tasks: mongod_replicaset.yml
-#
-# - name: Create replicaset with module
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     election_timeout_millis: 9999
-#     replica_set: '{{ mongodb_replicaset7 }}'
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#
-# - name: Get replicaset info
-#   command: mongo admin --eval "rs.conf()" --port 3001
-#   register: mongo_output
-#
-# - name: Assert replicaset name is in mongo_output
-#   assert:
-#     that:
-#     - mongo_output.changed == true
-#     - '''{{ mongodb_replicaset7 }}'' in mongo_output.stdout'
-#     - '''localhost:3001'' in mongo_output.stdout'
-#     - '''localhost:3002'' in mongo_output.stdout'
-#     - '''localhost:3003'' in mongo_output.stdout'
-#     - '''electionTimeoutMillis" : 9999,'' in mongo_output.stdout'
-#
-# - include_tasks: mongod_teardown.yml
-#
-# - set_fact:
-#     current_replicaset: '{{ mongodb_replicaset8 }}'
-#
-# - name: Launch mongod processes
-#   include_tasks: mongod_replicaset.yml
-#
-# - name: Create replicaset with module protocolVersion 0 (Mongodb 3.0)
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     protocol_version: 0
-#     heartbeat_timeout_secs: 9
-#     replica_set: '{{ mongodb_replicaset8 }}'
-#     election_timeout_millis: 1000
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#   when: mongodb_version.startswith('3') == True
-#
-# - name: Create replicaset with module protocolVersion 1 (MongoDB 4.0+)
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     protocol_version: 1
-#     election_timeout_millis: 9000
-#     replica_set: '{{ mongodb_replicaset8 }}'
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#   when: mongodb_version.startswith('4') == True
-#
-# - name: Get replicaset info
-#   command: mongo admin --eval "rs.conf()" --port 3001
-#   register: mongo_output
-#
-# - name: Assert replicaset name is in mongo_output MongoDB 3.0+
-#   assert:
-#     that:
-#     - mongo_output.changed == true
-#     - '''{{ mongodb_replicaset8 }}'' in mongo_output.stdout'
-#     - '''localhost:3001'' in mongo_output.stdout'
-#     - '''localhost:3002'' in mongo_output.stdout'
-#     - '''localhost:3003'' in mongo_output.stdout'
-#     - '''heartbeatTimeoutSecs" : 9,'' in mongo_output.stdout'
-#   when: mongodb_version.startswith('3') == True
-#
-# - name: Assert replicaset name is in mongo_output MongoDB 4.0+
-#   assert:
-#     that:
-#     - mongo_output.changed == true
-#     - '''{{ mongodb_replicaset8 }}'' in mongo_output.stdout'
-#     - '''localhost:3001'' in mongo_output.stdout'
-#     - '''localhost:3002'' in mongo_output.stdout'
-#     - '''localhost:3003'' in mongo_output.stdout'
-#     - '''electionTimeoutMillis" : 9000,'' in mongo_output.stdout'
-#   when: mongodb_version.startswith('4') == True
-#
-# - name: Test invalid arbiter handling 1
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     arbiter_at_index: 0
-#     replica_set: '{{ mongodb_replicaset4 }}'
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#     - localhost:3004
-#   ignore_errors: true
-#   register: invalid_num
-#
-# - assert:
-#     that:
-#     - '''MongoDB Replicaset validation failed. Invalid number of replicaset members.''
-#       == invalid_num.msg'
-#
-# - name: Test invalid arbiter handling 2
-#   mongodb_replicaset:
-#     login_user: admin
-#     login_password: secret
-#     login_host: localhost
-#     login_port: 3001
-#     login_database: admin
-#     arbiter_at_index: 4
-#     replica_set: '{{ mongodb_replicaset4 }}'
-#     members:
-#     - localhost:3001
-#     - localhost:3002
-#     - localhost:3003
-#   ignore_errors: true
-#   register: invalid_num2
-#
-# - assert:
-#     that:
-#     - '''MongoDB Replicaset validation failed. Invalid arbiter index.'' == invalid_num2.msg'
-#
-# - include_tasks: mongod_teardown.yml
+- name: Check the status of the replicaset with mongodb_status module (with auth)
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    replica_set: '{{ mongodb_replicaset3 }}'
+    poll: 3
+    interval: 5
+  register: bad_status
+  ignore_errors: yes
+
+- debug:
+    var: bad_status
+
+- name: Assert that replicaset status is not good - mongodb_replicaset3
+  assert:
+    that:
+      - "bad_status.msg == 'replicaset is not currently in a converged state'"
+      - "bad_status.iterations == 9"
+      - "bad_status.replicaset['localhost:3001'] == 'PRIMARY'"
+      - "bad_status.replicaset['localhost:3002'] == '(not reachable/healthy)'"
+      - "bad_status.replicaset['localhost:3003'] == 'SECONDARY'"
+      - "bad_status.failed == True"
+
+- name: Spawn another mongod process for the 3002 instance we killed
+  shell: mongod --shardsvr --smallfiles {{ mongod_storage_engine_opts }} --dbpath
+    mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
+    mongod{{ item }}/log.log --fork
+  args:
+    chdir: '{{ remote_tmp_dir }}'
+  with_items:
+    - 3002
+
+- name: Check the replicaset returns to a good status
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset3 }}'
+    poll: 99
+    interval: 1
+  register: good_status
+
+- debug:
+    var: good_status
+
+- name: Assert that replicaset status is good again - mongodb_replicaset3
+  assert:
+    that:
+      - "good_status.msg == 'replicaset is in a converged state'"
+      - "good_status.iterations > 1"
+      - "good_status.replicaset['localhost:3001'] == 'PRIMARY'"
+      - "good_status.replicaset['localhost:3002'] == 'SECONDARY'"
+      - "good_status.replicaset['localhost:3003'] == 'SECONDARY'"
+      - "good_status.failed == False"
+
+- include_tasks: mongod_teardown.yml
