@@ -251,7 +251,19 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with module
+- name: Add mongodb admin user - mongodb_replicaset3
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset3 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
+    state: present
+
+- name: Create replicaset with module - mongodb_replicaset3
   mongodb_replicaset:
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
