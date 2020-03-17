@@ -180,12 +180,8 @@
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
 
-- name: Install lsof
-  package:
-    name: lsof
-
 - name: Kill one instance to make the replicaset status bad
-  shell: lsof -ti tcp:3003 | xargs kill && sleep 10 && ps -ef | grep mongod
+  shell: mongo admin --username {{ mongodb_admin_user }} --password '{{ mongodb_admin_password }}' --port 3003 --eval "db.shutdownServer()"
 
 - name: Check the status of the replicaset with mongodb_status module (auth) - 3
   mongodb_status:
