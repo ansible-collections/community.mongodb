@@ -186,12 +186,10 @@
 - pause:
     seconds: 5
 
-- name: Check the status of the replicaset with mongodb_status module (auth) - 3
+- name: Check the status of the replicaset with mongodb_status module  - 3
   mongodb_status:
     login_host: localhost
     login_port: 3001
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset2 }}'
     poll: 9
     interval: 1
@@ -201,7 +199,7 @@
 - debug:
     var: bad_status
 
-- name: Assert that replicaset status is not good
+- name: Assert that replicaset status is not good - mongodb_replicaset2
   assert:
     that:
       - "bad_status.msg == 'replicaset is not currently in a converged state'"
@@ -210,6 +208,35 @@
       - "bad_status.replicaset['localhost:3002'] == 'SECONDARY'"
       - "bad_status.replicaset['localhost:3003'] == '(not reachable/healthy)'"
       - "bad_status.failed == True"
+
+- name: Spawn another mongod process for the 3003 instance we killed
+  shell: mongod --shardsvr --smallfiles {{ mongod_storage_engine_opts }} --dbpath
+    mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
+    mongod{{ item }}/log.log --fork
+    args:
+      chdir: '{{ remote_tmp_dir }}'
+  with_items:
+    - 3003
+
+- name: Check the replicaset returns to a good status
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset2 }}'
+    poll: 99
+    interval: 2
+  register: good_status
+
+- name: Assert that replicaset status is  good again - mongodb_replicaset2
+  assert:
+    that:
+      - "bad_status.msg == 'replicaset is not in a converged state'"
+      - "bad_status.iterations > 1"
+      - "bad_status.replicaset['localhost:3001'] == 'PRIMARY'"
+      - "bad_status.replicaset['localhost:3002'] == 'SECONDARY'"
+      - "bad_status.replicaset['localhost:3003'] == 'SECONDARY"
+      - "bad_status.failed == False"
+
 
 #- include_tasks: mongod_teardown.yml
 
