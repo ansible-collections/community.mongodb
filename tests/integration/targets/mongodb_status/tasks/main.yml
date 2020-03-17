@@ -34,7 +34,7 @@
   command: mongo admin --eval "rs.status()" --port 3001
   register: mongo_output
 
-- name: Assert replicaset name is in mongo_output
+- name: Assert replicaset name is in mongo_output - mongodb_replicaset1
   assert:
     that:
     - mongo_output.changed == true
@@ -171,10 +171,10 @@
   command: mongo admin --eval "rs.status()" --port 3001
   register: mongo_output
 
-- name: Assert replicaset name is in mongo_output
+- name: Assert replicaset name is in mongo_output - mongodb_replicaset2
   assert:
     that:
-    - mongo_output.failed == true
+    - mongo_output.changed == true
     - '''{{ mongodb_replicaset2 }}'' in mongo_output.stdout'
     - '''localhost:3001'' in mongo_output.stdout'
     - '''localhost:3002'' in mongo_output.stdout'
