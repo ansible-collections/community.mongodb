@@ -230,10 +230,10 @@
 - debug:
     var: good_status
 
-- name: Assert that replicaset status is  good again - mongodb_replicaset2
+- name: Assert that replicaset status is good again - mongodb_replicaset2
   assert:
     that:
-      - "bad_status.msg == 'replicaset is not in a converged state'"
+      - "bad_status.msg == 'replicaset is in a converged state'"
       - "bad_status.iterations > 1"
       - "bad_status.replicaset['localhost:3001'] == 'PRIMARY'"
       - "bad_status.replicaset['localhost:3002'] == 'SECONDARY'"
