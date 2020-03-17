@@ -129,7 +129,7 @@
   assert:
     that:
     - mongodb_replicaset_bad_pw.changed == False
-    - '''unable to connect to database'' in mongodb_replicaset_bad_pw.module_stderr'
+    - '''unable to connect to database'' in mongodb_replicaset_bad_pw.msg'
 
 - include_tasks: mongod_teardown.yml
 
