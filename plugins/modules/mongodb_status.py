@@ -81,14 +81,25 @@ EXAMPLES = r'''
 # Wait for the replicaset rs0 to converge
   mongodb_status:
     replicaset: rs0
+    poll: 5
+    interval: 10
 '''
 
 RETURN = r'''
-mongodb_replicaset:
-  description: The name of the replicaset that has been created.
-  returned: success
+mongodb_status:
+  failed: If the mnodule had failed or not.
+  returned: always
+  type: bool
+  iteration: Number of times the module has queried the replicaset status.
+  returned: always
+  type: int
+  msg: Status message.
+  returned: always
   type: str
+  replicaset: The last queried status of all the members of the replicaset
+  type: dict
 '''
+
 
 from copy import deepcopy
 import time
@@ -314,7 +325,7 @@ def main():
     interval = module.params['interval']
 
     result = dict(
-        changed=False,
+        failed=False,
         replica_set=replica_set,
     )
 
@@ -375,9 +386,9 @@ def main():
         module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
 
     if status is False:
-        module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations, changed=False)
+        module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations)
     else:
-        module.exit_json(msg=msg, replicaset=replicaset, iterations=iterations, changed=False)
+        module.exit_json(msg=msg, replicaset=replicaset, iterations=iterations)
 
 
 if __name__ == '__main__':
