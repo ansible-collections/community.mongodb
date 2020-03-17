@@ -254,6 +254,17 @@
 - pause:
     seconds: 5
 
+- name: Create replicaset with module - mongodb_replicaset3
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset3 }}'
+    members:
+      - localhost:3001
+      - localhost:3002
+      - localhost:3003
+
 - name: Add mongodb admin user - mongodb_replicaset3
   mongodb_user:
     login_host: localhost
@@ -265,19 +276,6 @@
     roles:
       - root
     state: present
-
-- name: Create replicaset with module - mongodb_replicaset3
-  mongodb_replicaset:
-    login_user: "{{ mongodb_admin_user }}"
-    login_password: "{{ mongodb_admin_password }}"
-    login_host: localhost
-    login_port: 3001
-    login_database: admin
-    replica_set: '{{ mongodb_replicaset3 }}'
-    members:
-      - localhost:3001
-      - localhost:3002
-      - localhost:3003
 
 - name: Check the replicaset has a good status (with auth)
   mongodb_status:
