@@ -375,9 +375,9 @@ def main():
         module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
 
     if status is False:
-        module.fail_json(msg=msg, replicaset=replicaset, iterations=iteration, changed=False)
+        module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations, changed=False)
     else:
-        module.exit_json(msg=msg, replicaset=replicaset, iterations=iteration, changed=False)
+        module.exit_json(msg=msg, replicaset=replicaset, iterations=iterations, changed=False)
 
 
 if __name__ == '__main__':
