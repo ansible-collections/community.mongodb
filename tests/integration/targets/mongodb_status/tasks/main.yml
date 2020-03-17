@@ -251,6 +251,9 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
+- pause:
+    seconds: 5
+
 - name: Add mongodb admin user - mongodb_replicaset3
   mongodb_user:
     login_host: localhost
