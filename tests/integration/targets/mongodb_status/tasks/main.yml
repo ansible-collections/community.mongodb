@@ -320,7 +320,7 @@
   assert:
     that:
       - "bad_status.msg == 'replicaset is not currently in a converged state'"
-      - "bad_status.iterations == 9"
+      - "bad_status.iterations == 3"
       - "bad_status.replicaset['localhost:3001'] == 'PRIMARY'"
       - "bad_status.replicaset['localhost:3002'] == '(not reachable/healthy)'"
       - "bad_status.replicaset['localhost:3003'] == 'SECONDARY'"
