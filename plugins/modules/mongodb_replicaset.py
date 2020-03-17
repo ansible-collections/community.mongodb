@@ -52,10 +52,11 @@ options:
     default: rs0
   members:
     description:
-    - A comma-separated string or a yaml list consisting of the replicaset members.
-    - Supply as a simple csv string, i.e. mongodb1:27017,mongodb2:27017,mongodb3:27017.
+    - Yaml list consisting of the replicaset members.
+    - Csv string will also be accepted i.e. mongodb1:27017,mongodb2:27017,mongodb3:27017.
     - If a port number is not provided then 27017 is assumed.
     type: list
+    elements: raw
   validate:
     description:
     - Performs some basic validation on the provided replicaset config.
@@ -301,7 +302,7 @@ def main():
             login_host=dict(type='str', default="localhost"),
             login_port=dict(type='int', default=27017),
             replica_set=dict(type='str', default="rs0"),
-            members=dict(type='list'),
+            members=dict(type='list', elements='raw'),
             arbiter_at_index=dict(type='int'),
             validate=dict(type='bool', default=True),
             ssl=dict(type='bool', default=False),
