@@ -180,6 +180,10 @@
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
 
+- name: Install lsof
+  package:
+    name: lsof
+
 - name: Kill one instance to make the replicaset status bad
   shell: lsof -ti tcp:3003 | xargs kill && sleep 5
 
