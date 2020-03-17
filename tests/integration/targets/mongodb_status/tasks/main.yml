@@ -289,7 +289,7 @@
   assert:
     that:
       - "good_status.msg == 'replicaset is in a converged state'"
-      - "good_status.iterations > 1"
+      - "good_status.iterations > 0"
       - "good_status.replicaset['localhost:3001'] == 'PRIMARY'"
       - "good_status.replicaset['localhost:3002'] == 'SECONDARY'"
       - "good_status.replicaset['localhost:3003'] == 'SECONDARY'"
