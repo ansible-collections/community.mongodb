@@ -185,7 +185,7 @@
     name: lsof
 
 - name: Kill one instance to make the replicaset status bad
-  shell: lsof -ti tcp:3003 | xargs kill && sleep 5
+  shell: lsof -ti tcp:3003 | xargs kill && sleep 10
 
 - name: Check the status of the replicaset with mongodb_status module (auth) - 3
   mongodb_status:
