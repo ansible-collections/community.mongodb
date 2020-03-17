@@ -128,7 +128,7 @@
 - name: Assert login failed
   assert:
     that:
-    - mongodb_replicaset_bad_pw.rc == 1
+    - mongodb_replicaset_bad_pw.changed == False
     - '''unable to connect to database'' in mongodb_replicaset_bad_pw.module_stderr'
 
 - include_tasks: mongod_teardown.yml
