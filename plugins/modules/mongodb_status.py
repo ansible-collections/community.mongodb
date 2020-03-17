@@ -369,13 +369,15 @@ def main():
 
     try:
         status, msg, return_doc = replicaset_status_poll(client, module)  # Sort out the return doc
+        replicaset = return_doc['replicaset']
+        iterations = return_doc['iterations']
     except Exception as e:
         module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
 
     if status is False:
-        module.fail_json(msg=msg, return_doc=return_doc, changed=False)
+        module.fail_json(msg=msg, replicaset=replicaset, iterations=iteration, changed=False)
     else:
-        module.exit_json(msg=msg, return_doc=return_doc, changed=False)
+        module.exit_json(msg=msg, replicaset=replicaset, iterations=iteration, changed=False)
 
 
 if __name__ == '__main__':
