@@ -86,17 +86,21 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-mongodb_status:
-  failed: If the mnodule had failed or not.
+failed:
+  description: If the mnodule had failed or not.
   returned: always
   type: bool
-  iteration: Number of times the module has queried the replicaset status.
+iteration:
+  description: Number of times the module has queried the replicaset status.
   returned: always
   type: int
-  msg: Status message.
+msg:
+  description: Status message.
   returned: always
   type: str
-  replicaset: The last queried status of all the members of the replicaset
+replicaset:
+  description: The last queried status of all the members of the replicaset if obtainable.
+  returned: always
   type: dict
 '''
 
