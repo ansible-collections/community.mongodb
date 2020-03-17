@@ -10,10 +10,8 @@
 
 - include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with module
+- name: Create replicaset with module - mongodb_replicaset1
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -142,10 +140,8 @@
 - name: Execute mongod script to restart with auth disabled
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with module
+- name: Create replicaset with module - mongodb_replicaset2
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -161,8 +157,6 @@
   mongodb_status:
     login_host: localhost
     login_port: 3001
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset2 }}'
     poll: 99
     interval: 1
