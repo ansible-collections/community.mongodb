@@ -295,13 +295,13 @@
       - "good_status.replicaset['localhost:3003'] == 'SECONDARY'"
       - "good_status.failed == False"
 
-- name: Kill one instance to make the replicaset status bad
-  shell: mongo admin --port 3002 --eval 'db.shutdownServer()'
+- name: Kill one instance to make the replicaset status bad - replicaset3 with auth
+  shell: mongo admin --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --port 3002 --eval 'db.shutdownServer()'
 
 - pause:
     seconds: 5
 
-- name: Check the status of the replicaset with mongodb_status module (with auth)
+- name: Check the status of the replicaset with mongodb_status module (with auth) - replicaset3
   mongodb_status:
     login_host: localhost
     login_port: 3001
