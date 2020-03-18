@@ -13,6 +13,6 @@ before_install:
   - molecule --version
   - pytest --version
 script:
-  -  ./travis_run.sh
+  - ./travis_run.sh
 after_success:
   - codecov # submit coverage

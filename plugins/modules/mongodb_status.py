@@ -78,12 +78,12 @@ requirements:
 '''
 
 EXAMPLES = r'''
-# Check replicaset is healthy, fail if not after first attempt
+- name: Check replicaset is healthy, fail if not after first attempt
   mongodb_status:
     replicaset: rs0
   when: ansible_hostname == "mongodb1"
 
-# Wait for the replicaset rs0 to converge, check 5 times, 10 second interval
+- name: Wait for the replicaset rs0 to converge, check 5 times, 10 second interval
   mongodb_status:
     replicaset: rs0
     poll: 5
