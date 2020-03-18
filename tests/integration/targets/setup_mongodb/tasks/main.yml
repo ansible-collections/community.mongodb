@@ -21,7 +21,7 @@
   - ansible_distribution_version in ["16.04", "18.04"]
   - ansible_distribution == 'Ubuntu'
 
-- shell: rm -r /var/lib/apt/lists/* && sudo mkdir /var/lib/apt/lists/partial && apt-get update
+- shell: apt-get update
   when: ansible_distribution == 'Ubuntu'
 
 - name: Ensure mongod package is installed
