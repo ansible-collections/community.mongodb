@@ -21,10 +21,10 @@
   - ansible_distribution_version in ["16.04", "18.04"]
   - ansible_distribution == 'Ubuntu'
 
-- shell: cat /etc/apt/sources.list.d/mongodb-4.2.list
+- shell: cat /etc/apt/sources.list.d/mongodb-*.list
   when:
   - ansible_distribution_version in ["16.04", "18.04"]
-  - ansible_distribution == 'Ubuntu'  
+  - ansible_distribution == 'Ubuntu'
 
 - name: Ensure mongod package is installed
   apt:
