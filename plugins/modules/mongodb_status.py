@@ -78,11 +78,17 @@ requirements:
 '''
 
 EXAMPLES = r'''
-# Wait for the replicaset rs0 to converge
+# Check replicaset is healthy, fail if not after first attempt
+  mongodb_status:
+    replicaset: rs0
+  when: ansible_hostname == "mongodb1"
+
+# Wait for the replicaset rs0 to converge, check 5 times, 10 second interval
   mongodb_status:
     replicaset: rs0
     poll: 5
     interval: 10
+  when: ansible_hostname == "mongodb1"
 '''
 
 RETURN = r'''
