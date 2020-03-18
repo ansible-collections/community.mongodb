@@ -13,7 +13,7 @@
     state: absent
     delay: 1
   with_items: '{{ pids_of_mongod }}'
-  
+
 - name: Remove all mongod folders
   file:
     path: '{{ remote_tmp_dir }}/{{ item }}'
@@ -22,5 +22,6 @@
   - mongod3001
   - mongod3002
   - mongod3003
+
 - name: Remove all mongod sock files
   shell: rm -Rf /tmp/mongodb*.sock

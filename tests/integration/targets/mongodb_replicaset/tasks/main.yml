@@ -10,26 +10,6 @@
 
 - include_tasks: mongod_replicaset.yml
 
-- name: Attempt to create a rs with an empty string
-  mongodb_replicaset:
-    login_host: localhost
-    login_port: 3001
-    login_database: admin
-    replica_set: ""
-    heartbeat_timeout_secs: 1
-    election_timeout_millis: 1000
-    members:
-    - localhost:3001
-    - localhost:3002
-    - localhost:3003
-  ignore_errors: yes
-  register: emptystring
-
-- assert:
-    that:
-      - "emptystring.changed == False"
-      - "emptystring.msg == 'Parameter replica_set must not be an empty string'"
-
 - name: Create replicaset with module
   mongodb_replicaset:
     login_host: localhost
@@ -116,6 +96,7 @@
     mongod_auth: true
 
 - name: Execute mongod script to restart with auth enabled
+
   include_tasks: mongod_replicaset.yml
 
 - name: Validate replicaset previously created
@@ -137,29 +118,6 @@
   assert:
     that: mongodb_replicaset.changed == False
 
-# Module workflow has change meaning this test is redundant
-#- name: Test with bad password
-#  mongodb_replicaset:
-#    login_user: '{{ mongodb_admin_user }}'
-#    login_password: XXXXXXXXXXXXXXXX
-#    login_host: localhost
-#    login_port: 3001
-#    login_database: admin
-#    replica_set: '{{ mongodb_replicaset1 }}'
-#    election_timeout_millis: 1000
-#    members:
-#    - localhost:3001
-#    - localhost:3002
-#    - localhost:3003
-#  register: mongodb_replicaset_bad_pw
-#  ignore_errors: true
-
-#- name: Assert login failed
-#  assert:
-#    that:
-#    - mongodb_replicaset_bad_pw.rc == 1
-#    - '''Authentication failed'' in mongodb_replicaset_bad_pw.module_stderr'
-
 - include_tasks: mongod_teardown.yml
 
 - set_fact:
@@ -167,6 +125,7 @@
 
 - set_fact:
     mongod_auth: false
+
 - name: Execute mongod script to restart with auth enabled
   include_tasks: mongod_replicaset.yml
 
@@ -496,4 +455,5 @@
 - assert:
     that:
     - '''MongoDB Replicaset validation failed. Invalid arbiter index.'' == invalid_num2.msg'
+
 - include_tasks: mongod_teardown.yml

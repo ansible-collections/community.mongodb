@@ -257,10 +257,12 @@
   when: mongodb_version in ["3.2", "4.0"]
 - name: Murder all mongod processes
   shell: pkill -{{ kill_signal }} mongod || true;
+
 - name: Getting pids for mongod
   register: pids_of_mongod
   community.general.pids:
     name: mongod
+
 - name: Wait for all mongod processes to exit
   wait_for:
     path: /proc/{{ item }}/status
