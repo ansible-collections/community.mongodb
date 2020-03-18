@@ -1,0 +1,55 @@
+---
+# tasks file for mongodb_mongos
+- name: Include variables for os family
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Create mongodb_group
+  group:
+    name: "{{ mongodb_group }}"
+    system: yes
+
+- name: Create mongodb_user
+  user:
+    name: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+    system: yes
+    createhome: no
+
+- name: Ensure mongos service pre start script exists
+  template:
+    src: mongos_pre.sh.j2
+    dest: /usr/local/bin/mongos_pre.sh
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+    mode: 0755
+
+- name: Ensure mongos.service file exists
+  template:
+    src: mongos.service.j2
+    dest: /etc/systemd/system/mongos.service
+    owner: root
+    group: root
+  register: sysd
+
+- name: Run systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
+  when: sysd.changed == True
+
+- name: Ensure mongos.conf file exists
+  template:
+    src: mongos.conf.j2
+    dest: /etc/mongos.conf
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+
+- name: Ensure mongos package is installed
+  package:
+    name: "{{ mongos_package }}"
+
+- name: Start mongos service
+  service:
+    name: "{{ mongos_service }}"
+    state: started
+    enabled: yes

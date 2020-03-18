@@ -12,8 +12,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -43,6 +41,26 @@
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
 
+- name: Attempt to set to another rs name
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: rsnamecannotbechanged
+    heartbeat_timeout_secs: 1
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+  ignore_errors: yes
+  register: nochange
+
+- assert:
+    that:
+      - "nochange.changed == False"
+      - "nochange.msg == 'The replica_set name of rs1 does not match the expected: rsnamecannotbechanged'"
+
 - name: Add mongodb admin user
   mongodb_user:
     login_host: localhost
@@ -62,7 +80,7 @@
 
 - name: Getting pids for mongod
   register: pids_of_mongod
-  community.general.pids:
+  pids:
     name: mongod
 
 - name: Wait for all mongod processes to exit
@@ -100,28 +118,6 @@
   assert:
     that: mongodb_replicaset.changed == False
 
-- name: Test with bad password
-  mongodb_replicaset:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: XXXXXXXXXXXXXXXX
-    login_host: localhost
-    login_port: 3001
-    login_database: admin
-    replica_set: '{{ mongodb_replicaset1 }}'
-    election_timeout_millis: 1000
-    members:
-    - localhost:3001
-    - localhost:3002
-    - localhost:3003
-  register: mongodb_replicaset_bad_pw
-  ignore_errors: true
-
-- name: Assert login failed
-  assert:
-    that:
-    - mongodb_replicaset_bad_pw.rc == 1
-    - '''Authentication failed'' in mongodb_replicaset_bad_pw.module_stderr'
-
 - include_tasks: mongod_teardown.yml
 
 - set_fact:
@@ -135,8 +131,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -174,8 +168,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -209,8 +201,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -249,8 +239,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -297,8 +285,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -345,8 +331,6 @@
 
 - name: Create replicaset with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -381,8 +365,6 @@
 
 - name: Create replicaset with module protocolVersion 0 (Mongodb 3.0)
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -398,8 +380,6 @@
 
 - name: Create replicaset with module protocolVersion 1 (MongoDB 4.0+)
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -440,8 +420,6 @@
 
 - name: Test invalid arbiter handling 1
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -462,8 +440,6 @@
 
 - name: Test invalid arbiter handling 2
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin

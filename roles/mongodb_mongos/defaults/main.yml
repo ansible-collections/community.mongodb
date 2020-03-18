@@ -1,0 +1,12 @@
+---
+# defaults file for mongodb_mongos
+mongos_port: 27017
+mongod_service: "mongos"
+mongodb_user: "mongod"
+mongodb_group: "mongod"
+pid_file: /run/mongodb/mongos.pid
+bind_ip: 0.0.0.0
+mypy: python
+mongos_package: "mongodb-org-mongos"
+config_repl_set_name: cfg
+config_servers: "config1:27019, config2:27019, config3:27019"

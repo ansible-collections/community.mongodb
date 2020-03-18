@@ -1,0 +1,12 @@
+systemLog:
+  destination: file
+  path: /var/log/mongodb/mongos.log
+  logAppend: true
+  logRotate: reopen
+net:
+  bindIp: {{ bind_ip }}
+  port: {{ mongos_port }}
+sharding:
+  configDB: "{{ config_repl_set_name }}/{{ config_servers }}"
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo

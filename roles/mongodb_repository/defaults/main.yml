@@ -1,0 +1,6 @@
+---
+mongodb_version: "4.2"
+debian_packages:
+  - apt-transport-https
+  - curl
+  - gnupg

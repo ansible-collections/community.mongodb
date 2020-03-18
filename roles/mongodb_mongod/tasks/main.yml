@@ -1,0 +1,35 @@
+---
+# tasks file for mongodb_mongod
+- name: Include variables for os family
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Ensure db_path dir exists
+  file:
+    path: "{{ db_path }}"
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+
+- name: Copy config file
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+
+- name: Copy keyfile to host
+  copy:
+    content: |
+      {{ openssl_keyfile_content }}
+    dest: /etc/keyfile
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+    mode: 0400
+  when: authorization == "enabled"
+
+- name: Start mongod service
+  service:
+    name: "{{ mongod_service }}"
+    state: started
+    enabled: yes

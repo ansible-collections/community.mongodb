@@ -1,0 +1,13 @@
+---
+- name: Prepare
+  hosts: all
+
+  tasks:
+
+  - name: Are we in docker?
+    shell: "grep :/docker /proc/self/cgroup | wc -l"
+
+  - name: Create is_docker.txt file
+    file:
+      path: is_docker.txt
+      state: touch

@@ -1,0 +1,36 @@
+---
+# tasks file for mongodb_repository
+- name: Ensure MongoDB yum repository exists (RedHat)
+  yum_repository:
+      name: "mongodb-{{ mongodb_version }}"
+      description: "Official MongoDB {{ mongodb_version }} yum repo"
+      baseurl: "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/"
+      gpgcheck: 1
+      gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+  when: ansible_os_family == "RedHat"
+
+- name: Install debian packages (Debian & Ubuntu)
+  apt:
+    name: "{{ debian_packages }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Add apt key for MongoDB repository (Debian & Ubuntu)
+  apt_key:
+    url: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure MongoDB apt repository exists (Ubuntu)
+  apt_repository:
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }} multiverse"
+    state: present
+    filename: "mongodb-{{ mongodb_version }}"
+  when: ansible_distribution == "Ubuntu"
+
+- name: Ensure MongoDB apt repository exists (Debian)
+  apt_repository:
+    repo: "deb http://repo.mongodb.org/apt/debian {{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }} main"
+    state: present
+    filename: "mongodb-{{ mongodb_version }}"
+  when: ansible_distribution == "Debian"

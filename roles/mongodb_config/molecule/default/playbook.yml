@@ -1,0 +1,31 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: mongodb_repository
+    - role: mongodb_install
+    - role: mongodb_config
+
+  tasks:
+
+    - name: Install python stuff
+      package:
+        name: ["python-setuptools", "python-pip"]
+      when: ansible_hostname == "ubuntu_16"
+
+    - name: Install pymongo
+      pip:
+        name: pymongo
+      when: ansible_hostname == "ubuntu_16"
+
+    - name: Init config server replicaset
+      mongodb_replicaset:
+        login_host: localhost
+        login_port: 27019
+        replica_set: cfg
+        validate: no
+        members:
+          - ubuntu_16:27019
+          - ubuntu_18:27019
+          - debian_stretch:27019
+      when: ansible_hostname == "ubuntu_16"

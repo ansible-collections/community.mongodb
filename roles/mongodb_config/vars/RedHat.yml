@@ -1,0 +1,5 @@
+mongodb_user: "mongod"
+mongodb_group: "mongod"
+config_port: 27019
+mongod_service: "mongod"
+db_path: /var/lib/mongo
