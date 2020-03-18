@@ -6,7 +6,7 @@
 
 - name: Import MongoDB public GPG Key
   apt_key:
-    url: "{{ key_url }}"
+    url: "{{ apt.key_url }}"
     state: "present"
   when:
   - ansible_distribution_version in ["16.04", "18.04"]
