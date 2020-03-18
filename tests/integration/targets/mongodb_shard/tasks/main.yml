@@ -184,8 +184,6 @@
 
 - name: Create replicaset1 with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -197,8 +195,6 @@
 
 - name: Create replicaset2 with module
   mongodb_replicaset:
-    login_user: admin
-    login_password: secret
     login_host: localhost
     login_port: 3004
     login_database: admin
@@ -215,8 +211,6 @@
 
 - name: Create config srv replicaset with module
   mongodb_replicaset:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
     login_port: 4000
     login_database: admin
     replica_set: '{{ configsrv_replicaset }}'
@@ -456,5 +450,5 @@
     - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
       not in mongo_output.stdout'
     - '''balancer'' in mongo_output.stdout'
-    
+
 - include_tasks: mongod_teardown.yml
