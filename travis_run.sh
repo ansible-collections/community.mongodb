@@ -9,7 +9,7 @@
 set -u;
 set -e;
 
-echo $(pwd);
+pwd;
 
 export ANSIBLE_LIBRARY="/home/travis/build/ansible-collections/mongodb/plugins/modules/";
 
