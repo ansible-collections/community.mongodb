@@ -19,11 +19,3 @@ roles/mongodb_mongod/molecule/virtualbox/tests/test_default.py metaclass-boilerp
 roles/mongodb_mongos/molecule/default/tests/test_default.py metaclass-boilerplate
 roles/mongodb_mongos/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_repository/molecule/default/tests/test_default.py metaclass-boilerplate
-roles/mongodb_config/molecule/default/INSTALL.rst rstcheck
-roles/mongodb_config/molecule/virtualbox/INSTALL.rst rstcheck
-roles/mongodb_install/molecule/default/INSTALL.rst rstcheck
-roles/mongodb_mongod/molecule/default/INSTALL.rst rstcheck
-roles/mongodb_mongod/molecule/virtualbox/INSTALL.rst rstcheck
-roles/mongodb_mongos/molecule/default/INSTALL.rst rstcheck
-roles/mongodb_mongos/molecule/virtualbox/INSTALL.rst rstcheck
-roles/mongodb_repository/molecule/default/INSTALL.rst rstcheck
