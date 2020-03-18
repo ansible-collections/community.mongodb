@@ -49,5 +49,5 @@ if [ ${#role_list[@]} -ne 0 ]; then
     echo "No role tests executed on this run."
   fi;
 else
-  echo "No roles in commit."
+  echo "No roles in commit. Bailing without doing anything"
 fi;
