@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash -e
 
 if [ ! -d /var/log/mongodb ]; then
   mkdir -p /var/log/mongodb && chown {{ mongodb_user }}:{{ mongodb_group }} /var/log/mongodb
