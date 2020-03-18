@@ -335,8 +335,10 @@
   with_items:
     - 3002
 
-- name: Check the replicaset returns to a good status
+- name: Check the replicaset returns to a good status - mongodb_replicaset3
   mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset3 }}'
