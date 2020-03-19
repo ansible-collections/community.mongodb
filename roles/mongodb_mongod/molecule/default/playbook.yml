@@ -19,7 +19,7 @@
       when: ansible_hostname == "ubuntu_16"
 
     - name: Init replicaset
-      mongodb_replicaset:
+      community.mongodb.mongodb_replicaset:
         login_host: localhost
         login_port: 27018
         replica_set: rs0
@@ -30,16 +30,19 @@
           - debian_stretch:27018
       when: ansible_hostname == "ubuntu_16"
 
-    - name: Create admin user if authorization is enabled
-      mongodb_user:
-        login_user: "{{ mongodb_admin_user }}"
-        login_password: "{{ mongodb_admin_pwd }}"
-        name: "{{ mongodb_admin_user }}"
-        password: "{{ mongodb_admin_pwd }}"
-        database: admin
-        login_port: "{{ mongod_port }}"
-        roles:
-          - "root"
-      when:
-        - authorization == "enabled"
-        - ansible_hostname == "ubuntu_16"
+    - pause:
+        seconds: 5
+
+    #- name: Create admin user if authorization is enabled
+    #  community.mongodb.mongodb_user:
+    #    login_user: "{{ mongodb_admin_user }}"
+    #    login_password: "{{ mongodb_admin_pwd }}"
+    #    name: "{{ mongodb_admin_user }}"
+    #    password: "{{ mongodb_admin_pwd }}"
+    #    database: admin
+    #    login_port: "{{ mongod_port }}"
+    #    roles:
+    #      - "root"
+    #  when:
+    #    - authorization == "enabled"
+    #    - ansible_hostname == "ubuntu_16"
