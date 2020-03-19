@@ -19,7 +19,7 @@
       when: ansible_hostname == "ubuntu_16"
 
     - name: Init config server replicaset
-      mongodb_replicaset:
+      community.mongodb.mongodb_replicaset:
         login_host: localhost
         login_port: 27019
         replica_set: cfg
