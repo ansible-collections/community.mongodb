@@ -33,16 +33,16 @@
     - pause:
         seconds: 5
 
-    - name: Create admin user if authorization is enabled
-      community.mongodb.mongodb_user:
-        login_user: "{{ mongodb_admin_user }}"
-        login_password: "{{ mongodb_admin_pwd }}"
-        name: "{{ mongodb_admin_user }}"
-        password: "{{ mongodb_admin_pwd }}"
-        database: admin
-        login_port: "{{ mongod_port }}"
-        roles:
-          - "root"
-      when:
-        - authorization == "enabled"
-        - ansible_hostname == "ubuntu_16"
+    #- name: Create admin user if authorization is enabled
+    #  community.mongodb.mongodb_user:
+    #    login_user: "{{ mongodb_admin_user }}"
+    #    login_password: "{{ mongodb_admin_pwd }}"
+    #    name: "{{ mongodb_admin_user }}"
+    #    password: "{{ mongodb_admin_pwd }}"
+    #    database: admin
+    #    login_port: "{{ mongod_port }}"
+    #    roles:
+    #      - "root"
+    #  when:
+    #    - authorization == "enabled"
+    #    - ansible_hostname == "ubuntu_16"
