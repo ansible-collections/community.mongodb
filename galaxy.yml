@@ -9,7 +9,6 @@ license_file: null
 tags: null
 dependencies:
   community.general: '>=0.1.1'
-  ansible.windows: '>=1.0'
 repository: git@github.com:ansible-collections/mongodb.git
 documentation: https://github.com/ansible-collections/mongodb/tree/master/docs
 homepage: https://github.com/ansible-collections/mongodb
