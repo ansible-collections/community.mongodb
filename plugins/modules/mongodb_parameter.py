@@ -219,18 +219,6 @@ def main():
     param_type = module.params['param_type']
     value = module.params['value']
 
-    # Get server version:
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-    except Exception as e:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-    # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
-
-    # Check driver and server version compatibility:
-    check_compatibility(module, srv_version, driver_version)
-
     # Verify parameter is coherent with specified type
     try:
         if param_type == 'int':
@@ -254,6 +242,18 @@ def main():
 
         if login_user is not None and login_password is not None:
             client.admin.authenticate(login_user, login_password, source=login_database)
+
+            # Get server version:
+            try:
+                srv_version = LooseVersion(client.server_info()['version'])
+            except Exception as e:
+                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
+
+            # Get driver version::
+            driver_version = LooseVersion(PyMongoVersion)
+
+            # Check driver and server version compatibility:
+            check_compatibility(module, srv_version, driver_version)
 
     except ConnectionFailure as e:
         module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
