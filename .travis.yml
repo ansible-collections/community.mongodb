@@ -8,6 +8,8 @@ before_install:
   - pip install --upgrade pip
   - export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
   - pip install --requirement requirements-${pyv}.txt
+  - ansible-galaxy collection build
+  - ansible-galaxy collection install community-mongodb-*.tar.gz
   - pip --version
   - ansible --version
   - molecule --version
