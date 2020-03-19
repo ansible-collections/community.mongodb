@@ -220,29 +220,45 @@ from ansible.module_utils._text import to_native
 # MongoDB module specific support methods.
 #
 
-def check_compatibility(module, client):
+def check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
 
-       See: https://docs.mongodb.com/ecosystem/drivers/driver-compatibility-reference/#python-driver-compatibility
+    See: https://docs.mongodb.com/ecosystem/drivers/driver-compatibility-reference/#python-driver-compatibility
 
     Args:
         module: Ansible module.
-        client (cursor): Mongodb cursor on admin database.
+        srv_version (LooseVersion): MongoDB server version.
+        driver_version (LooseVersion): Pymongo version.
     """
-    loose_srv_version = LooseVersion(client.server_info()['version'])
-    loose_driver_version = LooseVersion(PyMongoVersion)
+    msg = 'pymongo driver version and MongoDB version are incompatible: '
 
-    if loose_srv_version >= LooseVersion('3.2') and loose_driver_version < LooseVersion('3.2'):
-        module.fail_json(msg=' (Note: you must use pymongo 3.2+ with MongoDB >= 3.2)')
+    if srv_version >= LooseVersion('4.2') and driver_version < LooseVersion('3.9'):
+        msg += 'you must use pymongo 3.9+ with MongoDB >= 4.2'
+        module.fail_json(msg=msg)
 
-    elif loose_srv_version >= LooseVersion('3.0') and loose_driver_version <= LooseVersion('2.8'):
-        module.fail_json(msg=' (Note: you must use pymongo 2.8+ with MongoDB 3.0)')
+    elif srv_version >= LooseVersion('4.0') and driver_version < LooseVersion('3.7'):
+        msg += 'you must use pymongo 3.7+ with MongoDB >= 4.0'
+        module.fail_json(msg=msg)
 
-    elif loose_srv_version >= LooseVersion('2.6') and loose_driver_version <= LooseVersion('2.7'):
-        module.fail_json(msg=' (Note: you must use pymongo 2.7+ with MongoDB 2.6)')
+    elif srv_version >= LooseVersion('3.6') and driver_version < LooseVersion('3.6'):
+        msg += 'you must use pymongo 3.6+ with MongoDB >= 3.6'
+        module.fail_json(msg=msg)
 
-    elif LooseVersion(PyMongoVersion) <= LooseVersion('2.5'):
-        module.fail_json(msg=' (Note: you must be on mongodb 2.4+ and pymongo 2.5+ to use the roles param)')
+    elif srv_version >= LooseVersion('3.4') and driver_version < LooseVersion('3.4'):
+        msg += 'you must use pymongo 3.4+ with MongoDB >= 3.4'
+        module.fail_json(msg=msg)
+
+    elif srv_version >= LooseVersion('3.2') and driver_version < LooseVersion('3.2'):
+        msg += 'you must use pymongo 3.2+ with MongoDB >= 3.2'
+        module.fail_json(msg=msg)
+
+    elif srv_version >= LooseVersion('3.0') and driver_version <= LooseVersion('2.8'):
+        msg += 'you must use pymongo 2.8+ with MongoDB 3.0'
+        module.fail_json(msg=msg)
+
+    elif srv_version >= LooseVersion('2.6') and driver_version <= LooseVersion('2.7'):
+        msg += 'you must use pymongo 2.7+ with MongoDB 2.6'
+        module.fail_json(msg=msg)
 
 
 def user_find(client, user, db_name):
@@ -398,11 +414,6 @@ def main():
 
         client = MongoClient(**connection_params)
 
-        # NOTE: this check must be done ASAP.
-        # We doesn't need to be authenticated (this ability has lost in PyMongo 3.6)
-        if LooseVersion(PyMongoVersion) <= LooseVersion('3.5'):
-            check_compatibility(module, client)
-
         if login_user is None and login_password is None:
             mongocnf_creds = load_mongocnf()
             if mongocnf_creds is not False:
@@ -413,6 +424,17 @@ def main():
 
         if login_user is not None and login_password is not None:
             client.admin.authenticate(login_user, login_password, source=login_database)
+            # Get server version:
+            try:
+                srv_version = LooseVersion(client.server_info()['version'])
+            except Exception as e:
+                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
+
+            # Get driver version::
+            driver_version = LooseVersion(PyMongoVersion)
+
+            # Check driver and server version compatibility:
+            check_compatibility(module, srv_version, driver_version)
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
             if db_name != "admin":
                 module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
