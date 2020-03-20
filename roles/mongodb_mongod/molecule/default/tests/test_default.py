@@ -59,3 +59,15 @@ def test_mongod_replicaset(host):
         r = host.run(cmd)
 
         assert "rs0" in r.stdout
+
+def test_mongod_replicaset(host):
+    '''
+    Ensure that the MongoDB config replicaset has been created successfully
+    '''
+    port = include_vars(host)['ansible_facts']['mongod_port']
+    cmd = "mongo --port {0} --eval 'rs.status()'".format(port)
+    # We only want to run this once
+    if host.ansible.get_variables()['inventory_hostname'] == "ubuntu_16":
+        r = host.run(cmd)
+
+        assert "cfg" in r.stdout
