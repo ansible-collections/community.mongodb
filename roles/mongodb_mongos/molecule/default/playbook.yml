@@ -21,6 +21,10 @@
         name: pymongo
       when: ansible_hostname == "config1"
 
+    - name: Install MongoDB Shell
+      package:
+        name: mongodb-org-shell 
+
     - name: Init config server replicaset
       community.mongodb.mongodb_replicaset:
         login_host: localhost

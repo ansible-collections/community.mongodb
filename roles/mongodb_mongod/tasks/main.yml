@@ -4,6 +4,10 @@
   include_vars:
     file: "{{ ansible_os_family }}.yml"
 
+- name: Ensure mongod package is installed
+  package:
+    name: "{{ mongod_package }}"
+
 - name: Ensure db_path dir exists
   file:
     path: "{{ db_path }}"

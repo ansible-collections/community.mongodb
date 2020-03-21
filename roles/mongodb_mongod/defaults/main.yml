@@ -26,3 +26,4 @@ openssl_keyfile_content: |
   mJfrCUVuP1nBEklk23lYkNi/ohe+aodNjdN+2DHp42sGZHYP
 mongodb_admin_user: admin
 mongodb_admin_pwd: admin
+mongod_package: "mongodb-org-mongod"

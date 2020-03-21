@@ -3,7 +3,6 @@
   hosts: all
   roles:
     - role: mongodb_repository
-    - role: mongodb_install
     - role: mongodb_mongod
 
   tasks:
@@ -17,6 +16,10 @@
       pip:
         name: pymongo
       when: ansible_hostname == "ubuntu_16"
+
+    - name: Install MongoDB Shell
+      package:
+        name: mongodb-org-shell 
 
     - name: Init replicaset
       community.mongodb.mongodb_replicaset:
