@@ -3,7 +3,7 @@ on:
 - pull_request
 
 env:
-  mongodb_version_file: "../../ansible_collections/community/mongodb/tests/integration/targets/setup_mongodb/defaults/main.yml"
+  mongodb_version_file: "./tests/integration/targets/setup_mongodb/defaults/main.yml"
 
 jobs:
   sanity:
