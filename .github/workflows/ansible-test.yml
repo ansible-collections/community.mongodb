@@ -50,6 +50,9 @@ jobs:
       - name: Install ansible-base
         run: pip install git+https://github.com/ansible-collection-migration/ansible-base.git --disable-pip-version-check
 
+      - name: Print working dir
+        run: pwd
+
       - name: Ensure MongoDB is set to 4.0
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
 
