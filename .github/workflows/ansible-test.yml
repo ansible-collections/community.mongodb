@@ -1,4 +1,7 @@
 name: CI
+env:
+  mongodb_version_file: "../../ansible_collections/community/mongodb/tests/integration/targets/setup_mongodb/defaults/main.yml"
+
 on:
 - pull_request
 
@@ -24,8 +27,6 @@ jobs:
         run: ansible-test sanity --docker -v --color --python 3.6
 
   integration:
-    env:
-      mongodb_version_file: "../../ansible_collections/community/mongodb/tests/integration/targets/setup_mongodb/defaults/main.yml"
     runs-on: ubuntu-latest
     strategy:
       matrix:
