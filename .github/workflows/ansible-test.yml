@@ -17,8 +17,8 @@ jobs:
         with:
           python-version: 3.6
 
-      - name: Install ansible-base
-        run: pip install git+https://github.com/ansible-collection-migration/ansible-base.git --disable-pip-version-check
+      - name: Install ansible-base (devel)
+        run: pip install git+https://github.com/ansible/ansible.git --disable-pip-version-check
 
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python 3.6
@@ -42,8 +42,8 @@ jobs:
       - name: Install community.general
         run: ansible-galaxy collection install community.general -p ../../
 
-      - name: Install ansible-base
-        run: pip install git+https://github.com/ansible-collection-migration/ansible-base.git --disable-pip-version-check
+      - name: Install ansible-base (devel)
+        run: pip install git+https://github.com/ansible/ansible.git  --disable-pip-version-check
 
       - name: Run integration tests on Python ${{ matrix.python_version }}
         run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
