@@ -53,19 +53,19 @@ jobs:
       - name: Print working dir
         run: pwd
 
-      - name: Ensure MongoDB is set to 4.0
+      - name: Ensure MongoDB version is set to 4.0
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Run integration tests on Python ${{ matrix.python_version }} and MongoDB 4.0
         run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
 
-      - name: Ensure MongoDB is set to 4.2
+      - name: Ensure MongoDB version is set to 4.2
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.2\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Run integration tests on Python ${{ matrix.python_version }} and MongoDB 4.2
         run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
 
-      - name: Ensure MongoDB version is returned to original - TODO Read original??
+      - name: Ensure MongoDB version is returned to original 4.0
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Upload Coverage data
