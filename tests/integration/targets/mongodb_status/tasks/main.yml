@@ -204,7 +204,7 @@
       - "bad_status.failed == True"
 
 - name: Spawn another mongod process for the 3003 instance we killed
-  shell: mongod --shardsvr --smallfiles {{ mongod_storage_engine_opts }} --dbpath
+  shell: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
     mongod{{ item }}/log.log --fork
   args:
@@ -327,7 +327,7 @@
       - "bad_status.failed == True"
 
 - name: Spawn another mongod process for the 3002 instance we killed
-  shell: mongod --shardsvr --smallfiles {{ mongod_storage_engine_opts }} --dbpath
+  shell: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
     mongod{{ item }}/log.log --fork --auth --keyFile my.key
   args:

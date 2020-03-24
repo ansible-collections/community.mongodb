@@ -29,7 +29,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --smallfiles --replSet "{{ configsrv_replicaset
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork
 
 - name: Create replicaset1 with module
@@ -206,7 +206,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --smallfiles --replSet "{{ configsrv_replicaset
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork
 
 - name: Create config srv replicaset with module
@@ -336,7 +336,7 @@
 
 - name: Launch cfg server with auth
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --smallfiles --replSet "{{ configsrv_replicaset
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
 - name: Execute script for 3001
