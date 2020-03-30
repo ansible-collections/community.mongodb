@@ -1,0 +1,27 @@
+---
+# tasks file for mongodb_selinux
+- name: Install required packages
+  package:
+    name: "{{ required_packages }}"
+
+- name: Copy custom MongoDB SeLinux Policy to Host
+  copy:
+    content: |
+      module mongodb_cgroup_memory 1.0;
+
+      require {
+          type cgroup_t;
+          type mongod_t;
+          class dir search;
+          class file { getattr open read };
+      }
+
+      #============= mongod_t ==============
+      allow mongod_t cgroup_t:dir search;
+      allow mongod_t cgroup_t:file { getattr open read };
+    dest: /root/mongodb_cgroup_memory.te
+
+- name: Compile & Install MongoDB Policy
+  script: file/compile_mongodb_selinux.sh
+  args:
+    creates: /root/mongodb_selinux.success

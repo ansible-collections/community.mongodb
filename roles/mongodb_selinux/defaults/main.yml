@@ -1,0 +1,4 @@
+---
+# defaults file for mongodb_selinux
+required_packages:
+  - "checkpolicy"
