@@ -1,7 +1,7 @@
-Role Name
-=========
+mongodb_linux
+=============
 
-A brief description of the role goes here.
+Configures SeLinux as per the instructions located at https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/
 
 Requirements
 ------------
