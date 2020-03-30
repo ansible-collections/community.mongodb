@@ -21,6 +21,7 @@ platforms:
     image: debian:stretch
   - name: centos_8
     image: centos:8
+    dockerfile: Dockerfile-CentOS8.j2
 provisioner:
   name: ansible
   lint:
