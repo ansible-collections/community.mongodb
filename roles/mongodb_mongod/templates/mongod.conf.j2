@@ -19,6 +19,8 @@ storage:
 
 # how the process runs
 processManagement:
+  fork: true
+  pidFilePath: /var/run/mongodb/mongod.pid
   timeZoneInfo: /usr/share/zoneinfo
 
 # network interfaces
