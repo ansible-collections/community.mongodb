@@ -27,3 +27,5 @@ openssl_keyfile_content: |
 mongodb_admin_user: admin
 mongodb_admin_pwd: admin
 mongod_package: "mongodb-org-server"
+replicaset: true
+sharding: false

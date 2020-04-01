@@ -38,8 +38,12 @@ security:
 
 #operationProfiling:
 
+{% if replicaset %}
 replication:
   replSetName: {{ repl_set_name }}
+{% endif %}
 
+{% if sharding %}
 sharding:
   clusterRole: shardsvr
+{% endif %}
