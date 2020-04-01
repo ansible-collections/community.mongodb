@@ -1,6 +1,6 @@
 ---
 # defaults file for mongodb_mongod
-mongod_port: 27018
+mongod_port: 27017
 mongod_service: "mongod"
 mongodb_user: "mongod"
 mongodb_group: "mongod"
