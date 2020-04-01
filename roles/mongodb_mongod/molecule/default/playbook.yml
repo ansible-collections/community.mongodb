@@ -19,12 +19,11 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell 
+        name: mongodb-org-shell
 
     - name: Init replicaset
       community.mongodb.mongodb_replicaset:
         login_host: localhost
-        login_port: 27018
         replica_set: rs0
         validate: yes
         members:
