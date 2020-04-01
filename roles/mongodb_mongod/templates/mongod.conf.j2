@@ -20,7 +20,9 @@ storage:
 # how the process runs
 processManagement:
   fork: true
+{% if ansible_os_family == "RedHat" %}  # Breaks Ubuntu / Debian
   pidFilePath: /var/run/mongodb/mongod.pid
+{% endif %}
   timeZoneInfo: /usr/share/zoneinfo
 
 # network interfaces
