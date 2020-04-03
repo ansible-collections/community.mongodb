@@ -11,8 +11,6 @@ set -e;
 
 pwd;
 
-export ANSIBLE_LIBRARY="/home/travis/build/ansible-collections/mongodb/plugins/modules/";
-
 FILES=$(git diff --name-only HEAD~1 | wc -l | xargs);
 
 echo "There are $FILES files in this commit.";
