@@ -21,7 +21,7 @@
       package:
         name: mongodb-org-shell
 
-    - name: Init replicaset
+    - name: Initialise replicaset
       community.mongodb.mongodb_replicaset:
         login_host: localhost
         replica_set: rs0
