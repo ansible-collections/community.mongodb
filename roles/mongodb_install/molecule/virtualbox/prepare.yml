@@ -1,0 +1,36 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+  vars:
+    avahi_packages_redhat:
+      - "avahi"
+      - "nss-mdns"
+    avahi_packages_debian:
+      - "avahi-daemon"
+      - "avahi-discover"
+      - "libnss-mdns"
+  tasks:
+
+  - name: Ensure epel is available
+    yum:
+      name: epel-release
+      state: present
+    when: ansible_os_family == "RedHat"
+
+  - name: Install avahi packages
+    package:
+      name: "{{ avahi_packages_redhat }}"
+      state: present
+    when: ansible_os_family == "RedHat"
+
+  - name: Install avahi packages
+    package:
+      name: "{{ avahi_packages_debian }}"
+      state: present
+    when: ansible_os_family == "Debian"
+
+  - name: Ensure avahi-daemon is restarted
+    service:
+      name: avahi-daemon
+      state: restarted
