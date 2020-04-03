@@ -19,18 +19,17 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell 
+        name: mongodb-org-shell
 
     - name: Init replicaset
       community.mongodb.mongodb_replicaset:
         login_host: localhost
-        login_port: 27018
         replica_set: rs0
         validate: yes
         members:
-          - ubuntu_16:27018
-          - ubuntu_18:27018
-          - debian_stretch:27018
+          - ubuntu_16:27017
+          - ubuntu_18:27017
+          - debian_stretch:27017
       when: ansible_hostname == "ubuntu_16"
 
     - pause:

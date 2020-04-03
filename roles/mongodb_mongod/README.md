@@ -1,6 +1,8 @@
 mongodb_mongod
 ==============
 
+TODO - Set default role for standalone or shard server - role and port should be different (shard = 27018, standalone rs = 27017)
+
 Performs tasks relevant to the setup of a mongod server..
 
 Requirements

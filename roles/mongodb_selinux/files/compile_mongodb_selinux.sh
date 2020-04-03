@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e;
-set -u:
+set -u;
 
 checkmodule -M -m -o /root/mongodb_cgroup_memory.mod /root/mongodb_cgroup_memory.te
 semodule_package -o /root/mongodb_cgroup_memory.pp -m /root/mongodb_cgroup_memory.mod

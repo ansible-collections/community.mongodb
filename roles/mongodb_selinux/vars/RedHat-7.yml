@@ -3,3 +3,7 @@
 required_packages:
   - "checkpolicy"
   - "policycoreutils-python"
+  - "selinux-policy-mls"
+  - "selinux-policy"
+  - "selinux-policy-doc"
+  - "selinux-policy-targeted"
