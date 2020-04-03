@@ -58,8 +58,8 @@ def test_mongod_cfg_replicaset(host):
         r = host.run(cmd)
 
         assert "cfg" in r.stdout
-        assert "ubuntu-16.local:{0}".format(port)  in r.stdout
-        assert "ubuntu-18.local:{0}".format(port)  in r.stdout
-        assert "debian-buster.local:{0}".format(port)  in r.stdout
-        assert "debian-stretch.local:{0}".format(port)  in r.stdout
-        assert "centos-7.local:{0}".format(port)  in r.stdout
+        assert "ubuntu-16.local:{0}".format(port) in r.stdout
+        assert "ubuntu-18.local:{0}".format(port) in r.stdout
+        assert "debian-buster.local:{0}".format(port) in r.stdout
+        assert "debian-stretch.local:{0}".format(port) in r.stdout
+        assert "centos-7.local:{0}".format(port) in r.stdout
