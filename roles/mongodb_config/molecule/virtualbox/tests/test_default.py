@@ -47,6 +47,7 @@ def test_mongod_port(host):
 
     assert s.is_listening
 
+
 def test_mongod_cfg_replicaset(host):
     '''
     Ensure that the MongoDB config replicaset has been created successfully
