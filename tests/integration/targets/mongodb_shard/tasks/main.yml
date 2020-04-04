@@ -86,6 +86,8 @@
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
+- shell: "cat {{ remote_tmp_dir }}/mongod3003/log.log"
+
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
 

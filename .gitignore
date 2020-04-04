@@ -46,6 +46,8 @@ flycheck_*.el
 # server auth directory
 /server/
 
+venv/*
+
 # projectiles files
 .projectile
 

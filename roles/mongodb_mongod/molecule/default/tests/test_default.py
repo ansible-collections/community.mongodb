@@ -59,3 +59,6 @@ def test_mongod_replicaset(host):
         r = host.run(cmd)
 
         assert "rs0" in r.stdout
+        assert "ubuntu_16:27017" in r.stdout
+        assert "ubuntu_18:27017" in r.stdout
+        assert "debian_stretch:27017" in r.stdout
