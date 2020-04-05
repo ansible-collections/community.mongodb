@@ -76,3 +76,17 @@
     - ["hard", "soft"]
     - ["memlock"]
     - [1024]
+
+- name: Set sysctl values
+  sysctl:
+    name: "{{ item['name'] }}"
+    value: "{{ item['value'] }}"
+    state: present
+  loop:
+    - { "name": "vm.dirty_ratio", "value": "15" }
+    - { "name": "vm.dirty_background_ratio", "value": "5" }
+    - { "name": "net.core.somaxconn ", "value": "4096" }
+    - { "name": "net.ipv4.tcp_fin_timeout", "value": "30" }
+    - { "name": "net.ipv4.tcp_keepalive_intvl", "value": "30" }
+    - { "name": "net.ipv4.tcp_keepalive_time", "value": "120" }
+    - { "name": "net.ipv4.tcp_max_syn_backlog ", "value": "4096" }
