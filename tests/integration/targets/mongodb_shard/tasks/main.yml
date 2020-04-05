@@ -83,6 +83,8 @@
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
+- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
@@ -220,6 +222,8 @@
     members:
     - localhost:4000
 
+- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
@@ -348,6 +352,8 @@
 
 - name: Execute script for 3004
   script: /root/ensure_primary.sh 3004 1
+
+- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
