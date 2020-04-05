@@ -1,2 +1,78 @@
 ---
 # tasks file for mongodb_linux
+- name: Are we in docker?
+  stat:
+    path: is_docker.txt
+  register: d
+
+- name: Load vars for os family
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Set swappiness
+  sysctl:
+    name: vm.swappiness
+    value: "{{ swappiness }}"
+    state: present
+
+- name: Ensure ntp service is installed
+  package:
+    name: "{{ ntp_package }}"
+    state: present
+
+- name: Ensure ntp service is configured
+  service:
+    name: "{{ ntp_service }}"
+    state: started
+    enabled: yes
+
+- name: Ensure GNU C Library is the latest
+  package:
+    name: "{{ gnu_c_lib }}"
+    state: latest
+
+- name: Ensure NUMA zone reclaim is disabled
+  sysctl:
+    name: vm.zone_reclaim_mode
+    value: 0
+    state: present
+    reload: yes
+  when: d.stat.exists == False
+
+- name: Ensure thp-disable service exists
+  copy:
+    src: thp-disable.service
+    dest: /etc/systemd/system/disable-transparent-huge-pages.service
+    owner: root
+    group: root
+
+- name: Enable disable-transparent-huge-pages service
+  service:
+    name: disable-transparent-huge-pages
+    state: started
+    enabled: yes
+  when: d.stat.exists == False
+
+- name: Set pam limits 1
+  pam_limits:
+    domain: "{{ item[0] }}"
+    limit_type: "{{ item[1] }}"
+    limit_item: "{{ item[2] }}"
+    value: "{{ item[3] }}"
+  with_nested:
+    - ["root", "mongodb"]
+    - ["hard", "soft"]
+    - ["nproc", "nofile"]
+    - [64000]
+
+- name: Set pam limits 2
+  pam_limits:
+    domain: "{{ item[0] }}"
+    limit_type: "{{ item[1] }}"
+    limit_item: "{{ item[2] }}"
+    value: "{{ item[3] }}"
+  with_nested:
+    - ["root", "mongodb"]
+    - ["hard", "soft"]
+    - ["memlock"]
+    - [1024]

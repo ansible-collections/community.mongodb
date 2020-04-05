@@ -7,9 +7,48 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 ).get_hosts('all')
 
 
-def test_hosts_file(host):
-    f = host.file('/etc/hosts')
+def test_ntp_package(host):
+    ntp = host.package("ntp")
+
+    assert ntp.is_installed
+
+
+def test_ntpd_service(host):
+    ntpd = host.service("ntpd")
+
+    if ntpd.is_running:
+        assert ntpd.is_enabled
+    else:
+        ntp = host.service("ntp")
+        assert ntp.is_running
+        assert ntp.is_enabled
+
+
+def test_swappiness_value(host):
+    cmd = host.run("cat /proc/sys/vm/swappiness")
+
+    assert cmd.rc == 0
+    assert cmd.stdout.strip() == "1"
+
+
+def test_thp_service_file(host):
+    f = host.file("/etc/systemd/system/disable-transparent-huge-pages.service")
 
     assert f.exists
-    assert f.user == 'root'
-    assert f.group == 'root'
+    assert f.user == "root"
+    assert f.group == "root"
+
+
+def test_limit_file(host):
+    f = host.file("/etc/security/limits.conf")
+
+    assert f.exists
+    assert f.user == "root"
+    assert f.group == "root"
+
+    assert f.contains("mongodb	hard	nproc	64000")
+    assert f.contains("mongodb	hard	nofile	64000")
+    assert f.contains("mongodb	soft	nproc	64000")
+    assert f.contains("mongodb	soft	nofile	64000")
+    assert f.contains("mongodb	hard	memlock	1024")
+    assert f.contains("mongodb	soft	memlock	1024")
