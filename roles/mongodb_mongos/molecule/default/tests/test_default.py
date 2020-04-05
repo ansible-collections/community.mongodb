@@ -50,3 +50,16 @@ def test_mongod_port(host):
         s = host.socket("tcp://0.0.0.0:{0}".format(port))
 
         assert s.is_listening
+
+
+def test_mongos_shell_connectivity(host):
+    '''
+    Tests that we can connect to mongos via the shell annd run a cmd
+    '''
+    if host.ansible.get_variables()['inventory_hostname'] != 'config1':
+        port = include_vars(host)['ansible_facts']['mongos_port']
+        cmd = host.run("mongo admin --port {0} --eval 'db.runCommand({{listDatabases: 1}})'".format(port))
+
+        assert cmd.rc == 0
+        assert "config" in cmd.stdout
+        assert "admin" in cmd.stdout
