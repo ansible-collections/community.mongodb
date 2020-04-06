@@ -9,6 +9,14 @@
   include_vars:
     file: "{{ ansible_os_family }}.yml"
 
+- name: Set vars for RedHat 8
+  set_fact:
+    ntp_package: chrony
+    ntp_service: chronyd
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 8
+
 - name: Set swappiness
   sysctl:
     name: vm.swappiness
@@ -45,6 +53,12 @@
     dest: /etc/systemd/system/disable-transparent-huge-pages.service
     owner: root
     group: root
+  register: thp
+
+- name: Reload systemd
+  systemd:
+    daemon_reexec: yes
+  when: thp.changed == True
 
 - name: Enable disable-transparent-huge-pages service
   service:
