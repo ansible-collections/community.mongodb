@@ -1,0 +1,12 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+  
+  tasks:
+
+    - name: Ensure epel-release is installed
+      package:
+        name: epel-release
+        state: present
+      when: ansible_os_family == "RedHat"

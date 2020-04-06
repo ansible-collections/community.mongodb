@@ -1,0 +1,5 @@
+---
+# defaults file for mongodb_linux
+swappiness: "1"
+ntp_package: ntp
+ntp_service: ntpd

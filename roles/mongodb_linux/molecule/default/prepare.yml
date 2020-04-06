@@ -1,0 +1,10 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Create is_docker.txt file
+      shell: touch is_docker.txt
+      
