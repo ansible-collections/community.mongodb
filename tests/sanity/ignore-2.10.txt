@@ -8,6 +8,7 @@ roles/mongodb_config/molecule/virtualbox/tests/test_default.py future-import-boi
 roles/mongodb_install/molecule/default/tests/test_default.py future-import-boilerplate
 roles/mongodb_install/molecule/virtualbox/tests/test_default.py future-import-boilerplate
 roles/mongodb_linux/molecule/default/tests/test_default.py future-import-boilerplate
+roles/mongodb_linux/molecule/virtualbox/tests/test_default.py future-import-boilerplate
 roles/mongodb_mongod/molecule/default/tests/test_default.py future-import-boilerplate
 roles/mongodb_mongod/molecule/virtualbox/tests/test_default.py future-import-boilerplate
 roles/mongodb_mongos/molecule/default/tests/test_default.py future-import-boilerplate
@@ -21,6 +22,7 @@ roles/mongodb_config/molecule/virtualbox/tests/test_default.py metaclass-boilerp
 roles/mongodb_install/molecule/default/tests/test_default.py metaclass-boilerplate
 roles/mongodb_install/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_linux/molecule/default/tests/test_default.py metaclass-boilerplate
+roles/mongodb_linux/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_mongod/molecule/default/tests/test_default.py metaclass-boilerplate
 roles/mongodb_mongod/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_mongos/molecule/default/tests/test_default.py metaclass-boilerplate
