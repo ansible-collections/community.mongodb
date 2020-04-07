@@ -477,11 +477,11 @@
     replica_set: '{{ mongodb_replicaset9 }}'
     election_timeout_millis: 1000
     members:
-    - localhost:3001
+    - "localhost:3001"
         priority: 1
-    - localhost:3002
+    - "localhost:3002"
         priority: 0.5
-    - localhost:3003
+    - "localhost:3003"
         priority: 0.5
   when: mongodb_version.startswith('3') == True
 
@@ -494,11 +494,11 @@
     election_timeout_millis: 9000
     replica_set: '{{ mongodb_replicaset8 }}'
     members:
-    - localhost:3001
+    - "localhost:3001"
         priority: 1
-    - localhost:3002
+    - "localhost:3002"
         priority: 0.5
-    - localhost:3003
+    - "localhost:3003"
         priority: 0.5
   when: mongodb_version.startswith('4') == True
 
