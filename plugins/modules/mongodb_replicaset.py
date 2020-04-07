@@ -304,7 +304,7 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
     try:
         client["admin"].command('replSetInitiate', conf)
     except Exception as excep:
-        raise Exception("Some problem {0} | {1}".format(str(excep), str(conf))
+        raise Exception("Some problem {0} | {1}".format(str(excep), str(conf)))
 
 
 def replicaset_remove(module, client, replica_set):
