@@ -280,7 +280,7 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
         if isinstance(member, str):
             if ':' not in member:  # No port supplied. Assume 27017
                 member += ":27017"
-            members_dict_list.append(OrderedDict([("_id", index), ("host", member)]))
+            members_dict_list.append(OrderedDict([("_id", int(index)), ("host", member)]))
             if index == arbiter_at_index:
                 members_dict_list[index]['arbiterOnly'] = True
             index += 1
@@ -288,7 +288,7 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
             hostname = list(members[0].keys())[0]
             if ':' not in hostname:
                 hostname += ":27017"
-            members_dict_list.append(OrderedDict([("_id", index), ("host", member)]))
+            members_dict_list.append(OrderedDict([("_id", int(index)), ("host", member)]))
             for key in members[list(members[0].keys())[0]]:
                 members_dict_list[index][key] = members[list(members[0].keys())[0]][key]
             if index == arbiter_at_index:
@@ -301,7 +301,10 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
                         ("protocolVersion", protocol_version),
                         ("members", members_dict_list),
                         ("settings", settings)])
-    client["admin"].command('replSetInitiate', conf)
+    try:
+        client["admin"].command('replSetInitiate', conf)
+    except Exception as excep:
+        raise Exception("Some problem {0} | {1}".format(str(excep), str(conf))
 
 
 def replicaset_remove(module, client, replica_set):
