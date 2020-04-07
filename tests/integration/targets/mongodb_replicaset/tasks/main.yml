@@ -457,3 +457,75 @@
     - '''MongoDB Replicaset validation failed. Invalid arbiter index.'' == invalid_num2.msg'
 
 - include_tasks: mongod_teardown.yml
+
+###################################################
+###################################################
+
+ set_fact:
+    current_replicaset: '{{ mongodb_replicaset9 }}'
+
+- name: Launch mongod processes
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset with members as dictionaries
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    protocol_version: 0
+    heartbeat_timeout_secs: 9
+    replica_set: '{{ mongodb_replicaset9 }}'
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+        priority: 1
+    - localhost:3002
+        priority: 0.5
+    - localhost:3003
+        priority: 0.5
+  when: mongodb_version.startswith('3') == True
+
+- name: Create replicaset with members as dictionaries (MongoDB 4.0+)
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    protocol_version: 1
+    election_timeout_millis: 9000
+    replica_set: '{{ mongodb_replicaset8 }}'
+    members:
+    - localhost:3001
+        priority: 1
+    - localhost:3002
+        priority: 0.5
+    - localhost:3003
+        priority: 0.5
+  when: mongodb_version.startswith('4') == True
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.conf()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output MongoDB 3.0+
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset9 }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+    - '''heartbeatTimeoutSecs" : 9,'' in mongo_output.stdout'
+  when: mongodb_version.startswith('3') == True
+
+- name: Assert replicaset name is in mongo_output MongoDB 4.0+
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset9 }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+    - '''electionTimeoutMillis" : 9000,'' in mongo_output.stdout'
+  when: mongodb_version.startswith('4') == True
+
+- include_tasks: mongod_teardown.yml

@@ -54,6 +54,7 @@ options:
     description:
     - Yaml list consisting of the replicaset members.
     - Csv string will also be accepted i.e. mongodb1:27017,mongodb2:27017,mongodb3:27017.
+    - A dict can also be used to specify advanced replicaset member options.
     - If a port number is not provided then 27017 is assumed.
     type: list
     elements: raw
@@ -145,6 +146,21 @@ EXAMPLES = r'''
     replica_set: rs1
     members: localhost:3002
     validate: no
+
+- name: Create a replicaset and use a custom priority for each member
+  mongodb_replicaset:
+    login_host: localhost
+    login_user: admin
+    login_password: admin
+    replica_set: rs0
+    members:
+    - "mongodb1:27017":
+          priority: 1
+    - "mongodb2:27017":
+          priority: 0.5
+    - "mongodb3:27017":
+          priority: 0.5
+  when: groups.mongod.index(inventory_hostname) == 0
 '''
 
 RETURN = r'''
@@ -261,12 +277,25 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
     else:
         settings['electionTimeoutMillis'] = election_timeout_millis
     for member in members:
-        if ':' not in member:  # No port supplied. Assume 27017
-            member += ":27017"
-        members_dict_list.append(OrderedDict([("_id", index), ("host", member)]))
-        if index == arbiter_at_index:
-            members_dict_list[index]['arbiterOnly'] = True
-        index += 1
+        if isinstance(member, str):
+            if ':' not in member:  # No port supplied. Assume 27017
+                member += ":27017"
+            members_dict_list.append(OrderedDict([("_id", index), ("host", member)]))
+            if index == arbiter_at_index:
+                members_dict_list[index]['arbiterOnly'] = True
+            index += 1
+        elif isinstance(member, dict):
+            hostname = list(members[0].keys())[0]
+            if ':' not in hostname:
+                hostname += ":27017"
+            members_dict_list.append(OrderedDict([("_id", index), ("host", member)]))
+            for key in members[list(members[0].keys())[0]]:
+                members_dict_list[index][key] = members[list(members[0].keys())[0]][key]
+            if index == arbiter_at_index:
+                members_dict_list[index]['arbiterOnly'] = True
+            index += 1
+        else:
+            raise ValueError("member should be a str or dict found: {0}".format(str(type(members))))
 
     conf = OrderedDict([("_id", replica_set),
                         ("protocolVersion", protocol_version),
