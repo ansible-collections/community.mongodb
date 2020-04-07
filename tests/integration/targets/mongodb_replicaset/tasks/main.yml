@@ -461,7 +461,7 @@
 ###################################################
 ###################################################
 
- set_fact:
+- set_fact:
     current_replicaset: '{{ mongodb_replicaset9 }}'
 
 - name: Launch mongod processes
