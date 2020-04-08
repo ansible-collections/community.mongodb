@@ -288,7 +288,7 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
             hostname = member["host"]
             if ':' not in hostname:
                 hostname += ":27017"
-            members_dict_list.append(OrderedDict([("_id", int(index)), ("host", member)]))
+            members_dict_list.append(OrderedDict([("_id", int(index)), ("host", hostname)]))
             for key in list(member.keys()):
                 if key != "host":
                     members_dict_list[index][key] = member[key]
