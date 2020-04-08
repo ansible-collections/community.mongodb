@@ -290,7 +290,7 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
                 hostname += ":27017"
             members_dict_list.append(OrderedDict([("_id", int(index)), ("host", member)]))
             for key in list(member.keys()):
-                if key not "host":
+                if key != "host":
                     members_dict_list[index][key] = member[key]
             if index == arbiter_at_index:
                 members_dict_list[index]['arbiterOnly'] = True
