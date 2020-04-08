@@ -530,7 +530,7 @@
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset9 }}'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset10 }}'' in mongo_output.stdout'
     - '''localhost:3001'' in mongo_output.stdout'
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
