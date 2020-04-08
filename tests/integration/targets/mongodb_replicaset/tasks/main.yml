@@ -518,7 +518,7 @@
     - host: "localhost:3002"
       priority: 1
     - host: "localhost:3003"
-      priority: 1
+      priority: 0
       hidden: true
       slaveDelay: 3600
 
