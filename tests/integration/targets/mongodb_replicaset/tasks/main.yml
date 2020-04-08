@@ -467,7 +467,7 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with members as dictionaries
+- name: Create replicaset with members as dictionaries - mongodb_replicaset9
   mongodb_replicaset:
     login_host: localhost
     login_port: 3001
@@ -478,28 +478,28 @@
     election_timeout_millis: 1000
     members:
     members:
-    - host: "localhost:3001":
+    - host: "localhost:3001"
       priority: 1
-    - host: "localhost:3002":
+    - host: "localhost:3002"
       priority: 0.5
-    - host: "localhost:3003":
+    - host: "localhost:3003"
       priority: 0.5
   when: mongodb_version.startswith('3') == True
 
-- name: Create replicaset with members as dictionaries (MongoDB 4.0+)
+- name: Create replicaset with members as dictionaries - mongodb_replicaset9 (MongoDB 4.0+)
   mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
     protocol_version: 1
     election_timeout_millis: 9000
-    replica_set: '{{ mongodb_replicaset8 }}'
+    replica_set: '{{ mongodb_replicaset9 }}'
     members:
-    - host: "localhost:3001":
+    - host: "localhost:3001"
       priority: 1
-    - host: "localhost:3002":
+    - host: "localhost:3002"
       priority: 0.5
-    - host: "localhost:3003":
+    - host: "localhost:3003"
       priority: 0.5
   when: mongodb_version.startswith('4') == True
 
