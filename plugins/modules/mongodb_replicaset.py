@@ -161,6 +161,31 @@ EXAMPLES = r'''
     - host: "localhost:3003"
       priority: 0.5
   when: groups.mongod.index(inventory_hostname) == 0
+
+- name: Create replicaset rs1 with options and member tags
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: rs1
+    members:
+    - host: "localhost:3001"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3002"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      slaveDelay: 3600
+      tags:
+        dc: "west"
+        usage: "reporting"
 '''
 
 RETURN = r'''
