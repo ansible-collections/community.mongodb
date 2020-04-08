@@ -154,11 +154,11 @@ EXAMPLES = r'''
     login_password: admin
     replica_set: rs0
     members:
-    - host: "localhost:3001":
+    - host: "localhost:3001"
       priority: 1
-    - host: "localhost:3002":
+    - host: "localhost:3002"
       priority: 0.5
-    - host: "localhost:3003":
+    - host: "localhost:3003"
       priority: 0.5
   when: groups.mongod.index(inventory_hostname) == 0
 '''
