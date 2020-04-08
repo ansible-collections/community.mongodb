@@ -467,31 +467,11 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with members as dictionaries - mongodb_replicaset9
-  mongodb_replicaset:
-    login_host: localhost
-    login_port: 3001
-    login_database: admin
-    protocol_version: 0
-    heartbeat_timeout_secs: 9
-    replica_set: '{{ mongodb_replicaset9 }}'
-    election_timeout_millis: 1000
-    members:
-    - host: "localhost:3001"
-      priority: 1
-    - host: "localhost:3002"
-      priority: 0.5
-    - host: "localhost:3003"
-      priority: 0.5
-  when: mongodb_version.startswith('3') == True
-
 - name: Create replicaset with members as dictionaries - mongodb_replicaset9 (MongoDB 4.0+)
   mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
-    protocol_version: 1
-    election_timeout_millis: 9000
     replica_set: '{{ mongodb_replicaset9 }}'
     members:
     - host: "localhost:3001"
@@ -500,13 +480,12 @@
       priority: 0.5
     - host: "localhost:3003"
       priority: 0.5
-  when: mongodb_version.startswith('4') == True
 
 - name: Get replicaset info
   command: mongo admin --eval "rs.conf()" --port 3001
   register: mongo_output
 
-- name: Assert replicaset name is in mongo_output MongoDB 3.0+
+- name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
@@ -514,10 +493,40 @@
     - '''localhost:3001'' in mongo_output.stdout'
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
-    - '''heartbeatTimeoutSecs" : 9,'' in mongo_output.stdout'
-  when: mongodb_version.startswith('3') == True
+    - '''priority\" : 1''in mongo_output.stdout'
+    - '''priority\" : 0.5''in mongo_output.stdout'
 
-- name: Assert replicaset name is in mongo_output MongoDB 4.0+
+- include_tasks: mongod_teardown.yml
+
+#############
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset10 }}'
+
+- name: Launch mongod processes
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset with members as dictionaries - mongodb_replicaset10
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset10 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+    - host: "localhost:3002"
+      priority: 1
+    - host: "localhost:3003"
+      priority: 1
+      hidden: true
+      slaveDelay: 3600
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.conf()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
@@ -525,7 +534,8 @@
     - '''localhost:3001'' in mongo_output.stdout'
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
-    - '''electionTimeoutMillis" : 9000,'' in mongo_output.stdout'
-  when: mongodb_version.startswith('4') == True
+    - '''priority\" : 1''in mongo_output.stdout'
+    - '''hidden\" : false'' in mongo_output.stdout'
+    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.stdout'
 
 - include_tasks: mongod_teardown.yml

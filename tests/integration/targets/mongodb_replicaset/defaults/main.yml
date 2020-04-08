@@ -7,6 +7,7 @@ mongodb_replicaset6: rs6
 mongodb_replicaset7: rs7
 mongodb_replicaset8: rs8
 mongodb_replicaset9: rs9
+mongodb_replicaset10: rs10
 test_mongo_auth: true
 mongodb_admin_user: test_root
 mongodb_admin_password: saE_Rr9!gE6gh#e~R#nZ
