@@ -54,6 +54,7 @@ options:
     description:
     - Yaml list consisting of the replicaset members.
     - Csv string will also be accepted i.e. mongodb1:27017,mongodb2:27017,mongodb3:27017.
+    - A dict can also be used to specify advanced replicaset member options.
     - If a port number is not provided then 27017 is assumed.
     type: list
     elements: raw
@@ -145,6 +146,46 @@ EXAMPLES = r'''
     replica_set: rs1
     members: localhost:3002
     validate: no
+
+- name: Create a replicaset and use a custom priority for each member
+  mongodb_replicaset:
+    login_host: localhost
+    login_user: admin
+    login_password: admin
+    replica_set: rs0
+    members:
+    - host: "localhost:3001"
+      priority: 1
+    - host: "localhost:3002"
+      priority: 0.5
+    - host: "localhost:3003"
+      priority: 0.5
+  when: groups.mongod.index(inventory_hostname) == 0
+
+- name: Create replicaset rs1 with options and member tags
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: rs1
+    members:
+    - host: "localhost:3001"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3002"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      slaveDelay: 3600
+      tags:
+        dc: "west"
+        usage: "reporting"
 '''
 
 RETURN = r'''
@@ -261,18 +302,35 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
     else:
         settings['electionTimeoutMillis'] = election_timeout_millis
     for member in members:
-        if ':' not in member:  # No port supplied. Assume 27017
-            member += ":27017"
-        members_dict_list.append(OrderedDict([("_id", index), ("host", member)]))
-        if index == arbiter_at_index:
-            members_dict_list[index]['arbiterOnly'] = True
-        index += 1
+        if isinstance(member, str):
+            if ':' not in member:  # No port supplied. Assume 27017
+                member += ":27017"
+            members_dict_list.append(OrderedDict([("_id", int(index)), ("host", member)]))
+            if index == arbiter_at_index:
+                members_dict_list[index]['arbiterOnly'] = True
+            index += 1
+        elif isinstance(member, dict):
+            hostname = member["host"]
+            if ':' not in hostname:
+                hostname += ":27017"
+            members_dict_list.append(OrderedDict([("_id", int(index)), ("host", hostname)]))
+            for key in list(member.keys()):
+                if key != "host":
+                    members_dict_list[index][key] = member[key]
+            if index == arbiter_at_index:
+                members_dict_list[index]['arbiterOnly'] = True
+            index += 1
+        else:
+            raise ValueError("member should be a str or dict. Instead found: {0}".format(str(type(members))))
 
     conf = OrderedDict([("_id", replica_set),
                         ("protocolVersion", protocol_version),
                         ("members", members_dict_list),
                         ("settings", settings)])
-    client["admin"].command('replSetInitiate', conf)
+    try:
+        client["admin"].command('replSetInitiate', conf)
+    except Exception as excep:
+        raise Exception("Some problem {0} | {1}".format(str(excep), str(conf)))
 
 
 def replicaset_remove(module, client, replica_set):

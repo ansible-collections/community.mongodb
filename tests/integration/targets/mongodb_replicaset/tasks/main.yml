@@ -457,3 +457,140 @@
     - '''MongoDB Replicaset validation failed. Invalid arbiter index.'' == invalid_num2.msg'
 
 - include_tasks: mongod_teardown.yml
+
+###################################################
+###################################################
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset9 }}'
+
+- name: Launch mongod processes
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset with members as dictionaries - mongodb_replicaset9 (MongoDB 4.0+)
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset9 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+    - host: "localhost:3002"
+      priority: 0.5
+    - host: "localhost:3003"
+      priority: 0.5
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.conf()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset9 }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+    - '''priority\" : 1''in mongo_output.stdout'
+    - '''priority\" : 0.5''in mongo_output.stdout'
+
+- include_tasks: mongod_teardown.yml
+
+#############
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset10 }}'
+
+- name: Launch mongod processes
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset with members as dictionaries - mongodb_replicaset10
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset10 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+    - host: "localhost:3002"
+      priority: 1
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      slaveDelay: 3600
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.conf()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset10 }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+    - '''priority\" : 1''in mongo_output.stdout'
+    - '''hidden\" : false'' in mongo_output.stdout'
+    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.stdout'
+
+- include_tasks: mongod_teardown.yml
+
+#############
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset11 }}'
+
+- name: Launch mongod processes
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset member tags - mongodb_replicaset11
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset11 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3002"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      slaveDelay: 3600
+      tags:
+        dc: "west"
+        usage: "reporting"
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.conf()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset11 }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+    - '''priority\" : 1''in mongo_output.stdout'
+    - '''hidden\" : false'' in mongo_output.stdout'
+    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.stdout'
+    - '''east''in mongo_output.stdout'
+    - '''west''in mongo_output.stdout'
+    - '''production''in mongo_output.stdout'
+    - '''reporting''in mongo_output.stdout'
+
+- include_tasks: mongod_teardown.yml
