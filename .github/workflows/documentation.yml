@@ -16,9 +16,9 @@ jobs:
       - name: Build documentation from modules
         run: |
           mkdir -p docs
-          echo "MongoDB Ansible Modules Documentation" > docs/index.html
-          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "<a href=$(basename {} .py).rst>$(basename "{}" ".py")</a>"' \; >> docs/index.html
-          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -M $(dirname "{}") $(basename "{}" ".py") > "docs/$(basename "{}" ".py").rst"' \;
+          echo "MongoDB Ansible Modules Documentation" > docs/index.md
+          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "[$(basename "{}" ".py")]($(basename {} .py))"' \; >> docs/index.md
+          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -M $(dirname "{}") $(basename "{}" ".py") > "docs/$(basename "{}" ".py").md"' \;
 
       - name: Deploy
         if: success()
