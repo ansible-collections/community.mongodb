@@ -55,6 +55,13 @@ options:
       - For example rs0/example1.mongodb.com:27017.
     required: true
     type: str
+  sharded_databases:
+    description:
+      - Enable sharding on the listed database.
+      - Can be supplied as a string or a list of strings.
+      - Sharding cannot be disabled on a database.
+    required: false
+    type: str
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
@@ -116,6 +123,17 @@ EXAMPLES = '''
     login_user: admin
     login_password: secret
     shard: "rs1/localhost:3002"
+    state: present
+
+# Enable sharding on a few databases when creating the shard
+- name: To remove a shard called 'rs1'
+  mongodb_shard:
+    login_user: admin
+    login_password: admin
+    shard: rs1
+    sharded_databases:
+      - db1
+      - db2
     state: present
 '''
 
@@ -247,6 +265,48 @@ def load_mongocnf():
 
     return creds
 
+
+def sharded_dbs(client):
+    '''
+    Returns the sharded databases
+    Args:
+        client (cursor): Mongodb cursor on admin database.
+    Returns:
+        a list of database names that are sharded
+    '''
+    sharded_databases = client["config"].databases.find({ "partitioned": true }, { "_id": 1 }):
+    return list(sharded_databases)
+
+
+def enable_database_sharding(client, database):
+    '''
+    Enables sharding on a database
+    Args:
+        client (cursor): Mongodb cursor on admin database.
+    Returns:
+        true on success, false on failure
+    '''
+    s = False
+    db = client["admin"].command('enableSharding', database)
+    if db:
+        s = True
+    return s
+
+
+def any_dbs_to_shard(client, sharded_databases):
+    '''
+    Return a list of databases that need to have sharding enabled
+    sharded_databases - Provided by module
+    cluster_sharded_databases - List of sharded dbs from the mongos
+    '''
+    dbs_to_shard = []
+    cluster_sharded_databases = sharded_dbs(client)
+    for db in sharded_databases:
+        if db not in cluster_sharded_databases:
+            db.append(db)
+    return dbs_to_shard
+
+
 # =========================================
 # Module execution.
 #
@@ -262,6 +322,7 @@ def main():
                                               ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
                                                                  choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
                                               shard=dict(type='str', required=True),
+                                              sharded_databases=dict(type="raw", required=False),
                                               state=dict(type='str', required=False, default='present', choices=['absent', 'present'])),
                            supports_check_mode=True)
 
@@ -276,6 +337,7 @@ def main():
     ssl = module.params['ssl']
     shard = module.params['shard']
     state = module.params['state']
+    sharded_databases = module.params['sharded_databases']
 
     try:
         connection_params = {
@@ -337,12 +399,18 @@ def main():
         if client["admin"].command("serverStatus")["process"] != "mongos":
             module.fail_json(msg="Process running on {0}:{1} is not a mongos".format(login_host, login_port))
         shard_created = False
+        dbs_to_shard = []
+        if sharded_databases is not None:
+            if isinstance(sharded_databases, str):
+                sharded_databases = list(sharded_databases)
+            dbs_to_shard = any_dbs_to_shard(client, sharded_databases)
         if module.check_mode:
             if state == "present":
-                if not shard_find(client, shard):
+                if not shard_find(client, shard) or len(dbs_to_shard) > 0:
                     changed = True
                 else:
                     changed = False
+
             elif state == "absent":
                 if not shard_find(client, shard):
                     changed = False
@@ -355,6 +423,10 @@ def main():
                     changed = True
                 else:
                     changed = False
+                if len(dbs_to_shard) > 0:
+                    for db in dbs_to_shard:
+                        enable_database_sharding(client, db)
+                    changed = True
             elif state == "absent":
                 if shard_find(client, shard):
                     shard_remove(client, shard)
