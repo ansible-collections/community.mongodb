@@ -335,6 +335,7 @@ def stop_balancer(client):
     Stops MongoDB balancer
     '''
     client['admin'].command({'balancerStop': 1, 'maxTimeMS': 60000})
+    time.sleep(1)
 
 
 def start_balancer(client):
@@ -342,6 +343,7 @@ def start_balancer(client):
     Starts MongoDB balancer
     '''
     client['admin'].command({'balancerStart': 1, 'maxTimeMS': 60000})
+    time.sleep(1)
 
 
 # =========================================
