@@ -395,7 +395,7 @@
     that:
       - myshard.changed == True
 
-pause:
+- pause:
   seconds: 5
 
 - name: Add shard 2 - Second

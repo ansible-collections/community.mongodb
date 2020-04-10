@@ -61,7 +61,7 @@ options:
       - Can be supplied as a string or a list of strings.
       - Sharding cannot be disabled on a database.
     required: false
-    type: str
+    type: raw
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
