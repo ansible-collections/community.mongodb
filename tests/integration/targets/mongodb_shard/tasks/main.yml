@@ -396,7 +396,7 @@
       - myshard.changed == True
 
 - pause:
-  seconds: 5
+    seconds: 5
 
 - name: Add shard 2 - Second
   mongodb_shard:

@@ -274,7 +274,7 @@ def sharded_dbs(client):
     Returns:
         a list of database names that are sharded
     '''
-    sharded_databases = client["config"].databases.find({ "partitioned": true }, { "_id": 1 })
+    sharded_databases = client["config"].databases.find({"partitioned": True}, {"_id": 1})
     return list(sharded_databases)
 
 
