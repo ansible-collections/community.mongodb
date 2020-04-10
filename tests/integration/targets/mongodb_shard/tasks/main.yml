@@ -525,7 +525,7 @@
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
     state: present
-    balancer_state: "stopped"
+    balancer_state: "started"
     sharded_databases:
       - db1
       - db2
@@ -545,7 +545,7 @@
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
     state: present
-    balancer_state: "stopped"
+    balancer_state: "started"
     sharded_databases:
       - db1
       - db2
