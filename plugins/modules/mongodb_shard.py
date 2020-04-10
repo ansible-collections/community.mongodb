@@ -481,10 +481,12 @@ def main():
                         start_balancer(client)
                         old_balancer_state = cluster_balancer_state
                         new_balancer_state = get_balancer_state(client)
+                        changed = True
                     else:
                         stop_balancer(client)
                         old_balancer_state = cluster_balancer_state
                         new_balancer_state = get_balancer_state(client)
+                        changed = True
             elif state == "absent":
                 if shard_find(client, shard):
                     shard_remove(client, shard)
