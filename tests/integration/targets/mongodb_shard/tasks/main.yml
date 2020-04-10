@@ -445,6 +445,41 @@
       - myshard.changed == False
       - myshard.sharded_enabled is not defined
 
+- name: Add shard 2 - Fifth - new db but check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    sharded_databases:
+      - db1
+      - db2
+      - db3
+  register: myshard
+  check_mode: yes
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.sharded_enabled == ["db3"]
+
+- name: Add shard 2 - Sixth - new db without check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    sharded_databases:
+      - db1
+      - db2
+      - db3
+  register: myshard
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.sharded_enabled == ["db3"]
+
 - name: Test with bad password
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
