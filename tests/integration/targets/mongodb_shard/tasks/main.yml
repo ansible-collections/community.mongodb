@@ -428,7 +428,7 @@
 - pause:
     seconds: 5
 
-- name: Add shard 2 - Fourth
+- name: Add shard 2 - Fourth - Nothing should change
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'

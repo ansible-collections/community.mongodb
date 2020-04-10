@@ -439,7 +439,7 @@ def main():
             action = "remove"
         module.fail_json(msg='Unable to {0} shard: %s'.format(action) % to_native(e), exception=traceback.format_exc())
 
-    module.exit_json(changed=changed, shard=shard)
+    module.exit_json(changed=changed, shard=shard, sharded_databases=sharded_databases, dbs_sharded_now=dbs_to_shard)
 
 
 if __name__ == '__main__':
