@@ -424,6 +424,7 @@
 - assert:
     that:
       - myshard.changed == True
+      - myshard.sharded_enabled = ["db1", "db2"]
 
 - pause:
     seconds: 5
@@ -442,6 +443,7 @@
 - assert:
     that:
       - myshard.changed == False
+      - myshard.sharded_enabled is not defined
 
 - name: Test with bad password
   mongodb_shard:

@@ -142,6 +142,10 @@ mongodb_shard:
     description: The name of the shard to create.
     returned: success
     type: str
+sharded_enabled:
+    description: Databases that have had sharding enabled during module execution.
+    returned: success when sharding is enabled
+    type: list
 '''
 
 import os
@@ -400,7 +404,6 @@ def main():
     try:
         if client["admin"].command("serverStatus")["process"] != "mongos":
             module.fail_json(msg="Process running on {0}:{1} is not a mongos".format(login_host, login_port))
-        d=sharded_dbs(client) #  TODO REMOVE line
         shard_created = False
         dbs_to_shard = []
         if sharded_databases is not None:
@@ -442,7 +445,15 @@ def main():
             action = "remove"
         module.fail_json(msg='Unable to {0} shard: %s'.format(action) % to_native(e), exception=traceback.format_exc())
 
-    module.exit_json(changed=changed, shard=shard, sharded_databases=sharded_databases, dbs_sharded_now=dbs_to_shard, d=d)
+    result = {
+        "changed": changed,
+        "shard": shard
+    }
+    if len(dbs_to_shard) > 0:
+        result['sharded_enabled'] = dbs_to_shard
+
+
+    module.exit_json(**result)
 
 
 if __name__ == '__main__':
