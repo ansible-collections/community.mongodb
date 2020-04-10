@@ -324,7 +324,7 @@ def get_balancer_state(client):
     Gets the state of the MongoDB balancer
     '''
     balancer_state = "stopped"
-    result = client["config"].settings.find({_id: "balancer"})
+    result = client["config"].settings.find({"_id": "balancer"})
     if result:
         balancer_state = "started"
     return balancer_state
@@ -334,14 +334,14 @@ def start_balancer(client):
     '''
     Starts MongoDB balancer
     '''
-    client['admin'].command({balancerStop: 1, maxTimeMS: 60000})
+    client['admin'].command({'balancerStop': 1, 'maxTimeMS': 60000})
 
 
 def start_balancer(client):
     '''
     Starts MongoDB balancer
     '''
-    client['admin'].command({balancerStart: 1, maxTimeMS: 60000})
+    client['admin'].command({'balancerStart': 1, 'maxTimeMS': 60000})
 
 
 # =========================================
