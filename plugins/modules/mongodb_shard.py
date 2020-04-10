@@ -67,7 +67,7 @@ options:
       - Manage the Balancer for the Cluster
     required: false
     type: str
-    choices: ["started", "stopped"]
+    choices: ["started", "stopped", None]
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
@@ -330,9 +330,9 @@ def get_balancer_state(client):
     return balancer_state
 
 
-def start_balancer(client):
+def stop_balancer(client):
     '''
-    Starts MongoDB balancer
+    Stops MongoDB balancer
     '''
     client['admin'].command({'balancerStop': 1, 'maxTimeMS': 60000})
 
