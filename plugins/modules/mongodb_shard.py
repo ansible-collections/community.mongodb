@@ -303,7 +303,7 @@ def any_dbs_to_shard(client, sharded_databases):
     cluster_sharded_databases = sharded_dbs(client)
     for db in sharded_databases:
         if db not in cluster_sharded_databases:
-            db.append(db)
+            dbs_to_shard.append(db)
     return dbs_to_shard
 
 
