@@ -62,6 +62,12 @@ options:
       - Sharding cannot be disabled on a database.
     required: false
     type: raw
+  balancer_state:
+    description:
+      - Manage the Balancer for the Cluster
+    required: false
+    type: str
+    choices: ["started", "stopped"]
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
@@ -313,6 +319,31 @@ def any_dbs_to_shard(client, sharded_databases):
     return dbs_to_shard
 
 
+def get_balancer_state(client):
+    '''
+    Gets the state of the MongoDB balancer
+    '''
+    balancer_state = "stopped"
+    result = client["config"].settings.find({_id: "balancer"})
+    if result:
+        balancer_state = "started"
+    return balancer_state
+
+
+def start_balancer(client):
+    '''
+    Starts MongoDB balancer
+    '''
+    client['admin'].command({balancerStop: 1, maxTimeMS: 60000})
+
+
+def start_balancer(client):
+    '''
+    Starts MongoDB balancer
+    '''
+    client['admin'].command({balancerStart: 1, maxTimeMS: 60000})
+
+
 # =========================================
 # Module execution.
 #
@@ -329,6 +360,7 @@ def main():
                                                                  choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
                                               shard=dict(type='str', required=True),
                                               sharded_databases=dict(type="raw", required=False),
+                                              balancer_state=dict(type='str', required=False, choices=["started", "stopped", None], default=None),
                                               state=dict(type='str', required=False, default='present', choices=['absent', 'present'])),
                            supports_check_mode=True)
 
@@ -344,6 +376,7 @@ def main():
     shard = module.params['shard']
     state = module.params['state']
     sharded_databases = module.params['sharded_databases']
+    balancer_state = module.params['balancer_state']
 
     try:
         connection_params = {
@@ -406,13 +439,20 @@ def main():
             module.fail_json(msg="Process running on {0}:{1} is not a mongos".format(login_host, login_port))
         shard_created = False
         dbs_to_shard = []
+        old_balancer_state = None
+        new_balancer_state = None
         if sharded_databases is not None:
             if isinstance(sharded_databases, str):
                 sharded_databases = list(sharded_databases)
             dbs_to_shard = any_dbs_to_shard(client, sharded_databases)
+        if balancer_state is not None:
+            cluster_balancer_state = get_balancer_state(client)
         if module.check_mode:
             if state == "present":
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
+                    changed = True
+                elif balancer_state is not None \
+                        and balancer_state != cluster_balancer_state:
                     changed = True
                 else:
                     changed = False
@@ -433,6 +473,16 @@ def main():
                     for db in dbs_to_shard:
                         enable_database_sharding(client, db)
                     changed = True
+                if balancer_state is not None \
+                        and balancer_state != cluster_balancer_state:
+                    if balancer_state == "started":
+                        start_balancer(client)
+                        old_balancer_state = cluster_balancer_state
+                        new_balancer_state = get_balancer_state(client)
+                    else:
+                        stop_balancer(client)
+                        old_balancer_state = cluster_balancer_state
+                        new_balancer_state = get_balancer_state(client)
             elif state == "absent":
                 if shard_find(client, shard):
                     shard_remove(client, shard)
@@ -451,6 +501,9 @@ def main():
     }
     if len(dbs_to_shard) > 0:
         result['sharded_enabled'] = dbs_to_shard
+    if old_balancer_state is not None:
+        result['old_balancer_state'] = old_balancer_state
+        result['new_balancer_state'] = new_balancer_state
 
     module.exit_json(**result)
 

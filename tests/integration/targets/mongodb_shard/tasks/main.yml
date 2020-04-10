@@ -480,6 +480,84 @@
       - myshard.changed == True
       - myshard.sharded_enabled == ["db3"]
 
+- name: Add shard 2 - Seventh - balancer check mode stopped
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    balancer_state: "stopped"
+    sharded_databases:
+      - db1
+      - db2
+      - db3
+  register: myshard
+  check_mode: yes
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.old_balancer_state == "started"
+      - myshard.new_balancer_state == "stopped"
+
+- name: Add shard 2 - Eighth - balancer stopped without check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    balancer_state: "stopped"
+    sharded_databases:
+      - db1
+      - db2
+      - db3
+  register: myshard
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.old_balancer_state == "started"
+      - myshard.new_balancer_state == "stopped"
+
+- name: Add shard 2 - Ninth - balancer started with check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    balancer_state: "stopped"
+    sharded_databases:
+      - db1
+      - db2
+      - db3
+  register: myshard
+  check_mode: yes
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.old_balancer_state == "stopped"
+      - myshard.new_balancer_state == "started"
+
+- name: Add shard 2 - Tenth - balancer started without check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    balancer_state: "stopped"
+    sharded_databases:
+      - db1
+      - db2
+      - db3
+  register: myshard
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.old_balancer_state == "stopped"
+      - myshard.new_balancer_state == "started"
+
 - name: Test with bad password
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
