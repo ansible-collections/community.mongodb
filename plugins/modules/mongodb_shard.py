@@ -453,6 +453,8 @@ def main():
                     changed = True
                 elif balancer_state is not None \
                         and balancer_state != cluster_balancer_state:
+                    old_balancer_state = cluster_balancer_state
+                    new_balancer_state = balancer_state
                     changed = True
                 else:
                     changed = False
