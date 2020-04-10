@@ -424,7 +424,7 @@
 - assert:
     that:
       - myshard.changed == True
-      - myshard.sharded_enabled = ["db1", "db2"]
+      - myshard.sharded_enabled == ["db1", "db2"]
 
 - pause:
     seconds: 5

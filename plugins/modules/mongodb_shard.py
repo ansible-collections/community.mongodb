@@ -452,7 +452,6 @@ def main():
     if len(dbs_to_shard) > 0:
         result['sharded_enabled'] = dbs_to_shard
 
-
     module.exit_json(**result)
 
 
