@@ -274,8 +274,10 @@ def sharded_dbs(client):
     Returns:
         a list of database names that are sharded
     '''
-    sharded_databases = client["config"].databases.find({"partitioned": True}, {"_id": 1})
-    return list(sharded_databases)
+    sharded_databases = []
+    for entry in client["config"].databases.find({"partitioned": True}, {"_id": 1}):
+        sharded_databases.append(entry["_id"])
+    return sharded_databases
 
 
 def enable_database_sharding(client, database):
