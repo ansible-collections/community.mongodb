@@ -50,9 +50,6 @@ jobs:
       - name: Install ansible-base (devel)
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
-      - name: Print working dir
-        run: pwd
-
       - name: Ensure MongoDB version is set to 4.0
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
 
