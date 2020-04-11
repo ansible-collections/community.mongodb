@@ -322,12 +322,20 @@ def any_dbs_to_shard(client, sharded_databases):
 
 def get_balancer_state(client):
     '''
-    Gets the state of the MongoDB balancer
+    Gets the state of the MongoDB balancer. The config.settings collection does
+    not exist until the balancer has been started for the first time
+    { "_id" : "balancer", "mode" : "full", "stopped" : false }
+    { "_id" : "autosplit", "enabled" : true }
     '''
     balancer_state = "stopped"
     result = client["config"].settings.find({"_id": "balancer"})
-    if result:
-        balancer_state = "started"
+    if not result:
+        balancer_state = "stopped"
+    else:
+        if result['stopped'] == False:
+            balancer_state = "started"
+        else:
+            balancer_state = "stopped"
     return balancer_state
 
 
