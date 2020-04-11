@@ -493,7 +493,7 @@
     that:
       - myshard.changed == True
       - myshard.old_balancer_state == "stopped"
-      - myshard.old_balancer_state == "started"
+      - myshard.new_balancer_state == "started"
 
 - name: Add shard 2 - Seventh - balancer check mode stopped
   mongodb_shard:
