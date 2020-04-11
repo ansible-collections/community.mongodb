@@ -328,7 +328,7 @@ def get_balancer_state(client):
     { "_id" : "autosplit", "enabled" : true }
     '''
     balancer_state = "stopped"
-    result = client["config"].settings.findOne({"_id": "balancer"})
+    result = client["config"].settings.find_one({"_id": "balancer"})
     if not result:
         balancer_state = "stopped"
     else:
