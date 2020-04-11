@@ -481,7 +481,6 @@
       - myshard.sharded_enabled == ["db3"]
 
 - name: Ensure the balancer is started
-- name: Add shard 2 - Seventh - balancer check mode stopped
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
