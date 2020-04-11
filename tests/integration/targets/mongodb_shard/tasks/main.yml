@@ -496,7 +496,7 @@
       - myshard.new_balancer_state == "started"
 
 - name: Get balancer state
-  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  command: mongo admin --port 4000 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
   register: balancer_state
 
 - name: Is the balancer really on?
@@ -525,7 +525,7 @@
       - myshard.new_balancer_state == "stopped"
 
 - name: Get balancer state - Should still be on
-  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  command: mongo admin --port 4000 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
   register: balancer_state
 
 - name: Is the balancer still on?
@@ -553,7 +553,7 @@
       - myshard.new_balancer_state == "stopped"
 
 - name: Get balancer state - Should now be off
-  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  command: mongo admin --port 4000 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
   register: balancer_state
 
 - name: Is the balancer now off?
@@ -576,7 +576,7 @@
   check_mode: yes
 
 - name: Get balancer state
-  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  command: mongo admin --port 4000 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
   register: balancer_state
 
 - name: Is the balancer still off?
@@ -610,7 +610,7 @@
       - myshard.new_balancer_state == "started"
 
 - name: Get balancer state - Should now be on again
-  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  command: mongo admin --port 4000 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
   register: balancer_state
 
 - name: Is the balancer now off?
