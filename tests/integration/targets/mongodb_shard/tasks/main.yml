@@ -495,6 +495,15 @@
       - myshard.old_balancer_state == "stopped"
       - myshard.new_balancer_state == "started"
 
+- name: Get balancer state
+  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer really on?
+  assert:
+    that:
+      - "'true' in balancer_state.stdout"
+
 - name: Add shard 2 - Seventh - balancer check mode stopped
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
@@ -515,6 +524,15 @@
       - myshard.old_balancer_state == "started"
       - myshard.new_balancer_state == "stopped"
 
+- name: Get balancer state - Should still be on
+  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer still on?
+  assert:
+    that:
+      - "'true' in balancer_state.stdout"
+
 - name: Add shard 2 - Eighth - balancer stopped without check mode
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
@@ -534,6 +552,15 @@
       - myshard.old_balancer_state == "started"
       - myshard.new_balancer_state == "stopped"
 
+- name: Get balancer state - Should now be off
+  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer now off?
+  assert:
+    that:
+      - "'false' in balancer_state.stdout"
+
 - name: Add shard 2 - Ninth - balancer started with check mode
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
@@ -547,6 +574,15 @@
       - db3
   register: myshard
   check_mode: yes
+
+- name: Get balancer state
+  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer still off?
+  assert:
+    that:
+      - "'false' in balancer_state.stdout"
 
 - assert:
     that:
@@ -573,6 +609,15 @@
       - myshard.old_balancer_state == "stopped"
       - myshard.new_balancer_state == "started"
 
+- name: Get balancer state - Should now be on again
+  command: mongo admin --port 3004 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer now off?
+  assert:
+    that:
+      - "'true' in balancer_state.stdout"
+
 - name: Test with bad password
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
@@ -589,8 +634,7 @@
     - '''unable to connect to database: Authentication failed.'' == mongodb_shard_bad_pw.msg'
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
-    }}" -p "{{ mongodb_admin_password }}"
+  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
