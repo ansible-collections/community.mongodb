@@ -377,6 +377,7 @@ def get_autosplit(client):
     result = client["config"].settings.find_one({"_id": "autosplit"})
     if result:
         autosplit = result['enabled']
+    return autosplit
 
 
 # =========================================
@@ -492,10 +493,10 @@ def main():
             if state == "present":
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
                     changed = True
-                elif (balancer_state is not None \
+                elif (balancer_state is not None
                         and balancer_state != cluster_balancer_state) \
-                        or (autosplit is not None \
-                        and autosplit != cluster_autosplit):
+                        or (autosplit is not None
+                            and autosplit != cluster_autosplit):
                     if balancer_state is not None:
                         old_balancer_state = cluster_balancer_state
                         new_balancer_state = balancer_state
