@@ -494,7 +494,7 @@ def main():
             if state == "present":
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
                     changed = True
-                elif (balancer_state is not None
+                if (balancer_state is not None
                         and balancer_state != cluster_balancer_state) \
                         or (autosplit is not None
                             and autosplit != cluster_autosplit):
