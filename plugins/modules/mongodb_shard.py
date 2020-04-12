@@ -492,6 +492,7 @@ def main():
             assert isinstance(cluster_autosplit, bool)
         if module.check_mode:
             if state == "present":
+                changed = False
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
                     changed = True
                 if (balancer_state is not None
@@ -504,8 +505,6 @@ def main():
                     old_autosplit = cluster_autosplit
                     new_autosplit = autosplit
                     changed = True
-                else:
-                    changed = False
             elif state == "absent":
                 if not shard_find(client, shard):
                     changed = False
