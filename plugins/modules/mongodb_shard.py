@@ -71,8 +71,8 @@ options:
   autosplit:
     description:
       - Disable or enable the autosplit flag in the config.settings collection.
-     required: false
-     type: bool
+    required: false
+    type: bool
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
