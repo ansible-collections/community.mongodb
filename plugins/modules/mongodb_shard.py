@@ -495,20 +495,17 @@ def main():
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
                     changed = True
                 if (balancer_state is not None
-                        and balancer_state != cluster_balancer_state) \
-                        or (autosplit is not None
-                            and autosplit != cluster_autosplit):
-                    if balancer_state is not None:
-                        old_balancer_state = cluster_balancer_state
-                        new_balancer_state = balancer_state
-                        changed = True
-                    if autosplit is not None:
-                        old_autosplit = cluster_autosplit
-                        new_autosplit = autosplit
-                        changed = True
+                        and balancer_state != cluster_balancer_state):
+                    old_balancer_state = cluster_balancer_state
+                    new_balancer_state = balancer_state
+                    changed = True
+                if (autosplit is not None
+                        and autosplit != cluster_autosplit):
+                    old_autosplit = cluster_autosplit
+                    new_autosplit = autosplit
+                    changed = True
                 else:
                     changed = False
-
             elif state == "absent":
                 if not shard_find(client, shard):
                     changed = False
