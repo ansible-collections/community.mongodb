@@ -489,7 +489,6 @@ def main():
             cluster_balancer_state = get_balancer_state(client)
         if autosplit is not None:
             cluster_autosplit = get_autosplit(client)
-            assert isinstance(cluster_autosplit, bool)
         if module.check_mode:
             if state == "present":
                 changed = False
