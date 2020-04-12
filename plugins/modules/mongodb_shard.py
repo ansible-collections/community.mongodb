@@ -363,13 +363,13 @@ def start_balancer(client):
 def enable_autosplit(client):
     client["config"].settings.update({"_id": "autosplit"},
                                      {"$set": {"enabled": True}},
-                                     upsert = True)
+                                     upsert=True)
 
 
 def disable_autosplit(client):
     client["config"].settings.update({"_id": "autosplit"},
                                      {"$set": {"enabled": False}},
-                                     upsert = True)
+                                     upsert=True)
 
 
 def get_autosplit(client):
@@ -492,17 +492,19 @@ def main():
             if state == "present":
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
                     changed = True
-                elif balancer_state is not None \
-                        and balancer_state != cluster_balancer_state:
-                    old_balancer_state = cluster_balancer_state
-                    new_balancer_state = balancer_state
-                    changed = True
-                else:
-                    if autosplit is not None \
-                            and autosplit != cluster_autosplit:
+                elif (balancer_state is not None \
+                        and balancer_state != cluster_balancer_state) \
+                        or (autosplit is not None \
+                        and autosplit != cluster_autosplit):
+                    if balancer_state is not None:
+                        old_balancer_state = cluster_balancer_state
+                        new_balancer_state = balancer_state
                         changed = True
-                    old_autosplit = cluster_autosplit
-                    new_autosplit = autosplit
+                    if autosplit is not None:
+                        old_autosplit = cluster_autosplit
+                        new_autosplit = autosplit
+                        changed = True
+                else:
                     changed = False
 
             elif state == "absent":
@@ -566,6 +568,9 @@ def main():
     if old_balancer_state is not None:
         result['old_balancer_state'] = old_balancer_state
         result['new_balancer_state'] = new_balancer_state
+    if old_autosplit is not None:
+        result['old_autosplit'] = old_autosplit
+        result['new_autosplit'] = new_autosplit
 
     module.exit_json(**result)
 
