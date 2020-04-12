@@ -495,38 +495,7 @@
       - myshard.old_balancer_state == "stopped"
       - myshard.new_balancer_state == "started"
 
-- name: Deactivate autosplit check mode
-  mongodb_shard:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-    autosplit: false
-  register: autosplit
-  check_mode: yes
-
-- assert:
-    that:
-      - "autosplit.changed == True"
-      - "autosplit.old_autosplit == True"
-      - "autosplit.new_autosplit == False"
-
-- name: Deactivate autosplit without check mode
-  mongodb_shard:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-    autosplit: false
-  register: autosplit
-
-- assert:
-    that:
-      - "autosplit.changed == True"
-      - "autosplit.old_autosplit == True"
-      - "autosplit.new_autosplit == False"
-
-- name: Enable autosplit check mode
+- name: Activate autosplit check mode
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -542,7 +511,7 @@
       - "autosplit.old_autosplit == False"
       - "autosplit.new_autosplit == True"
 
-- name: Enable autosplit without check mode
+- name: Activate autosplit without check mode
   mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -556,6 +525,37 @@
       - "autosplit.changed == True"
       - "autosplit.old_autosplit == False"
       - "autosplit.new_autosplit == True"
+
+- name: Disable autosplit check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: false
+  register: autosplit
+  check_mode: yes
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == True"
+      - "autosplit.new_autosplit == False"
+
+- name: Disable autosplit without check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: false
+  register: autosplit
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == True"
+      - "autosplit.new_autosplit == False"
 
 - name: Get balancer state
   command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
