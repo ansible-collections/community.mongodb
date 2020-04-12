@@ -68,6 +68,11 @@ options:
     required: false
     type: str
     choices: ["started", "stopped", None]
+  autosplit:
+    description:
+      - Disable or enable the autosplit flag in the config.settings collection.
+     required: false
+     type: bool
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
@@ -355,6 +360,25 @@ def start_balancer(client):
     time.sleep(1)
 
 
+def enable_autosplit(client):
+    client["config"].settings.update({"_id": "autosplit"},
+                                     {"$set": {"enabled": True}},
+                                     upsert = True)
+
+
+def disable_autosplit(client):
+    client["config"].settings.update({"_id": "autosplit"},
+                                     {"$set": {"enabled": False}},
+                                     upsert = True)
+
+
+def get_autosplit(client):
+    autosplit = None
+    result = client["config"].settings.find_one({"_id": "autosplit"})
+    if result:
+        autosplit = result['enabled']
+
+
 # =========================================
 # Module execution.
 #
@@ -372,6 +396,7 @@ def main():
                                               shard=dict(type='str', required=True),
                                               sharded_databases=dict(type="raw", required=False),
                                               balancer_state=dict(type='str', required=False, choices=["started", "stopped", None], default=None),
+                                              autosplit=dict(type='bool', required=False, default=None),
                                               state=dict(type='str', required=False, default='present', choices=['absent', 'present'])),
                            supports_check_mode=True)
 
@@ -388,6 +413,7 @@ def main():
     state = module.params['state']
     sharded_databases = module.params['sharded_databases']
     balancer_state = module.params['balancer_state']
+    autosplit = module.params['autosplit']
 
     try:
         connection_params = {
@@ -452,12 +478,16 @@ def main():
         dbs_to_shard = []
         old_balancer_state = None
         new_balancer_state = None
+        old_autosplit = None
+        new_autosplit = None
         if sharded_databases is not None:
             if isinstance(sharded_databases, str):
                 sharded_databases = list(sharded_databases)
             dbs_to_shard = any_dbs_to_shard(client, sharded_databases)
         if balancer_state is not None:
             cluster_balancer_state = get_balancer_state(client)
+        if autosplit is not None:
+            cluster_autosplit = get_autosplit(client)
         if module.check_mode:
             if state == "present":
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
@@ -468,6 +498,11 @@ def main():
                     new_balancer_state = balancer_state
                     changed = True
                 else:
+                    if autosplit is not None \
+                            and autosplit != cluster_autosplit:
+                        changed = True
+                    old_autosplit = cluster_autosplit
+                    new_autosplit = autosplit
                     changed = False
 
             elif state == "absent":
@@ -497,6 +532,18 @@ def main():
                         stop_balancer(client)
                         old_balancer_state = cluster_balancer_state
                         new_balancer_state = get_balancer_state(client)
+                        changed = True
+                if autosplit is not None \
+                        and autosplit != cluster_autosplit:
+                    if autosplit:
+                        disable_autosplit(client)
+                        old_autosplit = cluster_autosplit
+                        new_autosplit = autosplit
+                        changed = True
+                    else:
+                        enable_autosplit(client)
+                        old_autosplit = cluster_autosplit
+                        new_autosplit = autosplit
                         changed = True
             elif state == "absent":
                 if shard_find(client, shard):
