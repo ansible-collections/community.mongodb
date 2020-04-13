@@ -562,7 +562,6 @@ def main():
     result = {
         "changed": changed,
         "shard": shard,
-        "cluster_autosplit": cluster_autosplit
     }
     if len(dbs_to_shard) > 0:
         result['sharded_enabled'] = dbs_to_shard

@@ -78,17 +78,23 @@
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
     "{{ remote_tmp_dir }}/tests/mongos.log" --port 27017 --fork
 
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
 - name: Ensure is_primary script exists on host
   copy:
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
@@ -222,12 +228,18 @@
     members:
     - localhost:4000
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
+#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
@@ -353,13 +365,13 @@
 - name: Execute script for 3004
   script: /root/ensure_primary.sh 3004 1
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
     }} "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
@@ -541,7 +553,6 @@
       - "autosplit.changed == True"
       - "autosplit.old_autosplit == True"
       - "autosplit.new_autosplit == False"
-  ignore_errors: yes
 
 - name: Disable autosplit without check mode
   mongodb_shard:
@@ -557,7 +568,6 @@
       - "autosplit.changed == True"
       - "autosplit.old_autosplit == True"
       - "autosplit.new_autosplit == False"
-  ignore_errors: yes
 
 - name: Get balancer state
   command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
