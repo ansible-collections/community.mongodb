@@ -375,7 +375,7 @@ def disable_autosplit(client):
 def get_autosplit(client):
     autosplit = False
     result = client["config"].settings.find_one({"_id": "autosplit"})
-    if 'enabled' in result.keys():
+    if result is not None:
         autosplit = result['enabled']
     return autosplit
 
