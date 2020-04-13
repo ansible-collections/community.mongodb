@@ -538,12 +538,12 @@ def main():
                 if autosplit is not None \
                         and autosplit != cluster_autosplit:
                     if autosplit:
-                        disable_autosplit(client)
+                        enable_autosplit(client)
                         old_autosplit = cluster_autosplit
                         new_autosplit = autosplit
                         changed = True
                     else:
-                        enable_autosplit(client)
+                        disable_autosplit(client)
                         old_autosplit = cluster_autosplit
                         new_autosplit = autosplit
                         changed = True
