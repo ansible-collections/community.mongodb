@@ -78,6 +78,11 @@
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
     "{{ remote_tmp_dir }}/tests/mongos.log" --port 27017 --fork
 
+- name: Copy script to host
+  template:
+    src: files/bash/ensure_primary.sh.j2
+    dest: /root/ensure_primary.sh
+
 - name: Execute script for 3001
   script: /root/ensure_primary.sh 3001 0
 
@@ -299,10 +304,10 @@
     dest: /root/ensure_primary.sh
 
 - name: Execute script for 3001
-  script: /root/ensure_primary.sh 3001 0
+  script: /root/ensure_primary.sh 3001 1
 
 - name: Execute script for 3004
-  script: /root/ensure_primary.sh 3004 0
+  script: /root/ensure_primary.sh 3004 1
 
 - name: Create admin user on 3.2 and 4.0 config replset
   shell: mongo admin --port {{ item }} /root/create_user_root_3.2.js
@@ -358,6 +363,11 @@
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
     {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
+
+- name: Copy script to host
+  template:
+    src: files/bash/ensure_primary.sh.j2
+    dest: /root/ensure_primary.sh
 
 - name: Execute script for 3001
   script: /root/ensure_primary.sh 3001 1
