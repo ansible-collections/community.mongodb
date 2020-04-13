@@ -541,6 +541,7 @@
       - "autosplit.changed == True"
       - "autosplit.old_autosplit == True"
       - "autosplit.new_autosplit == False"
+  ignore_errors: yes
 
 - name: Disable autosplit without check mode
   mongodb_shard:
@@ -556,6 +557,7 @@
       - "autosplit.changed == True"
       - "autosplit.old_autosplit == True"
       - "autosplit.new_autosplit == False"
+  ignore_errors: yes
 
 - name: Get balancer state
   command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
