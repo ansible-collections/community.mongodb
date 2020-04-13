@@ -477,6 +477,7 @@ def main():
             module.fail_json(msg="Process running on {0}:{1} is not a mongos".format(login_host, login_port))
         shard_created = False
         dbs_to_shard = []
+        cluster_autosplit = None
         old_balancer_state = None
         new_balancer_state = None
         old_autosplit = None
@@ -558,7 +559,8 @@ def main():
 
     result = {
         "changed": changed,
-        "shard": shard
+        "shard": shard,
+        "cluster_autosplit": cluster_autosplit
     }
     if len(dbs_to_shard) > 0:
         result['sharded_enabled'] = dbs_to_shard
