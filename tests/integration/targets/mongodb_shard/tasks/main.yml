@@ -273,7 +273,7 @@
     rs: '{{ configsrv_replicaset }}'
   when: mongodb_version not in ["3.2", "4.0"] and test_mongo_auth == True
 
-- name: Add mongodb admin user to each shard 3.2 ^ 4.0
+- name: Add mongodb admin user to each shard 3.2 & 4.0
   mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
