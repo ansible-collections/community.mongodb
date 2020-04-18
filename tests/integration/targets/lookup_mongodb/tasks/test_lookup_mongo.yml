@@ -1,5 +1,5 @@
 - name: "assert we complain properly if pymongo is not there"
-  debug: msg="{{ lookup('mongodb', mongodb_parameters ) }}"
+  debug: msg="{{ lookup('community.mongodb.mongodb', mongodb_parameters ) }}"
   register: result
   ignore_errors: yes
 
@@ -15,7 +15,7 @@
     name: "pymongo"
 
 - name: "assert we complain properly if we can't connect to mongo"
-  debug: msg="{{ lookup('mongodb', mongodb_parameters ) }}"
+  debug: msg="{{ lookup('community.mongodb.mongodb', mongodb_parameters ) }}"
   register: result
   ignore_errors: yes
 
@@ -44,7 +44,7 @@
     port: 27017
 
 - name: "make a simple query"
-  debug: msg="{{ lookup('mongodb', mongodb_parameters ).pid }}"
+  debug: msg="{{ lookup('community.mongodb.mongodb', mongodb_parameters ).pid }}"
   register: result
 
 - name: asserting query result is a valid value
