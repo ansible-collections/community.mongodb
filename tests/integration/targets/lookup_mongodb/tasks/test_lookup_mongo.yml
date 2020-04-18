@@ -1,3 +1,8 @@
+- name: pymongo may be installed by other tests
+  pip:
+    name: pymongo
+    state: absent
+
 - name: "assert we complain properly if pymongo is not there"
   debug: msg="{{ lookup('community.mongodb.mongodb', mongodb_parameters ) }}"
   register: result
