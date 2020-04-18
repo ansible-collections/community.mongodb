@@ -32,7 +32,7 @@
     dest: /etc/mongodb.conf
 
 - name: Installing mongodb
-  # somehow the apt module messes up all tests...
+  # somehow the apt module messes up all tests....
   command: "apt-get install -o Dpkg::Options::=\"--force-confold\" --force-yes -y mongodb"
 
 - name: "Start service mongodb, if not started. This may fail, but mongodb starts anyway after a while..."
