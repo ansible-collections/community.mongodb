@@ -19,7 +19,7 @@
     path: '{{ remote_tmp_dir }}/{{ item }}'
     state: absent
   with_items:
-  - mongod3001
+  - "mongod{{ mongodb_nodes }}"
 
 - name: Remove all mongod sock files
   shell: rm -Rf /tmp/mongodb*.sock
