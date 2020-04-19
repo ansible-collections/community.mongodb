@@ -3,10 +3,27 @@
 
 # Main mongodb_info module tests
 - include_tasks: mongod_teardown.yml
-- include_tasks: mongod_singlenode.yml
+
+# TODO Tests without auth before here?
 
 - set_fact:
     mongod_auth: true
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Create admin user with module
+  mongodb_user:
+    login_port: 3001
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+  register: mongodb_admin_user_created
+
+- assert:
+    that:
+    - mongodb_admin_user_created.changed == True
 
 - import_tasks: mongodb_info.yml
 
