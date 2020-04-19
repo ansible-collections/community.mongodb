@@ -517,7 +517,13 @@
       - myshard.old_balancer_state == "stopped"
       - myshard.new_balancer_state == "started"
 
-- command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.status()"
+- name: Ensure autosplit starts at an off state
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: false
 
 - name: Activate autosplit check mode
   mongodb_shard:
@@ -528,8 +534,6 @@
     autosplit: true
   register: autosplit
   check_mode: yes
-
-- command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.status()"
 
 - assert:
     that:
