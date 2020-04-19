@@ -4,3 +4,5 @@ mongod_storage_engine_opts: --storageEngine wiredTiger --wiredTigerEngineConfigS
 mongodb_user: mongodb
 mongodb_nodes:
   - "27017"
+mongodb_admin_user: test_root
+mongodb_admin_password: saE_Rr9!gE6gh#e~R#nZ

@@ -5,6 +5,9 @@
 - include_tasks: mongod_teardown.yml
 - include_tasks: mongod_singlenode.yml
 
+- set_fact:
+    mongod_auth: true
+
 - import_tasks: mongodb_info.yml
 
 - include_tasks: mongod_teardown.yml
