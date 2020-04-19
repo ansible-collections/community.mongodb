@@ -78,17 +78,28 @@
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
     "{{ remote_tmp_dir }}/tests/mongos.log" --port 27017 --fork
 
+- name: Copy script to host
+  template:
+    src: files/bash/ensure_primary.sh.j2
+    dest: /root/ensure_primary.sh
+
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
 - name: Ensure is_primary script exists on host
   copy:
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
@@ -222,12 +233,18 @@
     members:
     - localhost:4000
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
+#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
@@ -256,7 +273,7 @@
     rs: '{{ configsrv_replicaset }}'
   when: mongodb_version not in ["3.2", "4.0"] and test_mongo_auth == True
 
-- name: Add mongodb admin user to each shard 3.2 ^ 4.0
+- name: Add mongodb admin user to each shard 3.2 & 4.0
   mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
@@ -281,16 +298,16 @@
     dest: /root/create_user_root_3.2.js
   when: mongodb_version in ["3.2", "4.0"]
 
-- name: Copy script to host
-  template:
-    src: files/bash/ensure_primary.sh.j2
-    dest: /root/ensure_primary.sh
+#- name: Copy script to host
+#  template:
+#    src: files/bash/ensure_primary.sh.j2
+#    dest: /root/ensure_primary.sh
 
-- name: Execute script for 3001
-  script: /root/ensure_primary.sh 3001 0
+#- name: Execute script for 3001
+#  script: /root/ensure_primary.sh 3001 1
 
-- name: Execute script for 3004
-  script: /root/ensure_primary.sh 3004 0
+#- name: Execute script for 3004
+#  script: /root/ensure_primary.sh 3004 1
 
 - name: Create admin user on 3.2 and 4.0 config replset
   shell: mongo admin --port {{ item }} /root/create_user_root_3.2.js
@@ -347,19 +364,24 @@
     {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
-- name: Execute script for 3001
-  script: /root/ensure_primary.sh 3001 1
+#- name: Copy script to host
+#  template:
+#    src: files/bash/ensure_primary.sh.j2
+#    dest: /root/ensure_primary.sh
 
-- name: Execute script for 3004
-  script: /root/ensure_primary.sh 3004 1
+#- name: Execute script for 3001
+#  script: /root/ensure_primary.sh 3001 1
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
+#- name: Execute script for 3004
+#  script: /root/ensure_primary.sh 3004 1
+
+#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
 
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
     }} "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
+#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
@@ -494,6 +516,76 @@
       - myshard.changed == True
       - myshard.old_balancer_state == "stopped"
       - myshard.new_balancer_state == "started"
+
+- name: Ensure autosplit starts at an off state
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: false
+
+- name: Activate autosplit check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: true
+  register: autosplit
+  check_mode: yes
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == False"
+      - "autosplit.new_autosplit == True"
+
+- name: Activate autosplit without check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: true
+  register: autosplit
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == False"
+      - "autosplit.new_autosplit == True"
+
+- name: Disable autosplit check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: false
+  register: autosplit
+  check_mode: yes
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == True"
+      - "autosplit.new_autosplit == False"
+
+- name: Disable autosplit without check mode
+  mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+    autosplit: false
+  register: autosplit
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == True"
+      - "autosplit.new_autosplit == False"
 
 - name: Get balancer state
   command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
