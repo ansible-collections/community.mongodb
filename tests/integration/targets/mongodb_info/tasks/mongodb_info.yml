@@ -20,7 +20,7 @@
   - assert:
       that:
       - result is not changed
-      - result.general.version == '4.2.3'
+      - result.general.version.startswith('4')
       - result.databases.admin
       - result.total_size
       - result.users.admin
@@ -36,7 +36,7 @@
   - assert:
       that:
       - result is not changed
-      - result.general.version == '4.2.3'
+      - result.general.version.startswith('4')
       - result.total_size
       - result.databases is not defined
       - result.parameters is not defined
@@ -52,7 +52,7 @@
   - assert:
       that:
       - result is not changed
-      - result.general.version == '4.2.3'
+      - result.general.version.startswith('4')
       - result.databases.admin
       - result.total_size
       - result.users.admin
