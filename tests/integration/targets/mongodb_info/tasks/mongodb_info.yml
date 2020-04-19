@@ -5,10 +5,10 @@
     task_parameters: &task_parameters
       register: result
     mongo_parameters: &mongo_parameters
-      login_port: '{{ mongodb_default_port }}'
+      login_port: 27017
       login_user: '{{ mongodb_admin_user }}'
       login_password: '{{ mongodb_admin_password }}'
-      login_database: '{{ mongodb_default_db }}'
+      login_database: "admin"
 
   block:
 
