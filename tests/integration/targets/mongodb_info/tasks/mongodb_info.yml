@@ -23,7 +23,7 @@
       - result.general.version.startswith('4')
       - result.databases.admin
       - result.total_size
-      - result.users.admin
+      - result.users.test_root
       - result.roles.backup
       - result.parameters.logLevel == 0
 
@@ -55,6 +55,6 @@
       - result.general.version.startswith('4')
       - result.databases.admin
       - result.total_size
-      - "result.users.{{ mongodb_admin_user }}"
+      - result.users.test_root
       - result.roles.backup
       - result.parameters is not defined
