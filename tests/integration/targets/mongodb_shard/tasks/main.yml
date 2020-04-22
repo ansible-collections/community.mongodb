@@ -352,25 +352,6 @@
   command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
     }} "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- name: Add mongodb admin user to each shard
-  mongodb_user:
-    login_host: localhost
-    login_port: '{{ item.port }}'
-    replica_set: '{{ item.rs }}'
-    database: admin
-    name: '{{ mongodb_admin_user }}'
-    password: '{{ mongodb_admin_password }}'
-    roles:
-    - root
-    state: present
-  register: mongo_admin_user
-  with_items:
-  - port: 3001
-    rs: '{{ mongodb_replicaset1 }}'
-  - port: 3004
-    rs: '{{ mongodb_replicaset2 }}'
-  when: test_mongo_auth == True
-
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
     "{{ remote_tmp_dir }}/mongos.log" --port 27017 --fork --keyFile {{ remote_tmp_dir
