@@ -252,7 +252,7 @@
 - name: Ensure host reaches primary before proceeding 4000
   command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- name: Add mongodb admin user to each shard
+- name: Add mongodb admin user to each shard inc config rs
   mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
@@ -269,6 +269,8 @@
     rs: '{{ mongodb_replicaset1 }}'
   - port: 3004
     rs: '{{ mongodb_replicaset2 }}'
+  - port: 4000
+    rs: '{{ configsrv_replicaset }}'
   when: test_mongo_auth == True
 
 #- name: Copy script to host
