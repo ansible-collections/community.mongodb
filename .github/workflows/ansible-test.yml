@@ -62,8 +62,8 @@ jobs:
       - name: Run integration tests on Python ${{ matrix.python_version }} and MongoDB 4.2
         run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
 
-      - name: Ensure MongoDB version is returned to original 4.0
-        run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
+      #- name: Ensure MongoDB version is returned to original 4.0
+      #  run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Upload Coverage data
         run: tests/coverage.sh
