@@ -252,7 +252,7 @@
 - name: Ensure host reaches primary before proceeding 4000
   command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- name: Add mongodb admin user to each shard 3.4+
+- name: Add mongodb admin user to each shard inc config rs
   mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
@@ -271,32 +271,7 @@
     rs: '{{ mongodb_replicaset2 }}'
   - port: 4000
     rs: '{{ configsrv_replicaset }}'
-  when: mongodb_version not in ["3.2", "4.0"] and test_mongo_auth == True
-
-- name: Add mongodb admin user to each shard 3.2 & 4.0
-  mongodb_user:
-    login_host: localhost
-    login_port: '{{ item.port }}'
-    replica_set: '{{ item.rs }}'
-    database: admin
-    name: '{{ mongodb_admin_user }}'
-    password: '{{ mongodb_admin_password }}'
-    roles:
-    - root
-    state: present
-  register: mongo_admin_user
-  with_items:
-  - port: 3001
-    rs: '{{ mongodb_replicaset1 }}'
-  - port: 3004
-    rs: '{{ mongodb_replicaset2 }}'
-  when: mongodb_version not in ["3.2", "4.0"] and test_mongo_auth == True
-
-- name: Copy create_user_root_3.2.js.j2 template to host
-  template:
-    src: create_user_root_3.2.js.j2
-    dest: /root/create_user_root_3.2.js
-  when: mongodb_version in ["3.2", "4.0"]
+  when: test_mongo_auth == True
 
 #- name: Copy script to host
 #  template:
@@ -308,14 +283,6 @@
 
 #- name: Execute script for 3004
 #  script: /root/ensure_primary.sh 3004 1
-
-- name: Create admin user on 3.2 and 4.0 config replset
-  shell: mongo admin --port {{ item }} /root/create_user_root_3.2.js
-  with_items:
-  - 4000
-  - 3001
-  - 3004
-  when: mongodb_version in ["3.2", "4.0"]
 
 - name: Murder all mongod processes
   shell: pkill -{{ kill_signal }} mongod || true;
