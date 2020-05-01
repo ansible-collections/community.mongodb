@@ -77,9 +77,9 @@ options:
     description:
       - Provide a custom name for the mongos process you are connecting to.
       - Most users can ignore this setting.
-     required: false
-     type: str
-     default: "mongos"
+    required: false
+    type: str
+    default: "mongos"
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
