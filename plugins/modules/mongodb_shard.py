@@ -73,6 +73,13 @@ options:
       - Disable or enable the autosplit flag in the config.settings collection.
     required: false
     type: bool
+  mongos_process:
+    description:
+      - Provide a custom name for the mongos process you are connecting to.
+      - Most users can ignore this setting.
+    required: false
+    type: str
+    default: "mongos"
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
@@ -400,6 +407,7 @@ def main():
                                               sharded_databases=dict(type="raw", required=False),
                                               balancer_state=dict(type='str', required=False, choices=["started", "stopped", None], default=None),
                                               autosplit=dict(type='bool', required=False, default=None),
+                                              mongos_process=dict(type='str', required=False, default="mongos"),
                                               state=dict(type='str', required=False, default='present', choices=['absent', 'present'])),
                            supports_check_mode=True)
 
@@ -417,6 +425,7 @@ def main():
     sharded_databases = module.params['sharded_databases']
     balancer_state = module.params['balancer_state']
     autosplit = module.params['autosplit']
+    mongos_process = module.params['mongos_process']
 
     try:
         connection_params = {
@@ -475,8 +484,8 @@ def main():
         module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
 
     try:
-        if client["admin"].command("serverStatus")["process"] != "mongos":
-            module.fail_json(msg="Process running on {0}:{1} is not a mongos".format(login_host, login_port))
+        if client["admin"].command("serverStatus")["process"] != mongos_process:
+            module.fail_json(msg="Process running on {0}:{1} is not a {2}".format(login_host, login_port, mongos_process))
         shard_created = False
         dbs_to_shard = []
         cluster_autosplit = None

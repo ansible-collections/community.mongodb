@@ -104,6 +104,21 @@
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
+- name: Attempt to add shard with incorrect mongos process name set
+  mongodb_shard:
+    login_user: admin
+    login_password: admin
+    shard: '{{ mongodb_replicaset1 }}/localhost:3001'
+    state: present
+    mongos_process: "wrong-process-name"
+  register: mongos_process
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "mongos_process.changed == False"
+      - "mongos_process.msg == 'Process running on localhost:27017 is not a wrong-process-name'"
+
 - name: Add shard 1
   mongodb_shard:
     login_user: admin
