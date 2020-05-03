@@ -16,6 +16,12 @@
     system: yes
     createhome: no
 
+- name: Ensure /usr/local/bin/ directory exists
+  file:
+    path: /usr/local/bin/
+    state: directory
+    recurse: yes
+
 - name: Ensure mongos service pre start script exists
   template:
     src: mongos_pre.sh.j2
