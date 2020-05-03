@@ -1,7 +1,7 @@
-Role Name
-=========
+mongodb_mongos
+==============
 
-A brief description of the role goes here.
+A role to setup a mongos server for a MongoDB sharded cluster.
 
 Requirements
 ------------
