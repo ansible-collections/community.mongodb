@@ -5,4 +5,5 @@ flake8==3.7.9
 molecule==2.22
 pytest==4.6.9
 python-vagrant==0.5.15
-sh==1.13.1
+# sh 1.13.1 causes molecule yamllint to fail.
+sh<1.13
