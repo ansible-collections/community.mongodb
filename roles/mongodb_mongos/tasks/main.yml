@@ -4,15 +4,6 @@
   include_vars:
     file: "{{ ansible_os_family }}.yml"
 
-- name: Copy keyfile to host
-  copy:
-    content: |
-      {{ openssl_keyfile_content }}
-    dest: /etc/keyfile
-    owner: "{{ mongodb_user }}"
-    group: "{{ mongodb_group }}"
-    mode: 0400
-
 - name: Create mongodb_group
   group:
     name: "{{ mongodb_group }}"
@@ -24,6 +15,15 @@
     group: "{{ mongodb_group }}"
     system: yes
     createhome: no
+
+- name: Copy keyfile to host
+  copy:
+    content: |
+      {{ openssl_keyfile_content }}
+    dest: /etc/keyfile
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+    mode: 0400
 
 - name: Ensure /usr/local/bin/ directory exists
   file:
