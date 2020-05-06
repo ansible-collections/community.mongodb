@@ -287,11 +287,17 @@ def user_add(module, client, db_name, user, password, roles):
     # pymongo's user_add is a _create_or_update_user so we won't know if it was changed or updated
     # without reproducing a lot of the logic in database.py of pymongo
     db = client[db_name]
+    exists = user_find(client, user, db_name)
+
+    if exists:
+        user_add_db_command = 'updateUser'
+    else:
+        user_add_db_command = 'createUser'
 
     if roles is None:
-        db.add_user(user, password, False)
+        db.command(user_add_db_command, user, pwd=password)
     else:
-        db.add_user(user, password, None, roles=roles)
+        db.command(user_add_db_command, user, pwd=password, roles=roles)
 
 
 def user_remove(module, client, db_name, user):
@@ -300,7 +306,7 @@ def user_remove(module, client, db_name, user):
         if module.check_mode:
             module.exit_json(changed=True, user=user)
         db = client[db_name]
-        db.remove_user(user)
+        db.command("dropUser", user)
     else:
         module.exit_json(changed=False, user=user)
 
