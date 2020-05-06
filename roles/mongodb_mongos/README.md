@@ -1,7 +1,7 @@
 mongodb_mongos
 ==============
 
-A role to setup a mongos server for a MongoDB sharded cluster. 
+A role to setup a mongos server for a MongoDB sharded cluster.
 
 Requirements
 ------------
