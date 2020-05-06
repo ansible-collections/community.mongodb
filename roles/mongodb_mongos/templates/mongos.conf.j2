@@ -10,8 +10,5 @@ sharding:
   configDB: "{{ config_repl_set_name }}/{{ config_servers }}"
 processManagement:
   timeZoneInfo: /usr/share/zoneinfo
-{% if authorization == "enabled" %}
 security:
-    authorization: {{ authorization }}
     keyFile: /etc/keyfile
-{% endif %}
