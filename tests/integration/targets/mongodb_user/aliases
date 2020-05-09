@@ -5,4 +5,3 @@ skip/osx
 skip/freebsd
 skip/rhel
 needs/root
-disabled
