@@ -236,7 +236,10 @@ def member_stepdown(client, module):
                         'secondaryCatchUpPeriodSecs': secondary_catch_up,
                         'force': force
                     }
-                    client.admin.command(cmd_doc)
+                    try:
+                        client.admin.command(cmd_doc)  # For now we assume the stepDown was successful
+                    except Exception as excp:
+                        pass  # 4.0 and below close the connection as part of the stepdown. This code should be removed once we support 4.2+ onwards https://docs.mongodb.com/manual/reference/method/rs.stepDown/#rs-stepdown-behavior
                     return_doc['changed'] = True
                     status = True
                     return_doc["msg"] = "member was stepped down"
