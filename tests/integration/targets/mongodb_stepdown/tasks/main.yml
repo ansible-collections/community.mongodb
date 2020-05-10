@@ -118,7 +118,6 @@
     login_host: localhost
     login_port: 3001
     login_database: admin
-    replica_set: '{{ mongodb_replicaset1 }}'
   register: mongodb_stepdown_bad_pw
   ignore_errors: true
 
