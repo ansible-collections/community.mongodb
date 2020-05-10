@@ -54,17 +54,28 @@
       - "stepdown.msg == 'member was stepped down'"
       - "stepdown.changed == True"
 
+- name: Ensure replicaset reaches a good state
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+
 - name: This node should still be primary
   mongodb_stepdown:
     login_host: localhost
     login_port: 3001
-  check_mode: yes
   register: stepdown
 
 - assert:
     that:
       - "stepdown.msg == 'member was stepped down'"
       - "stepdown.changed == True"
+
+- name: Ensure replicaset reaches a good state
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
 
 - name: Add mongodb admin user
   mongodb_user:
@@ -188,6 +199,14 @@
     that:
       - "stepdown.msg == 'member was stepped down'"
       - "stepdown.changed == True"
+
+- name: Ensure replicaset reaches a good state
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
 
 - name: This node should now be secondary
   mongodb_stepdown:
