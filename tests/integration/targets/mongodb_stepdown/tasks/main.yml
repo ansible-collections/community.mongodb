@@ -127,6 +127,40 @@
     - mongodb_stepdown_bad_pw.changed == False
     - '''unable to connect to database'' in mongodb_stepdown_bad_pw.msg'
 
+- name: Copy script to host
+  template:
+    src: files/bash/ensure_primary.sh.j2
+    dest: /root/ensure_primary.sh
+
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Run stepdown on 3002
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was already at SECONDARY state'"
+      - "stepdown.changed == False"
+
+- name: Run stepdown on 3003
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was already at SECONDARY state'"
+      - "stepdown.changed == False"
+
 - name: Run stepdown with force = true and check_mode
   mongodb_stepdown:
     login_host: localhost
