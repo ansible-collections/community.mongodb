@@ -222,6 +222,7 @@
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
+    stepdown_seconds: 120
   check_mode: yes
   register: stepdown
 
