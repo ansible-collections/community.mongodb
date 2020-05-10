@@ -68,8 +68,8 @@ options:
   stepdown_seconds:
     description:
       - The number of seconds to step down the primary, during which time the stepdown member is ineligible for becoming primary.
-     type: int
-     default: 60
+    type: int
+    default: 60
   secondary_catch_up:
     description:
       - The secondaryCatchUpPeriodSecs parameter for the stepDown command.
@@ -222,7 +222,7 @@ def member_stepdown(client, module):
         try:
             iterations += 1
             return_doc['iterations'] = iterations
-            myStateStr = member_status(client, module)
+            myStateStr = member_status(client)
             if myStateStr == "PRIMARY":
                 # Run step down command
                 if module.check_mode:
