@@ -17,8 +17,7 @@ short_description: Step down the MongoDB node
 description:
 - Step down the MongoDB node from the PRIMARY state if it has that status.
 - Returns OK immediately if the member is already in the SECONDARY or ARBITER states.
-- Will wait until a timeout for the member state to reach SECONDARY or PRIMARY \
-  if the member state is currently 	STARTUP, RECOVERING, STARTUP2 or ROLLBACK.
+- Will wait until a timeout for the member state to reach SECONDARY or PRIMARY if the member state is currently STARTUP, RECOVERING, STARTUP2 or ROLLBACK.
 author: Rhys Campbell (@rhysmeister)
 version_added: "2.9"
 options:
@@ -217,6 +216,7 @@ def member_stepdown(client, module):
     while iterations < poll:
         try:
             iterations += 1
+            return_doc['iterations'] = iterations
             myStateStr = member_status(client, module)
             if myStateStr == "PRIMARY":
                 # Run step down command
