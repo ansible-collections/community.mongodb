@@ -65,6 +65,11 @@ options:
       - The number of seconds to wait between poll executions.
     type: int
     default: 30
+  stepdown_seconds:
+    description:
+      - The number of seconds to step down the primary, during which time the stepdown member is ineligible for becoming primary.
+     type: int
+     default: 60
   secondary_catch_up:
     description:
       - The secondaryCatchUpPeriodSecs parameter for the stepDown command.
@@ -251,6 +256,7 @@ def member_stepdown(client, module):
         except Exception as e:
             failures += 1
             return_doc['failed'] = True
+            return_doc['changed'] = False
             return_doc['msg'] = str(e)
             status = False
             if iterations == poll:
