@@ -1,0 +1,173 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset with module - mongodb_replicaset1
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    heartbeat_timeout_secs: 1
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+
+- name: Ensure is_primary script exists on host
+  copy:
+    src: js/is_primary.js
+    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.status()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output - mongodb_replicaset1
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset1 }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+
+
+- name: This node should be primary - Run stepdown check_mode
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+  check_mode: yes
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was stepped down'"
+      - "stepdown.changed == True"
+
+- name: This node should still be primary
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+  check_mode: yes
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was stepped down'"
+      - "stepdown.changed == True"
+
+- name: Add mongodb admin user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
+  register: mongo_admin_user
+  when: test_mongo_auth
+
+- name: Murder all mongod processes
+  shell: pkill -{{ kill_signal }} mongod;
+
+- name: Getting pids for mongod
+  register: pids_of_mongod
+  community.general.pids:
+    name: mongod
+
+- name: Wait for all mongod processes to exit
+  wait_for:
+    path: /proc/{{ item }}/status
+    state: absent
+  with_items: '{{ pids_of_mongod.pids }}'
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongod_auth: true
+
+- name: Execute mongod script to restart with auth enabled
+  include_tasks: mongod_replicaset.yml
+
+- name: Ensure the replicaset converges
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
+
+- name: Test with bad password
+  mongodb_stepdown:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: XXXXXXXXXXXXXXXX
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+  register: mongodb_stepdown_bad_pw
+  ignore_errors: true
+
+- name: Assert login failed
+  assert:
+    that:
+    - mongodb_stepdown_bad_pw.changed == False
+    - '''unable to connect to database'' in mongodb_stepdown_bad_pw.msg'
+
+- name: Run stepdown with force = true and check_mode
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    force: yes
+  check_mode: yes
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was stepped down'"
+      - "stepdown.changed == True"
+
+- name: This node should still be primary
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was stepped down'"
+      - "stepdown.changed == True"
+
+- name: This node should now be secondary
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+  check_mode: yes
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was already at SECONDARY state'"
+      - "stepdown.changed == False"
+
+- include_tasks: mongod_teardown.yml
