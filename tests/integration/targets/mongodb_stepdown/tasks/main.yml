@@ -59,6 +59,8 @@
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 10
+    interval: 10
 
 - name: This node should still be primary
   mongodb_stepdown:
@@ -76,6 +78,8 @@
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 10
+    interval: 10
 
 - name: Add mongodb admin user
   mongodb_user:
@@ -121,6 +125,8 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 10
+    interval: 10
 
 - name: Test with bad password
   mongodb_stepdown:
@@ -207,6 +213,8 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 10
+    interval: 10
 
 - name: This node should now be secondary
   mongodb_stepdown:

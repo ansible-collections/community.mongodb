@@ -238,8 +238,11 @@ def member_stepdown(client, module):
                     }
                     try:
                         client.admin.command(cmd_doc)  # For now we assume the stepDown was successful
-                    except Exception as excp:
-                        pass  # 4.0 and below close the connection as part of the stepdown. This code should be removed once we support 4.2+ onwards https://docs.mongodb.com/manual/reference/method/rs.stepDown/#rs-stepdown-behavior
+                    except Exception as excep:
+                        if str(excep) == "connection closed":
+                            pass  # 4.0 and below close the connection as part of the stepdown. This code should be removed once we support 4.2+ onwards https://docs.mongodb.com/manual/reference/method/rs.stepDown/#rs-stepdown-behavior
+                        else:
+                            raise excep
                     return_doc['changed'] = True
                     status = True
                     return_doc["msg"] = "member was stepped down"
