@@ -231,4 +231,35 @@
       - "stepdown.msg == 'member was already at SECONDARY state'"
       - "stepdown.changed == False"
 
+- name: Test with secondary_catch_up param
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    secondary_catch_up: 5
+  check_mode: yes
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was already at SECONDARY state'"
+      - "stepdown.changed == False"
+
+- name: Test with stepdown_seconds and secondary_catch_up params
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    stepdown_seconds: 10
+    secondary_catch_up: 5
+  check_mode: yes
+  register: stepdown
+
+- assert:
+    that:
+      - "stepdown.msg == 'member was already at SECONDARY state'"
+      - "stepdown.changed == False"
+
 - include_tasks: mongod_teardown.yml
