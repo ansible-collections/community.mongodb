@@ -41,6 +41,13 @@
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' in mongo_output.stdout'
 
+- name: Check with bad port and ssl = true to boost codecov
+  mongodb_stepdown:
+    login_host: localhost
+    login_port: 3002
+    ssl: true
+  check_mode: yes
+  ignore_errors: yes
 
 - name: This node should be primary - Run stepdown check_mode
   mongodb_stepdown:
