@@ -69,7 +69,6 @@ options:
     description:
       - The document to insert.
     type: dict
-    elements: raw
     required: true
   upsert:
     description:
@@ -129,7 +128,7 @@ EXAMPLES = r'''
     collection: "customers"
     document:
       name: "ACME Ltd"
-     state: absent
+      state: absent
 '''
 
 RETURN = r'''
@@ -261,7 +260,6 @@ def delete_document(client, database, collection, document):
     return status
 
 
-
 def index_exists(client, database, collection, index_name):
     """
     Returns true if an index on the collection exists with the given name
@@ -272,7 +270,7 @@ def index_exists(client, database, collection, index_name):
     """
     exists = False
     indexes = client[database][collection].list_indexes()
-    for idx in indexes:
+    for index in indexes:
         if index["name"] == index_name:
             exists = True
     return exists
@@ -338,9 +336,9 @@ def main():
             ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
             database=dict(type='str', default="test"),
             collection=dict(type='str', required=True),
-            document=dict(type='dict', elements='raw'),
+            document=dict(type='raw', required=True),
             state=dict(type='str', required=False, default='present', choices=['absent', 'present']),
-            index=dict(type='dict', elements='raw'),
+            index=dict(type='raw'),
             index_name=dict(type='str', default="idx_mongodb_document"),
             upsert=dict(type='bool', default=False)),
         supports_check_mode=True)
