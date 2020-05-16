@@ -1,3 +1,4 @@
+plugins/modules/mongodb_document.py use-argspec-type-path
 plugins/modules/mongodb_parameter.py use-argspec-type-path
 plugins/modules/mongodb_replicaset.py use-argspec-type-path
 plugins/modules/mongodb_shard.py use-argspec-type-path

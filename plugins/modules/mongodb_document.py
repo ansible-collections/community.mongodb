@@ -68,7 +68,7 @@ options:
   document:
     description:
       - The document to insert.
-    type: dict
+    type: raw
     required: true
   upsert:
     description:
@@ -78,7 +78,7 @@ options:
   index:
     description:
       - Specify an index to create.
-    type: dict
+    type: raw
   index_name:
     description:
       - Name of the index to create.
@@ -229,13 +229,13 @@ def insert_document(client, database, collection, document):
     """
     status = None
     if "_id" not in document.keys():
-        result = client[database][collection].insert(document)
+        result = client[database][collection].insert_one(document)
         inserted_id = result.inserted_id
         status = True
     else:
         result = client[database][collection].update_one({"_id": document["_id"]},
-                                                          document,
-                                                          upsert=True)
+                                                         document,
+                                                         upsert=True)
         if result.modified_count == 0:
             status = False
         elif result.modified_count == 1:
