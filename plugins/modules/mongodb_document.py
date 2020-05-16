@@ -234,7 +234,7 @@ def insert_document(client, database, collection, document):
         inserted_id = result.inserted_id
         status = True
     else:
-        result = client[database][collection].update_one({ "_id": document["_id"] },
+        result = client[database][collection].update_one({"_id": document["_id"]},
                                                           document,
                                                           upsert=True)
         if result.modified_count == 0:
@@ -272,7 +272,7 @@ def index_exists(client, database, collection, index_name):
     """
     exists = False
     indexes = client[database][collection].list_indexes()
-    for idx in rs["members"]:
+    for idx in indexes:
         if index["name"] == index_name:
             exists = True
     return exists
@@ -296,7 +296,7 @@ def document_exists(client, database, collection, document):
     if "_id" not in document.keys():
         exists = False  # Alwyays a new doc if no _id given
     else:
-        count = client[database][collection].count_documents({ "_id": document["_id"] })
+        count = client[database][collection].count_documents({"_id": document["_id"]})
         if count == 1:
             exists = True
         else:
@@ -339,6 +339,7 @@ def main():
             database=dict(type='str', default="test"),
             collection=dict(type='str', required=True),
             document=dict(type='dict', elements='raw'),
+            state=dict(type='str', required=False, default='present', choices=['absent', 'present']),
             index=dict(type='dict', elements='raw'),
             index_name=dict(type='str', default="idx_mongodb_document"),
             upsert=dict(type='bool', default=False)),
@@ -356,6 +357,7 @@ def main():
     database = module.params['database']
     collection = module.params['collection']
     document = module.params['document']
+    state = module.params['state']
     index = module.params['index']
     index_name = module.params['index_name']
     upsert = module.params['upsert']
@@ -460,12 +462,9 @@ def main():
                     result["msg"] = "Document does not exist in collection"
 
     except Exception as e:
-        module.fail_json(msg='Unable to query MongoDB: %s' % str(e))
+        module.fail_json(msg='Error running module: %s' % str(e))
 
-    if status is False:
-        module.fail_json(**result)
-    else:
-        module.exit_json(**result)
+    module.exit_json(**result)
 
 
 if __name__ == '__main__':
