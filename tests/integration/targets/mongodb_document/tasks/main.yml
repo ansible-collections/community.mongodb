@@ -1,0 +1,82 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+- include_tasks: mongod_singlenode.yml
+
+- name: Insert a document into the customer collection
+  mongodb_document:
+    login_port: 3001
+    database: "crm"
+    collection: "customers"
+    document:
+      name: "Rhys Campbell"
+      address: "Nirgendwostrasse 99"
+      city: "Zürich"
+      postcode: "9999"
+  register: customer_insert
+
+- assert:
+    that:
+    - customer_insert.changed == True
+    - customer_insert.msg == "Document was inserted"
+    - customer.inserted_id is defined
+
+- name: Create admin user with module
+  mongodb_user:
+    login_port: 3001
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+  register: mongodb_admin_user_created
+
+- assert:
+    that:
+    - mongodb_admin_user_created.changed == True
+
+- name: Kill all mongod processes
+  command: pkill  -{{ kill_signal }} mongod
+  ignore_errors: true
+
+- name: Getting pids for mongod
+  register: pids_of_mongod
+  community.general.pids:
+    name: mongod
+
+- name: Wait for all mongod processes to exit
+  wait_for:
+    path: /proc/{{ item }}/status
+    state: absent
+    delay: 3
+  with_items: '{{ pids_of_mongod }}'
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Insert a document into the customer collection (auth)
+  mongodb_document:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    database: "crm"
+    collection: "customers"
+    document:
+      name: "Rhys Campbell"
+      address: "Nirgendwostrasse 99"
+      city: "Zürich"
+      postcode: "9999"
+  register: customer_insert
+
+- assert:
+    that:
+    - customer_insert.changed == True
+    - customer_insert.msg == "Document was inserted"
+    - customer.inserted_id is defined
+
+- include_tasks: mongod_teardown.yml
