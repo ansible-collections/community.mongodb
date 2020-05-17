@@ -444,7 +444,7 @@ def main():
                 else:
                     result["changed"] = True
                     result["msg"] = "Document was inserted"
-                    result["_id"] = "dummy_id"
+                    result["inserted_id"] = "dummy_id"
             elif state == "absent":
                 if document_exists(client, database, collection, document):
                     result["changed"] = True
@@ -458,7 +458,7 @@ def main():
                 if rs:
                     result["changed"] = True
                     if inserted_id is not None:
-                        result["inserted_id"] = inserted_id
+                        #result["inserted_id"] = inserted_id
                         result["msg"] = "Document was inserted"
                     else:
                         result["msg"] = "Document was updated"
