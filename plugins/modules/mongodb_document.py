@@ -160,7 +160,7 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
-    from bson.objectid import ObjectId
+    import bson.objectid
     HAS_PYMONGO = True
 except ImportError:
     try:  # for older PyMongo 2.2
@@ -232,7 +232,7 @@ def insert_document(client, database, collection, document):
     inserted_id = None
     if "_id" not in document.keys():
         result = client[database][collection].insert_one(document)
-        inserted_id = result.inserted_id
+        inserted_id = str(bson.objectid.ObjectId(result.inserted_id))
         status = True
     else:
         result = client[database][collection].update_one({"_id": document["_id"]},
