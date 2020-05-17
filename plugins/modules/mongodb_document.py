@@ -247,9 +247,9 @@ def insert_document(client, database, collection, document):
         inserted_id = deepcopy(str(client[database][collection].insert_one(document).inserted_id))
         status = True
     else:
-        result = client[database][collection].update_one({"_id": document["_id"]},
-                                                         document,
-                                                         upsert=True)
+        result = client[database][collection].replace_one({"_id": document["_id"]},
+                                                          document,
+                                                          upsert=True)
         if result.modified_count == 0:
             status = False
         elif result.modified_count == 1:
