@@ -445,7 +445,7 @@ def main():
                 if rs:
                     result["changed"] = True
                     if inserted_id is not None:
-                        result["inserted_id"] = inserted_id
+                        result["inserted_id"] = str(inserted_id)
                         result["msg"] = "Document was inserted"
                     else:
                         result["msg"] = "Document was updated"
