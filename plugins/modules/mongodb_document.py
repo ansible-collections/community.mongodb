@@ -244,8 +244,7 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        doc = client[database][collection].insert_one(document)
-        inserted_id = str(doc.inserted_id)
+        inserted_id = str(client[database][collection].insert_one(document).inserted_id)
         status = True
     else:
         result = client[database][collection].update_one({"_id": document["_id"]},
