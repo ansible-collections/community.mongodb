@@ -232,7 +232,7 @@ def insert_document(client, database, collection, document):
     inserted_id = None
     if "_id" not in document.keys():
         result = client[database][collection].insert_one(document)
-        inserted_id = str(result.inserted_id)
+        inserted_id = copy.deepcopy(str(result.inserted_id))
         status = True
     else:
         result = client[database][collection].update_one({"_id": document["_id"]},
@@ -445,7 +445,7 @@ def main():
                 if rs:
                     result["changed"] = True
                     if inserted_id is not None:
-                        result["inserted_id"] = str(inserted_id)
+                        result["inserted_id"] = inserted_id
                         result["msg"] = "Document was inserted"
                     else:
                         result["msg"] = "Document was updated"
