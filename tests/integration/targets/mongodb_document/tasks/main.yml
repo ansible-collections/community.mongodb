@@ -12,6 +12,7 @@
     database: "crm"
     collection: "customers"
     document:
+      _id: 1
       name: "Rhys Campbell"
       address: "Nirgendwostrasse 99"
       city: "Zürich"
@@ -67,6 +68,7 @@
     database: "crm"
     collection: "customers"
     document:
+      _id: 2
       name: "Rhys Campbell"
       address: "Nirgendwostrasse 99"
       city: "Zürich"
