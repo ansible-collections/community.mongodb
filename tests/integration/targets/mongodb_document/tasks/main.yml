@@ -23,7 +23,7 @@
     that:
     - customer_insert.changed == True
     - customer_insert.msg == "Document was inserted"
-    - customer.inserted_id is defined
+    - customer.inserted_id is not defined
 
 - name: Create admin user with module
   mongodb_user:
@@ -79,6 +79,6 @@
     that:
     - customer_insert.changed == True
     - customer_insert.msg == "Document was inserted"
-    - customer.inserted_id is defined
+    - customer.inserted_id is not defined
 
 - include_tasks: mongod_teardown.yml
