@@ -250,7 +250,7 @@ def insert_document(client, database, collection, document):
         result = client[database][collection].replace_one({"_id": document["_id"]},
                                                           document,
                                                           upsert=True)
-        if result.modified_count == 0:
+        if result.modified_count == 0 and not hasattr(result, 'upserted_id'):
             status = False
         elif result.modified_count == 1:
             status = True
