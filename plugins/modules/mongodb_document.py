@@ -254,6 +254,9 @@ def insert_document(client, database, collection, document):
             status = False
         elif result.modified_count == 1:
             status = True
+        elif result.upserted_id is not None:
+            status = True
+            inserted_id = result.upserted_id
     return status, inserted_id
 
 
