@@ -30,10 +30,11 @@
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
-
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  ignore_errors: yes
+
+- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
 
 - name: Create admin user with module
   mongodb_user:
