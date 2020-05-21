@@ -25,16 +25,24 @@
     - localhost:3002
     - localhost:3003
 
-- name: Ensure is_primary script exists on host
-  copy:
-    src: js/is_primary.js
-    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+- name: Check the status of the replicaset with mongodb_status module
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 99
+    interval: 10
 
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-  ignore_errors: yes
+#- name: Ensure is_primary script exists on host
+#  copy:
+#    src: js/is_primary.js
+#    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
+#- name: Ensure host reaches primary before proceeding 3001
+#  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+#  ignore_errors: yes
+
+#- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
 
 - name: Create admin user with module
   mongodb_user:
