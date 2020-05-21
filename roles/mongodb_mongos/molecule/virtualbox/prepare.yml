@@ -35,7 +35,10 @@
       state: present
     when: ansible_os_family == "Debian"
 
-  - name: Ensure avahi-daemon is restarted
+  - name: Ensure services are restarted
     service:
-      name: avahi-daemon
+      name: "{{ item }}"
       state: restarted
+    with_items:
+      - dbus
+      - avahi-daemon

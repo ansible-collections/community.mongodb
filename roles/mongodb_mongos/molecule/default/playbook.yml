@@ -3,6 +3,10 @@
   hosts: all
   become: yes
 
+  vars:
+    admin_user: "admin"
+    admin_user_password: "admin"
+
   roles:
     - role: mongodb_repository
     - { role: mongodb_install, when: "'config' in ansible_hostname" }
@@ -23,12 +27,12 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell 
+        name: mongodb-org-shell
 
     - name: Init config server replicaset
       community.mongodb.mongodb_replicaset:
         login_host: localhost
-        login_port: 27019
+        login_port: "27019"
         replica_set: cfg
         validate: no
         members:
@@ -40,3 +44,29 @@
         name: mongos
         state: started
       when: "'config' not in ansible_hostname"
+
+    - name: Has MongoDB Admin User been created already?
+      stat:
+        path: /root/mongodb_admin.success
+      register: mongodb_admin
+      when: ansible_hostname == "config1"
+
+    - name: Add MongoDB Admin User using localhost exception on the mongos
+      community.mongodb.mongodb_user:
+        name: "{{ admin_user }}"
+        password: "{{ admin_user_password }}"
+        login_port: "27019"
+        database: admin
+        roles:
+          - "root"
+      when:
+        - ansible_hostname == "config1"
+        - mongodb_admin.stat.exists == False
+
+    - shell: "mongo admin --port 27019 --username {{ admin_user }} --password {{ admin_user_password }} --eval 'db.runCommand({listDatabases: 1})' && touch /root/mongodb_admin.success"
+      args:
+        creates: /root/mongodb_admin.success
+      when:
+        - ansible_hostname == "config1"
+        - mongodb_admin.stat.exists == False
+      ignore_errors: yes
