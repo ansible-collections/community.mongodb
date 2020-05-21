@@ -29,7 +29,7 @@
   mongodb_status:
     login_host: localhost
     login_port: 3001
-    replica_set: '{{ mongodb_replicaset1 }}'
+    replica_set: '{{ current_replicaset }}'
     poll: 99
     interval: 10
 
