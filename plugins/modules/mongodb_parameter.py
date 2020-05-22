@@ -120,7 +120,7 @@ else:
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible.module_utils.common import check_compatibility
+from ansible.module_utils.mongodb_common import check_compatibility
 
 
 def load_mongocnf():
