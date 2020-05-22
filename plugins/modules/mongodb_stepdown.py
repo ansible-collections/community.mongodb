@@ -145,7 +145,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible.module_utils.mongodb_common import check_compatibility
+from ansible_collections.community.mongodb.module_utils.mongodb_common import check_compatibility
 
 
 def member_status(client):
