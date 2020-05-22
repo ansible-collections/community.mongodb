@@ -2,15 +2,20 @@
   file:
     path: '{{ remote_tmp_dir }}/tests'
     state: directory
+
 - include_tasks: mongod_teardown.yml
+
 - set_fact:
     current_replicaset: mongodb_user_tests_replicaset
+
 - set_fact:
     mongodb_nodes:
     - 3001
     - 3002
     - 3003
+
 - include_tasks: mongod_replicaset.yml
+
 - name: Create current_replicaset with module
   mongodb_replicaset:
     login_port: 3001
@@ -19,12 +24,26 @@
     - localhost:3001
     - localhost:3002
     - localhost:3003
-- name: Ensure is_primary script exists on host
-  copy:
-    src: js/is_primary.js
-    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Check the status of the replicaset with mongodb_status module
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
+
+#- name: Ensure is_primary script exists on host
+#  copy:
+#    src: js/is_primary.js
+#    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+
+#- name: Ensure host reaches primary before proceeding 3001
+#  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+#  ignore_errors: yes
+
+#- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
+
 - name: Create admin user with module
   mongodb_user:
     login_port: 3001
@@ -53,12 +72,26 @@
     state: absent
     delay: 3
   with_items: '{{ pids_of_mongod }}'
+
 - set_fact:
     mongod_auth: true
+
 - include_tasks: mongod_replicaset.yml
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 --username "{{ mongodb_admin_user }}" --password
-    "{{ mongodb_admin_password }}" "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Check the status of the replicaset with mongodb_status module
+  mongodb_status:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
+
+#- name: Ensure host reaches primary before proceeding 3001
+#  command: mongo admin --port 3001 --username "{{ mongodb_admin_user }}" --password
+#    "{{ mongodb_admin_password }}" "{{ remote_tmp_dir }}/tests/is_primary.js"
+
 - name: Run admin user creation again
   mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
@@ -73,9 +106,11 @@
     state: present
     update_password: on_create
   register: mongodb_admin_user_created
+
 - assert:
     that:
     - mongodb_admin_user_created.changed == False
+
 - name: Run admin user creation again with forced pw update
   mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
@@ -90,9 +125,11 @@
     state: present
     update_password: always
   register: mongodb_admin_user_created
+
 - assert:
     that:
     - mongodb_admin_user_created.changed == True
+
 - name: Run user creation
   mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
@@ -106,19 +143,23 @@
     roles: '{{ item.roles }}'
     state: present
   with_items: '{{ mongodb_user_list }}'
+
 - name: Test login for all users
   shell: mongo "{{ item.database }}" --port 3001 --username "{{ item.name }}" --password
     "{{ item.password }}" --eval "printjson(db.getCollectionNames())"
   with_items: '{{ mongodb_user_list }}'
   register: login_test
+
 - name: Assert all logins successful
   assert:
     that: '{{ item.rc == 0 }}'
   with_items: '{{ login_test.results }}'
+
 - name: Get admin db users
   shell: mongo admin --port 3001 --username "{{ mongodb_admin_user }}" --password
     "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: admin_db_users
+
 - name: Assert that roles exist in admin db output
   assert:
     that:
@@ -127,10 +168,12 @@
     - '''readWriteAnyDatabase'' in admin_db_users.stdout'
     - '''userAdminAnyDatabase'' in admin_db_users.stdout'
     - '''dbAdminAnyDatabase'' in admin_db_users.stdout'
+
 - name: Get test db users
   shell: mongo test --authenticationDatabase admin --port 3001 --username "{{ mongodb_admin_user
     }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: test_db_users
+
 - name: Assert that roles exist in test db output
   assert:
     that:
@@ -138,6 +181,7 @@
     - '''readWrite'' in test_db_users.stdout'
     - '''dbAdmin'' in test_db_users.stdout'
     - '''userAdmin'' in test_db_users.stdout'
+
 - name: Drop users in test db
   mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
@@ -150,10 +194,12 @@
     state: absent
   with_items: '{{ mongodb_user_list }}'
   when: item.database == "test"
+
 - name: Get test db users
   shell: mongo test --authenticationDatabase admin --port 3001 --username "{{ mongodb_admin_user
     }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: test_db_users
+
 - name: Assert that roles do not exist in test db output
   assert:
     that:
@@ -161,6 +207,7 @@
     - '''user2'' not in test_db_users.stdout'
     - '''user3'' not in test_db_users.stdout'
     - '''user4'' not in test_db_users.stdout'
+
 - name: Create user with multiple roles in test db
   mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
@@ -173,10 +220,13 @@
     password: secret
     roles: readWrite,dbAdmin,userAdmin
     state: present
+
 - name: Get test db users
   shell: mongo test --authenticationDatabase admin --port 3001 --username "{{ mongodb_admin_user
     }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: test_db_users
+
 - debug:
     var: test_db_users
+    
 - include_tasks: mongod_teardown.yml
