@@ -191,7 +191,7 @@ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.module_utils.mongodb_common import check_compatibility
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
 
 
 def shard_find(client, shard):
