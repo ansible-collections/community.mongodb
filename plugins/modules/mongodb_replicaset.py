@@ -199,6 +199,8 @@ from copy import deepcopy
 
 import os
 import ssl as ssl_lib
+from distutils.version import LooseVersion
+
 
 try:
     from pymongo.errors import ConnectionFailure

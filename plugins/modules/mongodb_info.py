@@ -148,6 +148,8 @@ import traceback
 from uuid import UUID
 
 import ssl as ssl_lib
+from distutils.version import LooseVersion
+
 
 PYMONGO_IMP_ERR = None
 try:

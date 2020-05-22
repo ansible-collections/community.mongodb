@@ -99,6 +99,7 @@ after:
 '''
 
 import os
+from distutils.version import LooseVersion
 import traceback
 
 try:
