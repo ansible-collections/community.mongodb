@@ -100,7 +100,6 @@ after:
 
 import os
 import traceback
-from distutils.version import LooseVersion
 
 try:
     from pymongo.errors import ConnectionFailure

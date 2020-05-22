@@ -169,7 +169,6 @@ sharded_enabled:
 import os
 import ssl as ssl_lib
 import traceback
-from distutils.version import LooseVersion
 import time
 
 try:
