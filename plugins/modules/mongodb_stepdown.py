@@ -128,68 +128,13 @@ import ssl as ssl_lib
 from distutils.version import LooseVersion
 import traceback
 
-try:
-    from pymongo.errors import ConnectionFailure
-    from pymongo.errors import OperationFailure
-    from pymongo import version as PyMongoVersion
-    from pymongo import MongoClient
-    HAS_PYMONGO = True
-except ImportError:
-    try:  # for older PyMongo 2.2
-        from pymongo import Connection as MongoClient
-        HAS_PYMONGO = True
-    except ImportError:
-        HAS_PYMONGO = False
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-
-
-# =========================================
-# MongoDB module specific support methods.
-#
-
-def check_compatibility(module, srv_version, driver_version):
-    """Check the compatibility between the driver and the database.
-
-    See: https://docs.mongodb.com/ecosystem/drivers/driver-compatibility-reference/#python-driver-compatibility
-
-    Args:
-        module: Ansible module.
-        srv_version (LooseVersion): MongoDB server version.
-        driver_version (LooseVersion): Pymongo version.
-    """
-    msg = 'pymongo driver version and MongoDB version are incompatible: '
-
-    if srv_version >= LooseVersion('4.2') and driver_version < LooseVersion('3.9'):
-        msg += 'you must use pymongo 3.9+ with MongoDB >= 4.2'
-        module.fail_json(msg=msg)
-
-    elif srv_version >= LooseVersion('4.0') and driver_version < LooseVersion('3.7'):
-        msg += 'you must use pymongo 3.7+ with MongoDB >= 4.0'
-        module.fail_json(msg=msg)
-
-    elif srv_version >= LooseVersion('3.6') and driver_version < LooseVersion('3.6'):
-        msg += 'you must use pymongo 3.6+ with MongoDB >= 3.6'
-        module.fail_json(msg=msg)
-
-    elif srv_version >= LooseVersion('3.4') and driver_version < LooseVersion('3.4'):
-        msg += 'you must use pymongo 3.4+ with MongoDB >= 3.4'
-        module.fail_json(msg=msg)
-
-    elif srv_version >= LooseVersion('3.2') and driver_version < LooseVersion('3.2'):
-        msg += 'you must use pymongo 3.2+ with MongoDB >= 3.2'
-        module.fail_json(msg=msg)
-
-    elif srv_version >= LooseVersion('3.0') and driver_version <= LooseVersion('2.8'):
-        msg += 'you must use pymongo 2.8+ with MongoDB 3.0'
-        module.fail_json(msg=msg)
-
-    elif srv_version >= LooseVersion('2.6') and driver_version <= LooseVersion('2.7'):
-        msg += 'you must use pymongo 2.7+ with MongoDB 2.6'
-        module.fail_json(msg=msg)
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
 def member_status(client):
@@ -278,23 +223,6 @@ def member_stepdown(client, module):
     return status, return_doc['msg'], return_doc
 
 
-def load_mongocnf():
-    config = configparser.RawConfigParser()
-    mongocnf = os.path.expanduser('~/.mongodb.cnf')
-
-    try:
-        config.readfp(open(mongocnf))
-    except (configparser.NoOptionError, IOError):
-        return False
-
-    creds = dict(
-        user=config.get('client', 'user'),
-        password=config.get('client', 'pass')
-    )
-
-    return creds
-
-
 # =========================================
 # Module execution.
 #
@@ -317,8 +245,9 @@ def main():
             force=dict(type='bool', default=False)),
         supports_check_mode=True)
 
-    if HAS_PYMONGO is False:
-        module.fail_json(msg='the python pymongo module is required')
+    if not pymongo_found:
+        module.fail_json(msg=missing_required_lib('pymongo'),
+                         exception=PYMONGO_IMP_ERR)
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
