@@ -152,7 +152,6 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
 import ansible_collections.community.mongodb.plugins.module_utils.mongodb_common as mongodb_common
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import LooseVersion
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
 
 
@@ -360,7 +359,7 @@ def main():
         connection_params['ssl'] = ssl
         connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
 
-    client = MongoClient(**connection_params)
+    client = mongodb_common.MongoClient(**connection_params)
 
     if login_user:
         try:
@@ -375,7 +374,7 @@ def main():
         module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
 
     # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
+    driver_version = LooseVersion(mongodb_common.PyMongoVersion)
 
     # Check driver and server version compatibility:
     check_compatibility(module, srv_version, driver_version)

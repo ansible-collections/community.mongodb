@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from distutils.version import LooseVersion
 import traceback
 
 
@@ -25,7 +26,6 @@ def check_compatibility(module, srv_version, driver_version):
         srv_version (LooseVersion): MongoDB server version.
         driver_version (LooseVersion): Pymongo version.
     """
-    from distutils.version import LooseVersion
     msg = 'pymongo driver version and MongoDB version are incompatible: '
 
     if srv_version >= LooseVersion('4.2') and driver_version < LooseVersion('3.9'):
