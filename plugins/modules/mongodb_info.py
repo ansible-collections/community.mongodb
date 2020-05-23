@@ -151,7 +151,7 @@ from distutils.version import LooseVersion
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
-import ansible_collections.community.mongodb.plugins.module_utils.mongodb_common
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import *
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_pymongo
 
