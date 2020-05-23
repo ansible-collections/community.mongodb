@@ -1,8 +1,10 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from ansible.module_utils.six.moves import configparser
 from distutils.version import LooseVersion
 import traceback
+import os
 
 MongoClient = None
 PYMONGO_IMP_ERR = None
@@ -64,8 +66,6 @@ def check_compatibility(module, srv_version, driver_version):
 
 
 def load_mongocnf():
-    from ansible.module_utils.six.moves import configparser
-    import os
     config = configparser.RawConfigParser()
     mongocnf = os.path.expanduser('~/.mongodb.cnf')
 
