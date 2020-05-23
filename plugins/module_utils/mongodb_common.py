@@ -1,3 +1,8 @@
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+
+
 def check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
 
