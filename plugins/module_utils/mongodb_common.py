@@ -4,7 +4,7 @@ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from distutils.version import LooseVersion
 import traceback
 
-
+MongoClient = None
 PYMONGO_IMP_ERR = None
 pymongo_found = None
 PyMongoVersion = None
