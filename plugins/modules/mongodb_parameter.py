@@ -107,7 +107,7 @@ from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
-
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import ConnectionFailure, OperationFailure
 
 # =========================================
 # Module execution.
