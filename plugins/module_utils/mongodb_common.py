@@ -1,6 +1,17 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
+import traceback
 
+
+PYMONGO_IMP_ERR = None
+try:
+    from pymongo import version as PyMongoVersion
+    from pymongo import MongoClient
+except ImportError:
+    PYMONGO_IMP_ERR = traceback.format_exc()
+    pymongo_found = False
+else:
+    pymongo_found = True
 
 
 def check_compatibility(module, srv_version, driver_version):

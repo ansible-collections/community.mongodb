@@ -143,23 +143,10 @@ parameters:
   sample: {"maxOplogTruncationPointsAfterStartup": 100, "maxOplogTruncationPointsDuringStartup": 100, "maxSessions": 1000000}
 '''
 
-import traceback
-
 from uuid import UUID
 
 import ssl as ssl_lib
 from distutils.version import LooseVersion
-
-
-PYMONGO_IMP_ERR = None
-try:
-    from pymongo import version as PyMongoVersion
-    from pymongo import MongoClient
-except ImportError:
-    PYMONGO_IMP_ERR = traceback.format_exc()
-    pymongo_found = False
-else:
-    pymongo_found = True
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils._text import to_native
