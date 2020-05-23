@@ -202,25 +202,12 @@ import ssl as ssl_lib
 from distutils.version import LooseVersion
 
 
-try:
-    from pymongo.errors import ConnectionFailure
-    from pymongo.errors import OperationFailure
-    from pymongo import version as PyMongoVersion
-    from pymongo import MongoClient
-    HAS_PYMONGO = True
-except ImportError:
-    try:  # for older PyMongo 2.2
-        from pymongo import Connection as MongoClient
-        HAS_PYMONGO = True
-    except ImportError:
-        HAS_PYMONGO = False
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
 def replicaset_find(client):
@@ -330,8 +317,9 @@ def main():
         supports_check_mode=True,
     )
 
-    if not HAS_PYMONGO:
-        module.fail_json(msg='the python pymongo module is required')
+    if not pymongo_found:
+        module.fail_json(msg=missing_required_lib('pymongo'),
+                         exception=PYMONGO_IMP_ERR)
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
