@@ -10,6 +10,8 @@ pymongo_found = None
 PyMongoVersion = None
 
 try:
+    from pymongo.errors import ConnectionFailure
+    from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
     pymongo_found = True
