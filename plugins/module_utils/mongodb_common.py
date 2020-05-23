@@ -8,6 +8,8 @@ MongoClient = None
 PYMONGO_IMP_ERR = None
 pymongo_found = None
 PyMongoVersion = None
+ConnectionFailure = None
+OperationFailure = None
 
 try:
     from pymongo.errors import ConnectionFailure
