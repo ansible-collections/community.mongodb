@@ -1,17 +1,18 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 import traceback
 
 
-PYMONGO_IMP_ERR = None
-try:
-    from pymongo import version as PyMongoVersion
-    from pymongo import MongoClient
-except ImportError:
-    PYMONGO_IMP_ERR = traceback.format_exc()
-    pymongo_found = False
-else:
-    pymongo_found = True
+def check_pymongo(module):
+    PYMONGO_IMP_ERR = None
+    try:
+        from pymongo import version as PyMongoVersion
+        from pymongo import MongoClient
+    except ImportError:
+        PYMONGO_IMP_ERR = traceback.format_exc()
+        module.fail_json(msg=missing_required_lib('pymongo'), exception=PYMONGO_IMP_ERR)
+    return True
 
 
 def check_compatibility(module, srv_version, driver_version):

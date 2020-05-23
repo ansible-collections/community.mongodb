@@ -148,11 +148,11 @@ from uuid import UUID
 import ssl as ssl_lib
 from distutils.version import LooseVersion
 
-from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
-
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_pymongo
 
 class MongoDbInfo():
     """Class for gathering MongoDB instance information.
@@ -334,8 +334,7 @@ def main():
         required_together=[['login_user', 'login_password']],
     )
 
-    if not pymongo_found:
-        module.fail_json(msg=missing_required_lib('pymongo'), exception=PYMONGO_IMP_ERR)
+    check_pymongo(module)
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
