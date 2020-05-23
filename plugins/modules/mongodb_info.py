@@ -151,8 +151,8 @@ from distutils.version import LooseVersion
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
-import ansible_collections.community.mongodb.plugins.module_utils.mongodb_common as mongodb_common
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, pymongo_found, MongoClient
 
 
 class MongoDbInfo():
@@ -335,9 +335,9 @@ def main():
         required_together=[['login_user', 'login_password']],
     )
 
-    if not mongodb_common.pymongo_found:
-        module.fail_json(msg=mongodb_common.missing_required_lib('pymongo'),
-                         exception=mongodb_common.PYMONGO_IMP_ERR)
+    if not pymongo_found:
+        module.fail_json(msg=missing_required_lib('pymongo'),
+                         exception=PYMONGO_IMP_ERR)
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
@@ -359,7 +359,7 @@ def main():
         connection_params['ssl'] = ssl
         connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
 
-    client = mongodb_common.MongoClient(**connection_params)
+    client = MongoClient(**connection_params)
 
     if login_user:
         try:
@@ -374,7 +374,7 @@ def main():
         module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
 
     # Get driver version::
-    driver_version = LooseVersion(mongodb_common.PyMongoVersion)
+    driver_version = LooseVersion(PyMongoVersion)
 
     # Check driver and server version compatibility:
     check_compatibility(module, srv_version, driver_version)
