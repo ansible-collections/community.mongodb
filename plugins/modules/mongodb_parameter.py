@@ -121,22 +121,7 @@ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
-
-
-def load_mongocnf():
-    config = configparser.RawConfigParser()
-    mongocnf = os.path.expanduser('~/.mongodb.cnf')
-
-    try:
-        config.readfp(open(mongocnf))
-        creds = dict(
-            user=config.get('client', 'user'),
-            password=config.get('client', 'pass')
-        )
-    except (configparser.NoOptionError, IOError):
-        return False
-
-    return creds
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import load_mongocnf
 
 
 # =========================================

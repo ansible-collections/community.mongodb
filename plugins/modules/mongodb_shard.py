@@ -192,6 +192,7 @@ from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import load_mongocnf
 
 
 def shard_find(client, shard):
@@ -227,22 +228,6 @@ def shard_remove(client, shard):
     except Exception as excep:
         raise excep
     return sh
-
-
-def load_mongocnf():
-    config = configparser.RawConfigParser()
-    mongocnf = os.path.expanduser('~/.mongodb.cnf')
-
-    try:
-        config.readfp(open(mongocnf))
-        creds = dict(
-            user=config.get('client', 'user'),
-            password=config.get('client', 'pass')
-        )
-    except (configparser.NoOptionError, IOError):
-        return False
-
-    return creds
 
 
 def sharded_dbs(client):

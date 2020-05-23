@@ -38,3 +38,20 @@ def check_compatibility(module, srv_version, driver_version):
     elif srv_version >= LooseVersion('2.6') and driver_version <= LooseVersion('2.7'):
         msg += 'you must use pymongo 2.7+ with MongoDB 2.6'
         module.fail_json(msg=msg)
+
+
+def load_mongocnf():
+    config = configparser.RawConfigParser()
+    mongocnf = os.path.expanduser('~/.mongodb.cnf')
+
+    try:
+        config.readfp(open(mongocnf))
+    except (configparser.NoOptionError, IOError):
+        return False
+
+    creds = dict(
+        user=config.get('client', 'user'),
+        password=config.get('client', 'pass')
+    )
+
+    return creds

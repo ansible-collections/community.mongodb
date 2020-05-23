@@ -137,6 +137,7 @@ from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import load_mongocnf
 
 
 def replicaset_status(client, module):
@@ -254,23 +255,6 @@ def replicaset_status_poll(client, module):
 
     return_doc['failures'] = failures
     return status, return_doc['msg'], return_doc
-
-
-def load_mongocnf():
-    config = configparser.RawConfigParser()
-    mongocnf = os.path.expanduser('~/.mongodb.cnf')
-
-    try:
-        config.readfp(open(mongocnf))
-    except (configparser.NoOptionError, IOError):
-        return False
-
-    creds = dict(
-        user=config.get('client', 'user'),
-        password=config.get('client', 'pass')
-    )
-
-    return creds
 
 
 # =========================================
