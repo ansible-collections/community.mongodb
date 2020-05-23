@@ -7,6 +7,8 @@ import traceback
 
 PYMONGO_IMP_ERR = None
 pymongo_found = None
+PyMongoVersion = None
+
 try:
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
