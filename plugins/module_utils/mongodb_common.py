@@ -42,6 +42,7 @@ def check_compatibility(module, srv_version, driver_version):
 
 def load_mongocnf():
     from ansible.module_utils.six.moves import configparser
+    import os
     config = configparser.RawConfigParser()
     mongocnf = os.path.expanduser('~/.mongodb.cnf')
 
