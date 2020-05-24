@@ -1,42 +1,41 @@
 mongodb_mongod
 ==============
 
-TODO - Set default role for standalone or shard server - role and port should be different (shard = 27018, standalone rs = 27017)
-
-Performs tasks relevant to the setup of a mongod server..
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should
-be mentioned here. For instance, if the role uses the EC2 module, it may be a
-good idea to mention in this section that the boto package is required.
+A simple role to aid in the setup of a MongoDB replicaset.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including
-any variables that are in defaults/main.yml, vars/main.yml, and any variables
-that can/should be set via parameters to the role. Any variables that are read
-from other roles and/or the global scope (ie. hostvars, group vars, etc.) should
-be mentioned here as well.
+mongod_port: The port used by the mongod process. Default 27017.
+mongod_service: The name of the mongod service. Default mongod.
+mongodb_user: The Linux OS user for MongoDB. Default mongod.
+mongodb_group: The Linux OS user group for MongoDB. Default mongod.
+bind_ip: The IP address mongos will bind to. Default 0.0.0.0.
+repl_set_name: The name of the replicaset the member will participate in. Default rs0.
+authorization: Enable authorization. Default enabled.
+openssl_keyfile_content: The kexfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.
+mongodb_admin_user: MongoDB admin username. Default admin.
+mongodb_admin_pwd: MongoDB admin password. Default admin.
+mongod_package: The mongod package to install. Default mongodb-org-server.
+replicaset: When enabled add a replication section to the configuration. Default true.
+sharding: If this replicaset member will form part of a sharded cluster. Default false.
+
+IMPORTANT NOTE: It is expected that mongodb_admin_user & mongodb_admin_pwd values be overridden in your own file protected by Ansible Vault. These values are primary included here for Molecule/Travis CI integration. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in
-regards to parameters that may need to be set for other roles, or variables that
-are used from other roles.
+mongodb_repository
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables
-passed in as parameters) is always nice for users too:
+Install MongoDB preparing hosts for a Sharded Cluster.
 
     - hosts: servers
       roles:
-         - { role: mongodb_mongod, x: 42 }
+         - { role: mongodb_repository }
+         - { role: mongodb_mongod, mongod_port: 27018, sharding: true }
 
 License
 -------
@@ -46,5 +45,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a
-website (HTML is not allowed).
+Rhys Campbell (https://github.com/rhysmeister)

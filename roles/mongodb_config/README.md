@@ -1,30 +1,27 @@
-Role Name
-=========
+mongodb_config
+==============
 
-A brief description of the role goes here. 
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should
-be mentioned here. For instance, if the role uses the EC2 module, it may be a
-good idea to mention in this section that the boto package is required.
+A simple role to aid in setting up a CSRS Config Server Replicaset for a MongoDB sharded cluster.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including
-any variables that are in defaults/main.yml, vars/main.yml, and any variables
-that can/should be set via parameters to the role. Any variables that are read
-from other roles and/or the global scope (ie. hostvars, group vars, etc.) should
-be mentioned here as well.
+config_port: The port used by the mongos process. Default 27019.
+mongod_service: The name of the mongod service. Default mongod.
+mongodb_user: The Linux OS user for MongoDB. Default mongod.
+mongodb_group: The Linux OS user group for MongoDB. Default mongod.
+pid_file: The pid file for mongos. Default /run/mongodb/mongos.pid.
+bind_ip: The IP address mongos will bind to. Default 0.0.0.0.
+config_repl_set_name: The replicaset name for the config servers. Default cfg.
+authorization: Enable authorization. Default enabled.
+openssl_keyfile_content: The kexfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.
+mongod_package: The name of the mongod installation package. Default mongodb-org-server.
+replicaset: When enabled add a replication section to the configuration. Default true.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in
-regards to parameters that may need to be set for other roles, or variables that
-are used from other roles.
+mongodb_repository
 
 Example Playbook
 ----------------
@@ -34,7 +31,8 @@ passed in as parameters) is always nice for users too:
 
     - hosts: servers
       roles:
-         - { role: mongodb_config, x: 42 }
+         - { role: mongodb_repository }
+         - { role: mongodb_config, config_repl_set_name: "mycustomrs" }
 
 License
 -------
@@ -44,5 +42,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a
-website (HTML is not allowed).
+Rhys Campbell (https://github.com/rhysmeister)
