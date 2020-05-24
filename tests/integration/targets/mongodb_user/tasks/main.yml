@@ -145,8 +145,7 @@
   with_items: '{{ mongodb_user_list }}'
 
 - name: Test login for all users
-  shell: mongo "{{ item.database }}" --port 3001 --username "{{ item.name }}" --password
-    "{{ item.password }}" --eval "printjson(db.getCollectionNames())"
+  shell: mongo "{{ item.database }}" --host "{{ current_replicaset }}/localhost:3001" --username "{{ item.name }}" --password "{{ item.password }}" --eval "printjson(db.getCollectionNames())"
   with_items: '{{ mongodb_user_list }}'
   register: login_test
 
@@ -156,8 +155,7 @@
   with_items: '{{ login_test.results }}'
 
 - name: Get admin db users
-  shell: mongo admin --port 3001 --username "{{ mongodb_admin_user }}" --password
-    "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: admin_db_users
 
 - name: Assert that roles exist in admin db output
@@ -170,8 +168,7 @@
     - '''dbAdminAnyDatabase'' in admin_db_users.stdout'
 
 - name: Get test db users
-  shell: mongo test --authenticationDatabase admin --port 3001 --username "{{ mongodb_admin_user
-    }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: test_db_users
 
 - name: Assert that roles exist in test db output
@@ -196,8 +193,7 @@
   when: item.database == "test"
 
 - name: Get test db users
-  shell: mongo test --authenticationDatabase admin --port 3001 --username "{{ mongodb_admin_user
-    }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: test_db_users
 
 - name: Assert that roles do not exist in test db output
@@ -222,11 +218,10 @@
     state: present
 
 - name: Get test db users
-  shell: mongo test --authenticationDatabase admin --port 3001 --username "{{ mongodb_admin_user
-    }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   register: test_db_users
 
 - debug:
     var: test_db_users
-    
+
 - include_tasks: mongod_teardown.yml

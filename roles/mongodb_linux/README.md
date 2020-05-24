@@ -1,40 +1,33 @@
-Role Name
-=========
+mongodb_linux
+=============
 
-A brief description of the role goes here.
+A simple role to configure Linux Operating System settings, for Debian and RedHat systems, as advised in the [MongoDB Production Notes](https://docs.mongodb.com/manual/administration/production-notes/).
 
-Requirements
-------------
+A brief description of what we do in this role:
 
-Any pre-requisites that may not be covered by Ansible itself or the role should
-be mentioned here. For instance, if the role uses the EC2 module, it may be a
-good idea to mention in this section that the boto package is required.
+* Set swappiness.
+* Ensure NTP (or equivalent) service is installed and running.
+* Ensure GNU C Library is the latest available.
+* Disable NUMA reclaim zone.
+* Add script to disable transparent-huge-pages and setup as a service.
+* Set pam limits.
+* Set various sysctl values.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including
-any variables that are in defaults/main.yml, vars/main.yml, and any variables
-that can/should be set via parameters to the role. Any variables that are read
-from other roles and/or the global scope (ie. hostvars, group vars, etc.) should
-be mentioned here as well.
+swappiness: OS swappiness value. Default "1".
+ntp_package: Name of ntp package. Default ntp.
+ntp_service: Name of ntp service. Default ntpd.
 
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in
-regards to parameters that may need to be set for other roles, or variables that
-are used from other roles.
+* On RedHat 8 and higher systems ntp_package and ntp_service are set to chrony and chronyd respectively.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables
-passed in as parameters) is always nice for users too:
-
     - hosts: servers
       roles:
-         - { role: mongodb_linux, x: 42 }
+         - mongodb_linux
 
 License
 -------
@@ -44,5 +37,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a
-website (HTML is not allowed).
+Rhys Campbell (https://github.com/rhysmeister)

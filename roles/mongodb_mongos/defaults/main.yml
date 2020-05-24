@@ -1,7 +1,7 @@
 ---
 # defaults file for mongodb_mongos
 mongos_port: 27017
-mongod_service: "mongos"
+mongos_service: "mongos"
 mongodb_user: "mongod"
 mongodb_group: "mongod"
 pid_file: /run/mongodb/mongos.pid

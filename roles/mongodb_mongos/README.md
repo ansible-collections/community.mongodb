@@ -14,7 +14,7 @@ Role Variables
 --------------
 
 mongos_port: The port used by the mongos process. Default 27017.
-mongod_service: The name of the mongos service. Default mongos.
+mongos_service: The name of the mongos service. Default mongos.
 mongodb_user: The Linux OS user for MongoDB. Default mongod.
 mongodb_group: The Linux OS user group for MongoDB. Default mongod.
 pid_file: The pid file for mongos. Default /run/mongodb/mongos.pid.
@@ -28,19 +28,15 @@ openssl_keyfile_content: The kexfile content that MongoDB uses to authenticate w
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in
-regards to parameters that may need to be set for other roles, or variables that
-are used from other roles.
+mongodb_repository
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables
-passed in as parameters) is always nice for users too:
-
     - hosts: servers
       roles:
-         - { role: mongodb_mongos, x: 42 }
+         - mongodb_repository
+         - mongodb_mongos
 
 License
 -------
@@ -50,5 +46,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a
-website (HTML is not allowed).
+Rhys Campbell (https://github.com/rhysmeister)
