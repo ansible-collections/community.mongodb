@@ -64,7 +64,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         with open(os.path.expanduser("~/.mongodb.cnf"), "w+") as w:
             w.write("""
             [client]
-            user = mongo_user pass = 123456 """)
+            user = mongo_user
+            pass = 123456
+            """)
         creds = mongodb_common.load_mongocnf()
         assert creds['user'] == "mongo_user"
         assert creds['password'] == "123456"
