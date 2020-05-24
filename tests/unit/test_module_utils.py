@@ -1,7 +1,9 @@
 import unittest
 import sys
 import os
-sys.path.append(os.path.abspath('/Users/rhyscampbell/Documents/git/ansible_collections/community/mongodb/plugins/module_utils'))
+path = os.path.dirname(os.path.realpath(__file__))
+path = "{0}/../../plugins/module_utils".format(path)
+sys.path.append(path)
 import mongodb_common
 from distutils.version import LooseVersion
 
