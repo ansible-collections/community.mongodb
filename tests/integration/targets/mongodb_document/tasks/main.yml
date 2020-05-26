@@ -81,7 +81,7 @@
       - customer_insert.msg == "Document was inserted"
       - customer.inserted_id is not defined
 
-- name: Insert a new document into the customer collection (auth)
+- name: Insert a new document into the customer collection (auth / return objectid)
   mongodb_document:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
