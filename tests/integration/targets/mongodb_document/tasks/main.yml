@@ -81,4 +81,24 @@
     - customer_insert.msg == "Document was inserted"
     - customer.inserted_id is not defined
 
+- name: Insert a new document into the customer collection (auth)
+  mongodb_document:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    database: "crm"
+    collection: "customers"
+    document:
+      name: "Joe Blow"
+      address: "99 Nowhere Street"
+      city: "New York"
+      postcode: "9999"
+  register: customer_insert_object_id
+
+- assert:
+    that:
+    - customer_insert_object_id.changed == True
+    - customer_insert_object_id.msg == "Document was inserted"
+    - customer.inserted_id is defined
+
 - include_tasks: mongod_teardown.yml
