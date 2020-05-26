@@ -77,9 +77,9 @@
 
 - assert:
     that:
-    - customer_insert.changed == True
-    - customer_insert.msg == "Document was inserted"
-    - customer.inserted_id is not defined
+      - customer_insert.changed == True
+      - customer_insert.msg == "Document was inserted"
+      - customer.inserted_id is not defined
 
 - name: Insert a new document into the customer collection (auth)
   mongodb_document:
@@ -97,8 +97,8 @@
 
 - assert:
     that:
-    - customer_insert_object_id.changed == True
-    - customer_insert_object_id.msg == "Document was inserted"
-    - customer.inserted_id is defined
+      - customer_insert_object_id.changed == True
+      - customer_insert_object_id.msg == "Document was inserted"
+      - customer.inserted_id is defined
 
 - include_tasks: mongod_teardown.yml
