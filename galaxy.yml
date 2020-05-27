@@ -2,14 +2,15 @@ namespace: community
 name: mongodb
 version: 0.1.2
 readme: README.md
-authors: null
+authors:
+  - Ansible (https://github.com/ansible)
+  - Rhys Campbell (https://github.com/rhysmeister)
 description: null
-license: null
-license_file: null
+license_file: COPYING
 tags: null
 dependencies:
   community.general: '>=0.1.1'
-repository: git@github.com:ansible-collections/community.mongodb.git
+repository: https://github.com/ansible-collections/community.mongodb
 documentation: https://github.com/ansible-collections/community.mongodb/tree/master/docs
 homepage: https://github.com/ansible-collections/community.mongodb
-issues: https://github.com/ansible-collections/community.mongodb/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc
+issues: https://github.com/ansible-collections/community.mongodb
