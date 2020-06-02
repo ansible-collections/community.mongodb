@@ -27,13 +27,13 @@ class TestMongoDBCommonMethods(unittest.TestCase):
     def test_check_compatibility_old_pymongo_version(self):
         # (mongo version, pymongo version, msg)
         versions = [
-          ('2.6', '2.0', 'you must use pymongo 2.7+ with MongoDB 2.6'),
-          ('3.0', '2.7', 'you must use pymongo 2.8+ with MongoDB 3.0'),
-          ('3.2', '3.0', 'you must use pymongo 3.2+ with MongoDB >= 3.2'),
-          ('3.4', '3.3', 'you must use pymongo 3.4+ with MongoDB >= 3.4'),
-          ('3.6', '3.5', 'you must use pymongo 3.6+ with MongoDB >= 3.6'),
-          ('4.0', '3.6', 'you must use pymongo 3.7+ with MongoDB >= 4.0'),
-          ('4.2', '3.8', 'you must use pymongo 3.9+ with MongoDB >= 4.2')
+            ('2.6', '2.0', 'you must use pymongo 2.7+ with MongoDB 2.6'),
+            ('3.0', '2.7', 'you must use pymongo 2.8+ with MongoDB 3.0'),
+            ('3.2', '3.0', 'you must use pymongo 3.2+ with MongoDB >= 3.2'),
+            ('3.4', '3.3', 'you must use pymongo 3.4+ with MongoDB >= 3.4'),
+            ('3.6', '3.5', 'you must use pymongo 3.6+ with MongoDB >= 3.6'),
+            ('4.0', '3.6', 'you must use pymongo 3.7+ with MongoDB >= 4.0'),
+            ('4.2', '3.8', 'you must use pymongo 3.9+ with MongoDB >= 4.2')
         ]
 
         for tuple in versions:
@@ -45,13 +45,13 @@ class TestMongoDBCommonMethods(unittest.TestCase):
     def test_check_compatibility_correct_pymongo_version(self):
         # (mongo version, pymongo version)
         versions = [
-          ('2.6', '2.8'),
-          ('3.0', '2.9'),
-          ('3.2', '3.2'),
-          ('3.4', '3.4'),
-          ('3.6', '3.6'),
-          ('4.0', '3.7'),
-          ('4.2', '3.9')
+            ('2.6', '2.8'),
+            ('3.0', '2.9'),
+            ('3.2', '3.2'),
+            ('3.4', '3.4'),
+            ('3.6', '3.6'),
+            ('4.0', '3.7'),
+            ('4.2', '3.9')
         ]
 
         for tuple in versions:
@@ -70,6 +70,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         creds = mongodb_common.load_mongocnf()
         assert creds['user'] == "mongo_user"
         assert creds['password'] == "123456"
+
 
 if __name__ == '__main__':
     unittest.main()

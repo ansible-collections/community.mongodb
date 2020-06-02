@@ -6,9 +6,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
 
 DOCUMENTATION = r'''
 ---
@@ -21,7 +18,6 @@ description: >
   if the member state is currently STARTUP, RECOVERING, STARTUP2 or ROLLBACK,
   before taking any needed action.
 author: Rhys Campbell (@rhysmeister)
-version_added: "2.9"
 options:
   login_user:
     description:
