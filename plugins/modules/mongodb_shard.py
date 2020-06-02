@@ -6,14 +6,10 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
 
 DOCUMENTATION = '''
 ---
 module: mongodb_shard
-version_added: "2.8"
 short_description: Add or remove shards from a MongoDB Cluster
 description:
     -  Add or remove shards from a MongoDB Cluster.

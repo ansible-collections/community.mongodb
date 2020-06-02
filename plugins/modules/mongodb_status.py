@@ -6,9 +6,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
 
 DOCUMENTATION = r'''
 ---
@@ -19,7 +16,6 @@ description:
 - The module expects all replicaset nodes to be PRIMARY, SECONDARY or ARBITER.
 - Will wait until a timeout for the replicaset state to converge if required.
 author: Rhys Campbell (@rhysmeister)
-version_added: "2.9"
 options:
   login_user:
     description:
