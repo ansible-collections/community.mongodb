@@ -6,9 +6,6 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
 
 DOCUMENTATION = r'''
 ---
@@ -160,7 +157,7 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
-    import bson.objectid
+    from bson.objectid import ObjectId
     HAS_PYMONGO = True
 except ImportError:
     try:  # for older PyMongo 2.2
