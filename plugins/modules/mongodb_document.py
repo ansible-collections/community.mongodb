@@ -150,6 +150,7 @@ import os
 import ssl as ssl_lib
 from distutils.version import LooseVersion
 import traceback
+from ansible.module_utils.common.json import AnsibleJSONEncoder
 
 try:
     from pymongo.errors import ConnectionFailure
@@ -240,7 +241,7 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        inserted_id = str(ObjectId(client[database][collection].insert_one(document).inserted_id).binary)
+        inserted_id = super(AnsibleJSONEncoder, self).default(client[database][collection].insert_one(document).inserted_id)
         status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
