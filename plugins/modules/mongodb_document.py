@@ -157,7 +157,7 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
-    from bson import ObjectId
+    from bson.objectid import ObjectId
     HAS_PYMONGO = True
 except ImportError:
     try:  # for older PyMongo 2.2
@@ -280,7 +280,7 @@ def _custom_remove_values_conditions(value, no_log_strings, deferred_removals):
 
     elif isinstance(value, datetime.datetime):
         value = value.isoformat()
-    elif isinstance(value, ObjectId):  # Cast ObjectId to str
+    elif isinstance(value, bson.objectid.ObjectId):  # Cast ObjectId to str
         value = str(value)
     else:
         raise TypeError('Value of unknown type: %s, %s' % (type(value), value))
