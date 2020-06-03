@@ -157,6 +157,7 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
+    from bson import ObjectId
     HAS_PYMONGO = True
 except ImportError:
     try:  # for older PyMongo 2.2
