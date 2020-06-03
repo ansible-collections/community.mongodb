@@ -157,7 +157,6 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
-    from bson import json_util
     HAS_PYMONGO = True
 except ImportError:
     try:  # for older PyMongo 2.2
@@ -241,7 +240,7 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        inserted_id = json.dumps(client[database][collection].insert_one(document).inserted_id, default=json_util.default)
+        inserted_id = json.dumps(client[database][collection].insert_one(document).inserted_id, default=str)
         status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
