@@ -287,8 +287,6 @@ def _custom_remove_values_conditions(value, no_log_strings, deferred_removals):
     return value
 
 
-AnsibleModule._remove_values_conditions = _custom_remove_values_conditions
-
 def check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
 
@@ -455,6 +453,8 @@ def main():
             index_name=dict(type='str', default="idx_mongodb_document"),
             upsert=dict(type='bool', default=False)),
         supports_check_mode=True)
+
+    module._remove_values_conditions = _custom_remove_values_conditions
 
     if HAS_PYMONGO is False:
         module.fail_json(msg='the python pymongo module is required')
