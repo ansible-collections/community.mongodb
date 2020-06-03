@@ -151,6 +151,7 @@ import ssl as ssl_lib
 from distutils.version import LooseVersion
 import traceback
 from ansible.module_utils.common.json import AnsibleJSONEncoder
+import json
 
 try:
     from pymongo.errors import ConnectionFailure
