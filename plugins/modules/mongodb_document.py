@@ -169,7 +169,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-
+from ansible.module_utils.common.text.converters import to_bytes, to_text
 
 # =========================================
 # MongoDB module specific support methods.
@@ -240,7 +240,7 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        inserted_id = json.dumps(client[database][collection].insert_one(document).inserted_id, default=str)
+        inserted_id = json.loads(to_text(client[database][collection].insert_one(document).inserted_id))
         status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
