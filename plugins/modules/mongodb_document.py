@@ -170,10 +170,31 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
+############
+from ansible.module_utils.six import (
+    PY2,
+    PY3,
+    b,
+    binary_type,
+    integer_types,
+    iteritems,
+    string_types,
+    text_type,
+)
+from ansible.module_utils.common._collections_compat import (
+    KeysView,
+    Mapping, MutableMapping,
+    Sequence, MutableSequence,
+    Set, MutableSet,
+)
+from itertools import chain
+import datetime
+############
 
 # =========================================
 # MongoDB module specific support methods.
 #
+
 
 def _remove_values_conditions(value, no_log_strings, deferred_removals):
     """
