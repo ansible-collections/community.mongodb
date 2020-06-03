@@ -189,6 +189,8 @@ from ansible.module_utils.common._collections_compat import (
 )
 from itertools import chain
 import datetime
+from ansible.module_utils._text import to_native, to_bytes, to_text
+NoneType = type(None)
 ############
 
 # =========================================
