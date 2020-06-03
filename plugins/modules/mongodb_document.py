@@ -157,7 +157,7 @@ try:
     from pymongo.errors import OperationFailure
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
-    import bson
+    from bson import json_util, ObjectId
     HAS_PYMONGO = True
 except ImportError:
     try:  # for older PyMongo 2.2
@@ -215,20 +215,6 @@ def check_compatibility(module, srv_version, driver_version):
         msg += 'you must use pymongo 2.7+ with MongoDB 2.6'
         module.fail_json(msg=msg)
 
-# Pinched from https://gist.github.com/joelwking/a4cf2621d17cefeb6e74a2d5eca4ddda
-def convert_id(self, result):
-    """
-         Convert the ObjectId in _id  to a string, to make it convertable to JSON
-         {u'_id': ObjectId('5a789a190d0d0e46828e7b3e'), u'name': u'HR_Micro_Seg'}
-         Note: find_one() returns either a dictionary (a document)  or None
-         we return an empty dictionary instead of None.
-    """
-    if result:
-        if result.get("_id"):
-            result["_id"] = str(result["_id"])
-        return result
-    return dict()
-
 def insert_document(client, database, collection, document):
     """
     Insert a document into the specified collection
@@ -240,7 +226,7 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        inserted_id = unicode(client[database][collection].insert_one(document).inserted_id)
+        inserted_id = json.loads(json_util.dumps(client[database][collection].insert_one(document).inserted_id))
         status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
