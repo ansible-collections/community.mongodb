@@ -242,12 +242,15 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        inserted_id = json.dumps(str(client[database][collection].insert_one(document).inserted_id),
-                                 cls=AnsibleJSONEncoder,
-                                 sort_keys=True,
-                                 indent=4,
-                                 preprocess_unsafe=True)
-        status = True
+        try:
+            inserted_id = json.dumps(str(client[database][collection].insert_one(document).inserted_id),
+                                     cls=AnsibleJSONEncoder,
+                                     sort_keys=True,
+                                     indent=4,
+                                     preprocess_unsafe=True)
+        except TypeError:
+            inserted_id = "XXXXXXXX"
+            status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
                                                           document,
