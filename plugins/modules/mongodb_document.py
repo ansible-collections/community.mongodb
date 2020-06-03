@@ -198,7 +198,7 @@ NoneType = type(None)
 #
 
 
-def _remove_values_conditions(value, no_log_strings, deferred_removals):
+def _custom_remove_values_conditions(value, no_log_strings, deferred_removals):
     """
     Helper function for :meth:`remove_values`.
     :arg value: The value to check for strings that need to be stripped
@@ -285,6 +285,9 @@ def _remove_values_conditions(value, no_log_strings, deferred_removals):
     else:
         raise TypeError('Value of unknown type: %s, %s' % (type(value), value))
     return value
+
+
+AnsibleModule._remove_values_conditions = _custom_remove_values_conditions
 
 def check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
