@@ -242,7 +242,7 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = None
     if "_id" not in document.keys():
-        inserted_id = json.dumps(client[database][collection].insert_one(document).inserted_id,
+        inserted_id = json.dumps(str(client[database][collection].insert_one(document).inserted_id),
                                  cls=AnsibleJSONEncoder,
                                  sort_keys=True,
                                  indent=4)
