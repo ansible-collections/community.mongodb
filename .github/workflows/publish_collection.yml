@@ -13,7 +13,7 @@ jobs:
   build_publish:
     runs-on: ubuntu-latest
     steps:
-      
+
       - name: Check out code
         uses: actions/checkout@v1
         with:
@@ -36,5 +36,14 @@ jobs:
       - name: Upload community-mongodb-latest.tar.gz as an artifact
         uses: actions/upload-artifact@v1
         with:
-          name: mongodb_collection
+          name: community-mongodb-latest
           path: community-mongodb-latest.tar.gz
+
+      - name: Upload files to release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: community-mongodb-latest.tar.gz
+          asset_name: community-mongodb-latest
+          tag: ${{ github.ref }}
+          overwrite: true
