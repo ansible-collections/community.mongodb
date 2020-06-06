@@ -39,6 +39,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: community-mongodb-latest.tar.gz
-          asset_name: community-mongodb-latest
+          asset_name: community-mongodb-latest.tar.gz
           tag: ${{ github.ref }}
           overwrite: true
