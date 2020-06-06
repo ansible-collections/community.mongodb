@@ -1,13 +1,11 @@
 name: Build & Publish Collection
 on:
-  pull_request:
+  push:
     branches:
       - master
-    types: [closed]
 
 jobs:
   build_publish:
-    if: github. **event**.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
 
