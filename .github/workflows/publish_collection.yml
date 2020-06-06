@@ -11,28 +11,30 @@ on:
 
 jobs:
   build_publish:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          path: ansible_collections/community/mongodb
 
-    - name: Check out code
-      uses: actions/checkout@v1
-      with:
-        path: ansible_collections/community/mongodb
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
 
-    - name: Set up Python 3.6
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.6
+      - name: Install ansible-base (devel)
+        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
-    - name: Install ansible-base (devel)
-      run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+      - name: Build the collection
+        run: ansible-galaxy collection build
 
-    - name: Build the collection
-      run: ansible-galaxy collection build
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
 
-    - name: Rename the build artifact
-      run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
-
-    - name: Upload community-mongodb-latest.tar.gz as an artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: mongodb_collection
-        path: community-mongodb-latest.tar.gz
+      - name: Upload community-mongodb-latest.tar.gz as an artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: mongodb_collection
+          path: community-mongodb-latest.tar.gz
