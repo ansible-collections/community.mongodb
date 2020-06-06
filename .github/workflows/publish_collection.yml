@@ -1,0 +1,46 @@
+name: Build & Publish Collection
+on:
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+
+jobs:
+  build_publish:
+    if: github. **event**.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+
+      - name: Install ansible-base (devel)
+        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+
+      - name: Build the collection
+        run: ansible-galaxy collection build
+
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+
+      - name: Upload community-mongodb-latest.tar.gz as an artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: community-mongodb-latest
+          path: community-mongodb-latest.tar.gz
+
+      - name: Upload files to release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: community-mongodb-latest.tar.gz
+          asset_name: community-mongodb-latest
+          tag: ${{ github.ref }}
+          overwrite: true
