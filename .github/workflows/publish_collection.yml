@@ -1,16 +1,13 @@
 name: Build & Publish Collection
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the master branch
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
+    types: [closed]
 
 jobs:
   build_publish:
+    if: github. **event**.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
 
