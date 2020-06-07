@@ -32,6 +32,37 @@
     mode: 0400
   when: authorization == "enabled"
 
+- name: Create systemd servcie file on RedHat 8+
+  copy:
+    dest: /etc/systemd/system/mongod.service
+    content: |
+      [Unit]
+      Description=MongoDB
+      After=syslog.target network.target
+
+      [Service]
+      Type=simple
+
+      User=mongod
+      Group=mongod
+
+      ExecStart=/opt/mongodb/bin/mongod --config /etc/mongod.conf
+
+      [Install]
+      WantedBy=multi-user.target
+  register: systemd
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 8
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 8
+    - systemd.changed == True  
+
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
