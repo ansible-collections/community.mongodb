@@ -28,6 +28,16 @@
     name: "{{ ntp_package }}"
     state: present
 
+- name: Update perms on pid dir on RedHat 8
+  file:
+    path: /run/chrony/
+    owner: root
+    group: root
+    state: directory
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 8  
+
 - name: Ensure ntp service is configured
   service:
     name: "{{ ntp_service }}"
