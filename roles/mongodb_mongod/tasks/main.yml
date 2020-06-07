@@ -32,7 +32,7 @@
     mode: 0400
   when: authorization == "enabled"
 
-- name: Create systemd servcie file on RedHat 8+
+- name: Create systemd service file on RedHat 8+
   copy:
     dest: /etc/systemd/system/mongod.service
     content: |
@@ -61,7 +61,7 @@
   when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version|int >= 8
-    - systemd.changed == True  
+    - systemd.changed == True
 
 - name: Start mongod service
   service:
