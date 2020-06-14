@@ -23,7 +23,7 @@ if find tests/output/coverage/ -mindepth 1 -name '.*' -prune -o -print -quit | g
         bash <(curl -s https://codecov.io/bash) \
             -f "${file}" \
             -F "${flags}" \
-            -t c481ab27-5cd1-4c7d-bf2f-3f0ed4c836cc
+            -t c481ab27-5cd1-4c7d-bf2f-3f0ed4c836cc \
             -X coveragepy \
             -X gcov \
             -X fix \
