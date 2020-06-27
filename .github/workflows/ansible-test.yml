@@ -65,7 +65,6 @@ jobs:
           - mongodb_status
           - mongodb_stepdown
           - mongodb_user
-          - mongodb
     steps:
 
 
