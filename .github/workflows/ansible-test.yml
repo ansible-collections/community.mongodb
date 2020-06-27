@@ -61,7 +61,7 @@ jobs:
         mongodb_version:
           - "4.0"
           - "4.2"
-        mongodb_modules:
+        mongodb_module:
           - mongodb_info
           - mongodb_parameter
           - mongodb_replicaset
@@ -70,8 +70,10 @@ jobs:
           - mongodb_stepdown
           - mongodb_user
           - lookup_mongodb
+        docker_image:
+          - ubuntu1804
+          - centos8
     steps:
-
 
       - name: Check out code
         uses: actions/checkout@v1
@@ -92,8 +94,8 @@ jobs:
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
 
-      - name: Run integration tests on Python ${{ matrix.python_version }}
-        run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_modules }}
+      - name: Run integration tests on Python ${{ matrix.python_version }} | ${{ matrix.docker_image }}
+        run: ansible-test integration --docker ${{ matrix.docker_image }} -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_module }}
 
       - name: Upload Coverage data
         run: tests/coverage.sh
