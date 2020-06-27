@@ -57,6 +57,15 @@ jobs:
     strategy:
       matrix:
         python_version: ["3.6"]
+        mongodb_modules:
+          - mongodb_info
+          - mongodb_parameter
+          - mongodb_replicaset
+          - mognodb_shard
+          - mongodb_status
+          - mongodb_stepdown
+          - mongodb_user
+          - mongodb
     steps:
 
 
@@ -80,13 +89,13 @@ jobs:
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Run integration tests on Python ${{ matrix.python_version }} and MongoDB 4.0
-        run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
+        run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_modules }}
 
       - name: Ensure MongoDB version is set to 4.2
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.2\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Run integration tests on Python ${{ matrix.python_version }} and MongoDB 4.2
-        run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage
+        run: ansible-test integration --docker -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_modules }}
 
       #- name: Ensure MongoDB version is returned to original 4.0
       #  run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"4.0\"/g' ${{ env.mongodb_version_file }}"
