@@ -57,7 +57,7 @@
   - ansible_distribution_version.split('.')[0]|int <= 7
   - not ansible_distribution == "Fedora"
 
-- name: RedHat 8 repo not yet available so use 7 url
+- name: RedHat 8 repo
   yum_repository:
     name: '{{ yum.name }}'
     description: '{{ yum.description }}'
