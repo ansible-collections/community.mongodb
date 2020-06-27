@@ -56,7 +56,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version: ["3.6"]
+        python_version:
+          - "3.6"
+          - "3.8"
         mongodb_version:
           - "4.0"
           - "4.2"
