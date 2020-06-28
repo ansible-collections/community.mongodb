@@ -31,7 +31,7 @@ except ImportError:
                 pymongo_found = True
             except ImportError:
                 raise ImportError
-    except ImportError
+    except ImportError:
         PYMONGO_IMP_ERR = traceback.format_exc()
         pymongo_found = False
 
