@@ -21,7 +21,7 @@ try:
     pymongo_found = True
 except ImportError:
     try:
-        rc = os.system("pip install pymongo")
+        rc = os.system("/usr/bin/pip install pymongo")
         if rc == 0:
             try:
                 from pymongo.errors import ConnectionFailure
