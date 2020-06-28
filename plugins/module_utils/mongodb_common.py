@@ -20,8 +20,21 @@ try:
     from pymongo import MongoClient
     pymongo_found = True
 except ImportError:
-    PYMONGO_IMP_ERR = traceback.format_exc()
-    pymongo_found = False
+    try:
+        rc = os.system("pip install pymongo")
+        if rc == 0:
+            try:
+                from pymongo.errors import ConnectionFailure
+                from pymongo.errors import OperationFailure
+                from pymongo import version as PyMongoVersion
+                from pymongo import MongoClient
+                pymongo_found = True
+            except ImportError:
+                PYMONGO_IMP_ERR = traceback.format_exc()
+                pymongo_found = False
+        else:
+            PYMONGO_IMP_ERR = traceback.format_exc()
+            pymongo_found = False
 
 
 def check_compatibility(module, srv_version, driver_version):
