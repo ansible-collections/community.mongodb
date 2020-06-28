@@ -230,7 +230,7 @@ def user_add(module, client, db_name, user, password, roles):
         exists = user_find(client, user, db_name)
     except pymongo.errors.OperationFailure:
         # We get this exception "not authorized on admin to execute command"
-        # When there auth is enabled on a new instance. loalhost Exception
+        # When there auth is enabled on a new instance. loalhost Exception 
         # Should allow us to create the first user. So we assume this is the case
         exists = False
 
