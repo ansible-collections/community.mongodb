@@ -226,10 +226,7 @@ def user_add(module, client, db_name, user, password, roles):
     # without reproducing a lot of the logic in database.py of pymongo
     db = client[db_name]
 
-    try:
-        exists = user_find(client, user, db_name)
-    except Exception:
-        exists = False
+    exists = user_find(client, user, db_name)
 
     if exists:
         user_add_db_command = 'updateUser'
