@@ -30,11 +30,10 @@ except ImportError:
                 from pymongo import MongoClient
                 pymongo_found = True
             except ImportError:
-                PYMONGO_IMP_ERR = traceback.format_exc()
-                pymongo_found = False
-        else:
-            PYMONGO_IMP_ERR = traceback.format_exc()
-            pymongo_found = False
+                raise ImportError
+    except ImportError
+        PYMONGO_IMP_ERR = traceback.format_exc()
+        pymongo_found = False
 
 
 def check_compatibility(module, srv_version, driver_version):
