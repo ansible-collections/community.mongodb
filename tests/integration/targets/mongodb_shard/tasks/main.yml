@@ -94,12 +94,8 @@
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
-
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-
-#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
@@ -254,12 +250,8 @@
 - name: Execute script for 3004
   script: /root/ensure_primary.sh 3004 0
 
-#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
-
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-
-#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
@@ -287,17 +279,6 @@
   - port: 4000
     rs: '{{ configsrv_replicaset }}'
   when: test_mongo_auth == True
-
-#- name: Copy script to host
-#  template:
-#    src: files/bash/ensure_primary.sh.j2
-#    dest: /root/ensure_primary.sh
-
-#- name: Execute script for 3001
-#  script: /root/ensure_primary.sh 3001 1
-
-#- name: Execute script for 3004
-#  script: /root/ensure_primary.sh 3004 1
 
 - name: Murder all mongod processes
   shell: pkill -{{ kill_signal }} mongod || true;
@@ -346,24 +327,9 @@
     {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
-#- name: Copy script to host
-#  template:
-#    src: files/bash/ensure_primary.sh.j2
-#    dest: /root/ensure_primary.sh
-
-#- name: Execute script for 3001
-#  script: /root/ensure_primary.sh 3001 1
-
-#- name: Execute script for 3004
-#  script: /root/ensure_primary.sh 3004 1
-
-#- shell: "cat {{ remote_tmp_dir }}/mongod3001/log.log"
-
 - name: Ensure host reaches primary before proceeding 3001
   command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
     }} "{{ remote_tmp_dir }}/tests/is_primary.js"
-
-#- shell: "cat {{ remote_tmp_dir }}/mongod3004/log.log"
 
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password

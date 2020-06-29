@@ -88,10 +88,6 @@
     poll: 99
     interval: 10
 
-#- name: Ensure host reaches primary before proceeding 3001
-#  command: mongo admin --port 3001 --username "{{ mongodb_admin_user }}" --password
-#    "{{ mongodb_admin_password }}" "{{ remote_tmp_dir }}/tests/is_primary.js"
-
 - name: Run admin user creation again
   mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
