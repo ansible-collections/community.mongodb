@@ -226,10 +226,28 @@ def user_add(module, client, db_name, user, password, roles):
     # without reproducing a lot of the logic in database.py of pymongo
     db = client[db_name]
 
-    if roles is None:
-        db.add_user(user, password, False)
+    try:
+        exists = user_find(client, user, db_name)
+    except Exception as excep:
+        # We get this exception "not authorized on admin to execute command"
+        # When there auth is enabled on a new instance. loalhost Exception
+        # Should allow us to create the first user. So we assume this is the case
+        # Might be able to do something with db.getUsers() if this approach needs
+        # a rethink
+        if excep.code == 13:  # Unauthorized
+            exists = False
+        else:
+            raise Exception
+
+    if exists:
+        user_add_db_command = 'updateUser'
     else:
-        db.add_user(user, password, None, roles=roles)
+        user_add_db_command = 'createUser'
+
+    if roles is None:
+        db.command(user_add_db_command, user, pwd=password)
+    else:
+        db.command(user_add_db_command, user, pwd=password, roles=roles)
 
 
 def user_remove(module, client, db_name, user):
@@ -238,7 +256,7 @@ def user_remove(module, client, db_name, user):
         if module.check_mode:
             module.exit_json(changed=True, user=user)
         db = client[db_name]
-        db.remove_user(user)
+        db.command("dropUser", user)
     else:
         module.exit_json(changed=False, user=user)
 
