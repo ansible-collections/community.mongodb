@@ -62,6 +62,7 @@ jobs:
           - "4.0"
           - "4.2"
         mongodb_module:
+          - mongodb_document
           - mongodb_info
           - mongodb_parameter
           - mongodb_replicaset
