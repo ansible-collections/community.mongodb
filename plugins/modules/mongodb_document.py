@@ -337,9 +337,9 @@ def insert_document(client, database, collection, document):
     @document: The MongoDB document to insert.
     """
     status = None
-    inserted_id = []
+    inserted_id = ""
     if "_id" not in document.keys():
-        inserted_id = [str(client[database][collection].insert_one(document).inserted_id).strip() in str(item)]
+        inserted_id = str(client[database][collection].insert_one(document).inserted_id)
         status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
