@@ -283,7 +283,8 @@ class MyCustomAnsibleModule(AnsibleModule):
         elif isinstance(value, bson.objectid.ObjectId):  # Cast ObjectId to str
             value = str(value)
         else:
-            raise TypeError('Value of unknown type: %s, %s' % (type(value), value))
+            pass
+            #raise TypeError('Value of unknown type: %s, %s' % (type(value), value))
         return value
 
 
