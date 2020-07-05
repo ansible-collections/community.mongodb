@@ -29,11 +29,14 @@
     mongodb_index:
       <<: *mongo_parameters
 
-- name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "test.rhys.getIndexes()"
-  register: myindex
-
   - assert:
       that:
       - result is changed
       - result.indexes_created == ["test.rhys.myindex"]
+
+  - name: Get indexes on collection
+    command: mongo admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "test.rhys.getIndexes()"
+    register: myindex
+
+  - debug:
+      var: myindex
