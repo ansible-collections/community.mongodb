@@ -20,7 +20,7 @@
 
   block:
 
-  - name: Get info
+  - name: Create an index on a collection
     <<: *task_parameters
     mongodb_index:
       <<: *mongo_parameters

@@ -181,6 +181,15 @@ def main():
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
+
+    login_user = module.params['login_user']
+    login_password = module.params['login_password']
+    login_database = module.params['login_database']
+    login_host = module.params['login_host']
+    login_port = module.params['login_port']
+    ssl = module.params['ssl']
+    indexes = module.params['indexes']
+
     if len(indexes) == 0:
         module.fail_json(msg="One or more indexes must be specified")
     if not all(isinstance(i, dict) for i in indexes):
@@ -209,14 +218,6 @@ def main():
             module.fail_json(msg="options key should be dict")
         elif not i["options"].has_key("name"):
             module.fail_json(msg="The options dict must contain a name field")
-
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    ssl = module.params['ssl']
-    indexes = module.params['indexes']
 
     connection_params = {
         'host': login_host,
