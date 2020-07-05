@@ -105,3 +105,22 @@
 - assert:
     that:
       - '"myindex" not in output.stdout'
+
+# Check adding 2 indexes
+# Check adding 3 indexes
+# Check adding a unique index
+# Check adding a sparse index
+# Check adding a TTL index
+# Check adding an index in the background
+# Check adding a partial index
+
+# Check misssing database key
+# Check database is not string
+# Check collection is not string
+# Check when key spec for index is not a dict
+# Check when options is not a dict
+# Check when "name" key is not in options dict
+# Check when state is something other that "absent" or "present"
+
+# Check creating 5 index all with multiple options specified
+# Check creating and dropping a bunch of indexes

@@ -70,6 +70,7 @@ options:
       - List of indexes to create or drop
     type: list
     elements: raw
+    required: yes
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
 
@@ -159,6 +160,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 # Module execution
 #
 
+
 def main():
     argument_spec = dict(
         login_user=dict(type='str', required=False),
@@ -211,7 +213,7 @@ def main():
             module.fail_json(msg="database key should be str")
         elif not isinstance(i["collection"], str):
             module.fail_json(msg="collection key should be str")
-        elif i["state"] == "present" and not isinstance(i["keys"], dict):
+        elif i["state"] == "present" not and isinstance(i["keys"], dict):
             module.fail_json(msg="keys key should be dict")
         elif not isinstance(i["options"], dict):
             module.fail_json(msg="options key should be dict")
@@ -254,8 +256,12 @@ def main():
     indexes_dropped = []
     changed = None
     for i in indexes:
+        try:
+            idx = index_exists(client, i["database"], i["collection"], i["options"]["name"])
+        except Exception as excep:
+            module.fail_json(msg="Could not determine index status: %" % to_native(excep))
         if module.check_mode:
-            if index_exists(client, i["database"], i["collection"], i["options"]["name"]):
+            if idx:
                 if i["state"] == "present":
                     changed = False
                 elif i["state"] == "absent":
@@ -272,27 +278,34 @@ def main():
                 elif i["state"] == "absent":
                     changed = False
         else:
-            if index_exists(client, i["database"], i["collection"], i["options"]["name"]):
+            if idx:
                 if i["state"] == "present":
                     changed = False
                 elif i["state"] == "absent":
-                    drop_index(client, i["database"], i["collection"],
-                               i["options"]["name"])
-                    indexes_dropped.append("{0}.{1}.{2}".format(i["database"],
-                                                                i["collection"],
-                                                                i["options"]["name"]))
-                    changed = True
+                    try:
+                        drop_index(client, i["database"], i["collection"],
+                                   i["options"]["name"])
+                        indexes_dropped.append("{0}.{1}.{2}".format(i["database"],
+                                                                    i["collection"],
+                                                                    i["options"]["name"]))
+                        changed = True
+                    except Exception as excep:
+                        module.fail_json(msg="Error dropping index: %" % to_native(excep))
+
             else:
                 if i["state"] == "present":
-                    create_index(client=client,
-                                 database=i["database"],
-                                 collection=i["collection"],
-                                 keys=i["keys"],
-                                 options=i["options"])
-                    indexes_created.append("{0}.{1}.{2}".format(i["database"],
-                                                                i["collection"],
-                                                                i["options"]["name"]))
-                    changed = True
+                    try:
+                        create_index(client=client,
+                                     database=i["database"],
+                                     collection=i["collection"],
+                                     keys=i["keys"],
+                                     options=i["options"])
+                        indexes_created.append("{0}.{1}.{2}".format(i["database"],
+                                                                    i["collection"],
+                                                                    i["options"]["name"]))
+                        changed = True
+                    except Exception as excep:
+                        module.fail_json(msg="Error creating index: %" % to_native(excep))
                 elif i["state"] == "absent":
                     changed = False
 
