@@ -32,7 +32,7 @@
 
 - assert:
     that:
-      - "myindex" in output.stdout
+      - "'myindex' in output.stdout"
 
 - name: Drop the index we just created
   mongodb_index:
@@ -50,8 +50,8 @@
 
 - assert:
     that:
-    - result is changed
-    - result.indexes_dropped == ["test.rhys.myindex"]
+      - result is changed
+      - result.indexes_dropped == ["test.rhys.myindex"]
 
 - name: Get indexes on collection
   command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
@@ -62,4 +62,4 @@
 
 - assert:
     that:
-      - "myindex" not in output.stdout
+      - "'myindex' not in output.stdout"
