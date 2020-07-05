@@ -218,6 +218,8 @@ def main():
             module.fail_json(msg="options key should be dict")
         elif "name" not in i["options"]:
             module.fail_json(msg="The options dict must contain a name field")
+        elif i["state"] not in ["present", "absent"]:
+            module.fail_json(msg="state must be one of present or absent")
 
     connection_params = {
         'host': login_host,
@@ -263,7 +265,7 @@ def main():
                                                                 i["options"]["name"]))
                     changed = True
             else:
-                if state == "present":
+                if i["state"] == "present":
                     indexes_created.append("{0}.{1}.{2}".format(i["database"],
                                                                 i["collection"],
                                                                 i["options"]["name"]))
@@ -282,7 +284,7 @@ def main():
                                                                 i["options"]["name"]))
                     changed = True
             else:
-                if state == "present":
+                if i["state"] == "present":
                     create_index(client=client,
                                  database=i["database"],
                                  collection=i["collection"],
