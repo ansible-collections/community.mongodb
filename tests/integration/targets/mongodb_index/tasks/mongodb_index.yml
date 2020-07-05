@@ -21,6 +21,9 @@
 
   block:
 
+  - debug:
+      var: mongo_parameters
+
   - name: Create an index on a collection
     <<: *task_parameters
     mongodb_index:
