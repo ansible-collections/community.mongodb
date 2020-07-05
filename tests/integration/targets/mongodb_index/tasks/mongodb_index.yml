@@ -35,7 +35,7 @@
       - result.indexes_created == ["test.rhys.myindex"]
 
   - name: Get indexes on collection
-    command: mongo admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "test.rhys.getIndexes()"
+    command: mongo admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "use test; db.rhys.getIndexes()"
     register: myindex
 
   - debug:
