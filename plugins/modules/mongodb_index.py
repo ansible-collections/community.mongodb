@@ -254,7 +254,7 @@ def main():
     changed = None
     for i in indexes:
         if module.check_mode:
-            if index_exists(i["database"], i["collection"], i["options"]["name"]):
+            if index_exists(client, i["database"], i["collection"], i["options"]["name"]):
                 if i["state"] == "present":
                     changed = False
                 elif i["state"] == "absent":
@@ -271,7 +271,7 @@ def main():
                 elif i["state"] == "absent":
                     changed = False
         else:
-            if index_exists(i["database"], i["collection"], i["options"]["name"]):
+            if index_exists(client, i["database"], i["collection"], i["options"]["name"]):
                 if i["state"] == "present":
                     changed = False
                 elif i["state"] == "absent":
