@@ -104,9 +104,9 @@ def create_index(client, database, collection, keys, options):
     @client: MongoDB connection.
     @database: MongoDB Database - str.
     @collection: MongoDB collection - str.
-    @keys: Specification of index. 
+    @keys: Specification of index.
     """
-    client[database][collection].create_index(keys,
+    client[database][collection].create_index(keys.items(),
                                               name=options["name"])
 
 
