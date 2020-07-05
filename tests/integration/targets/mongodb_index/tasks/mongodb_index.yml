@@ -32,7 +32,7 @@
 
 - assert:
     that:
-      - "'myindex' in output.stdout"
+      - '"myindex" in output.stdout'
 
 - name: Drop the index we just created
   mongodb_index:
@@ -62,4 +62,4 @@
 
 - assert:
     that:
-      - "'myindex' not in output.stdout"
+      - '"myindex" not in output.stdout'
