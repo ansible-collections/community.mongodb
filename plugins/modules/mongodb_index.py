@@ -289,7 +289,7 @@ def main():
                                  database=i["database"],
                                  collection=i["collection"],
                                  keys=i["keys"],
-                                 i["options"])
+                                 options=i["options"])
                     indexes_created.append("{0}.{1}.{2}".format(i["database"],
                                                                 i["collection"],
                                                                 i["options"]["name"]))
