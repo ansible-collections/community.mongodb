@@ -197,7 +197,6 @@ def main():
     required_index_keys = [
         "database",
         "collection",
-        "keys",
         "options",
         "state",
     ]
@@ -212,7 +211,7 @@ def main():
             module.fail_json(msg="database key should be str")
         elif not isinstance(i["collection"], str):
             module.fail_json(msg="collection key should be str")
-        elif not isinstance(i["keys"], dict):
+        elif if i["state"] == "present" and not isinstance(i["keys"], dict):
             module.fail_json(msg="keys key should be dict")
         elif not isinstance(i["options"], dict):
             module.fail_json(msg="options key should be dict")
