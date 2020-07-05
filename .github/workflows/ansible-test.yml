@@ -61,7 +61,6 @@ jobs:
         mongodb_version:
           - "4.0"
           - "4.2"
-          - "4.4"
         mongodb_module:
           - mongodb_index
           - mongodb_info
