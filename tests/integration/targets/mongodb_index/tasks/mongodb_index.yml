@@ -17,6 +17,7 @@
             last_login: -1
           options:
             name: myindex
+          state: present
 
   block:
 
