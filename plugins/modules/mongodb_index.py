@@ -196,10 +196,10 @@ def main():
         module.fail_json(msg="Indexes must be supplied as dictionaries")
     required_index_keys = [
         "database",
-        "collection"
+        "collection",
         "keys",
         "options",
-        "state"
+        "state",
     ]
     # Ensure keys are present in index spec
     for k in required_index_keys:
