@@ -73,7 +73,7 @@ class CacheModule(BaseCacheModule):
         except KeyError:
             display.deprecated('Rather than importing CacheModules directly, '
                                'use ansible.plugins.loader.cache_loader',
-                               collection_name="community.mongodb", version=2.12)
+                               collection_name="community.mongodb", version='2.10')
             self._connection = C.CACHE_PLUGIN_CONNECTION
             self._timeout = int(C.CACHE_PLUGIN_TIMEOUT)
             self._prefix = C.CACHE_PLUGIN_PREFIX
