@@ -216,7 +216,7 @@ def main():
             module.fail_json(msg="keys key should be dict")
         elif not isinstance(i["options"], dict):
             module.fail_json(msg="options key should be dict")
-        elif not i["options"].has_key("name"):
+        elif "name" not in i["options"]:
             module.fail_json(msg="The options dict must contain a name field")
 
     connection_params = {
