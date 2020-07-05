@@ -1,5 +1,27 @@
 # Copyright 2020, Rhys Campbell <rhys.james.campbell@googlemail.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+- name: Create an index on a collection (check mode)
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+            username: 1
+            last_login: -1
+        options:
+          name: myindex
+        state: present
+  check_mode: yes
+  register: result
+
+- assert:
+    that:
+    - result is changed
+    - result.indexes_created == ["test.rhys.myindex"]
 
 - name: Create an index on a collection
   mongodb_index:
@@ -33,6 +55,26 @@
 - assert:
     that:
       - '"myindex" in output.stdout'
+
+- name: Drop the index we just created (check mode)
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: myindex
+        state: absent
+  check_mode: true
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_dropped == ["test.rhys.myindex"]
 
 - name: Drop the index we just created
   mongodb_index:
