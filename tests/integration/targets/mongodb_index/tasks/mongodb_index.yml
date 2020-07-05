@@ -1,0 +1,31 @@
+# Copyright 2020, Andrew Klychkov <aaklychkov@mail.ru>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- vars:
+    task_parameters: &task_parameters
+      register: result
+    mongo_parameters: &mongo_parameters
+      login_port: 27017
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_database: "admin"
+        indexes:
+          - database: "test"
+            collection: "rhys"
+            keys:
+              username: 1
+              last_login: -1
+            options:
+              name: myindex
+
+  block:
+
+  - name: Get info
+    <<: *task_parameters
+    mongodb_index:
+      <<: *mongo_parameters
+
+  - assert:
+      that:
+      - result is changed
+      - result.indexes_created = ["myindex"]
