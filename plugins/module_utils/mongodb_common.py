@@ -80,3 +80,43 @@ def load_mongocnf():
     )
 
     return creds
+
+
+def index_exists(client, database, collection, index_name):
+    """
+    Returns true if an index on the collection exists with the given name
+    @client: MongoDB connection.
+    @database: MongoDB Database.
+    @collection: MongoDB collection.
+    @index_name: The index name.
+    """
+    exists = False
+    indexes = client[database][collection].list_indexes()
+    for index in indexes:
+        if index["name"] == index_name:
+            exists = True
+    return exists
+
+
+def create_index(client, database, collection, keys, background=False,
+                 unique=False, name="myindex", partialFilterExpression=None,
+                 sparse=False, expireAfterSeconds=None, storageEngine=None):
+    """
+    Creates an index on the given collection
+    @client: MongoDB connection.
+    @database: MongoDB Database.
+    @collection: MongoDB collection.
+    @keys: Specification of index.
+    """
+    client[database][collection].create_index(keys,
+                                              background=background,
+                                              unique=unique,
+                                              name=name,
+                                              partialFilterExpression=partialFilterExpression,
+                                              sparse=sparse,
+                                              expireAfterSeconds=expireAfterSeconds,
+                                              storageEngine=storageEngine)
+
+
+def drop_index(client, database, collection, index_name):
+    client[database][collection].drop_index(index_name)

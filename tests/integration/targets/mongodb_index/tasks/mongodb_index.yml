@@ -9,14 +9,14 @@
       login_user: '{{ mongodb_admin_user }}'
       login_password: '{{ mongodb_admin_password }}'
       login_database: "admin"
-        indexes:
-          - database: "test"
-            collection: "rhys"
-            keys:
-              username: 1
-              last_login: -1
-            options:
-              name: myindex
+      indexes:
+        - database: "test"
+          collection: "rhys"
+          keys:
+            username: 1
+            last_login: -1
+          options:
+            name: myindex
 
   block:
 
