@@ -32,4 +32,4 @@
   - assert:
       that:
       - result is changed
-      - result.indexes_created = ["myindex"]
+      - result.indexes_created == ["myindex"]
