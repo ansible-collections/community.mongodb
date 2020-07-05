@@ -85,8 +85,8 @@ EXAMPLES = r'''
       - database: mydb
         collection: test
         keys:
-          username: 1
-          last_login: -1
+          - username: 1
+          - last_login: -1
         options:
           name: myindex
 
@@ -109,15 +109,15 @@ EXAMPLES = r'''
       - database: mydb
         collection: test
         keys:
-          username: 1
-          last_login: -1
+          - username: 1
+          - last_login: -1
         options:
           name: myindex
       - database: mydb
         collection: test
         keys:
-          email: 1
-          last_login: -1
+          - email: 1
+          - last_login: -1
         options:
           name: myindex2
 '''
@@ -212,8 +212,8 @@ def main():
             module.fail_json(msg="database key should be str")
         elif not isinstance(i["collection"], str):
             module.fail_json(msg="collection key should be str")
-        elif not isinstance(i["keys"], dict):
-            module.fail_json(msg="keys key should be dict")
+        elif not isinstance(i["keys"], list):
+            module.fail_json(msg="keys key should be list")
         elif not isinstance(i["options"], dict):
             module.fail_json(msg="options key should be dict")
         elif "name" not in i["options"]:
