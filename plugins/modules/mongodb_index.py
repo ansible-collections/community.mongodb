@@ -259,7 +259,7 @@ def main():
         try:
             idx = index_exists(client, i["database"], i["collection"], i["options"]["name"])
         except Exception as excep:
-            module.fail_json(msg="Could not determine index status: %" % to_native(excep))
+            module.fail_json(msg="Could not determine index status: {0}".format(str(excep)))
         if module.check_mode:
             if idx:
                 if i["state"] == "present":
@@ -290,7 +290,7 @@ def main():
                                                                     i["options"]["name"]))
                         changed = True
                     except Exception as excep:
-                        module.fail_json(msg="Error dropping index: %" % to_native(excep))
+                        module.fail_json(msg="Error dropping index: {0}".format(str(excep)))
 
             else:
                 if i["state"] == "present":
@@ -305,7 +305,7 @@ def main():
                                                                     i["options"]["name"]))
                         changed = True
                     except Exception as excep:
-                        module.fail_json(msg="Error creating index: %" % to_native(excep))
+                        module.fail_json(msg="Error creating index: {0}".format(str(excep)))
                 elif i["state"] == "absent":
                     changed = False
 
