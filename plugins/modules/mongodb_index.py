@@ -195,18 +195,18 @@ def main():
     # Ensure keys are present in index spec
     for k in required_index_keys:
         for i in indexes:
-            if k not in i.keys()
+            if k not in i.keys():
                 module.fail_json(msg="Missing required index key: {0}".format(k))
     # Check index subkeys look correct
     for i in indexes:
         if not isinstance(i["database"], str):
-            module.fail_json(msg="Database key should be str")
+            module.fail_json(msg="database key should be str")
         elif not isinstance(i["collection"], str):
-            module.fail_json(msg="Collection key should be str")
+            module.fail_json(msg="collection key should be str")
         elif not isinstance(i["keys"], dict):
-            module.fail_json(msg="Keys key should be dict")
+            module.fail_json(msg="keys key should be dict")
         elif not isinstance(i["options"], dict):
-            module.fail_json(msg="Options key should be dict")
+            module.fail_json(msg="options key should be dict")
         elif not i["options"].has_key("name"):
             module.fail_json(msg="The options dict must contain a name field")
 
@@ -265,7 +265,7 @@ def main():
                 if state == "present":
                     indexes_created.append("{0}.{1}.{2}".format(i["database"],
                                                                 i["collection"],
-                                                                i["options"]["name"])
+                                                                i["options"]["name"]))
                     changed = True
                 elif i["state"] == "absent":
                     changed = False
@@ -289,7 +289,7 @@ def main():
                                  **options)
                     indexes_created.append("{0}.{1}.{2}".format(i["database"],
                                                                 i["collection"],
-                                                                i["options"]["name"])
+                                                                i["options"]["name"]))
                     changed = True
                 elif i["state"] == "absent":
                     changed = False
