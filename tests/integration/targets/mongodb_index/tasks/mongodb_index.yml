@@ -25,14 +25,14 @@
 
 - name: Get indexes on collection
   command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
-  register: myindex
+  register: output
 
 - debug:
-    var: myindex
+    var: output
 
 - assert:
     that:
-      - "myindex" in myindex.stdout
+      - "myindex" in output.stdout
 
 - name: Drop the index we just created
   mongodb_index:
@@ -55,11 +55,11 @@
 
 - name: Get indexes on collection
   command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
-  register: myindex
+  register: output
 
 - debug:
-    var: myindex
+    var: output
 
 - assert:
     that:
-      - "myindex" not in myindex.stdout
+      - "myindex" not in output.stdout
