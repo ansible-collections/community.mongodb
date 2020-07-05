@@ -107,7 +107,7 @@ def create_index(client, database, collection, keys, options):
     @keys: Specification of index.
     """
     client[database][collection].create_index(keys,
-                                              **options)
+                                              name=options["name"])
 
 
 def drop_index(client, database, collection, index_name):
