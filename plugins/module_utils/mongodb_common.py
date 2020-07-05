@@ -98,9 +98,7 @@ def index_exists(client, database, collection, index_name):
     return exists
 
 
-def create_index(client, database, collection, keys, background=False,
-                 unique=False, name="myindex", partialFilterExpression=None,
-                 sparse=False, expireAfterSeconds=None, storageEngine=None):
+def create_index(client, database, collection, keys, options):
     """
     Creates an index on the given collection
     @client: MongoDB connection.
@@ -109,13 +107,7 @@ def create_index(client, database, collection, keys, background=False,
     @keys: Specification of index.
     """
     client[database][collection].create_index(keys,
-                                              background=background,
-                                              unique=unique,
-                                              name=name,
-                                              partialFilterExpression=partialFilterExpression,
-                                              sparse=sparse,
-                                              expireAfterSeconds=expireAfterSeconds,
-                                              storageEngine=storageEngine)
+                                              **options)
 
 
 def drop_index(client, database, collection, index_name):
