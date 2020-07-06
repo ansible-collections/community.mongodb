@@ -117,6 +117,8 @@
     indexes:
       - database: "test"
         collection: "rhys"
+        keys:
+          username: 1
         options:
           name: myuniqueindex
           unique: true
