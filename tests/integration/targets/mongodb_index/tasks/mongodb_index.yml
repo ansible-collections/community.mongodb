@@ -139,7 +139,8 @@
 
 - assert:
     that:
-      - '"test.rhys.myuniqueindex" in output.stdout'
+      - '"myuniqueindex" in output.stdout'
+      - '"unique\" : true," in output.stdout'
 
 # Check adding a sparse index
 # Check adding a TTL index
