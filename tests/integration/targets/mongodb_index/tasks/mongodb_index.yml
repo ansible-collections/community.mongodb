@@ -123,6 +123,7 @@
           name: myuniqueindex
           unique: true
         state: present
+  register: result
 
 - assert:
     that:
