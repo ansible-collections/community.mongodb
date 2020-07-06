@@ -108,7 +108,36 @@
 
 # Check adding 2 indexes
 # Check adding 3 indexes
-# Check adding a unique index
+- name: Add a unique index
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: myuniqueindex
+          unique: true
+        state: present
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_created == ["test.rhys.myuniqueindex"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"test.rhys.myuniqueindex" in output.stdout'
+
 # Check adding a sparse index
 # Check adding a TTL index
 # Check adding an index in the background
