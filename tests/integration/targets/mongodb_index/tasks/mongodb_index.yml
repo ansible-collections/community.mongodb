@@ -1,5 +1,7 @@
 # Copyright 2020, Rhys Campbell <rhys.james.campbell@googlemail.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Simple index
 - name: Create an index on a collection (check mode)
   mongodb_index:
     login_port: 27017
@@ -105,9 +107,12 @@
 - assert:
     that:
       - '"myindex" not in output.stdout'
+# EOF Simple index
 
 # Check adding 2 indexes
 # Check adding 3 indexes
+
+# UNIQUE
 - name: Add a unique index
   mongodb_index:
     login_port: 27017
@@ -142,8 +147,104 @@
       - '"myuniqueindex" in output.stdout'
       - '"unique\" : true," in output.stdout'
 
+- name: Drop the unique index we just created
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: myuniqueindex
+        state: absent
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_dropped == ["test.rhys.myuniqueindex"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"myuniqueindex" not in output.stdout'
+# EOF UNIQUE
+
+# TTL
+- name: Add a ttl index
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+          created: 1
+        options:
+          name: myttlindex
+          expireAfterSeconds: 3600
+        state: present
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_created == ["test.rhys.myttlindex"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"myttlindex" in output.stdout'
+      - '"expireAfterSeconds\" : 3600," in output.stdout'
+
+- name: Drop the unique index we just created
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: myttlindex
+        state: absent
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_dropped == ["test.rhys.myttlindex"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"myttlindex" not in output.stdout'
+# EOF TTL
+
 # Check adding a sparse index
-# Check adding a TTL index
 # Check adding an index in the background
 # Check adding a partial index
 
