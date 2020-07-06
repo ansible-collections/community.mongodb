@@ -211,7 +211,7 @@
 - assert:
     that:
       - '"myttlindex" in output.stdout'
-      - '"expireAfterSeconds\" : 3600," in output.stdout'
+      - '"expireAfterSeconds\" : 3600" in output.stdout'
 
 - name: Drop the unique index we just created
   mongodb_index:
