@@ -347,7 +347,6 @@
       - '"mypartialindex" in output.stdout'
       - '"partialFilterExpression" in output.stdout'
       - '"rating\" :" in output.stdout'
-      - '"\"\$gt\" : 5" in output.stdout'
 
 - name: Drop the partial index we just created
   mongodb_index:
