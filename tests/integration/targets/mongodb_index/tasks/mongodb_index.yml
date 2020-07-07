@@ -310,9 +310,75 @@
       - '"mysparseindex" not in output.stdout'
 # EOF SPARSE
 
-# Check adding an index in the background
-# Check adding a partial index
+# PARTIAL
+- name: Add a partial index
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+          last_login: -1
+        options:
+          name: mypartialindex
+          partialFilterExpression:
+            last_login:
+              $gt: 5
+        state: present
+  register: result
 
+- assert:
+    that:
+      - result is changed
+      - result.indexes_created == ["test.rhys.mypartialindex"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"mypartialindex" in output.stdout'
+      - '"partialFilterExpression in output.stdout'
+
+- name: Drop the partial index we just created
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: mypartialindex
+        state: absent
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_dropped == ["test.rhys.mypartialindex"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"mypartialindex" not in output.stdout'
+# EOF PARTIAL
+
+# Check adding an index in the background
 # Check misssing database key
 # Check database is not string
 # Check collection is not string
