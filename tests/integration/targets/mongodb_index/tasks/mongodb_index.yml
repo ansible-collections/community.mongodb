@@ -325,7 +325,7 @@
         options:
           name: mypartialindex
           partialFilterExpression:
-            last_login:
+            rating:
               $gt: 5
         state: present
   register: result
@@ -345,7 +345,7 @@
 - assert:
     that:
       - '"mypartialindex" in output.stdout'
-      - '"partialFilterExpression in output.stdout'
+      - '"partialFilterExpression" in output.stdout'
 
 - name: Drop the partial index we just created
   mongodb_index:
