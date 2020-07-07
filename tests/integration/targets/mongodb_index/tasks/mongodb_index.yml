@@ -257,7 +257,7 @@
         keys:
           last_login: -1
         options:
-          name: msparseindex
+          name: mysparseindex
           sparse: true
         state: present
   register: result
