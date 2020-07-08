@@ -215,7 +215,7 @@ def main():
             module.fail_json(msg="collection key should be str")
         elif i["state"] == "present" and "keys" not in i.keys():
             module.fail_json(msg="keys must be supplied when state is present")
-        elif i["state"] == "present" and isinstance(i["keys"], dict):
+        elif i["state"] == "present" and not isinstance(i["keys"], dict):
             module.fail_json(msg="keys key should be dict")
         elif not isinstance(i["options"], dict):
             module.fail_json(msg="options key should be dict")
