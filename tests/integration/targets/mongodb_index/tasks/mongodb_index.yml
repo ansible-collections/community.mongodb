@@ -379,7 +379,7 @@
       - '"mypartialindex" not in output.stdout'
 # EOF PARTIAL
 
-# Background
+# Background. Option ignored from 4.2
 - name: Add a index in the background (deprecated)
   mongodb_index:
     login_port: 27017
@@ -389,7 +389,8 @@
     indexes:
       - database: "test"
         collection: "rhys"
-        name: idxbackground
+        options:
+          name: idxbackground
         keys:
           username: -1
         backgroud: true
