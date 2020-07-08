@@ -379,7 +379,69 @@
       - '"mypartialindex" not in output.stdout'
 # EOF PARTIAL
 
-# Check adding an index in the background
+# Background
+- name: Add a index in the background (deprecated)
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        name: idxbackground
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_created == ["test.rhys.idxbackground"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"idxbackground" in output.stdout'
+
+- name: Drop the background index we just created
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: idxbackground
+        state: absent
+  register: result
+
+- assert:
+    that:
+      - result is changed
+      - result.indexes_dropped == ["test.rhys.idxbackground"]
+
+- name: Get indexes on collection
+  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  register: output
+
+- debug:
+    var: output
+
+- assert:
+    that:
+      - '"idxbackground" not in output.stdout'
+
 # Check misssing database key
 # Check database is not string
 # Check collection is not string
