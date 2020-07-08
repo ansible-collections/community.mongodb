@@ -1,0 +1,30 @@
+# Copyright 2020, Rhys Campbell <rhys.james.campbell@googlemail.com>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Main mongodb_info module tests
+- include_tasks: mongod_teardown.yml
+
+# TODO Tests without auth before here?
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Create admin user with module
+  mongodb_user:
+    login_port: 27017
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+  register: mongodb_admin_user_created
+
+- assert:
+    that:
+    - mongodb_admin_user_created.changed == True
+
+- import_tasks: mongodb_index.yml
+
+- include_tasks: mongod_teardown.yml
