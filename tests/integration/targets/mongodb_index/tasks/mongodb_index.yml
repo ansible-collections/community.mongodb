@@ -624,5 +624,64 @@
     that:
       - 'result.failed'
       - 'result.msg == "keys must be supplied when state is present"'
-# Check creating 5 index all with multiple options specified
+# EOF VALIDATION
+- name: Check creating 5 index all with multiple options specified
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "idx_unq_username"
+          unique: true
+        keys:
+          username: -1
+        state: present
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "idx_last_login"
+          sparse: true
+        keys:
+          last_login: -1
+        state: present
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "myindex"
+        keys:
+          first_name: 1
+          last_name: -1
+          city: 1
+        state: present
+      - database: "test"
+        collection: partialtest
+        options:
+          name: "idx_partialtest"
+          partialFilterExpression:
+            rating:
+              $gt: 5
+        keys:
+          rating: -1,
+          title: 1
+      - database: "test"
+        collection: "wideindex"
+        options:
+          name: "mywideindex"
+        keys:
+          email: -1
+          username: 1
+          first_name: 1
+          last_name: 1
+          dob: -1
+          city: 1
+          last_login: -1
+          review_count: 1
+          rating_count: 1
+          last_post: -1
+
+
 # Check creating and dropping a bunch of indexes
