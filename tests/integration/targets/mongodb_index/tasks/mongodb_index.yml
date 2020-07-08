@@ -462,8 +462,9 @@
   ignore_errors: yes
 
 - assert:
-    - result.failed
-    - result.msg = 'Missing required index key: database'
+    that:
+      - 'result.failed'
+      - 'result.msg == "Missing required index key: database"'
 # Check database is not string
 # Check collection is not string
 # Check when key spec for index is not a dict
