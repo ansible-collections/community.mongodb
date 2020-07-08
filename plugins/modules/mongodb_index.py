@@ -298,6 +298,47 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import index_exists, create_index, drop_index
 
+
+def validate_module(module):
+    '''
+    Runs validation rules specific the mongodb_index module
+    '''
+    required_index_keys = [
+        "database",
+        "collection",
+        "options",
+        "state",
+    ]
+    indexes = module.params['indexes']
+
+    if len(indexes) == 0:
+        module.fail_json(msg="One or more indexes must be specified")
+    if not all(isinstance(i, dict) for i in indexes):
+        module.fail_json(msg="Indexes must be supplied as dictionaries")
+
+    # Ensure keys are present in index spec
+    for k in required_index_keys:
+        for i in indexes:
+            if k not in i.keys():
+                module.fail_json(msg="Missing required index key {0}".format(k))
+
+    # Check index subkeys look correct
+    for i in indexes:
+        if not isinstance(i["database"], str):
+            module.fail_json(msg="database key should be str")
+        elif not isinstance(i["collection"], str):
+            module.fail_json(msg="collection key should be str")
+        elif i["state"] == "present" and "keys" not in i.keys():
+            module.fail_json(msg="keys must be supplied when state is present")
+        elif i["state"] == "present" and not isinstance(i["keys"], dict):
+            module.fail_json(msg="keys key should be dict")
+        elif not isinstance(i["options"], dict):
+            module.fail_json(msg="options key should be dict")
+        elif "name" not in i["options"]:
+            module.fail_json(msg="The options dict must contain a name field")
+        elif i["state"] not in ["present", "absent"]:
+            module.fail_json(msg="state must be one of present or absent")
+
 # ================
 # Module execution
 #
@@ -326,6 +367,8 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
+    validate_module(module)
+
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     login_database = module.params['login_database']
@@ -333,38 +376,6 @@ def main():
     login_port = module.params['login_port']
     ssl = module.params['ssl']
     indexes = module.params['indexes']
-
-    if len(indexes) == 0:
-        module.fail_json(msg="One or more indexes must be specified")
-    if not all(isinstance(i, dict) for i in indexes):
-        module.fail_json(msg="Indexes must be supplied as dictionaries")
-    required_index_keys = [
-        "database",
-        "collection",
-        "options",
-        "state",
-    ]
-    # Ensure keys are present in index spec
-    for k in required_index_keys:
-        for i in indexes:
-            if k not in i.keys():
-                module.fail_json(msg="Missing required index key {0}".format(k))
-    # Check index subkeys look correct
-    for i in indexes:
-        if not isinstance(i["database"], str):
-            module.fail_json(msg="database key should be str")
-        elif not isinstance(i["collection"], str):
-            module.fail_json(msg="collection key should be str")
-        elif i["state"] == "present" and "keys" not in i.keys():
-            module.fail_json(msg="keys must be supplied when state is present")
-        elif i["state"] == "present" and not isinstance(i["keys"], dict):
-            module.fail_json(msg="keys key should be dict")
-        elif not isinstance(i["options"], dict):
-            module.fail_json(msg="options key should be dict")
-        elif "name" not in i["options"]:
-            module.fail_json(msg="The options dict must contain a name field")
-        elif i["state"] not in ["present", "absent"]:
-            module.fail_json(msg="state must be one of present or absent")
 
     connection_params = {
         'host': login_host,
