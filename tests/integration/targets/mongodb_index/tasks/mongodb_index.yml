@@ -623,6 +623,6 @@
 - assert:
     that:
       - 'result.failed'
-      - 'result.msg == "eys must be supplied when state is present"'
+      - 'result.msg == "keys must be supplied when state is present"'
 # Check creating 5 index all with multiple options specified
 # Check creating and dropping a bunch of indexes
