@@ -90,7 +90,7 @@ options:
     default: always
     choices: [always, on_create]
     description:
-      - C(always) will update passwords if they differ.
+      - C(always) will always update passwords and cause the module to return changed. 
       - C(on_create) will only set the password for newly created users.
     type: str
 
