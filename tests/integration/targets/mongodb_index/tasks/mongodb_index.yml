@@ -667,6 +667,7 @@
         keys:
           rating: -1,
           title: 1
+        state: present
       - database: "test"
         collection: "wideindex"
         options:
@@ -682,6 +683,7 @@
           review_count: 1
           rating_count: 1
           last_post: -1
+        state: present
 
 
 # Check creating and dropping a bunch of indexes
