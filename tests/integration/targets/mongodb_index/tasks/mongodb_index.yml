@@ -514,11 +514,115 @@
       - 'result.failed'
       - 'result.msg == "collection key should be str"'
 
-# Check when key spec for index is not a dict
-# Check when options is not a dict
-# Check when "name" key is not in options dict
-# Check when state is something other that "absent" or "present"
-# Check when state is present and no kyes are supplied
+- name: Check when key spec for index is not a dict
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: idxbackground
+        keys: "stringisinvalid"
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
 
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "keys key should be dict"'
+
+- name: Check when options is not a dict
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options: "invalid"
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
+
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "options key should be dict"'
+
+- name: Check when "name" key is not in options dict
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          noname: "ihavenoname"
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
+
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "The options dict must contain a name field"'
+
+- name: Check when state is something other that "absent" or "present"
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: "idx_username"
+        keys:
+          username: -1
+        backgroud: true
+        state: invalid
+  register: result
+  ignore_errors: yes
+
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "state must be one of present or absent"'
+
+- name: Check when state is present and no keys are supplied
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: "idx_username"
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
+
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "eys must be supplied when state is present"'
 # Check creating 5 index all with multiple options specified
 # Check creating and dropping a bunch of indexes
