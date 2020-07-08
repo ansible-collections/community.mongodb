@@ -443,13 +443,34 @@
     that:
       - '"idxbackground" not in output.stdout'
 
-# Check misssing database key
+# Check missing database key
+- name: Add a index in the background (deprecated)
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - collection: "rhys"
+        options:
+          name: idxbackground
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
+
+- assert:
+    - result.failed
+    - result.msg = 'Missing required index key: database'
 # Check database is not string
 # Check collection is not string
 # Check when key spec for index is not a dict
 # Check when options is not a dict
 # Check when "name" key is not in options dict
 # Check when state is something other that "absent" or "present"
+# Check when state is present and no kyes are supplied
 
 # Check creating 5 index all with multiple options specified
 # Check creating and dropping a bunch of indexes
