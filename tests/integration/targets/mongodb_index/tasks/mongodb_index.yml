@@ -665,7 +665,7 @@
             rating:
               $gt: 5
         keys:
-          rating: -1,
+          rating: -1
           title: 1
         state: present
       - database: "test"
