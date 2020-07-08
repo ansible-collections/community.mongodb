@@ -206,7 +206,7 @@ def main():
     for k in required_index_keys:
         for i in indexes:
             if k not in i.keys():
-                module.fail_json(msg="Missing required index key: {0}".format(k))
+                module.fail_json(msg="Missing required index key {0}".format(k))
     # Check index subkeys look correct
     for i in indexes:
         if not isinstance(i["database"], str):

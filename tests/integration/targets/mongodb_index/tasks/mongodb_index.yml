@@ -443,8 +443,8 @@
     that:
       - '"idxbackground" not in output.stdout'
 
-# Check missing database key
-- name: Add a index in the background (deprecated)
+# Module validation tests
+- name: Missing database kys
   mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
@@ -464,9 +464,56 @@
 - assert:
     that:
       - 'result.failed'
-      #- 'result.msg == "Missing required index key: database"'
-# Check database is not string
-# Check collection is not string
+      - 'result.msg == "Missing required index key database"'
+
+- name: database key not a string
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database:
+          - "notastring"
+        collection: "rhys"
+        options:
+          name: idxbackground
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
+
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "database key should be str"'
+
+- name: collection key not a string
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection:
+          - "rhys"
+        options:
+          name: idxbackground
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+  register: result
+  ignore_errors: yes
+
+- assert:
+    that:
+      - 'result.failed'
+      - 'result.msg == "collection key should be str"'
+
 # Check when key spec for index is not a dict
 # Check when options is not a dict
 # Check when "name" key is not in options dict
