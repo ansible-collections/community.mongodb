@@ -121,6 +121,148 @@ EXAMPLES = r'''
             last_login: -1
         options:
           name: myindex2
+
+- name: Add a unique index
+  mongodb_index:
+    login_port: 27017
+    login_user: admin
+    login_password: secret
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+          username: 1
+        options:
+          name: myuniqueindex
+          unique: true
+        state: present
+
+- name: Add a ttl index
+  mongodb_index:
+    login_port: 27017
+    login_user: admin
+    login_password: secret
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+          created: 1
+        options:
+          name: myttlindex
+          expireAfterSeconds: 3600
+        state: present
+
+- name: Add a sparse index
+  mongodb_index:
+    login_port: 27017
+    login_user: admin
+    login_password: secret
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+          last_login: -1
+        options:
+          name: mysparseindex
+          sparse: true
+        state: present
+
+- name: Add a partial index
+  mongodb_index:
+    login_port: 27017
+    login_user: admin
+    login_password: secret
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        keys:
+          last_login: -1
+        options:
+          name: mypartialindex
+          partialFilterExpression:
+            rating:
+              $gt: 5
+        state: present
+
+- name: Add a index in the background (background option is deprecated from 4.2+)
+  mongodb_index:
+    login_port: 27017
+    login_user: admin
+    login_password: secret
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "rhys"
+        options:
+          name: idxbackground
+        keys:
+          username: -1
+        backgroud: true
+        state: present
+
+- name: Check creating 5 index all with multiple options specified
+  mongodb_index:
+    login_port: 27017
+    login_user: admin
+    login_password: secret
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "idx_unq_username"
+          unique: true
+        keys:
+          username: -1
+        state: present
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "idx_last_login"
+          sparse: true
+        keys:
+          last_login: -1
+        state: present
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "myindex"
+        keys:
+          first_name: 1
+          last_name: -1
+          city: 1
+        state: present
+      - database: "test"
+        collection: partialtest
+        options:
+          name: "idx_partialtest"
+          partialFilterExpression:
+            rating:
+              $gt: 5
+        keys:
+          rating: -1
+          title: 1
+        state: present
+      - database: "test"
+        collection: "wideindex"
+        options:
+          name: "mywideindex"
+        keys:
+          email: -1
+          username: 1
+          first_name: 1
+          last_name: 1
+          dob: -1
+          city: 1
+          last_login: -1
+          review_count: 1
+          rating_count: 1
+          last_post: -1
+        state: present
 '''
 
 RETURN = r'''

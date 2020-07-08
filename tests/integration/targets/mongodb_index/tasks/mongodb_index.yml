@@ -444,7 +444,7 @@
       - '"idxbackground" not in output.stdout'
 
 # Module validation tests
-- name: Missing database kys
+- name: Missing database key
   mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
@@ -692,8 +692,7 @@
       - "result.indexes_created|length == 5"
       - "result.indexes_dropped|length == 0"
 
-# Check creating and dropping a bunch of indexes
-- name: Check creating 5 index all with multiple options specified
+- name: Drop and create a bunch of indexes
   mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
