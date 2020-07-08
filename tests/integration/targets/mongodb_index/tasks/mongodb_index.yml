@@ -684,6 +684,68 @@
           rating_count: 1
           last_post: -1
         state: present
+  register: result
 
+- assert:
+    that:
+      - "result.changed"
+      - "result.indexes_created|length == 5"
+      - "result.indexes_dropped|length == 0"
 
 # Check creating and dropping a bunch of indexes
+- name: Check creating 5 index all with multiple options specified
+  mongodb_index:
+    login_port: 27017
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: "admin"
+    indexes:
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "idx_unq_username"
+        state: absent
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "idx_last_login"
+        state: absent
+      - database: "test"
+        collection: "indextest"
+        options:
+          name: "myindex"
+        state: absent
+      - database: "test"
+        collection: partialtest
+        options:
+          name: "idx_partialtest"
+        state: absent
+      - database: "test"
+        collection: "wideindex"
+        options:
+          name: "mywideindex"
+        state: absent
+      - database: "newdb"
+        collection: "test"
+        options:
+          name: "idxtest"
+          unique: true
+        keys:
+          username: -1
+        state: present
+      - database: "newdb"
+        collection: "test"
+        options:
+          name: "idxtest2"
+          unique: true
+        keys:
+          username: -1
+          last_login: -1
+        state: present
+  register: result
+
+- assert:
+    that:
+      - "result.changed"
+      - "result.indexes_created|length == 2"
+      - "result.indexes_dropped|length == 5"
