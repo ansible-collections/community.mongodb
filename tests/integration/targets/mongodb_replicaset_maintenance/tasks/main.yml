@@ -64,7 +64,7 @@
   assert:
     that:
     - mongodb_replicaset_maint_bad_pw.changed == False
-    - '''unable to connect to database'' in mongodb_replicaset_maint_bad_pw.msg'
+    - '''Authentication failed'' in mongodb_replicaset_maint_bad_pw.msg'
 
 - name: Put secondaries into maintenance
   mongodb_replicaset_maintenance:
