@@ -76,13 +76,16 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-changed: Whether the member was placed into maintenance mode or not.
+changed:
+  description: Whether the member was placed into maintenance mode or not.
   returned: success
   type: bool
-msg: A short description of what happened.
+msg:
+  description: A short description of what happened.
   returned: success
   type: str
-failed: If something went wrong
+failed:
+  description: If something went wrong
   returned: failed
   type: bool
 '''
