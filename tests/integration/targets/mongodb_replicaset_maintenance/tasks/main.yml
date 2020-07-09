@@ -14,10 +14,8 @@
 - name: Execute mongod script to restart with auth enabled
   include_tasks: mongod_replicaset.yml
 
-- name: Validate replicaset previously created
+- name: Create replicaset
   mongodb_replicaset:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -28,6 +26,18 @@
     - localhost:3002
     - localhost:3003
   register: mongodb_replicaset
+
+- name: Add mongodb admin user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
 
 - name: Check the status of the replicaset with mongodb_status module (auth)
   mongodb_status:
@@ -54,7 +64,7 @@
     - mongodb_replicaset_maint_bad_pw.changed == False
     - '''unable to connect to database'' in mongodb_replicaset_maint_bad_pw.msg'
 
-- name: Put secondaries into maintnenance
+- name: Put secondaries into maintenance
   mongodb_replicaset_maintenance:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
