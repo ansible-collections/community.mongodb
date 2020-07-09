@@ -68,6 +68,7 @@ jobs:
           - mongodb_parameter
           - mongodb_replicaset
           - mongodb_shard
+          - mongodb_shutdown
           - mongodb_status
           - mongodb_stepdown
           - mongodb_user
