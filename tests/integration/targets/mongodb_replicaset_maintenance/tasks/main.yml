@@ -135,13 +135,26 @@
       - "maint.changed"
       - "maint.msg == 'the member was removed from maintenance mode'"
 
-- name: Try to remove SECONDARY from maintenance
+- name: Try to remove SECONDARY from maintenance (check mode)
   mongodb_replicaset_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     maintenance: false
   check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'the member was removed from maintenance mode'"
+
+- name: Try to remove SECONDARY from maintenance
+  mongodb_replicaset_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
   register: maint
 
 - assert:
