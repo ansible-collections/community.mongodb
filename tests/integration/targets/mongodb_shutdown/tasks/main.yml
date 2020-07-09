@@ -1,0 +1,84 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongod_auth: true
+
+- name: Execute mongod script to restart with auth enabled
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+  register: mongodb_replicaset
+
+- name: Add mongodb admin user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
+
+- name: Shutdown the mongod process - 3001
+  mongodb_shutdown:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+  register: shutdown
+
+- assert:
+    that:
+      - "shutdown.changed == True"
+      - "shutdown.msg == 'mongod process was terminated sucessfully'"
+
+- name: Shutdown the mongod process - 3002
+  mongodb_maintenance:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: 3002
+    force: yes
+  register: shutdown
+
+- assert:
+    that:
+      - "shutdown.changed == True"
+      - "shutdown.msg == 'mongod process was terminated sucessfully'"
+
+- name: Shutdown the mongod process - 3003
+  mongodb_maintenance:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: 3003
+    force: yes
+    timeout: 99
+  register: shutdown
+
+- assert:
+    that:
+      - "shutdown.changed == True"
+      - "shutdown.msg == 'mongod process was terminated sucessfully'"
+
+- include_tasks: mongod_teardown.yml
