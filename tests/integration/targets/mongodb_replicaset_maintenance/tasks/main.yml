@@ -46,6 +46,8 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 5
+    interval: 10
 
 - name: Test with bad password
   mongodb_replicaset_maintenance:
