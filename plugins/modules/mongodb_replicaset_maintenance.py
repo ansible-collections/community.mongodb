@@ -199,7 +199,7 @@ def main():
     try:
         state = member_state(client)
         if state == "PRIMARY":
-            result["msg"] == "no action taken as member state was PRIMARY"
+            result["msg"] = "no action taken as member state was PRIMARY"
         elif state == "SECONDARY":
             if module.check_mode:
                 result["changed"] = True
@@ -211,7 +211,7 @@ def main():
         elif state == "RECOVERING":
             result["msg"] = "no action taken as member is already in a RECOVERING state"
         else:
-            result["msg"] == "no action taken as member state was {0}".format(state)
+            result["msg"] = "no action taken as member state was {0}".format(state)
     except Exception as excep:
         module.fail_json(msg='module encountered an error: %s' % to_native(excep))
 
