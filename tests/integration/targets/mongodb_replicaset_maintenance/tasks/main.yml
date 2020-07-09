@@ -66,7 +66,21 @@
     - mongodb_replicaset_maint_bad_pw.changed == False
     - '''Authentication failed'' in mongodb_replicaset_maint_bad_pw.msg'
 
-- name: Put secondaries into maintenance
+- name: Try to put PRIMARY into maintenance (check mode)
+  mongodb_replicaset_maintenance:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'no action taken as member state was PRIMARY'"
+
+- name: Try to put PRIMARY into maintenance
   mongodb_replicaset_maintenance:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -74,7 +88,23 @@
     maintenance: true
   register: maint
 
-- debug:
-    var: maint
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'no action taken as member state was PRIMARY'"
+
+- name: Try to put SECONARY into maintenance (check mode)
+  mongodb_replicaset_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'member was placed into maintenance mode'"
 
 - include_tasks: mongod_teardown.yml

@@ -201,15 +201,27 @@ def main():
         if state == "PRIMARY":
             result["msg"] = "no action taken as member state was PRIMARY"
         elif state == "SECONDARY":
-            if module.check_mode:
-                result["changed"] = True
-                result["msg"] = "member was placed into maintnenance mode"
+            if maintenance:
+                if module.check_mode:
+                    result["changed"] = True
+                    result["msg"] = "member was placed into maintenance mode"
+                else:
+                    put_in_maint_mode(client)
+                    result["changed"] = True
+                    result["msg"] = "member was placed into maintenance mode"
             else:
-                put_in_maint_mode(client)
-                result["changed"] = True
-                result["msg"] = "member was placed into maintnenance mode"
+                result["msg"] = "No action taken as maintenance parameter is false"
         elif state == "RECOVERING":
-            result["msg"] = "no action taken as member is already in a RECOVERING state"
+            if maintenance:
+                result["msg"] = "no action taken as member is already in a RECOVERING state"
+            else:
+                if module.check_mode:
+                    result["changed"] = True
+                    result["msg"] = "the member was removed from maintenance mode"
+                else:
+                    remove_maint_mode(client)
+                    result["changed"] = True
+                    result["msg"] = "the member was removed from maintenance mode"
         else:
             result["msg"] = "no action taken as member state was {0}".format(state)
     except Exception as excep:
