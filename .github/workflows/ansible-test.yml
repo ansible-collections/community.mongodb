@@ -77,8 +77,8 @@ jobs:
           - ubuntu1804
           - centos8
         ansible:
+          - stable-2.9
           - stable-2.10
-          - stable-2.11
           - devel
     steps:
 
