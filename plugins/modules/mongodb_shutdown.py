@@ -109,22 +109,6 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
-def mongodb_shutdown(client, force, timeout):
-    """Check if a replicaset exists.
-
-    Args:
-        client (cursor): Mongodb cursor on admin database.
-        force: bool, true or false
-        timeout: int, timeout to wait for shutdown
-
-    Returns:
-        bool
-    """
-    state = None
-    client['admin'].command({"shutdown": 1, "force": force, "timeout": timeout})
-    return True
-
-
 def main():
     module = AnsibleModule(
         argument_spec=dict(
@@ -196,12 +180,14 @@ def main():
         except Exception as excep:
             module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
 
-    try:
-        mongodb_shutdown(client, force, timeout)
-        result["changed"] = True
-        result["msg"] = "mongod process was terminated sucessfully"
-    except Exception as excep:
-        module.fail_json(msg='module encountered an error: %s' % to_native(excep))
+        try:
+            client['admin'].command({"shutdown": 1, "force": force, "timeout": timeout})
+        except Exception as excep:
+            if "connection closed" in str(excep):
+                result["changed"] = True
+                result["msg"] = "mongod process was terminated sucessfully"
+            else:
+                result["msg"] = "An error occurred: {0}".format(excep)
 
     module.exit_json(**result)
 
