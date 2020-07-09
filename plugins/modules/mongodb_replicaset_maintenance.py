@@ -169,8 +169,8 @@ def main():
 
     try:
         client = MongoClient(**connection_params)
-    except Exception as e:
-        module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(e))
+    except Exception as excep:
+        module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
@@ -186,8 +186,8 @@ def main():
             # Get server version:
             try:
                 srv_version = LooseVersion(client.server_info()['version'])
-            except Exception as e:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
+            except Exception as excep:
+                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
 
             # Get driver version::
             driver_version = LooseVersion(PyMongoVersion)
@@ -213,7 +213,7 @@ def main():
         else:
             result["msg"] == "no action taken as member state was {0}".format(state)
     except Exception as excep:
-        module.fail_json(msg='module encountered an error: %s' % to_native(e))
+        module.fail_json(msg='module encountered an error: %s' % to_native(excep))
 
     module.exit_json(**result)
 
