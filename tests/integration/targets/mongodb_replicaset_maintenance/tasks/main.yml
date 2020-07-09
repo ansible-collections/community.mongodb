@@ -1,0 +1,68 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongod_auth: true
+
+- name: Execute mongod script to restart with auth enabled
+  include_tasks: mongod_replicaset.yml
+
+- name: Validate replicaset previously created
+  mongodb_replicaset:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+  register: mongodb_replicaset
+
+- name: Check the status of the replicaset with mongodb_status module (auth)
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
+
+- name: Test with bad password
+  mongodb_replicaset_maintenance:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: XXXXXXXXXXXXXXXX
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    maintenance: true
+  register: mongodb_replicaset_maint_bad_pw
+  ignore_errors: true
+
+- name: Assert login failed
+  assert:
+    that:
+    - mongodb_replicaset_maint_bad_pw.changed == False
+    - '''unable to connect to database'' in mongodb_replicaset_maint_bad_pw.msg'
+
+- name: Put secondaries into maintnenance
+  mongodb_replicaset_maintenance:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  register: maint
+
+- debug:
+    var: maint
+
+- include_tasks: mongod_teardown.yml

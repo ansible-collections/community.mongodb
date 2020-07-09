@@ -120,12 +120,12 @@ def member_state(client):
     return state
 
 
-def is_in_maint_mode(client):
-    pass
-
-
 def put_in_maint_mode(client):
-    pass
+    client['admin'].command('replSetMaintenance', True)
+
+
+def remove_maint_mode(client):
+    client['admin'].command('replSetMaintenance', False)
 
 
 def main():
@@ -168,9 +168,10 @@ def main():
         connection_params["ssl"] = ssl
         connection_params["ssl_cert_reqs"] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
 
-    try:
-
-        client = MongoClient(**connection_params)
+        try:
+            client = MongoClient(**connection_params)
+        except Exception as e:
+            module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(e))
 
         if login_user is None and login_password is None:
             mongocnf_creds = load_mongocnf()
@@ -201,26 +202,19 @@ def main():
             if state == "PRIMARY":
                 result["msg"] == "no action taken as member state was PRIMARY"
             elif state == "SECONDARY":
-                is_in_maint_mode = member_maint_mode(client)
                 if module.check_mode:
-                    if is_in_maint_mode(client):
-                        result["msg"] == "member is already in maintenance mode"
-                    else:
-                        result["changed"] = False
-                        result["msg"] = "member was placed into maintnenance mode"
+                    result["changed"] = True
+                    result["msg"] = "member was placed into maintnenance mode"
                 else:
-                    if is_in_maint_mode:
-                        result["msg"] == "member is already in maintenance mode"
-                    else:
-                        put_in_maint_mode(client)
-                        result["changed"] = False
-                        result["msg"] = "member was placed into maintnenance mode"
-
+                    put_in_maint_mode(client)
+                    result["changed"] = True
+                    result["msg"] = "member was placed into maintnenance mode"
+            elif state == "RECOVERING":
+                result["msg"] = "no action taken as member is already in a RECOVERING state"
             else:
                 result["msg"] == "no action taken as member state was {0}".format(state)
         except Excetion as excep:
             module.fail_json(msg='module encountered an error: %s' % to_native(e))
-
 
 
 if __name__ == '__main__':
