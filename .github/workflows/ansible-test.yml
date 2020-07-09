@@ -64,9 +64,9 @@ jobs:
         mongodb_module:
           - mongodb_index
           - mongodb_info
+          - mongodb_maintenance
           - mongodb_parameter
           - mongodb_replicaset
-          - mongodb_replicaset_maintenance
           - mongodb_shard
           - mongodb_status
           - mongodb_stepdown
