@@ -81,4 +81,14 @@
       - "shutdown.changed == True"
       - "shutdown.msg == 'mongod process was terminated sucessfully'"
 
+- name: Get pids of any mongod processes
+  pids:
+      name: mongod
+  register: pids_of_mongod
+
+- name: No mongod processes should be running
+  assert:
+    that:
+      - "pids_of_mongod.pids|length == 0"
+
 - include_tasks: mongod_teardown.yml
