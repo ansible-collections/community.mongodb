@@ -77,7 +77,7 @@
 
 - assert:
     that:
-      - "maint.changed is False"
+      - "maint.changed == False"
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
 - name: Try to put PRIMARY into maintenance
@@ -90,7 +90,7 @@
 
 - assert:
     that:
-      - "maint.changed is False"
+      - "maint.changed == False"
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
 - name: Try to put SECONARY into maintenance (check mode)
@@ -170,7 +170,7 @@
 
 - assert:
     that:
-      - "maint.changed is False"
+      - "maint.changed == False"
       - "maint.msg == 'No action taken as maintenance parameter is false and member state is SECONDARY'"
 
 - include_tasks: mongod_teardown.yml
