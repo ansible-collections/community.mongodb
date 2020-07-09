@@ -53,7 +53,7 @@
       - "shutdown.msg == 'mongod process was terminated sucessfully'"
 
 - name: Shutdown the mongod process - 3002
-  mongodb_maintenance:
+  mongodb_shutdown:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
@@ -67,7 +67,7 @@
       - "shutdown.msg == 'mongod process was terminated sucessfully'"
 
 - name: Shutdown the mongod process - 3003
-  mongodb_maintenance:
+  mongodb_shutdown:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
