@@ -42,7 +42,7 @@ options:
     - The MongoDB port to login to.
     type: int
     default: 27017
-  maintnenance:
+  maintenance:
     description: Enable or disable maintnenance mode.
     type: bool
     default: false
@@ -77,13 +77,13 @@ EXAMPLES = r'''
 
 RETURN = r'''
 mongodb_replicaset_maintenance:
-  changed: Whether the member was placed into maintnenance mode or not.
+  - changed: Whether the member was placed into maintnenance mode or not.
     returned: success
     type: bool
-  msg: A short description of what happened.
+  - msg: A short description of what happened.
     returned: success
     type: str
-  failed: If something went wrong
+  - failed: If something went wrong
     returned: failed
     type: bool
 '''
@@ -153,6 +153,7 @@ def main():
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     maintenance = module.params['maintenance']
+    ssl = module.params['ssl']
 
     result = dict(
         changed=False,
@@ -212,7 +213,7 @@ def main():
                 result["msg"] = "no action taken as member is already in a RECOVERING state"
             else:
                 result["msg"] == "no action taken as member state was {0}".format(state)
-        except Excetion as excep:
+        except Exception as excep:
             module.fail_json(msg='module encountered an error: %s' % to_native(e))
 
 
