@@ -50,7 +50,7 @@
     interval: 10
 
 - name: Test with bad password
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_user: '{{ mongodb_admin_user }}'
     login_password: XXXXXXXXXXXXXXXX
     login_host: localhost
@@ -67,7 +67,7 @@
     - '''Authentication failed'' in mongodb_replicaset_maint_bad_pw.msg'
 
 - name: Try to put PRIMARY into maintenance (check mode)
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -81,7 +81,7 @@
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
 - name: Try to put PRIMARY into maintenance
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -94,7 +94,7 @@
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
 - name: Try to put SECONARY into maintenance (check mode)
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -108,7 +108,7 @@
       - "maint.msg == 'member was placed into maintenance mode'"
 
 - name: Try to put SECONDARY into maintenance
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -122,7 +122,7 @@
       - "maint.msg == 'member was placed into maintenance mode'"
 
 - name: Try to remove SECONDARY from maintenance (check mode)
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -136,7 +136,7 @@
       - "maint.msg == 'the member was removed from maintenance mode'"
 
 - name: Try to remove SECONDARY from maintenance (check mode)
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -150,7 +150,7 @@
       - "maint.msg == 'the member was removed from maintenance mode'"
 
 - name: Try to remove SECONDARY from maintenance
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -173,7 +173,7 @@
     interval: 10
 
 - name: Try to remove maintenance mode when already SECONDARY
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'

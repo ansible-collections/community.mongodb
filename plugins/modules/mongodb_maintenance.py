@@ -9,10 +9,11 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: mongodb_replicaset_maintenance
+module: mongodb_maintenance
 short_description: Enables or disables maintnenance mode for a secondary member.
 description:
 - Enables or disables maintnenance mode for a secondary member.
+- Wrapper around the replSetMaintenance command.
 - Has no effect when executed against a PRIMARY member.
 - When enabled the SECONDARY member will not service reads.
 author: Rhys Campbell (@rhysmeister)
@@ -66,17 +67,16 @@ requirements:
 
 EXAMPLES = r'''
 - name: Enable maintenance mode
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     maintenance: true
 
 - name: Disable maintenance mode
-  mongodb_replicaset_maintenance:
+  mongodb_maintenance:
     maintnenance: false
-
 '''
 
 RETURN = r'''
-changed: Whether the member was placed into maintnenance mode or not.
+changed: Whether the member was placed into maintenance mode or not.
   returned: success
   type: bool
 msg: A short description of what happened.
