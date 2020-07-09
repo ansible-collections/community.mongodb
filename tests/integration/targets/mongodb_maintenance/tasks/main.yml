@@ -1,0 +1,189 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongod_auth: true
+
+- name: Execute mongod script to restart with auth enabled
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+  register: mongodb_replicaset
+
+- name: Add mongodb admin user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
+
+- name: Check the status of the replicaset with mongodb_status module (auth)
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 5
+    interval: 10
+
+- name: Test with bad password
+  mongodb_maintenance:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: XXXXXXXXXXXXXXXX
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    maintenance: true
+  register: mongodb_replicaset_maint_bad_pw
+  ignore_errors: true
+
+- name: Assert login failed
+  assert:
+    that:
+    - mongodb_replicaset_maint_bad_pw.changed == False
+    - '''Authentication failed'' in mongodb_replicaset_maint_bad_pw.msg'
+
+- name: Try to put PRIMARY into maintenance (check mode)
+  mongodb_maintenance:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed == False"
+      - "maint.msg == 'no action taken as member state was PRIMARY'"
+
+- name: Try to put PRIMARY into maintenance
+  mongodb_maintenance:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed == False"
+      - "maint.msg == 'no action taken as member state was PRIMARY'"
+
+- name: Try to put SECONARY into maintenance (check mode)
+  mongodb_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'member was placed into maintenance mode'"
+
+- name: Try to put SECONDARY into maintenance
+  mongodb_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  check_mode: false
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'member was placed into maintenance mode'"
+
+- name: Try to remove SECONDARY from maintenance (check mode)
+  mongodb_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'the member was removed from maintenance mode'"
+
+- name: Try to remove SECONDARY from maintenance (check mode)
+  mongodb_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'the member was removed from maintenance mode'"
+
+- name: Try to remove SECONDARY from maintenance
+  mongodb_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'the member was removed from maintenance mode'"
+
+- name: Ensure replicaset status is good
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 5
+    interval: 10
+
+- name: Try to remove maintenance mode when already SECONDARY
+  mongodb_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed == False"
+      - "maint.msg == 'No action taken as maintenance parameter is false and member state is SECONDARY'"
+
+- include_tasks: mongod_teardown.yml
