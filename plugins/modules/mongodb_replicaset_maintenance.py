@@ -167,53 +167,53 @@ def main():
         connection_params["ssl"] = ssl
         connection_params["ssl_cert_reqs"] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
 
+    try:
+        client = MongoClient(**connection_params)
+    except Exception as e:
+        module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(e))
+
+    if login_user is None and login_password is None:
+        mongocnf_creds = load_mongocnf()
+        if mongocnf_creds is not False:
+            login_user = mongocnf_creds['user']
+            login_password = mongocnf_creds['password']
+    elif login_password is None or login_user is None:
+        module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
+
+    if login_user is not None and login_password is not None:
         try:
-            client = MongoClient(**connection_params)
-        except Exception as e:
-            module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(e))
-
-        if login_user is None and login_password is None:
-            mongocnf_creds = load_mongocnf()
-            if mongocnf_creds is not False:
-                login_user = mongocnf_creds['user']
-                login_password = mongocnf_creds['password']
-        elif login_password is None or login_user is None:
-            module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
-
-        if login_user is not None and login_password is not None:
+            client.admin.authenticate(login_user, login_password, source=login_database)
+            # Get server version:
             try:
-                client.admin.authenticate(login_user, login_password, source=login_database)
-                # Get server version:
-                try:
-                    srv_version = LooseVersion(client.server_info()['version'])
-                except Exception as e:
-                    module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
+                srv_version = LooseVersion(client.server_info()['version'])
+            except Exception as e:
+                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
 
-                # Get driver version::
-                driver_version = LooseVersion(PyMongoVersion)
-                # Check driver and server version compatibility:
-                check_compatibility(module, srv_version, driver_version)
-            except Exception as excep:
-                module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
-
-        try:
-            state = member_state(client)
-            if state == "PRIMARY":
-                result["msg"] == "no action taken as member state was PRIMARY"
-            elif state == "SECONDARY":
-                if module.check_mode:
-                    result["changed"] = True
-                    result["msg"] = "member was placed into maintnenance mode"
-                else:
-                    put_in_maint_mode(client)
-                    result["changed"] = True
-                    result["msg"] = "member was placed into maintnenance mode"
-            elif state == "RECOVERING":
-                result["msg"] = "no action taken as member is already in a RECOVERING state"
-            else:
-                result["msg"] == "no action taken as member state was {0}".format(state)
+            # Get driver version::
+            driver_version = LooseVersion(PyMongoVersion)
+            # Check driver and server version compatibility:
+            check_compatibility(module, srv_version, driver_version)
         except Exception as excep:
-            module.fail_json(msg='module encountered an error: %s' % to_native(e))
+            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+
+    try:
+        state = member_state(client)
+        if state == "PRIMARY":
+            result["msg"] == "no action taken as member state was PRIMARY"
+        elif state == "SECONDARY":
+            if module.check_mode:
+                result["changed"] = True
+                result["msg"] = "member was placed into maintnenance mode"
+            else:
+                put_in_maint_mode(client)
+                result["changed"] = True
+                result["msg"] = "member was placed into maintnenance mode"
+        elif state == "RECOVERING":
+            result["msg"] = "no action taken as member is already in a RECOVERING state"
+        else:
+            result["msg"] == "no action taken as member state was {0}".format(state)
+    except Exception as excep:
+        module.fail_json(msg='module encountered an error: %s' % to_native(e))
 
     module.exit_json(**result)
 
