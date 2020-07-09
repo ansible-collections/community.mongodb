@@ -115,7 +115,7 @@ def member_state(client):
     doc = client['admin'].command('replSetGetStatus')
     for member in doc["members"]:
         if member["self"]:
-            state = str(doc['stateStr'])
+            state = str(member['stateStr'])
     return state
 
 
