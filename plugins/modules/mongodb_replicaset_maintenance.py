@@ -76,16 +76,15 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-mongodb_replicaset_maintenance:
-  - changed: Whether the member was placed into maintnenance mode or not.
-    returned: success
-    type: bool
-  - msg: A short description of what happened.
-    returned: success
-    type: str
-  - failed: If something went wrong
-    returned: failed
-    type: bool
+changed: Whether the member was placed into maintnenance mode or not.
+  returned: success
+  type: bool
+msg: A short description of what happened.
+  returned: success
+  type: str
+failed: If something went wrong
+  returned: failed
+  type: bool
 '''
 
 from copy import deepcopy
@@ -216,6 +215,7 @@ def main():
         except Exception as excep:
             module.fail_json(msg='module encountered an error: %s' % to_native(e))
 
+    module.exit_json(**result)
 
 if __name__ == '__main__':
     main()
