@@ -210,7 +210,7 @@ def main():
                     result["changed"] = True
                     result["msg"] = "member was placed into maintenance mode"
             else:
-                result["msg"] = "No action taken as maintenance parameter is false"
+                result["msg"] = "No action taken as maintenance parameter is false and member state is SECONDARY"
         elif state == "RECOVERING":
             if maintenance:
                 result["msg"] = "no action taken as member is already in a RECOVERING state"

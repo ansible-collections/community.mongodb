@@ -77,7 +77,7 @@
 
 - assert:
     that:
-      - "maint.changed"
+      - "maint.changed is False"
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
 - name: Try to put PRIMARY into maintenance
@@ -90,7 +90,7 @@
 
 - assert:
     that:
-      - "maint.changed"
+      - "maint.changed is False"
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
 - name: Try to put SECONARY into maintenance (check mode)
@@ -106,5 +106,71 @@
     that:
       - "maint.changed"
       - "maint.msg == 'member was placed into maintenance mode'"
+
+- name: Try to put SECONDARY into maintenance
+  mongodb_replicaset_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: true
+  check_mode: false
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'member was placed into maintenance mode'"
+
+- name: Try to remove SECONDARY from maintenance (check mode)
+  mongodb_replicaset_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'the member was removed from maintenance mode'"
+
+- name: Try to remove SECONDARY from maintenance
+  mongodb_replicaset_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed"
+      - "maint.msg == 'the member was removed from maintenance mode'"
+
+- name: Ensure replicaset status is good
+  mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 5
+    interval: 10
+
+- name: Try to remove maintenance mode when already SECONDARY
+  mongodb_replicaset_maintenance:
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    maintenance: false
+  check_mode: true
+  register: maint
+
+- assert:
+    that:
+      - "maint.changed is False"
+      - "maint.msg == 'No action taken as maintenance parameter is false and member state is SECONDARY'"
 
 - include_tasks: mongod_teardown.yml
