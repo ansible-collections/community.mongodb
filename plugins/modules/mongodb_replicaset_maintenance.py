@@ -153,7 +153,6 @@ def main():
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     maintenance = module.params['maintenance']
-    members = module.params['members']
 
     result = dict(
         changed=False,
