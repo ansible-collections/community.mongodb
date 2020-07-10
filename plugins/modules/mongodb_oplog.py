@@ -117,16 +117,15 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 def get_olplog_size(client):
-    pass
-    #client['admin'].command('replSetMaintenance', False)
+    return client["local"].command("collStats", "rs.oplog").maxSize
 
 
-def set_oplog_size(cleint):
-    pass
+def set_oplog_size(client, oplog_size_mb):
+    client["admin"].command({"replSetResizeOplog": 1, "size": oplog_size_mb})
 
 
 def compact_oplog(client):
-    pass
+    client["local"].command({"compact", "oplog.rs"})
 
 
 def main():
@@ -227,7 +226,7 @@ def main():
                     result["changed"] = True
                     result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(current_oplog_size,
                                                                                           oplog_size_mb)
-                    if state == "SECONDARY":
+                    if state == "SECONDARY" and current_oplog_size > oplog_size_mb:
                         try:
                             compact_oplog(client)
                             result["compacted"] = True
