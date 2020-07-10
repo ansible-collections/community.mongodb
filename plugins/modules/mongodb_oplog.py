@@ -15,6 +15,7 @@ description:
   - Resizes the MongoDB oplog.
   - This module should only be used with MongoDB 3.6 and above.
   - Old MongoDB versions should use an alternative method.
+  - Consult U(https://docs.mongodb.com/manual/tutorial/change-oplog-size) for further info.
 author: Rhys Campbell (@rhysmeister)
 options:
   login_user:
@@ -47,7 +48,7 @@ options:
       - Desired new size on MB of the oplog.
     type: int
     required: true
-  compact_secondaries:
+  compact:
     description:
       - Runs compact against the oplog.rs collection in the local database to reclaim disk space.
       - Will no run against PRIMARY members.
@@ -80,7 +81,7 @@ EXAMPLES = r'''
 - name: Resize oplog to 8 gigabytes and compact of secondaries to reclaim space
   mongodb_maintenance:
     oplog_size_mb:  8000
-    compact_secondaries: true
+    compact: true
 '''
 
 RETURN = r'''
@@ -137,7 +138,7 @@ def main():
             login_host=dict(type='str', default="localhost"),
             login_port=dict(type='int', default=27017),
             oplog_size_mb=dict(type='int', required=True),
-            compact_secondaries=dict(type='bool', default=False),
+            compact=dict(type='bool', default=False),
             ssl=dict(type='bool', default=False),
             ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
         ),
@@ -154,7 +155,7 @@ def main():
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     oplog_size_mb = module.params['oplog_size_mb']
-    compact_secondaries = module.params['compact_secondaries']
+    compact = module.params['compact']
     ssl = module.params['ssl']
 
     result = dict(
@@ -203,38 +204,38 @@ def main():
             current_oplog_size = get_olplog_size(client)
         except Exception as excep:
             module.fail_json(msg='Unable to get current oplog size: %s' % to_native(excep))
-            if oplog_size_mb == current_oplog_size:
-                result["msg"] = "oplog_size_mb is already {0} mb".format(oplog_size_mb)
-                result["compacted"] = False
+        if oplog_size_mb == current_oplog_size:
+            result["msg"] = "oplog_size_mb is already {0} mb".format(oplog_size_mb)
+            result["compacted"] = False
+        else:
+            try:
+                state = member_state(client)
+            except Exception as excep:
+                module.fail_json(msg='Unable to get member state: %s' % to_native(excep))
+            if module.check_mode:
+                result["changed"] = True
+                result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(current_oplog_size,
+                                                                                      oplog_size_mb)
+                if state == "SECONDARY":
+                    result["compacted"] = True
+                else:
+                    result["compacted"] = False
             else:
                 try:
-                    state = member_state(client)
-                except Exception as excep:
-                    module.fail_json(msg='Unable to get member state: %s' % to_native(excep))
-                if module.check_mode:
+                    set_oplog_size(client, oplog_size_mb)
                     result["changed"] = True
                     result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(current_oplog_size,
                                                                                           oplog_size_mb)
-                    if state == "SECONDARY":
-                        result["compacted"] = True
-                    else:
-                        result["compacted"] = False
-                else:
+                except Exception as excep:
+                    module.fail_json(msg='Unable to set oplog size: %s' % to_native(excep))
+                if state == "SECONDARY" and current_oplog_size > oplog_size_mb:
                     try:
-                        set_oplog_size(client, oplog_size_mb)
-                        result["changed"] = True
-                        result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(current_oplog_size,
-                                                                                              oplog_size_mb)
+                        compact_oplog(client)
+                        result["compacted"] = True
                     except Exception as excep:
-                        module.fail_json(msg='Unable to set oplog size: %s' % to_native(excep))
-                    if state == "SECONDARY" and current_oplog_size > oplog_size_mb:
-                        try:
-                            compact_oplog(client)
-                            result["compacted"] = True
-                        except Exception as excep:
-                            module.fail_json(msg='Error compacting member oplog: %s' % to_native(excep))
-                    else:
-                        result["compacted"] = False
+                        module.fail_json(msg='Error compacting member oplog: %s' % to_native(excep))
+                else:
+                    result["compacted"] = False
 
 
     module.exit_json(**result)
