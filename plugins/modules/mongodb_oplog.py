@@ -52,7 +52,7 @@ options:
     description:
       - Runs compact against the oplog.rs collection in the local database to reclaim disk space.
       - Will not run against PRIMARY members.
-      - The MongoDB user must have the readWrite role on the local database for this feature to work.
+      - The MongoDB user must have the compact role on the local database for this feature to work.
     type: bool
     default: false
     required: false
