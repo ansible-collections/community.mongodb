@@ -43,6 +43,8 @@
   mongodb_user:
     login_host: localhost
     login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset1 }}'
     database: admin
     name: '{{ mongodb_admin_user }}'
