@@ -1,0 +1,93 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongod_auth: true
+
+- name: Execute mongod script to restart with auth enabled
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+  register: mongodb_replicaset
+
+- name: Add mongodb admin user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
+
+- name: Resize the oplog - 3001
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact_secondaries: true
+  register: oplog
+
+- var:
+    debug: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+
+- name: Resize the oplog - 3002
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact_secondaries: true
+  register: oplog
+
+- var:
+    debug: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+
+- name: Resize the oplog - 3003
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact_secondaries: true
+  register: oplog
+
+- var:
+    debug: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+
+- include_tasks: mongod_teardown.yml
