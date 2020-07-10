@@ -46,7 +46,7 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     oplog_size_mb: 1384
-    compact_secondaries: true
+    compact: true
   register: oplog
 
 - debug:
@@ -63,7 +63,7 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     oplog_size_mb: 1384
-    compact_secondaries: true
+    compact: true
   register: oplog
 
 - debug:
@@ -80,7 +80,7 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     oplog_size_mb: 1384
-    compact_secondaries: true
+    compact: true
   register: oplog
 
 - debug:
