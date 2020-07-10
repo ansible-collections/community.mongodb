@@ -143,7 +143,7 @@ def main():
             ssl=dict(type='bool', default=False),
             ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
         ),
-        supports_check_mode=False,
+        supports_check_mode=True,
     )
 
     if not pymongo_found:
