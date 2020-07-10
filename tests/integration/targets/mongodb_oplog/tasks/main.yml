@@ -89,7 +89,7 @@
     that:
       - "oplog.changed == True"
       - "oplog.compacted == False"
-      - "oplog.msg == 'oplog has been resized from 1467271987 mb to 1384 mb'"
+      - "'to 1384 mb' in oplog.msg"
 # Tests 3001
 - name: Resize the oplog - 3001
   mongodb_oplog:
@@ -105,7 +105,7 @@
     that:
       - "oplog.changed == True"
       - "oplog.compacted == False"
-      - "oplog.msg == 'oplog has been resized from 1467271987 mb to 1384 mb'"
+      - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3001 (no change)
   mongodb_oplog:
@@ -138,7 +138,7 @@
     that:
       - "oplog.changed == True"
       - "oplog.compacted == True"
-      - "oplog.msg == 'oplog has been resized from 1467271987 mb to 1384 mb'"
+      - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3002
   mongodb_oplog:
@@ -154,7 +154,7 @@
     that:
       - "oplog.changed == True"
       - "oplog.compacted == True"
-      - "oplog.msg == 'oplog has been resized from 1467271987 mb to 1384 mb'"
+      - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3002 (no change)
   mongodb_oplog:
@@ -187,7 +187,7 @@
     that:
       - "oplog.changed == True"
       - "oplog.compacted == True"
-      - "oplog.msg == 'oplog has been resized from 1467271987 mb to 1384 mb'"
+      - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3003
   mongodb_oplog:
@@ -203,7 +203,7 @@
     that:
       - "oplog.changed == True"
       - "oplog.compacted == True"
-      - "oplog.msg == 'oplog has been resized from 1467271987 mb to 1384 mb'"
+      - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3003 (no change)
   mongodb_oplog:
