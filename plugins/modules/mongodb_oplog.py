@@ -126,7 +126,7 @@ def set_oplog_size(client, oplog_size_mb):
 
 
 def compact_oplog(client):
-    client["local"].command({"compact", "oplog.rs"})
+    client["local"].command("compact", "oplog.rs")
 
 
 def main():
