@@ -44,13 +44,27 @@
       );
     dest: mongodb_role.js
 
-- name: Run role file via the cmd line
-  shell: mongo admin --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }} mongodb_role.js
-
 - name: Add mongodb admin user
   mongodb_user:
     login_host: localhost
     login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
+    state: present
+
+- name: Run role file via the cmd line
+  shell: mongo admin --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }} mongodb_role.js
+
+- name: Add compactLocal role to user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset1 }}'
     database: admin
     name: '{{ mongodb_admin_user }}'
