@@ -155,6 +155,7 @@ def main():
     login_port = module.params['login_port']
     oplog_size_mb = module.params['oplog_size_mb']
     compact_secondaries = module.params['compact_secondaries']
+    ssl = module.params['ssl']
 
     result = dict(
         changed=False,
