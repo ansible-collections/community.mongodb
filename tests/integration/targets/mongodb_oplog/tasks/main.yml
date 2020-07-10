@@ -36,7 +36,8 @@
     name: '{{ mongodb_admin_user }}'
     password: '{{ mongodb_admin_password }}'
     roles:
-    - root
+      - root
+      - { "db": "local", "role": "readWrite" }
     state: present
 
 - name: Resize the oplog - 3001
