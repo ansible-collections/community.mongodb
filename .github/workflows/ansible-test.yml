@@ -65,6 +65,7 @@ jobs:
           - mongodb_index
           - mongodb_info
           - mongodb_maintenance
+          - mongodb_oplog
           - mongodb_parameter
           - mongodb_replicaset
           - mongodb_shard
