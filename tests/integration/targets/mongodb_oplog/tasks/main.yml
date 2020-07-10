@@ -37,6 +37,18 @@
     password: '{{ mongodb_admin_password }}'
     roles:
       - root
+    state: present
+
+- name: Add role so we can compact the oplog
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
       - { "db": "local", "role": "readWrite" }
     state: present
 
