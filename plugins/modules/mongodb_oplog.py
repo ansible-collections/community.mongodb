@@ -117,7 +117,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 def get_olplog_size(client):
-    return client["local"].command("collStats", "rs.oplog").maxSize
+    return client["local"].command("collStats", "oplog.rs").maxSize
 
 
 def set_oplog_size(client, oplog_size_mb):
