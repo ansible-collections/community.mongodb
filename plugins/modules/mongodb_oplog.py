@@ -217,7 +217,7 @@ def main():
                 result["changed"] = True
                 result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(current_oplog_size,
                                                                                       oplog_size_mb)
-                if state == "SECONDARY":
+                if state == "SECONDARY" and compact:
                     result["compacted"] = True
                 else:
                     result["compacted"] = False
@@ -229,7 +229,7 @@ def main():
                                                                                           oplog_size_mb)
                 except Exception as excep:
                     module.fail_json(msg='Unable to set oplog size: %s' % to_native(excep))
-                if state == "SECONDARY" and current_oplog_size > oplog_size_mb:
+                if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb:
                     try:
                         compact_oplog(client)
                         result["compacted"] = True
