@@ -56,6 +56,13 @@ options:
     type: bool
     default: false
     required: false
+  ver:
+    description:
+      - Version of MongoDB this module is supported from.
+      - You probably don't want to modifiy this.
+      - Included here for internal tetsing use.
+    type: str
+    default: "3.6"
   ssl:
     description:
       - Whether to use an SSL connection when connecting to the database.
@@ -141,6 +148,7 @@ def main():
             login_port=dict(type='int', default=27017),
             oplog_size_mb=dict(type='int', required=True),
             compact=dict(type='bool', default=False),
+            ver=dict(type='str', default='3.6'),
             ssl=dict(type='bool', default=False),
             ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
         ),
@@ -158,6 +166,7 @@ def main():
     login_port = module.params['login_port']
     oplog_size_mb = module.params['oplog_size_mb']
     compact = module.params['compact']
+    ver = module.params['ver']
     ssl = module.params['ssl']
 
     result = dict(
@@ -192,6 +201,8 @@ def main():
             # Get server version:
             try:
                 srv_version = LooseVersion(client.server_info()['version'])
+                if srv_version < LooseVersion(ver):
+                    module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
             except Exception as excep:
                 module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
 

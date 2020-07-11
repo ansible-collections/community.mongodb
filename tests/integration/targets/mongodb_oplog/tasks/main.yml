@@ -337,4 +337,21 @@
         - "oplog.changed == False"
         - "oplog.msg == 'Unable to set oplog size: oplog size should be 990MB at least'"
 
+- name: Test with unsupported version of MongoDB
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1000
+    compact: true
+    ver: "20.10"
+  ignore_errors: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == False"
+      - "'This module does not support MongoDB' in oplog.msg"
+
 - include_tasks: mongod_teardown.yml
