@@ -118,6 +118,7 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, member_state
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
+
 def get_olplog_size(client):
     return int(client["local"].command("collStats", "oplog.rs")["maxSize"]) / 1024 / 1024
 
@@ -237,7 +238,6 @@ def main():
                         module.fail_json(msg='Error compacting member oplog: %s' % to_native(excep))
                 else:
                     result["compacted"] = False
-
 
     module.exit_json(**result)
 
