@@ -81,6 +81,10 @@
       - "shutdown.changed == True"
       - "shutdown.msg == 'mongod process was terminated sucessfully'"
 
+- name: Wait a little for mongod pids to exit
+  pause:
+    seconds: 5
+
 - name: Get pids of any mongod processes
   pids:
       name: mongod

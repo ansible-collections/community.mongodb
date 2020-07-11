@@ -9,13 +9,13 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: mongodb_maintenance
-short_description: Enables or disables maintnenance mode for a secondary member.
+module: mongodb_oplog
+short_description: Resizes the MongoDB oplog.
 description:
-- Enables or disables maintnenance mode for a secondary member.
-- Wrapper around the replSetMaintenance command.
-- Has no effect when executed against a PRIMARY member.
-- When enabled the SECONDARY member will not service reads.
+  - Resizes the MongoDB oplog.
+  - This module should only be used with MongoDB 3.6 and above.
+  - Old MongoDB versions should use an alternative method.
+  - Consult U(https://docs.mongodb.com/manual/tutorial/change-oplog-size) for further info.
 author: Rhys Campbell (@rhysmeister)
 options:
   login_user:
@@ -43,15 +43,24 @@ options:
     - The MongoDB port to login to.
     type: int
     default: 27017
-  maintenance:
-    description: Enable or disable maintnenance mode.
+  oplog_size_mb:
+    description:
+      - Desired new size on MB of the oplog.
+    type: int
+    required: true
+  compact:
+    description:
+      - Runs compact against the oplog.rs collection in the local database to reclaim disk space.
+      - Will not run against PRIMARY members.
+      - The MongoDB user must have the compact role on the local database for this feature to work.
     type: bool
     default: false
+    required: false
   ssl:
     description:
-    - Whether to use an SSL connection when connecting to the database
+      - Whether to use an SSL connection when connecting to the database.
+    default: False
     type: bool
-    default: no
   ssl_cert_reqs:
     description:
     - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
@@ -66,18 +75,23 @@ requirements:
 '''
 
 EXAMPLES = r'''
-- name: Enable maintenance mode
-  mongodb_maintenance:
-    maintenance: true
+- name: Resize oplog to 16 gigabytes, or 16000 megabytes
+  mongodb_oplog:
+    oplog_size_mb:  16000
 
-- name: Disable maintenance mode
+- name: Resize oplog to 8 gigabytes and compact of secondaries to reclaim space
   mongodb_maintenance:
-    maintnenance: false
+    oplog_size_mb:  8000
+    compact: true
 '''
 
 RETURN = r'''
 changed:
-  description: Whether the member was placed into maintenance mode or not.
+  description: Whether the member oplog was modified.
+  returned: success
+  type: bool
+compacted:
+  description: Whether the member oplog was compacted.
   returned: success
   type: bool
 msg:
@@ -105,12 +119,16 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
-def put_in_maint_mode(client):
-    client['admin'].command('replSetMaintenance', True)
+def get_olplog_size(client):
+    return int(client["local"].command("collStats", "oplog.rs")["maxSize"]) / 1024 / 1024
 
 
-def remove_maint_mode(client):
-    client['admin'].command('replSetMaintenance', False)
+def set_oplog_size(client, oplog_size_mb):
+    client["admin"].command({"replSetResizeOplog": 1, "size": oplog_size_mb})
+
+
+def compact_oplog(client):
+    client["local"].command("compact", "oplog.rs")
 
 
 def main():
@@ -121,7 +139,8 @@ def main():
             login_database=dict(type='str', default="admin"),
             login_host=dict(type='str', default="localhost"),
             login_port=dict(type='int', default=27017),
-            maintenance=dict(type='bool', default=False),
+            oplog_size_mb=dict(type='int', required=True),
+            compact=dict(type='bool', default=False),
             ssl=dict(type='bool', default=False),
             ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
         ),
@@ -137,7 +156,8 @@ def main():
     login_database = module.params['login_database']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
-    maintenance = module.params['maintenance']
+    oplog_size_mb = module.params['oplog_size_mb']
+    compact = module.params['compact']
     ssl = module.params['ssl']
 
     result = dict(
@@ -182,36 +202,42 @@ def main():
         except Exception as excep:
             module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
 
-    try:
-        state = member_state(client)
-        if state == "PRIMARY":
-            result["msg"] = "no action taken as member state was PRIMARY"
-        elif state == "SECONDARY":
-            if maintenance:
-                if module.check_mode:
-                    result["changed"] = True
-                    result["msg"] = "member was placed into maintenance mode"
-                else:
-                    put_in_maint_mode(client)
-                    result["changed"] = True
-                    result["msg"] = "member was placed into maintenance mode"
-            else:
-                result["msg"] = "No action taken as maintenance parameter is false and member state is SECONDARY"
-        elif state == "RECOVERING":
-            if maintenance:
-                result["msg"] = "no action taken as member is already in a RECOVERING state"
-            else:
-                if module.check_mode:
-                    result["changed"] = True
-                    result["msg"] = "the member was removed from maintenance mode"
-                else:
-                    remove_maint_mode(client)
-                    result["changed"] = True
-                    result["msg"] = "the member was removed from maintenance mode"
+        try:
+            current_oplog_size = get_olplog_size(client)
+        except Exception as excep:
+            module.fail_json(msg='Unable to get current oplog size: %s' % to_native(excep))
+        if oplog_size_mb == current_oplog_size:
+            result["msg"] = "oplog_size_mb is already {0} mb".format(oplog_size_mb)
+            result["compacted"] = False
         else:
-            result["msg"] = "no action taken as member state was {0}".format(state)
-    except Exception as excep:
-        module.fail_json(msg='module encountered an error: %s' % to_native(excep))
+            try:
+                state = member_state(client)
+            except Exception as excep:
+                module.fail_json(msg='Unable to get member state: %s' % to_native(excep))
+            if module.check_mode:
+                result["changed"] = True
+                result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(round(current_oplog_size, 0),
+                                                                                      round(oplog_size_mb, 0))
+                if state == "SECONDARY" and compact:
+                    result["compacted"] = True
+                else:
+                    result["compacted"] = False
+            else:
+                try:
+                    set_oplog_size(client, oplog_size_mb)
+                    result["changed"] = True
+                    result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(round(current_oplog_size, 0),
+                                                                                          round(oplog_size_mb, 0))
+                except Exception as excep:
+                    module.fail_json(msg='Unable to set oplog size: %s' % to_native(excep))
+                if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb:
+                    try:
+                        compact_oplog(client)
+                        result["compacted"] = True
+                    except Exception as excep:
+                        module.fail_json(msg='Error compacting member oplog: %s' % to_native(excep))
+                else:
+                    result["compacted"] = False
 
     module.exit_json(**result)
 

@@ -1,0 +1,340 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongod_auth: true
+
+- name: Execute mongod script to restart with auth enabled
+  include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+  register: mongodb_replicaset
+
+- name: Create custom role file
+  copy:
+    content: |
+      db.createRole(
+      {
+        role: "compactLocal",
+        privileges: [
+        {
+            resource: { "db" : "local" , "collection" : "oplog.rs" },
+            actions: [ "compact" ]
+         }
+         ],
+         roles: []
+       }
+      );
+    dest: mongodb_role.js
+
+- name: Add mongodb admin user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
+    state: present
+
+- name: Run role file via the cmd line
+  shell: mongo admin --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }} mongodb_role.js
+
+- name: Add compactLocal role to user
+  mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ mongodb_replicaset1 }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
+      - compactLocal
+    state: present
+
+- name: Resize the oplog - 3001 (check mode)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  check_mode: yes
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+      - "oplog.compacted == False"
+      - "'to 1384 mb' in oplog.msg"
+# Tests 3001
+- name: Resize the oplog - 3001
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+      - "oplog.compacted == False"
+      - "'to 1384 mb' in oplog.msg"
+
+- name: Resize the oplog - 3001 (no change)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == False"
+      - "oplog.compacted == False"
+      - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
+# Tests 3002
+- name: Resize the oplog - 3002 (check mode)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  check_mode: yes
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+      - "oplog.compacted == True"
+      - "'to 1384 mb' in oplog.msg"
+
+- name: Resize the oplog - 3002
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+      - "oplog.compacted == True"
+      - "'to 1384 mb' in oplog.msg"
+
+- name: Resize the oplog - 3002 (no change)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == False"
+      - "oplog.compacted == False"
+      - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
+# Tests 3303
+- name: Resize the oplog - 3003 (check mode)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  check_mode: yes
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+      - "oplog.compacted == True"
+      - "'to 1384 mb' in oplog.msg"
+
+- name: Resize the oplog - 3003
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == True"
+      - "oplog.compacted == True"
+      - "'to 1384 mb' in oplog.msg"
+
+- name: Resize the oplog - 3003 (no change)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1384
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+      - "oplog.changed == False"
+      - "oplog.compacted == False"
+      - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
+
+- name: Make the oplog bigger - 3001 (check mode)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 2048
+    compact: true
+  check_mode: yes
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == True"
+        - "oplog.compacted == False"
+        - "'to 2048 mb' in oplog.msg"
+
+- name: Make the oplog bigger - 3001
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 2048
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == True"
+        - "oplog.compacted == False"
+        - "'to 2048 mb' in oplog.msg"
+
+- name: Make the oplog bigger - 3001 (should be no change)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 2048
+    compact: true
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == False"
+        - "oplog.compacted == False"
+        - "oplog.msg == 'oplog_size_mb is already 2048 mb'"
+
+- name: shrink the oplogto 1000MB - 3002 (check mode, no compact)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1000
+    compact: false
+  check_mode: yes
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == True"
+        - "oplog.compacted == False"
+        - "'to 1000 mb' in oplog.msg"
+
+- name: shrink the oplogto 10MB - 3002 (compact)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1000
+    compact: true
+  check_mode: no
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == True"
+        - "oplog.compacted == True"
+        - "'to 1000 mb' in oplog.msg"
+
+- name: Run shrink again should be no change - 3002 (compact)
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3002
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 1000
+    compact: true
+  check_mode: no
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == False"
+        - "oplog.compacted == False"
+        - "oplog.msg == 'oplog_size_mb is already 1000 mb'"
+
+- name: Try to shrink to 10MB will fail - 3003
+  mongodb_oplog:
+    login_host: localhost
+    login_port: 3003
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    oplog_size_mb: 10
+    compact: true
+  ignore_errors: true
+  register: oplog
+
+- assert:
+    that:
+        - "oplog.changed == False"
+        - "oplog.msg == 'Unable to set oplog size: oplog size should be 990MB at least'"
+
+- include_tasks: mongod_teardown.yml

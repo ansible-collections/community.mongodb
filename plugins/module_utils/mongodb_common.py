@@ -112,3 +112,20 @@ def create_index(client, database, collection, keys, options):
 
 def drop_index(client, database, collection, index_name):
     client[database][collection].drop_index(index_name)
+
+
+def member_state(client):
+    """Check if a replicaset exists.
+
+    Args:
+        client (cursor): Mongodb cursor on admin database.
+
+    Returns:
+        str: member state i.e. PRIMARY, SECONDARY
+    """
+    state = None
+    doc = client['admin'].command('replSetGetStatus')
+    for member in doc["members"]:
+        if "self" in member.keys():
+            state = str(member['stateStr'])
+    return state
