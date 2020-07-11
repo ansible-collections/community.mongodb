@@ -350,7 +350,8 @@
   register: oplog
 
 - assert:
-    - "oplog.changed == False"
-    - "'This module does not support MongoDB' in oplog.msg"
+    that:
+      - "oplog.changed == False"
+      - "'This module does not support MongoDB' in oplog.msg"
 
 - include_tasks: mongod_teardown.yml
