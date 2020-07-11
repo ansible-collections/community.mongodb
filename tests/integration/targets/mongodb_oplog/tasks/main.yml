@@ -319,7 +319,7 @@
     that:
         - "oplog.changed == False"
         - "oplog.compacted == False"
-        - "'to 1000 mb' in oplog.msg"
+        - "oplog.msg == 'oplog_size_mb is already 1000 mb'"
 
 - name: Try to shrink to 10MB will fail - 3003
   mongodb_oplog:
