@@ -78,7 +78,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert "login_host" in mongo_dict
         assert "login_port" in mongo_dict
         assert "ssl" in mongo_dict
-        assert "ssql_cert_reqs" in mongo_dict
+        assert "ssl_cert_reqs" in mongo_dict
         assert mongo_dict["login_port"] == 27017
         assert mongo_dict["login_host"] == "localhost"
         assert mongo_dict["login_database"] == "admin"
