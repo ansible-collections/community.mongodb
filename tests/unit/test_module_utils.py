@@ -71,7 +71,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert creds['user'] == "mongo_user"
         assert creds['password'] == "123456"
 
-    def test_mongodb_common_argument_spec():
+    def test_mongodb_common_argument_spec(self):
         mongo_dict = mongodb_common.mongodb_common_argument_spec()
         assert "login_user" in mongo_dict
         assert "login_password" in mongo_dict

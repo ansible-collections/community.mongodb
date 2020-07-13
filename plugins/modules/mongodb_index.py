@@ -339,6 +339,7 @@ def validate_module(module):
         elif i["state"] not in ["present", "absent"]:
             module.fail_json(msg="state must be one of present or absent")
 
+
 # ================
 # Module execution
 #
@@ -352,7 +353,6 @@ def main():
         supports_check_mode=True,
         required_together=[['login_user', 'login_password']],
     )
-
 
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
