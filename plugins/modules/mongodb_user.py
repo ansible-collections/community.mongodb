@@ -195,7 +195,7 @@ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, mongodb_common_argument_spec
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
@@ -301,26 +301,21 @@ def check_if_roles_changed(uinfo, roles, db_name):
 #
 
 def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            login_user=dict(default=None),
-            login_password=dict(default=None, no_log=True),
-            login_host=dict(default='localhost'),
-            login_port=dict(default='27017'),
-            login_database=dict(default=None),
-            replica_set=dict(default=None),
-            database=dict(required=True, aliases=['db']),
-            name=dict(required=True, aliases=['user']),
-            password=dict(aliases=['pass'], no_log=True),
-            ssl=dict(default=False, type='bool'),
-            roles=dict(default=None, type='list', elements='raw'),
-            state=dict(default='present', choices=['absent', 'present']),
-            update_password=dict(default="always", choices=["always", "on_create"]),
-            ssl_cert_reqs=dict(default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-        ),
-        supports_check_mode=True
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        database=dict(required=True, aliases=['db']),
+        name=dict(required=True, aliases=['user']),
+        password=dict(aliases=['pass'], no_log=True),
+        replica_set=dict(default=None),
+        roles=dict(default=None, type='list', elements='raw'),
+        state=dict(default='present', choices=['absent', 'present']),
+        update_password=dict(default="always", choices=["always", "on_create"])
     )
-
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        required_together=[['login_user', 'login_password']],
+    )
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)

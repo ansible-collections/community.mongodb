@@ -105,24 +105,20 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, mongodb_common_argument_spec
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
 def main():
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        force=dict(type='bool', default=False),
+        timeout=dict(type='int', default=10)
+    )
     module = AnsibleModule(
-        argument_spec=dict(
-            login_user=dict(type='str'),
-            login_password=dict(type='str', no_log=True),
-            login_database=dict(type='str', default="admin"),
-            login_host=dict(type='str', default="localhost"),
-            login_port=dict(type='int', default=27017),
-            force=dict(type='bool', default=False),
-            timeout=dict(type='int', default=10),
-            ssl=dict(type='bool', default=False),
-            ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-        ),
-        supports_check_mode=False,
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        required_together=[['login_user', 'login_password']],
     )
 
     if not pymongo_found:

@@ -60,7 +60,7 @@ options:
     description:
       - Version of MongoDB this module is supported from.
       - You probably don't want to modifiy this.
-      - Included here for internal tetsing use.
+      - Included here for internal testing.
     type: str
     default: "3.6"
   ssl:
@@ -86,7 +86,7 @@ EXAMPLES = r'''
   mongodb_oplog:
     oplog_size_mb:  16000
 
-- name: Resize oplog to 8 gigabytes and compact of secondaries to reclaim space
+- name: Resize oplog to 8 gigabytes and compact secondaries to reclaim space
   mongodb_maintenance:
     oplog_size_mb:  8000
     compact: true
@@ -122,7 +122,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, member_state
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, mongodb_common_argument_spec, member_state
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
@@ -139,20 +139,16 @@ def compact_oplog(client):
 
 
 def main():
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        compact=dict(type='bool', default=False),
+        oplog_size_mb=dict(type='int', required=True),
+        ver=dict(type='str', default='3.6')
+    )
     module = AnsibleModule(
-        argument_spec=dict(
-            login_user=dict(type='str'),
-            login_password=dict(type='str', no_log=True),
-            login_database=dict(type='str', default="admin"),
-            login_host=dict(type='str', default="localhost"),
-            login_port=dict(type='int', default=27017),
-            oplog_size_mb=dict(type='int', required=True),
-            compact=dict(type='bool', default=False),
-            ver=dict(type='str', default='3.6'),
-            ssl=dict(type='bool', default=False),
-            ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-        ),
+        argument_spec=argument_spec,
         supports_check_mode=True,
+        required_together=[['login_user', 'login_password']],
     )
 
     if not pymongo_found:

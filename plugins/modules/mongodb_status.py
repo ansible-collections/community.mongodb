@@ -120,7 +120,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, mongodb_common_argument_spec
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
@@ -247,20 +247,17 @@ def replicaset_status_poll(client, module):
 
 
 def main():
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        interval=dict(type='int', default=30),
+        poll=dict(type='int', default=1),
+        replica_set=dict(type='str', default="rs0"),
+    )
     module = AnsibleModule(
-        argument_spec=dict(
-            login_user=dict(type='str'),
-            login_password=dict(type='str', no_log=True),
-            login_database=dict(type='str', default="admin"),
-            login_host=dict(type='str', default="localhost"),
-            login_port=dict(type='int', default=27017),
-            replica_set=dict(type='str', default="rs0"),
-            ssl=dict(type='bool', default=False),
-            ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-            poll=dict(type='int', default=1),
-            interval=dict(type='int', default=30)),
-        supports_check_mode=False)
-
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        required_together=[['login_user', 'login_password']],
+    )
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)

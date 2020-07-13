@@ -100,7 +100,7 @@ import traceback
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, mongodb_common_argument_spec
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import ConnectionFailure, OperationFailure
 
@@ -110,19 +110,17 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 
 
 def main():
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        replica_set=dict(default=None),
+        param=dict(required=True),
+        value=dict(required=True),
+        param_type=dict(default="str", choices=['str', 'int'])
+    )
     module = AnsibleModule(
-        argument_spec=dict(
-            login_user=dict(default=None),
-            login_password=dict(default=None, no_log=True),
-            login_host=dict(default='localhost'),
-            login_port=dict(default=27017, type='int'),
-            login_database=dict(default=None),
-            replica_set=dict(default=None),
-            param=dict(required=True),
-            value=dict(required=True),
-            param_type=dict(default="str", choices=['str', 'int']),
-            ssl=dict(default=False, type='bool'),
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=False,
+        required_together=[['login_user', 'login_password']],
     )
 
     if not pymongo_found:

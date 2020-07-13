@@ -202,7 +202,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf, mongodb_common_argument_spec
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
@@ -292,25 +292,21 @@ def replicaset_remove(module, client, replica_set):
 
 
 def main():
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        arbiter_at_index=dict(type='int'),
+        chaining_allowed=dict(type='bool', default=True),
+        election_timeout_millis=dict(type='int', default=10000),
+        heartbeat_timeout_secs=dict(type='int', default=10),
+        members=dict(type='list', elements='raw'),
+        protocol_version=dict(type='int', default=1, choices=[0, 1]),
+        replica_set=dict(type='str', default="rs0"),
+        validate=dict(type='bool', default=True)
+    )
     module = AnsibleModule(
-        argument_spec=dict(
-            login_user=dict(type='str'),
-            login_password=dict(type='str', no_log=True),
-            login_database=dict(type='str', default="admin"),
-            login_host=dict(type='str', default="localhost"),
-            login_port=dict(type='int', default=27017),
-            replica_set=dict(type='str', default="rs0"),
-            members=dict(type='list', elements='raw'),
-            arbiter_at_index=dict(type='int'),
-            validate=dict(type='bool', default=True),
-            ssl=dict(type='bool', default=False),
-            ssl_cert_reqs=dict(type='str', default='CERT_REQUIRED', choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-            protocol_version=dict(type='int', default=1, choices=[0, 1]),
-            chaining_allowed=dict(type='bool', default=True),
-            heartbeat_timeout_secs=dict(type='int', default=10),
-            election_timeout_millis=dict(type='int', default=10000)
-        ),
+        argument_spec=argument_spec,
         supports_check_mode=True,
+        required_together=[['login_user', 'login_password']],
     )
 
     if not pymongo_found:
