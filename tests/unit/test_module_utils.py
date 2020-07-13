@@ -71,6 +71,18 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert creds['user'] == "mongo_user"
         assert creds['password'] == "123456"
 
+    def test_mongodb_common_argument_spec():
+        mongo_dict = mongodb_common.mongodb_common_argument_spec()
+        assert "login_user" in mongo_dict
+        assert "login_password" in mongo_dict
+        assert "login_host" in mongo_dict
+        assert "login_port" in mongo_dict
+        assert "ssl" in mongo_dict
+        assert "ssql_cert_reqs" in mongo_dict
+        assert mongo_dict["login_port"] == 27017
+        assert mongo_dict["login_host"] == "localhost"
+        assert mongo_dict["login_database"] == "admin"
+
 
 if __name__ == '__main__':
     unittest.main()
