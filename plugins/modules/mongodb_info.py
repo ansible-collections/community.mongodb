@@ -148,7 +148,7 @@ from distutils.version import LooseVersion
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, mongodb_common_argument_spec
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
@@ -314,18 +314,10 @@ class MongoDbInfo():
 #
 
 def main():
-    argument_spec = dict(
-        login_user=dict(type='str', required=False),
-        login_password=dict(type='str', required=False, no_log=True),
-        login_database=dict(type='str', required=False, default='admin'),
-        login_host=dict(type='str', required=False, default='localhost'),
-        login_port=dict(type='int', required=False, default=27017),
-        ssl=dict(type='bool', required=False, default=False),
-        ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
-                           choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-        filter=dict(type='list', elements='str', required=False),
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        filter=dict(type='list', elements='str', required=False)
     )
-
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,

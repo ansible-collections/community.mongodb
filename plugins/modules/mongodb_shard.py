@@ -173,7 +173,12 @@ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import check_compatibility, missing_required_lib, load_mongocnf
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    check_compatibility,
+    missing_required_lib,
+    load_mongocnf,
+    mongodb_common_argument_spec
+)
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
@@ -318,21 +323,20 @@ def get_autosplit(client):
 
 
 def main():
-    module = AnsibleModule(argument_spec=dict(login_user=dict(type='str', required=False),
-                                              login_password=dict(type='str', required=False, no_log=True),
-                                              login_database=dict(type='str', required=False, default='admin'),
-                                              login_host=dict(type='str', required=False, default='localhost'),
-                                              login_port=dict(type='int', default=27017, required=False),
-                                              ssl=dict(type='bool', default=False, required=False),
-                                              ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
-                                                                 choices=['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']),
-                                              shard=dict(type='str', required=True),
-                                              sharded_databases=dict(type="raw", required=False),
-                                              balancer_state=dict(type='str', required=False, choices=["started", "stopped", None], default=None),
-                                              autosplit=dict(type='bool', required=False, default=None),
-                                              mongos_process=dict(type='str', required=False, default="mongos"),
-                                              state=dict(type='str', required=False, default='present', choices=['absent', 'present'])),
-                           supports_check_mode=True)
+    argument_spec = mongodb_common_argument_spec()
+    argument_spec.update(
+        autosplit=dict(type='bool', required=False, default=None),
+        balancer_state=dict(type='str', required=False, choices=["started", "stopped", None], default=None),
+        mongos_process=dict(type='str', required=False, default="mongos"),
+        shard=dict(type='str', required=True),
+        sharded_databases=dict(type="raw", required=False),
+        state=dict(type='str', required=False, default='present', choices=['absent', 'present'])
+    )
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        required_together=[['login_user', 'login_password']],
+    )
 
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),

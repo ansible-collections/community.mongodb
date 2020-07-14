@@ -129,3 +129,21 @@ def member_state(client):
         if "self" in member.keys():
             state = str(member['stateStr'])
     return state
+
+
+def mongodb_common_argument_spec():
+    """
+    Returns a dict containing common options shared across the MongoDB modules.
+    """
+    return dict(
+        login_user=dict(type='str', required=False),
+        login_password=dict(type='str', required=False, no_log=True),
+        login_database=dict(type='str', required=False, default='admin'),
+        login_host=dict(type='str', required=False, default='localhost'),
+        login_port=dict(type='int', required=False, default=27017),
+        ssl=dict(type='bool', required=False, default=False),
+        ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
+                           choices=['CERT_NONE',
+                                    'CERT_OPTIONAL',
+                                    'CERT_REQUIRED'])
+    )
