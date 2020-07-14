@@ -101,7 +101,7 @@ jobs:
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
 
-      - name: Run integration tests on Python ${{ matrix.python_version }} | ${{ matrix.docker_image }} | ${{ matrix.ansible }} | ${{ matrix.mongodb_version }}
+      - name: Run integration tests on Python ${{ matrix.python_version }} | ${{ matrix.docker_image }} | ${{ matrix.ansible_version }} | ${{ matrix.mongodb_version }}
         run: ansible-test integration --docker ${{ matrix.docker_image }} -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_module }}
 
       - name: Upload Coverage data
