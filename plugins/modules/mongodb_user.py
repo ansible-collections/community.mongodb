@@ -33,12 +33,13 @@ options:
   login_port:
     description:
       - The MongoDB port to connect to.
-    default: '27017'
-    type: str
+    default: 27017
+    type: int
   login_database:
     description:
       - The database where login credentials are stored.
     type: str
+    default: "admin"
   replica_set:
     description:
       - Replica set to connect to (automatically connects to primary for writes).

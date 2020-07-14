@@ -40,6 +40,7 @@ options:
         description:
             - The database where login credentials are stored.
         type: str
+        default: "admin"
     replica_set:
         description:
             - Replica set to connect to (automatically connects to primary for writes).
@@ -49,6 +50,12 @@ options:
             - Whether to use an SSL connection when connecting to the database.
         type: bool
         default: no
+    ssl_cert_reqs:
+        description:
+          - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
+        type: str
+        default: CERT_REQUIRED
+        choices: [ CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED ]
     param:
         description:
             - MongoDB administrative parameter to modify.
