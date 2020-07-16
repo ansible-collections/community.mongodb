@@ -17,6 +17,10 @@ description:
 - Has no effect when executed against a PRIMARY member.
 - When enabled the SECONDARY member will not service reads.
 author: Rhys Campbell (@rhysmeister)
+
+extends_documentation_fragment:
+  - community.mongodb.ssl_options
+
 options:
   login_user:
     description:
@@ -106,7 +110,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    member_state
+    member_state,
+    ssl_connection_options
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
@@ -152,8 +157,7 @@ def main():
     )
 
     if ssl:
-        connection_params["ssl"] = ssl
-        connection_params["ssl_cert_reqs"] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
+        connection_params = ssl_connection_options(connection_params, module)
 
     try:
         client = MongoClient(**connection_params)

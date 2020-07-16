@@ -380,7 +380,7 @@ def main():
     }
 
     if ssl:
-        ssl_connection_options(connection_params, module)
+        connection_params = ssl_connection_options(connection_params, module)
 
     client = MongoClient(**connection_params)
 

@@ -12,6 +12,16 @@ from distutils.version import LooseVersion
 
 class FakeAnsibleModule:
 
+    params = dict {
+        "ssl": False,
+        "ssl_cert_reqs": None,
+        "ssl_ca_certs": None,
+        "ssl_crlfile": None,
+        "ssl_certfile": None,
+        "ssl_keyfile": None,
+        "ssl_pem_passphrase": None
+    }
+
     def __init__(self):
         self.msg = ""
 
@@ -87,6 +97,19 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert mongo_dict["login_port"]["default"] == 27017
         assert mongo_dict["login_host"]["default"] == "localhost"
         assert mongo_dict["login_database"]["default"] == "admin"
+
+    def test_ssl_connection_options(self):
+        connection_params = dict()
+        fake_module = FakeAnsibleModule()
+        ssl_dict = mongodb_common.ssl_connection_options(connection_params, fake_module)
+        assert isinstance(ssl_dict, dict)
+        assert ssl_dict["ssl"] == True
+        assert "ssl_cert_reqs" in ssl_dict
+        assert "ssl_ca_certs" in ssl_dict
+        assert "ssl_crlfile" in ssl_dict
+        assert "ssl_certfile" in ssl_dict
+        assert "ssl_keyfile" in ssl_dict
+        assert "ssl_pem_passphrase" in ssl_dict
 
 
 if __name__ == '__main__':
