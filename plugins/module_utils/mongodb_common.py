@@ -155,7 +155,7 @@ def mongodb_common_argument_spec():
     )
 
 
-def ssl_connection_options(connection_options, module):
+def ssl_connection_options(connection_params, module):
     connection_params['ssl'] = True
     connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
     connection_params['ssl_ca_certs'] = module.params['ssl_ca_certs']
