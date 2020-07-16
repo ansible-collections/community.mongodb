@@ -14,7 +14,7 @@ class FakeAnsibleModule:
 
     params = {
         "ssl": False,
-        "ssl_cert_reqs": "'CERT_REQUIRED",
+        "ssl_cert_reqs": "CERT_REQUIRED",
         "ssl_ca_certs": None,
         "ssl_crlfile": None,
         "ssl_certfile": None,
