@@ -5,6 +5,7 @@ from ansible.module_utils.six.moves import configparser
 from distutils.version import LooseVersion
 import traceback
 import os
+import ssl as ssl_lib
 
 MongoClient = None
 PYMONGO_IMP_ERR = None
@@ -145,5 +146,21 @@ def mongodb_common_argument_spec():
         ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
                            choices=['CERT_NONE',
                                     'CERT_OPTIONAL',
-                                    'CERT_REQUIRED'])
+                                    'CERT_REQUIRED']),
+        ssl_ca_certs=dict(type='str', default=None),
+        ssl_crlfile=dict(type='str', default=None),
+        ssl_certfile=dict(type='str', default=None),
+        ssl_keyfile=dict(type='str', default=None),
+        ssl_pem_passphrase=dict(type='str', default=None),
     )
+
+
+def ssl_connection_options(connection_params, module):
+    connection_params['ssl'] = True
+    connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
+    connection_params['ssl_ca_certs'] = module.params['ssl_ca_certs']
+    connection_params['ssl_crlfile'] = module.params['ssl_crlfile']
+    connection_params['ssl_certfile'] = module.params['ssl_certfile']
+    connection_params['ssl_keyfile'] = module.params['ssl_keyfile']
+    connection_params['ssl_pem_passphrase'] = module.params['ssl_pem_passphrase']
+    return connection_params
