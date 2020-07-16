@@ -14,7 +14,7 @@ class FakeAnsibleModule:
 
     params = {
         "ssl": False,
-        "ssl_cert_reqs": None,
+        "ssl_cert_reqs": "'CERT_REQUIRED",
         "ssl_ca_certs": None,
         "ssl_crlfile": None,
         "ssl_certfile": None,
@@ -103,7 +103,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module = FakeAnsibleModule()
         ssl_dict = mongodb_common.ssl_connection_options(connection_params, fake_module)
         assert isinstance(ssl_dict, dict)
-        assert ssl_dict["ssl"] == True
+        assert ssl_dict["ssl"] is True
         assert "ssl_cert_reqs" in ssl_dict
         assert "ssl_ca_certs" in ssl_dict
         assert "ssl_crlfile" in ssl_dict
