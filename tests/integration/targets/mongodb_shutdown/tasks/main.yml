@@ -85,14 +85,14 @@
   pause:
     seconds: 5
 
-- name: Get pids of any mongod processes
-  pids:
-      name: mongod
-  register: pids_of_mongod
-
-- name: No mongod processes should be running
-  assert:
-    that:
-      - "pids_of_mongod.pids|length == 0"
+- name: Ensure that no mongodb hosts are listening
+  wait_for:
+    host: 0.0.0.0
+    port: "{{ item }}"
+    state: drained
+  with_items:
+    - 3001
+    - 3002
+    - 3003
 
 - include_tasks: mongod_teardown.yml

@@ -17,6 +17,10 @@ module: mongodb_parameter
 short_description: Change an administrative parameter on a MongoDB server
 description:
     - Change an administrative parameter on a MongoDB server.
+
+extends_documentation_fragment:
+  - community.mongodb.ssl_options
+
 options:
     login_user:
         description:
@@ -111,7 +115,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     check_compatibility,
     missing_required_lib,
     load_mongocnf,
-    mongodb_common_argument_spec
+    mongodb_common_argument_spec,
+    ssl_connection_options
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import ConnectionFailure, OperationFailure
@@ -152,6 +157,14 @@ def main():
     param_type = module.params['param_type']
     value = module.params['value']
 
+    connection_params = dict(
+        host=login_host,
+        port=int(login_port),
+    )
+
+    if ssl:
+        connection_params = ssl_connection_options(connection_params, module)
+
     # Verify parameter is coherent with specified type
     try:
         if param_type == 'int':
@@ -161,9 +174,9 @@ def main():
 
     try:
         if replica_set:
-            client = MongoClient(login_host, int(login_port), replicaset=replica_set, ssl=ssl)
+            client = MongoClient(replicaset=replica_set, **connection_params)
         else:
-            client = MongoClient(login_host, int(login_port), ssl=ssl)
+            client = MongoClient(**connection_params)
 
         if login_user is None and login_password is None:
             mongocnf_creds = load_mongocnf()
