@@ -12,7 +12,7 @@ from distutils.version import LooseVersion
 
 class FakeAnsibleModule:
 
-    params = dict {
+    params = {
         "ssl": False,
         "ssl_cert_reqs": None,
         "ssl_ca_certs": None,
