@@ -19,7 +19,7 @@ description:
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
-  - community.mongodb.doc_fragments.ssl_options
+  - community.mongodb.ssl_options
 
 options:
   login_user:

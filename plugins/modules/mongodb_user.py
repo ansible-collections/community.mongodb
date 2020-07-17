@@ -18,7 +18,7 @@ description:
     - Adds or removes a user from a MongoDB database.
 
 extends_documentation_fragment:
-  - community.mongodb.doc_fragments.ssl_options
+  - community.mongodb.ssl_options
 
 options:
   login_user:
