@@ -21,7 +21,7 @@ jobs:
           mkdir -p docs
           echo "# MongoDB Ansible Modules Documentation" > docs/index.md
           find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).md)"' \; >> docs/index.md
-          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -t module community.mongodb.$(basename "{}" ".py") > "docs/$(basename "{}" ".py").md"' \;
+          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -M $(dirname "{}") -t module community.mongodb.$(basename "{}" ".py") > "docs/$(basename "{}" ".py").md"' \;
 
       - name: Deploy
         if: success()
