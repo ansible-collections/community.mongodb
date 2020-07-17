@@ -18,48 +18,15 @@ description:
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
+  - community.mongodb.login_options
   - community.mongodb.ssl_options
 
 options:
-  login_user:
-    description:
-    - The username to authenticate with.
-    type: str
-  login_password:
-    description:
-    - The password to authenticate with.
-    type: str
-  login_database:
-    description:
-    - The database where login credentials are stored.
-    type: str
-    default: admin
-  login_host:
-    description:
-    - The MongoDB hostname.
-    type: str
-    default: localhost
-  login_port:
-    description:
-    - The MongoDB port to login to.
-    type: int
-    default: 27017
   replica_set:
     description:
     - Replicaset name.
     type: str
     default: rs0
-  ssl:
-    description:
-    - Whether to use an SSL connection when connecting to the database
-    type: bool
-    default: no
-  ssl_cert_reqs:
-    description:
-    - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
-    type: str
-    default: CERT_REQUIRED
-    choices: [ CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED ]
   poll:
     description:
       - The maximum number of times query for the replicaset status.

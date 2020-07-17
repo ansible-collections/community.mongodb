@@ -18,32 +18,10 @@ description:
     - Adds or removes a user from a MongoDB database.
 
 extends_documentation_fragment:
+  - community.mongodb.login_options
   - community.mongodb.ssl_options
 
 options:
-  login_user:
-    description:
-      - The MongoDB username used to authenticate with.
-    type: str
-  login_password:
-    description:
-      - The login user's password used to authenticate with.
-    type: str
-  login_host:
-    description:
-      - The host running the database.
-    default: localhost
-    type: str
-  login_port:
-    description:
-      - The MongoDB port to connect to.
-    default: 27017
-    type: int
-  login_database:
-    description:
-      - The database where login credentials are stored.
-    type: str
-    default: "admin"
   replica_set:
     description:
       - Replica set to connect to (automatically connects to primary for writes).
@@ -65,16 +43,6 @@ options:
       - The password to use for the user.
     type: str
     aliases: [pass]
-  ssl:
-    description:
-      - Whether to use an SSL connection when connecting to the database.
-    type: bool
-  ssl_cert_reqs:
-    description:
-      - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
-    default: CERT_REQUIRED
-    choices: [CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED]
-    type: str
   roles:
     type: list
     elements: raw

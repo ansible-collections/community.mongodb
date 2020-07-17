@@ -20,6 +20,7 @@ description:
 author: Andrew Klychkov (@Andersson007)
 
 extends_documentation_fragment:
+  - community.mongodb.login_options
   - community.mongodb.ssl_options
 
 options:

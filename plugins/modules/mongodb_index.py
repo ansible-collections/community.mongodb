@@ -20,53 +20,10 @@ description:
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
+  - community.mongodb.login_options
   - community.mongodb.ssl_options
 
 options:
-  login_user:
-    description:
-    - The MongoDB user to login with.
-    - Required when I(login_password) is specified.
-    required: no
-    type: str
-  login_password:
-    description:
-    - The password used to authenticate with.
-    - Required when I(login_user) is specified.
-    required: no
-    type: str
-  login_database:
-    description:
-    - The database where login credentials are stored.
-    required: no
-    type: str
-    default: 'admin'
-  login_host:
-    description:
-    - The host running MongoDB instance to login to.
-    required: no
-    type: str
-    default: 'localhost'
-  login_port:
-    description:
-    - The MongoDB server port to login to.
-    required: no
-    type: int
-    default: 27017
-  ssl:
-    description:
-    - Whether to use an SSL connection when connecting to the database.
-    required: no
-    type: bool
-    default: no
-  ssl_cert_reqs:
-    description:
-    - Specifies whether a certificate is required from the other side of the connection,
-      and whether it will be validated if provided.
-    required: no
-    type: str
-    default: 'CERT_REQUIRED'
-    choices: ['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']
   indexes:
     description:
       - List of indexes to create or drop

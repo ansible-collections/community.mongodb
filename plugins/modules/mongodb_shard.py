@@ -16,38 +16,10 @@ description:
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
+  - community.mongodb.login_options
   - community.mongodb.ssl_options
 
 options:
-  login_user:
-    description:
-      - The MongoDB user to login with.
-    required: false
-    type: str
-  login_password:
-    description:
-      - The login user's password used to authenticate with.
-    required: false
-    type: str
-  login_database:
-    description:
-      - The database where login credentials are stored.
-    required: false
-    type: str
-    default: admin
-  login_host:
-    description:
-      - The host to login to.
-      - This must be a mongos.
-    required: false
-    type: str
-    default: localhost
-  login_port:
-    description:
-      - The MongoDB port to login to.
-    required: false
-    type: int
-    default: 27017
   shard:
     description:
       - The shard connection string.
@@ -80,18 +52,6 @@ options:
     required: false
     type: str
     default: "mongos"
-  ssl:
-    description:
-      - Whether to use an SSL connection when connecting to the database.
-    default: False
-    type: bool
-  ssl_cert_reqs:
-    description:
-      - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
-    required: false
-    type: str
-    default: CERT_REQUIRED
-    choices: [CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED]
   state:
     description:
       - Whether the shard should be present or absent from the Cluster.
