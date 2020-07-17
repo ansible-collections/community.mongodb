@@ -19,7 +19,7 @@ description:
     - Change an administrative parameter on a MongoDB server.
 
 extends_documentation_fragment:
-  - community.mongodb.ssl_options
+  - community.mongodb.doc_fragments.ssl_options
 
 options:
     login_user:
