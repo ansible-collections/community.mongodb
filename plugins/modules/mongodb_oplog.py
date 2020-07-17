@@ -19,34 +19,10 @@ description:
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
+  - community.mongodb.login_options
   - community.mongodb.ssl_options
 
 options:
-  login_user:
-    description:
-    - The username to authenticate with.
-    - If auth is not enabled do not supply this value.
-    type: str
-  login_password:
-    description:
-    - The password to authenticate with.
-    - If auth is not enabled do not supply this value.
-    type: str
-  login_database:
-    description:
-    - The database where login credentials are stored.
-    type: str
-    default: admin
-  login_host:
-    description:
-    - The MongoDB hostname.
-    type: str
-    default: localhost
-  login_port:
-    description:
-    - The MongoDB port to login to.
-    type: int
-    default: 27017
   oplog_size_mb:
     description:
       - Desired new size on MB of the oplog.
@@ -67,17 +43,6 @@ options:
       - Included here for internal testing.
     type: str
     default: "3.6"
-  ssl:
-    description:
-      - Whether to use an SSL connection when connecting to the database.
-    default: False
-    type: bool
-  ssl_cert_reqs:
-    description:
-    - Specifies whether a certificate is required from the other side of the connection, and whether it will be validated if provided.
-    type: str
-    default: CERT_REQUIRED
-    choices: [ CERT_NONE, CERT_OPTIONAL, CERT_REQUIRED ]
 notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
