@@ -1,21 +1,21 @@
 # Create private 2048 bit root key
 - command: openssl genrsa -out {{ ssl_rootCA }} 2048
   args:
-    creates: ""{{ ssl_rootCA }}""
+    creates: "{{ ssl_rootCA }}"
 # self sign the cert
-- command: openssl req -x509 -new -nodes -key {{ ssl_rootCA }} -sha256 -days 1024 -out {{ ssl_rootPem }} -subj '/CN=localhost.local/O=Ansible MongoDB./C=UK'
+- command: openssl req -x509 -new -nodes -key "{{ ssl_rootCA }}" -sha256 -days 1024 -out "{{ ssl_rootPem }}" -subj '/CN=localhost.local/O=Ansible MongoDB./C=UK'
   args:
     creates: "{{ ssl_rootPem }}"
 # Create a key for MongoDB
-- command: openssl genrsa -out {{ mongodb_ssl_key }} 2048
+- command: openssl genrsa -out "{{ mongodb_ssl_key }}" 2048
   args:
     creates: "{{ mongodb_ssl_key }}"
 # Generate the certificate signing request.
-- command: openssl req -new -key {{ mongodb_ssl_key }} -out {{ mongodb_csr }} -subj '/CN=localhost.local/O=Ansible MongoDB./C=UK'
+- command: openssl req -new -key "{{ mongodb_ssl_key }}" -out "{{ mongodb_csr }}" -subj '/CN=localhost.local/O=Ansible MongoDB./C=UK'
   args:
     creates: "{{ mongodb_csr }}"
 # Sign the cert
-- command: openssl x509 -req -in {{ mongodb_csr }} -CA {{ ssl_rootPem }} -CAkey {{ ssl_rootCA }} -CAcreateserial -out {{ mongodb_crt }} -days 500 -sha256
+- command: openssl x509 -req -in "{{ mongodb_csr }}" -CA "{{ ssl_rootPem }}" -CAkey "{{ ssl_rootCA }}" -CAcreateserial -out "{{ mongodb_crt }}" -days 500 -sha256
   args:
     creates: "{{ mongodb_crt }}"
 # Create the pem file
