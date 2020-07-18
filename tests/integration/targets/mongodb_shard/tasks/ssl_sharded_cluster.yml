@@ -29,12 +29,12 @@
     chdir: "{{ remote_tmp_dir }}"
   ignore_errors: yes
 
-  pause:
+- pause:
     seconds: 30
 
 - shell: cat mongodssl0/log.log
   args:
-    chdir: "{{ remote_tmp_dir }}"  
+    chdir: "{{ remote_tmp_dir }}"
 
 - name: Spawn mongod process with auth and with SSL - ssl1 3004
   command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
