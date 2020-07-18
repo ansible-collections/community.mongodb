@@ -70,8 +70,8 @@
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
-  --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
-  --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --fork
+    --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
+    --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --fork
 
 - name: Wait for mongos server to start responding
   wait_for:
