@@ -47,6 +47,8 @@
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 999
+    interval: 1
 
 - name: Add mongodb admin user
   mongodb_user:
@@ -111,6 +113,8 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 99
+    interval: 5
 
 - name: Test with bad password
   mongodb_status:
@@ -185,7 +189,7 @@
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset2 }}'
-    poll: 9
+    poll: 99
     interval: 1
   register: bad_status
   ignore_errors: yes
@@ -308,7 +312,7 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     replica_set: '{{ mongodb_replicaset3 }}'
-    poll: 3
+    poll: 101
     interval: 5
   register: bad_status
   ignore_errors: yes
