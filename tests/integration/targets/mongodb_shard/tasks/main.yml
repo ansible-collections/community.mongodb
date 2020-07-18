@@ -731,3 +731,6 @@
     - '''balancer'' in mongo_output.stdout'
 
 - include_tasks: mongod_teardown.yml
+
+# ssl tests
+- include_tasks: ssl_sharded_cluster.yml
