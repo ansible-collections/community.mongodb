@@ -1,5 +1,5 @@
 # Create private 2048 bit root key
-- command: openssl genrsa -out {{ ssl_rootCA }} 2048
+- command: openssl genrsa -out "{{ ssl_rootCA }}" 2048
   args:
     creates: "{{ ssl_rootCA }}"
 # self sign the cert
