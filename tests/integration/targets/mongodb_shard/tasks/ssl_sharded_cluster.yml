@@ -56,13 +56,13 @@
 - name: Create ssl0, ssl1 and sslcfg replicasets
   mongodb_replicaset:
     login_host: localhost
-    login_port: {{ item.port }}
+    login_port: "{{ item.port }}"
     login_database: admin
-    replica_set: {{ item.rs }}
-    ssl_ca_certs: {{ ssl_rootPem }}
-    ssl_certfile: {{ mongodb_pem }}
+    replica_set: "{{ item.rs }}"
+    ssl_ca_certs: "{{ ssl_rootPem }}"
+    ssl_certfile: "{{ mongodb_pem }}"
     members:
-    - localhost:{{ item.port }}
+    - "localhost:{{ item.port }}"
   with_items:
     - { "port": 3001, "rs": "ssl0" }
     - { "port": 3004, "rs": "ssl1" }
@@ -85,8 +85,8 @@
     login_password: admin
     shard: '{{ item.rs }}/localhost:{{ item.port }}'
     state: present
-    ssl_ca_certs: {{ ssl_rootPem }}
-    ssl_certfile: {{ mongodb_pem }}
+    ssl_ca_certs: "{{ ssl_rootPem }}"
+    ssl_certfile: "{{ mongodb_pem }}"
   with_items:
     - { "port": 3001, "rs": "ssl0" }
     - { "port": 3004, "rs": "ssl1" }
