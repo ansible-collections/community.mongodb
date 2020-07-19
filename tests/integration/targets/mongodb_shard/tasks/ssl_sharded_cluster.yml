@@ -79,6 +79,14 @@
     - { "port": 3001, "rs": "ssl0" }
     - { "port": 3004, "rs": "ssl1" }
     - { "port": 4000, "rs": "sslcfg" }
+  ignore_errors: yes
+  register: ssl_cert_validation_error
+
+- assert:
+    that:
+      - "'SSL handshake failed' in ssl_cert_validation_error.msg"
+
+# TODO Need to create replicasets above with correct ssl cert details
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
