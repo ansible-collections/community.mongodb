@@ -69,6 +69,7 @@
     login_port: "{{ item.port }}"
     login_database: admin
     replica_set: "{{ item.rs }}"
+    ssl: yes
     ssl_ca_certs: "{{ ssl_rootPem }}"
     ssl_certfile: "{{ mongodb_pem }}"
     members:
@@ -96,6 +97,7 @@
     login_password: admin
     shard: '{{ item.rs }}/localhost:{{ item.port }}'
     state: present
+    ssl: yes
     ssl_ca_certs: "{{ ssl_rootPem }}"
     ssl_certfile: "{{ mongodb_pem }}"
   with_items:
