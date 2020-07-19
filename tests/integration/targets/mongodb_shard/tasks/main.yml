@@ -150,6 +150,9 @@
     shard: '{{ mongodb_replicaset2 }}'
     state: absent
 
+- pause:
+    seconds: 3
+
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017
   register: mongo_output
@@ -169,6 +172,9 @@
     login_password: admin
     shard: '{{ mongodb_replicaset2 }}'
     state: absent
+
+- pause:
+    seconds: 3
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017
@@ -714,6 +720,9 @@
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}'
     state: absent
+
+- pause:
+    seconds: 3
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
