@@ -24,7 +24,7 @@
 - name: Spawn mongod process with auth and with SSL - ssl0 3001
   command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
     --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
-    --dbpath ssl0 --port 3001 --replSet ssl0 --logpath mongodssl0/log.log --fork --auth --keyFile my.key
+    --dbpath mongodssl0 --port 3001 --replSet ssl0 --logpath mongodssl0/log.log --fork --auth --keyFile my.key
   args:
     chdir: "{{ remote_tmp_dir }}"
   ignore_errors: yes
@@ -39,7 +39,7 @@
 - name: Spawn mongod process with auth and with SSL - ssl1 3004
   command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
     --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
-    --dbpath ssl0 --port 3004 --replSet ssl1 --logpath mongodssl1/log.log --fork --auth --keyFile my.key
+    --dbpath mongodssl1 --port 3004 --replSet ssl1 --logpath mongodssl1/log.log --fork --auth --keyFile my.key
   args:
     chdir: "{{ remote_tmp_dir }}"
 
@@ -51,9 +51,11 @@
     - 3004
 
 - name: Launch cfg server
-  command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/sslcfg --logpath {{ remote_tmp_dir }}/sslcfg.log
+  command: mongod --configsvr --port 4000 --dbpath mongodsslcfg --logpath {{ remote_tmp_dir }}/sslcfg.log
     --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
     --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --replSet sslcfg --fork
+  args:
+    chdir: "{{ remote_tmp_dir }}"
 
 - name: Wait for mongod cfg server to start responding
   wait_for:
