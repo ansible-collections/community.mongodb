@@ -85,7 +85,7 @@
     that:
       - "'No such file or directory' in item.item.msg"
   with_items:
-    - ssl_cert_invalid.results
+    - "{{ ssl_cert_invalid.results }}"
 
 - shell: cat mongodssl0/log.log
   args:
