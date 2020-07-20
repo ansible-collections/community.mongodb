@@ -82,12 +82,11 @@
   ignore_errors: yes
   register: ssl_cert_validation_error
 
-- debug:
-    var: ssl_cert_validation_error
-
 - assert:
     that:
-      - "'SSL handshake failed' in ssl_cert_validation_error.msg"
+      - "'SSL handshake failed' in item.msg"
+  with_items:
+    - ssl_cert_validation_error.results
 
 # TODO Need to create replicasets above with correct ssl cert details
 
