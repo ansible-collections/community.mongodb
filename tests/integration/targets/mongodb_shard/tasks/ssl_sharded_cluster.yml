@@ -83,7 +83,7 @@
 
 - assert:
     that:
-      - "'No such file or directory' in item.msg"
+      - "'No such file or directory' in item.item.msg"
   with_items:
     - ssl_cert_invalid.results
 
