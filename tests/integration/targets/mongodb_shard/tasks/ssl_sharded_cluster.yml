@@ -22,8 +22,9 @@
     - sslcfg
 
 - name: Spawn mongod process with auth and with SSL - ssl0 3001
-  command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
-    --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
+  command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
+    --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
+    --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
     --dbpath mongodssl0 --port 3001 --replSet ssl0 --logpath mongodssl0/log.log --fork --auth --keyFile my.key
   args:
     chdir: "{{ remote_tmp_dir }}"
@@ -33,8 +34,9 @@
     seconds: 30
 
 - name: Spawn mongod process with auth and with SSL - ssl1 3004
-  command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
-    --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
+  command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
+    --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
+    --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
     --dbpath mongodssl1 --port 3004 --replSet ssl1 --logpath mongodssl1/log.log --fork --auth --keyFile my.key
   args:
     chdir: "{{ remote_tmp_dir }}"
@@ -48,8 +50,8 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath mongodsslcfg --logpath {{ remote_tmp_dir }}/sslcfg.log
-    --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
-    --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --replSet sslcfg --fork
+    --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem
+    --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem --sslAllowInvalidHostnames --replSet sslcfg --fork
   args:
     chdir: "{{ remote_tmp_dir }}"
 
@@ -66,8 +68,9 @@
     login_database: admin
     replica_set: "{{ item.rs }}"
     ssl: yes
-    ssl_ca_certs: "{{ ssl_rootPem }}"
-    ssl_certfile: "{{ mongodb_pem }}"
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem.idonotexist"
     members:
       - "localhost:{{ item.port }}"
     validate: no
@@ -92,8 +95,9 @@
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
-    --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
-    --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --fork
+    --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
+    --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
+    --sslAllowInvalidHostnames --fork
 
 - name: Wait for mongos server to start responding
   wait_for:
@@ -108,8 +112,9 @@
     shard: '{{ item.rs }}/localhost:{{ item.port }}'
     state: present
     ssl: yes
-    ssl_ca_certs: "{{ ssl_rootPem }}"
-    ssl_certfile: "{{ mongodb_pem }}"
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
   with_items:
     - { "port": 3001, "rs": "ssl0" }
     - { "port": 3004, "rs": "ssl1" }
