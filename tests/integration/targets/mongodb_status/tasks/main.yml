@@ -312,7 +312,7 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     replica_set: '{{ mongodb_replicaset3 }}'
-    poll: 101
+    poll: 3
     interval: 5
   register: bad_status
   ignore_errors: yes
