@@ -95,6 +95,9 @@ jobs:
       - name: Install community.general
         run: ansible-galaxy collection install community.general -p ../../
 
+      - name: Install community.crypto
+        run: ansible-galaxy collection install community.crypto -p ../../
+
       - name: Install ansible-base (${{ matrix.ansible_version }})
         run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
