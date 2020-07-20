@@ -5,7 +5,6 @@
     - ca
     - mongo
     - mongo-client
-  when: mongo_ssl == True
 
 - name: Generate CSRs
   openssl_csr:
@@ -24,7 +23,6 @@
       - keyCertSign
   with_items:
     - mongo-client
-  when: mongo_ssl == True
 
 - name: Generate CSRs
   openssl_csr:
@@ -43,7 +41,6 @@
       - keyCertSign
   with_items:
     - ca
-  when: mongo_ssl == True
 
 - name: Generate CSRs
   openssl_csr:
@@ -62,7 +59,6 @@
       - keyCertSign
   with_items:
     - mongo
-  when: mongo_ssl == True
 
 - name: Generate a Self Signed OpenSSL CA certificate
   openssl_certificate:
@@ -70,7 +66,6 @@
     privatekey_path: "{{ remote_tmp_dir }}/ca-key.pem"
     csr_path: "{{ remote_tmp_dir }}/ca.csr"
     provider: selfsigned
-  when: mongo_ssl == True
 
 - name: Generate an OpenSSL certificate signed with your own CA certificate
   openssl_certificate:
@@ -82,7 +77,6 @@
   with_items:
     - mongo
     - mongo-client
-  when: mongo_ssl == True
 
 - name: create cert chains
   shell: "cat {{ item }}.pem {{ item }}-key.pem > {{ item }}-chain.pem"
@@ -92,4 +86,3 @@
     - ca
     - mongo
     - mongo-client
-  when: mongo_ssl == True
