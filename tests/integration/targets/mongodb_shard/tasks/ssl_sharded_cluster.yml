@@ -61,7 +61,7 @@
   with_items:
     - 4000
 
-- name: Create ssl0, ssl1 and sslcfg replicasets
+- name: Run module with invalid ssl_certfile path
   mongodb_replicaset:
     login_host: localhost
     login_port: "{{ item.port }}"
@@ -79,13 +79,13 @@
     - { "port": 3004, "rs": "ssl1" }
     - { "port": 4000, "rs": "sslcfg" }
   ignore_errors: yes
-  register: ssl_cert_validation_error
+  register: ssl_cert_invalid
 
 - assert:
     that:
-      - "'SSL handshake failed' in item.msg"
+      - "'No such file or directory' in item.msg"
   with_items:
-    - ssl_cert_validation_error.results
+    - ssl_cert_invalid.results
 
 - shell: cat mongodssl0/log.log
   args:
