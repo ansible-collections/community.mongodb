@@ -32,10 +32,6 @@
 - pause:
     seconds: 30
 
-- shell: cat mongodssl0/log.log
-  args:
-    chdir: "{{ remote_tmp_dir }}"
-
 - name: Spawn mongod process with auth and with SSL - ssl1 3004
   command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ ssl_rootPem }}
     --sslPEMKeyFile  {{ mongodb_pem }} --sslAllowInvalidHostnames --shardsvr --smallfiles {{ mongod_storage_engine_opts }}
@@ -87,6 +83,10 @@
       - "'SSL handshake failed' in item.msg"
   with_items:
     - ssl_cert_validation_error.results
+
+- shell: cat mongodssl0/log.log
+  args:
+    chdir: "{{ remote_tmp_dir }}"
 
 # TODO Need to create replicasets above with correct ssl cert details
 
