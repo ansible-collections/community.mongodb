@@ -82,6 +82,9 @@
   ignore_errors: yes
   register: ssl_cert_validation_error
 
+- debug:
+    var: ssl_cert_validation_error
+
 - assert:
     that:
       - "'SSL handshake failed' in ssl_cert_validation_error.msg"
