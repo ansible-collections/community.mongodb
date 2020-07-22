@@ -84,11 +84,29 @@
   with_items:
     - "{{ ssl_cert_invalid.results }}"
 
-- shell: cat mongodssl0/log.log
-  args:
-    chdir: "{{ remote_tmp_dir }}"
+#- shell: cat mongodssl0/log.log
+#  args:
+#    chdir: "{{ remote_tmp_dir }}"
 
-# TODO Need to create replicasets above with correct ssl cert details
+- name: Run module with invalid ssl_certfile path
+  mongodb_replicaset:
+    login_host: localhost
+    login_port: "{{ item.port }}"
+    login_database: admin
+    replica_set: "{{ item.rs }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+    members:
+      - "localhost:{{ item.port }}"
+    validate: no
+  with_items:
+    - { "port": 3001, "rs": "ssl0" }
+    - { "port": 3004, "rs": "ssl1" }
+    - { "port": 4000, "rs": "sslcfg" }
+  ignore_errors: yes
+  register: ssl_cert_invalid
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
