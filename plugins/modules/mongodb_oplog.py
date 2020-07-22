@@ -200,7 +200,7 @@ def main():
                 result["changed"] = True
                 result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(round(current_oplog_size, 0),
                                                                                       round(oplog_size_mb, 0))
-                if state == "SECONDARY" and compact:
+                if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb::
                     result["compacted"] = True
                 else:
                     result["compacted"] = False
