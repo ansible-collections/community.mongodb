@@ -88,7 +88,7 @@
 #  args:
 #    chdir: "{{ remote_tmp_dir }}"
 
-- name: Run module with invalid ssl_certfile path
+- name: Create replicasets with ssl enabled
   mongodb_replicaset:
     login_host: localhost
     login_port: "{{ item.port }}"
@@ -109,7 +109,7 @@
   register: ssl_cert_invalid
 
 - name: Launch mongos
-  command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
+  shell: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
     --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
     --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
     --sslAllowInvalidHostnames --fork
