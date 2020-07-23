@@ -168,6 +168,11 @@
   with_items:
     - { "port": 3001, "rs": "ssl0" }
     - { "port": 3004, "rs": "ssl1" }
+  ignore_errors: yes
+
+- shell: cat mongodssl1/log.log
+  args:
+    chdir: "{{ remote_tmp_dir }}"
 
 # TODO Test other modules ssl parameters here
 - include_tasks: mongod_teardown.yml
