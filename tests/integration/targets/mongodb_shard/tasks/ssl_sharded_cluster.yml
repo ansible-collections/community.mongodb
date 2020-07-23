@@ -119,6 +119,30 @@
     - 3004
     - 4000
 
+- name: Add mongodb admin user to each shard inc config rs
+  mongodb_user:
+    login_host: localhost
+    login_port: '{{ item.port }}'
+    replica_set: '{{ item.rs }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
+    ssl: yes
+    ssl_cert_reqs: CERT_REQUIRED
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  register: mongo_admin_user
+  with_items:
+  - port: 3001
+    rs: ssl0
+  - port: 3004
+    rs: ssl1
+  - port: 4000
+    rs: sslcfg
+
 - name: Launch mongos
   command: mongos --configdb "sslcfg/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
     --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
@@ -133,8 +157,8 @@
 
 - name: Add shards ssl0 and ssl1
   mongodb_shard:
-    login_user: admin
-    login_password: admin
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
     shard: '{{ item.rs }}/localhost:{{ item.port }}'
     state: present
     ssl: yes
