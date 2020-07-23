@@ -170,7 +170,7 @@
     - { "port": 3004, "rs": "ssl1" }
   ignore_errors: yes
 
-- shell: cat mongodssl1/log.log
+- shell: tail -n 50 mongodssl1/log.log && tail -n 50 tests/mongos.log
   args:
     chdir: "{{ remote_tmp_dir }}"
 
