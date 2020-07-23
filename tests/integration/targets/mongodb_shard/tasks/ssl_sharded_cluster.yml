@@ -109,7 +109,7 @@
 - name: Verify replicasets with ssl enabled
   mongodb_status:
     login_host: localhost
-    login_port: "{{ item.port }}"
+    login_port: "{{ item }}"
     ssl: yes
     ssl_cert_reqs: CERT_OPTIONAL
     ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
