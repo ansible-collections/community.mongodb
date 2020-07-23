@@ -105,8 +105,19 @@
     - { "port": 3001, "rs": "ssl0" }
     - { "port": 3004, "rs": "ssl1" }
     - { "port": 4000, "rs": "sslcfg" }
-  ignore_errors: yes
-  register: ssl_cert_invalid
+
+- name: Verify replicasets with ssl enabled
+  mongodb_status:
+    login_host: localhost
+    login_port: "{{ item.port }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+    - 4000
 
 - name: Launch mongos
   command: mongos --configdb "sslcfg/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
