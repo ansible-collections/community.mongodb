@@ -48,7 +48,8 @@
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath mongodsslcfg --logpath {{ remote_tmp_dir }}/sslcfg.log
     --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem
-    --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem --sslAllowInvalidHostnames --replSet sslcfg --fork
+    --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem --sslAllowInvalidHostnames --replSet sslcfg
+    --auth --keyFile {{ remote_tmp_dir }}/my.key --fork
   args:
     chdir: "{{ remote_tmp_dir }}"
 
@@ -59,7 +60,7 @@
     - 4000
 
 - name: Run module with invalid ssl_certfile path
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: "{{ item.port }}"
     login_database: admin
@@ -89,7 +90,7 @@
 #    chdir: "{{ remote_tmp_dir }}"
 
 - name: Create replicasets with ssl enabled
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: "{{ item.port }}"
     login_database: admin
@@ -107,7 +108,7 @@
     - { "port": 4000, "rs": "sslcfg" }
 
 - name: Verify replicasets with ssl enabled
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: "{{ item }}"
     ssl: yes
@@ -120,7 +121,7 @@
     - 4000
 
 - name: Add mongodb admin user to each shard inc config rs
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
     replica_set: '{{ item.rs }}'
@@ -128,7 +129,7 @@
     name: '{{ mongodb_admin_user }}'
     password: '{{ mongodb_admin_password }}'
     roles:
-    - root
+      - root
     state: present
     ssl: yes
     ssl_cert_reqs: CERT_REQUIRED
@@ -147,7 +148,7 @@
   command: mongos --configdb "sslcfg/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
     --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
     --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
-    --sslAllowInvalidHostnames --keyFile my.key --fork
+    --sslAllowInvalidHostnames --keyFile {{ remote_tmp_dir }}/my.key --fork
   args:
     chdir: "{{ remote_tmp_dir }}"
 
@@ -158,7 +159,7 @@
     - 27017
 
 - name: Add shards ssl0 and ssl1
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ item.rs }}/localhost:{{ item.port }}'
