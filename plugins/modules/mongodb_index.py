@@ -83,7 +83,7 @@ EXAMPLES = r'''
         options:
           name: myindex2
         state: present
-        
+
 - name: Add a unique index
   mongodb_index:
     login_port: 27017
