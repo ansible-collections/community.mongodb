@@ -49,6 +49,7 @@ EXAMPLES = r'''
             last_login: -1
         options:
           name: myindex
+        state: present
 
 - name: Drop an index on a collection
   mongodb_index:
@@ -73,6 +74,7 @@ EXAMPLES = r'''
             last_login: -1
         options:
           name: myindex
+        state: present
       - database: mydb
         collection: test
         keys:
@@ -80,7 +82,8 @@ EXAMPLES = r'''
             last_login: -1
         options:
           name: myindex2
-
+        state: present
+        
 - name: Add a unique index
   mongodb_index:
     login_port: 27017
