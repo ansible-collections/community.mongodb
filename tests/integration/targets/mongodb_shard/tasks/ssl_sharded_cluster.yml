@@ -270,9 +270,10 @@
 
 - assert:
     that:
-      - "'No electable secondaries caught up as of' in stepdown.msg"
+      - "'No electable secondaries caught up as of' in item.msg"
+  with_items: "{{ stepdown.results }}"
 
-- name: Wait for replsets to stabilise
+- name: Wait for replicasets to stabilise
   mongodb_status:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
