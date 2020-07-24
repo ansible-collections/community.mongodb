@@ -173,12 +173,122 @@
     - { "port": 3004, "rs": "ssl1" }
   ignore_errors: yes
 
-- pause:
-    seconds: 10
+- name: Create index with ssl enabled
+  community.mongodb.mongodb_index:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    indexes:
+      - database: mydb
+        collection: test
+        keys:
+          - username: 1
+            last_login: -1
+        options:
+          name: myindex
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
 
-- shell: tail -n 50 mongodssl1/log.log && tail -n 50 tests/mongos.log
-  args:
-    chdir: "{{ remote_tmp_dir }}"
+- name: Run info module with ssl
+  mongodb_info:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  register: info
+  with_items:
+    - 3001
+    - 3004
 
-# TODO Test other modules ssl parameters here
+- name: Run maint module with ssl
+  mongodb_maintenance:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run oplog module with ssl
+  mongodb_oplog:
+    oplog_size_mb:  8000
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Set param with ssl
+  mongodb_parameter:
+    param: syncdelay
+    value: 60
+    param_type: int
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run stepdown with ssl
+  mongodb_stepdown:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Wait for replsets to stabilise
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run shutdown with ssl
+  mongodb_shutdown:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004    
+
 - include_tasks: mongod_teardown.yml
