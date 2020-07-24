@@ -12,7 +12,7 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v1
-      
+
       - name: Install ansible-base (devel)
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
       
