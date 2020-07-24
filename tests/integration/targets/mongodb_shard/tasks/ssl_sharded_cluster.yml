@@ -182,7 +182,7 @@
       - database: mydb
         collection: test
         keys:
-          - username: 1
+            username: 1
             last_login: -1
         options:
           name: myindex
