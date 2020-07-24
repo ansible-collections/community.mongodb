@@ -43,7 +43,7 @@ ansible-test integration --docker default -v --color --python 3.6 mongodb_status
 Run integration tests for the mongodb_oplog module.
 
 ```
-ansible-test integration --docker default -v --color --python 3.6 mongodb_status
+ansible-test integration --docker ubuntu1804 -v --color --python 3.6 mongodb_oplog
 ```
 
 Run tests for everything in collection.
