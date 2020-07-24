@@ -88,7 +88,6 @@
 - assert:
     that:
       - "oplog.changed == True"
-      - "oplog.compacted == False"
       - "'to 1384 mb' in oplog.msg"
 # Tests 3001
 - name: Resize the oplog - 3001
@@ -98,7 +97,7 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     oplog_size_mb: 1384
-    compact: true
+    compact: false
   register: oplog
 
 - assert:
@@ -120,7 +119,6 @@
 - assert:
     that:
       - "oplog.changed == False"
-      - "oplog.compacted == False"
       - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
 # Tests 3002
 - name: Resize the oplog - 3002 (check mode)
@@ -137,7 +135,6 @@
 - assert:
     that:
       - "oplog.changed == True"
-      - "oplog.compacted == True"
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3002
@@ -153,7 +150,6 @@
 - assert:
     that:
       - "oplog.changed == True"
-      - "oplog.compacted == True"
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3002 (no change)
@@ -169,7 +165,6 @@
 - assert:
     that:
       - "oplog.changed == False"
-      - "oplog.compacted == False"
       - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
 # Tests 3303
 - name: Resize the oplog - 3003 (check mode)
@@ -186,7 +181,6 @@
 - assert:
     that:
       - "oplog.changed == True"
-      - "oplog.compacted == True"
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3003
@@ -202,7 +196,6 @@
 - assert:
     that:
       - "oplog.changed == True"
-      - "oplog.compacted == True"
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3003 (no change)
