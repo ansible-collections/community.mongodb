@@ -147,7 +147,9 @@
   command: mongos --configdb "sslcfg/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
     --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
     --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
-    --sslAllowInvalidHostnames --fork
+    --sslAllowInvalidHostnames --keyFile my.key --fork
+  args:
+    chdir: "{{ remote_tmp_dir }}"
 
 - name: Wait for mongos server to start responding
   wait_for:
