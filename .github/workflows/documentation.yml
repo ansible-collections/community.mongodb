@@ -15,13 +15,19 @@ jobs:
 
       - name: Install ansible-base (devel)
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+      
+      - name: Build collection
+        run: ansible-galaxy collection build .
+      
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
 
       - name: Build documentation from modules
         run: |
           mkdir -p docs
           echo "# MongoDB Ansible Modules Documentation" > docs/index.md
           find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).md)"' \; >> docs/index.md
-          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -t module community.mongodb.$(basename "{}" ".py") > "docs/$(basename "{}" ".py").md"' \;
+          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -M $(dirname "{}") -t module community.mongodb.$(basename "{}" ".py") > "docs/$(basename "{}" ".py").md"' \;
 
       - name: Deploy
         if: success()

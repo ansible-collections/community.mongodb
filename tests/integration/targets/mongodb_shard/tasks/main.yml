@@ -33,7 +33,7 @@
     }}" --fork
 
 - name: Create replicaset1 with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -44,7 +44,7 @@
     - localhost:3003
 
 - name: Create replicaset2 with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3004
     login_database: admin
@@ -55,7 +55,7 @@
     - localhost:3006
 
 - name: Create config srv replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 4000
     login_database: admin
@@ -101,7 +101,7 @@
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
 - name: Attempt to add shard with incorrect mongos process name set
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: '{{ mongodb_replicaset1 }}/localhost:3001'
@@ -116,14 +116,14 @@
       - "mongos_process.msg == 'Process running on localhost:27017 is not a wrong-process-name'"
 
 - name: Add shard 1
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: '{{ mongodb_replicaset1 }}/localhost:3001'
     state: present
 
 - name: Add shard 2
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -144,11 +144,14 @@
     - '''balancer'' in mongo_output.stdout'
 
 - name: Remove shard 2
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: '{{ mongodb_replicaset2 }}'
     state: absent
+
+- pause:
+    seconds: 3
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017
@@ -164,11 +167,14 @@
     - '''balancer'' in mongo_output.stdout'
 
 - name: Run remove command again to finalize shard removal
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: '{{ mongodb_replicaset2 }}'
     state: absent
+
+- pause:
+    seconds: 10
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017
@@ -209,7 +215,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset1 with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -220,7 +226,7 @@
     - localhost:3003
 
 - name: Create replicaset2 with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3004
     login_database: admin
@@ -236,7 +242,7 @@
     }}" --fork
 
 - name: Create config srv replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_port: 4000
     login_database: admin
     replica_set: '{{ configsrv_replicaset }}'
@@ -260,7 +266,7 @@
   command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
 - name: Add mongodb admin user to each shard inc config rs
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
     replica_set: '{{ item.rs }}'
@@ -347,14 +353,14 @@
     delay: 1
 
 - name: Add shard 1
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset1 }}/localhost:3001'
     state: present
 
 - name: Add shard 2 - First
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -369,7 +375,7 @@
     seconds: 5
 
 - name: Add shard 2 - Second
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -381,7 +387,7 @@
       - myshard.changed == False
 
 - name: Add shard 2 - Third
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -400,7 +406,7 @@
     seconds: 5
 
 - name: Add shard 2 - Fourth - Nothing should change
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -416,7 +422,7 @@
       - myshard.sharded_enabled is not defined
 
 - name: Add shard 2 - Fifth - new db but check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -434,7 +440,7 @@
       - myshard.sharded_enabled == ["db3"]
 
 - name: Add shard 2 - Sixth - new db without check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -451,7 +457,7 @@
       - myshard.sharded_enabled == ["db3"]
 
 - name: Ensure the balancer is started
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -466,7 +472,7 @@
       - myshard.new_balancer_state == "started"
 
 - name: Ensure autosplit starts at an off state
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -474,7 +480,7 @@
     autosplit: false
 
 - name: Activate autosplit check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -490,7 +496,7 @@
       - "autosplit.new_autosplit == True"
 
 - name: Activate autosplit without check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -505,7 +511,7 @@
       - "autosplit.new_autosplit == True"
 
 - name: Disable autosplit check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -521,7 +527,7 @@
       - "autosplit.new_autosplit == False"
 
 - name: Disable autosplit without check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -545,7 +551,7 @@
       - "'true' in balancer_state.stdout"
 
 - name: Add shard 2 - Seventh - balancer check mode stopped
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -574,7 +580,7 @@
       - "'true' in balancer_state.stdout"
 
 - name: Add shard 2 - Eighth - balancer stopped without check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -602,7 +608,7 @@
       - "'false' in balancer_state.stdout"
 
 - name: Add shard 2 - Ninth - balancer started with check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -631,7 +637,7 @@
       - myshard.new_balancer_state == "started"
 
 - name: Add shard 2 - Tenth - balancer started without check mode
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -659,7 +665,7 @@
       - "'true' in balancer_state.stdout"
 
 - name: Test with bad password
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: XXXXXXXXXXXX
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
@@ -688,7 +694,7 @@
     - '''balancer'' in mongo_output.stdout'
 
 - name: Remove shard 2
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}'
@@ -709,11 +715,14 @@
     - '''balancer'' in mongo_output.stdout'
 
 - name: Run remove command again to finalize shard removal
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     shard: '{{ mongodb_replicaset2 }}'
     state: absent
+
+- pause:
+    seconds: 3
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
@@ -731,3 +740,6 @@
     - '''balancer'' in mongo_output.stdout'
 
 - include_tasks: mongod_teardown.yml
+
+# ssl tests
+- include_tasks: ssl_sharded_cluster.yml

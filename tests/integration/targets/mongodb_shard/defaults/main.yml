@@ -9,3 +9,9 @@ mongod_auth: false
 kill_signal: SIGTERM
 mongod_storage_engine_opts: --storageEngine wiredTiger --wiredTigerEngineConfigString='cache_size=200M'
 mongodb_user: mongodb
+ssl_rootCA:  /root/rootCA.key
+ssl_rootPem: /root/rootCA.pem
+mongodb_ssl_key: /root/mongodb.key
+mongodb_csr: /root/mongodb.csr
+mongodb_crt: /root/mongodb.crt
+mongodb_pem: /root/mongodb.pem
