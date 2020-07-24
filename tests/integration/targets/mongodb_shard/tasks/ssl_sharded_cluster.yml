@@ -265,6 +265,12 @@
   with_items:
     - 3001
     - 3004
+  register: stepdown
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "'No electable secondaries caught up as of' in stepdown.msg"
 
 - name: Wait for replsets to stabilise
   mongodb_status:
