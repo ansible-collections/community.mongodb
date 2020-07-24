@@ -10,6 +10,48 @@ The modules present in Ansible 2.9 are included in this collection and will bene
 
 As this is an independent Collection, it can be release on it's own release cadance.
 
+## Running the integration tests
+
+Clone the collection git project. The ansible-test tool requires a specific directory setup to function correctly so please follow carefully.
+
+```
+cd && mkdir -p git/ansible_collections/community
+git clone https://github.com/ansible-collections/community.mongodb.git ./ansible_collections/community/mongodb
+cd ./git/ansible_collections/community/mongodb
+```
+
+Create a Python virtual environment.
+
+```
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements-3.6.txt
+```
+
+Run integration tests for the mongodb_shard module.
+
+```
+ansible-test integration --docker default -v --color --python 3.6 mongodb_shard
+```
+
+Run integration tests for the mongodb_status module.
+
+```
+ansible-test integration --docker default -v --color --python 3.6 mongodb_status
+```
+
+Run integration tests for the mongodb_oplog module.
+
+```
+ansible-test integration --docker ubuntu1804 -v --color --python 3.6 mongodb_oplog
+```
+
+Run tests for everything in collection.
+
+```
+ansible-test integration --docker default -v --color --python 3.6
+```
+
 ## GitHub workflow
 
 * Maintainers would be members of this GitHub Repo
