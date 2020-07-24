@@ -265,6 +265,7 @@
     - 3004
 
 - name: Wait for replsets to stabilise
+  mongodb_status:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
@@ -289,6 +290,6 @@
     ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
   with_items:
     - 3001
-    - 3004    
+    - 3004
 
 - include_tasks: mongod_teardown.yml
