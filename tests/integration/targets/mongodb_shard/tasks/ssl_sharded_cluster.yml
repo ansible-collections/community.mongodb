@@ -204,6 +204,7 @@
     ssl_cert_reqs: CERT_OPTIONAL
     ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
     ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+    filter: databases, total_size
   register: info
   with_items:
     - 3001
