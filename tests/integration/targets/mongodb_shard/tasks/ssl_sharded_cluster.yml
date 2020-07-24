@@ -186,6 +186,7 @@
             last_login: -1
         options:
           name: myindex
+    state: present
     ssl: yes
     ssl_cert_reqs: CERT_OPTIONAL
     ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
