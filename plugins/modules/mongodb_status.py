@@ -280,7 +280,7 @@ def main():
         # Check driver and server version compatibility:
         check_compatibility(module, srv_version, driver_version)
     except Exception as excep:
-        if "not authorized on" not in str(excep) and "there are no users authenticated" not in str(excep):
+        if excep.code != 13:
             raise excep
         if login_user is None or login_password is None:
             raise excep
