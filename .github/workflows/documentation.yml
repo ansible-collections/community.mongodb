@@ -15,19 +15,33 @@ jobs:
 
       - name: Install ansible-base (devel)
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
-      
+
       - name: Build collection
         run: ansible-galaxy collection build .
-      
+
       - name: Install collection
         run: ansible-galaxy collection install community-mongodb-*.tar.gz
 
-      - name: Build documentation from modules
+      - name: Install ansible-doc-extractor
+        run: pip install ansible-doc-extractor
+
+      - name: Install rstdoc
+        run: pip install rstdoc
+
+      - name: Create doc dir
+        run: mkdir docs
+
+      - name: Create rst files from modules
+        run: ansible-doc-extractor ./tmp plugins/modules/*.py
+
+      - name: Create module index document
         run: |
-          mkdir -p docs
           echo "# MongoDB Ansible Modules Documentation" > docs/index.md
           find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).md)"' \; >> docs/index.md
-          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'ansible-doc -M $(dirname "{}") -t module community.mongodb.$(basename "{}" ".py") > "docs/$(basename "{}" ".py").md"' \;
+
+      - name: Create module html documents from rst files
+        run: |
+          find ./docs -type f -name 'mongodb_*.rst' -exec bash -c 'rstdoc {} "docs/$(basename "{}" ".py").html"' \;
 
       - name: Deploy
         if: success()
