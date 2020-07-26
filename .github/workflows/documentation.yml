@@ -13,8 +13,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Install ansible-base (devel)
-        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+      #- name: Install ansible-base (devel) - Docker image now had ansible pre-installed?
+      #  run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Build collection
         run: ansible-galaxy collection build .
