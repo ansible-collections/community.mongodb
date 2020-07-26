@@ -43,7 +43,7 @@ jobs:
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run unit tests
-        run: ansible-test units --docker -v --color --python 3.6 --coverage --requirements mongomock
+        run: ansible-test units --docker -v --color --python 3.6 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version

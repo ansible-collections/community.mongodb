@@ -24,6 +24,10 @@ except ImportError:
     PYMONGO_IMP_ERR = traceback.format_exc()
     pymongo_found = False
 
+import subprocess
+import sys
+subprocess.check_call([sys.executable, "-m", "pip", "install", "mongomock"])
+
 
 def check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
