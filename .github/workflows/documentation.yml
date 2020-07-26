@@ -41,8 +41,13 @@ jobs:
 
       - name: Create module index document
         run: |
-          echo "# MongoDB Ansible Modules Documentation" > docs/index.md
+          echo "# MongoDB Ansible Collection Documentation" > docs/index.md
+          echo "## Modules" >> docs/index.md
           find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
+          echo "## Lookup" >> docs/index.md
+          echo "TODO" >> docs/index.md
+          echo "## Cache" >> docs/index.md
+          echo "TODO" >> docs/index.md          
 
       - name: Create module html documents from rst files
         run: |
