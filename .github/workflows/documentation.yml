@@ -26,7 +26,7 @@ jobs:
         run: pip install wheel setuptools ansible-doc-extractor --upgrade
 
       - name: Install rstdoc
-        run: pip install rstdoc
+        run: pip install -v rstdoc
 
       - name: Create doc dir
         run: mkdir docs
