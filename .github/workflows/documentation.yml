@@ -23,7 +23,7 @@ jobs:
         run: ansible-galaxy collection install community-mongodb-*.tar.gz
 
       - name: Install ansible-doc-extractor
-        run: pip install ansible-doc-extractor
+        run: pip install wheel setuptools ansible-doc-extractor --upgrade
 
       - name: Install rstdoc
         run: pip install rstdoc
