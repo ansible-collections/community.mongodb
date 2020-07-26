@@ -8,6 +8,7 @@ path = "{0}/../../plugins/module_utils".format(path)
 sys.path.append(path)
 import mongodb_common
 from distutils.version import LooseVersion
+import mongomock
 
 
 class FakeAnsibleModule:
@@ -110,6 +111,40 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert "ssl_certfile" in ssl_dict
         assert "ssl_keyfile" in ssl_dict
         assert "ssl_pem_passphrase" in ssl_dict
+
+
+    def test_index_exists(self):
+        client = mongomock.MongoClient()
+        database = "test"
+        collection = "test"
+        index_name = "myIndex"
+        mongodb_common.index_exists(client, database, collection, index_name)
+        assert True
+
+
+    def test_create_index(self):
+        client = mongomock.MongoClient()
+        database = "test"
+        collection = "test"
+        keys = { "username": -1 }
+        options = {}
+        mongodb_common.create_index(client, database, collection,
+                                    keys, options)
+        assert True
+
+
+    def test_drop_index(self):
+        client = mongomock.MongoClient()
+        database = "test"
+        collection = "test"
+        index_name = "myIndex"
+        mongodb_common.drop_index(client, database, collection, index_name)
+        assert True
+
+
+    def test_member_state(self):
+        # Probably not possible with mongomock
+        pass
 
 
 if __name__ == '__main__':
