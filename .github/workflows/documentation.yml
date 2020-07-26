@@ -32,16 +32,19 @@ jobs:
         run: mkdir docs
 
       - name: Create rst files from modules
-        run: ansible-doc-extractor ./tmp plugins/modules/*.py
+        run: ansible-doc-extractor ./docs plugins/modules/mongodb_*.py
 
       - name: Create module index document
         run: |
           echo "# MongoDB Ansible Modules Documentation" > docs/index.md
-          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).md)"' \; >> docs/index.md
+          find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
 
       - name: Create module html documents from rst files
         run: |
-          find ./docs -type f -name 'mongodb_*.rst' -exec bash -c 'rstdoc {} "docs/$(basename "{}" ".py").html"' \;
+          find ./docs -type f -name 'mongodb_*.rst' -exec bash -c 'rstdoc {} "docs/$(basename "{}" ".rst").html" rst_html' \;
+
+      - name: Remove intermediary rst docs
+        run: rm docs/*.rst
 
       - name: Deploy
         if: success()
