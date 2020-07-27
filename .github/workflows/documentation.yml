@@ -34,7 +34,7 @@ jobs:
         run: pip install -v rstdoc
 
       - name: Create docs dir
-        run: mkdir -p docs{lookup,cache}
+        run: mkdir -p docs/{lookup,cache}
 
       - name: Create rst files from modules
         run: ansible-doc-extractor ./docs plugins/modules/mongodb_*.py
