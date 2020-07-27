@@ -23,6 +23,7 @@ __metaclass__ = type
 DOCUMENTATION = '''
     author: 'Marcos Diez <marcos (at) unitron.com.br>'
     lookup: mongodb
+    name: mongodb
     version_added: "2.3"
     short_description: lookup info from MongoDB
     description:
