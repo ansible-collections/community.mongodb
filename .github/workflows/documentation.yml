@@ -51,9 +51,9 @@ jobs:
           echo "## Modules" >> docs/index.md
           find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
           echo "## Lookup" >> docs/index.md
-          find plugins/lookup -type f -name 'mongodb*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
+          find plugins/lookup -type f -name 'mongodb*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")](lookup/$(basename {} .py).html)"' \; >> docs/index.md
           echo "## Cache" >> docs/index.md
-          find plugins/cache -type f -name 'mongodb*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
+          find plugins/cache -type f -name 'mongodb*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")](cache/$(basename {} .py).html)"' \; >> docs/index.md
 
       - name: Create module html documents from rst files
         run: |
