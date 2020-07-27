@@ -9,6 +9,8 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
     cache: mongodb
+    name: mongodb
+    author: Matt Martz
     short_description: Use MongoDB for caching
     description:
         - This cache uses per host records saved in MongoDB.
