@@ -34,27 +34,41 @@ jobs:
         run: pip install -v rstdoc
 
       - name: Create docs dir
-        run: mkdir docs
+        run: mkdir -p docs{lookup,cache}
 
       - name: Create rst files from modules
         run: ansible-doc-extractor ./docs plugins/modules/mongodb_*.py
 
-      - name: Create module index document
+      - name: Create rst files from lookup
+        run: ansible-doc-extractor ./docs/lookup plugins/lookup/mongodb*.py
+
+      - name: Create rst files from cache
+        run: ansible-doc-extractor ./docs/cache plugins/cache/mongodb*.py
+
+      - name: Create collection index document
         run: |
           echo "# MongoDB Ansible Collection Documentation" > docs/index.md
           echo "## Modules" >> docs/index.md
           find plugins/modules -type f -name 'mongodb_*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
           echo "## Lookup" >> docs/index.md
-          echo "TODO" >> docs/index.md
+          find plugins/lookup -type f -name 'mongodb*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
           echo "## Cache" >> docs/index.md
-          echo "TODO" >> docs/index.md          
+          find plugins/cache -type f -name 'mongodb*.py' -exec bash -c 'echo "- [$(basename "{}" ".py")]($(basename {} .py).html)"' \; >> docs/index.md
 
       - name: Create module html documents from rst files
         run: |
-          find ./docs -type f -name 'mongodb_*.rst' -exec bash -c 'rstdoc {} "docs/$(basename "{}" ".rst").html" rst_html' \;
+          find ./docs -type f -name 'mongodb_*.rst' -maxdepth 1 -exec bash -c 'rstdoc {} "docs/$(basename "{}" ".rst").html" rst_html' \;
+
+      - name: Create lookup html documents from rst files
+        run: |
+          find ./docs/lookup -type f -name 'mongodb*.rst' -maxdepth 1 -exec bash -c 'rstdoc {} "docs/lookup/$(basename "{}" ".rst").html" rst_html' \;
+
+      - name: Create cache html documents from rst files
+        run: |
+          find ./docs/cache -type f -name 'mongodb*.rst' -maxdepth 1 -exec bash -c 'rstdoc {} "docs/cache/$(basename "{}" ".rst").html" rst_html' \;
 
       - name: Remove intermediary rst docs
-        run: rm docs/*.rst
+        run: find docs/ -name '*.rst' -delete
 
       - name: Deploy
         if: success()
