@@ -3,6 +3,7 @@
 ![documentation](https://github.com/ansible-collections/community.mongodb/workflows/documentation/badge.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.mongodb)](https://codecov.io/gh/ansible-collections/community.mongodb)
 [![Travis Status](https://travis-ci.com/ansible-collections/community.mongodb.svg)](https://travis-ci.com/ansible-collections/community.mongodb)
+[![Travis Clusters](https://travis-ci.com/rhysmeister/AutomatingMongoDBWithAnsible.svg?token=EZq8qB3ASZpTwAxAkbiU&branch=master)](https://travis-ci.com/rhysmeister/AutomatingMongoDBWithAnsible)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
