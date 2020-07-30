@@ -59,7 +59,7 @@ requirements:
 
 EXAMPLES = r'''
 - name: Step down the current MongoDB member
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_user: admin
     login_password: secret
 

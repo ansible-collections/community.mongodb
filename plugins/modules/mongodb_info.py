@@ -44,7 +44,7 @@ requirements: [ 'pymongo' ]
 
 EXAMPLES = r'''
 - name: Gather all supported information
-  mongodb_info:
+  community.mongodb.mongodb_info:
     login_user: admin
     login_password: secret
   register: result
@@ -54,13 +54,13 @@ EXAMPLES = r'''
     msg: '{{ result }}'
 
 - name: Gather only information about databases and their total size
-  mongodb_info:
+  community.mongodb.mongodb_info:
     login_user: admin
     login_password: secret
     filter: databases, total_size
 
 - name: Gather all information except parameters
-  mongodb_info:
+  community.mongodb.mongodb_info:
     login_user: admin
     login_password: secret
     filter: '!parameters'
