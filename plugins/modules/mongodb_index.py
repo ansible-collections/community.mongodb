@@ -38,7 +38,7 @@ requirements: [ 'pymongo' ]
 
 EXAMPLES = r'''
 - name: Create a single index on a collection
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_user: admin
     login_password: secret
     indexes:
@@ -52,7 +52,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Drop an index on a collection
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_user: admin
     login_password: secret
     indexes:
@@ -63,7 +63,7 @@ EXAMPLES = r'''
         state: absent
 
 - name: Create multiple indexes
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_user: admin
     login_password: secret
     indexes:
@@ -85,7 +85,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Add a unique index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: admin
     login_password: secret
@@ -101,7 +101,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Add a ttl index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: admin
     login_password: secret
@@ -117,7 +117,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Add a sparse index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: admin
     login_password: secret
@@ -133,7 +133,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Add a partial index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: admin
     login_password: secret
@@ -151,7 +151,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Add a index in the background (background option is deprecated from 4.2+)
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: admin
     login_password: secret
@@ -167,7 +167,7 @@ EXAMPLES = r'''
         state: present
 
 - name: Check creating 5 index all with multiple options specified
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: admin
     login_password: secret

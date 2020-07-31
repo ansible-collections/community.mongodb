@@ -78,7 +78,7 @@ requirements:
 EXAMPLES = r'''
 # Create a replicaset called 'rs0' with the 3 provided members
 - name: Ensure replicaset rs0 exists
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_user: admin
     login_password: admin
@@ -91,7 +91,7 @@ EXAMPLES = r'''
 
 # Create two single-node replicasets on the localhost for testing
 - name: Ensure replicaset rs0 exists
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_user: admin
@@ -102,7 +102,7 @@ EXAMPLES = r'''
     validate: no
 
 - name: Ensure replicaset rs1 exists
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3002
     login_user: admin
@@ -113,7 +113,7 @@ EXAMPLES = r'''
     validate: no
 
 - name: Create a replicaset and use a custom priority for each member
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_user: admin
     login_password: admin
@@ -128,7 +128,7 @@ EXAMPLES = r'''
   when: groups.mongod.index(inventory_hostname) == 0
 
 - name: Create replicaset rs1 with options and member tags
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin

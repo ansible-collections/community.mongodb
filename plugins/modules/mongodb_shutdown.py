@@ -40,7 +40,7 @@ requirements:
 
 EXAMPLES = r'''
 - name: Attempt to perform a clean shutdown
-  mongodb_shutdown:
+  community.mongodb.mongodb_shutdown:
 
 - name: Force shutdown with a timeout of 60 seconds
   mongodb_maintenance:

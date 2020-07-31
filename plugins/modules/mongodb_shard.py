@@ -67,21 +67,21 @@ requirements: [ pymongo ]
 
 EXAMPLES = '''
 - name: Add a replicaset shard named rs1 with a member running on port 27018 on mongodb0.example.net
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: "rs1/mongodb0.example.net:27018"
     state: present
 
 - name: Add a standalone mongod shard running on port 27018 of mongodb0.example.net
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: "mongodb0.example.net:27018"
     state: present
 
 - name: To remove a shard called 'rs1'
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: rs1
@@ -89,7 +89,7 @@ EXAMPLES = '''
 
 # Single node shard running on localhost
 - name: Ensure shard rs0 exists
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: secret
     shard: "rs0/localhost:3001"
@@ -97,7 +97,7 @@ EXAMPLES = '''
 
 # Single node shard running on localhost
 - name: Ensure shard rs1 exists
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: secret
     shard: "rs1/localhost:3002"
@@ -105,7 +105,7 @@ EXAMPLES = '''
 
 # Enable sharding on a few databases when creating the shard
 - name: To remove a shard called 'rs1'
-  mongodb_shard:
+  community.mongodb.mongodb_shard:
     login_user: admin
     login_password: admin
     shard: rs1
