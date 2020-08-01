@@ -328,7 +328,7 @@
 - assert:
     that:
         - "oplog.changed == False"
-        - "oplog.msg == 'Unable to set oplog size: oplog size should be 990MB at least'"
+        - "'Unable to set oplog size: oplog size should be 990MB at least' in oplog.msg"
 
 - name: Test with unsupported version of MongoDB
   community.mongodb.mongodb_oplog:
