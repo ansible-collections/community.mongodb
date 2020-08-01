@@ -78,14 +78,14 @@ author:
 
 EXAMPLES = '''
 - name: Create 'burgers' database user with name 'bob' and password '12345'.
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: bob
     password: 12345
     state: present
 
 - name: Create a database user via SSL (MongoDB must be compiled with the SSL option and configured properly)
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: bob
     password: 12345
@@ -93,13 +93,13 @@ EXAMPLES = '''
     ssl: True
 
 - name: Delete 'burgers' database user with name 'bob'.
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: bob
     state: absent
 
 - name: Define more users with various specific roles (if not defined, no roles is assigned, and the user will be added via pre mongo 2.2 style)
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: ben
     password: 12345
@@ -107,7 +107,7 @@ EXAMPLES = '''
     state: present
 
 - name: Define roles
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: jim
     password: 12345
@@ -115,7 +115,7 @@ EXAMPLES = '''
     state: present
 
 - name: Define roles
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: joe
     password: 12345
@@ -123,7 +123,7 @@ EXAMPLES = '''
     state: present
 
 - name: Add a user to database in a replica set, the primary server is automatically discovered and written to
-  mongodb_user:
+  community.mongodb.mongodb_user:
     database: burgers
     name: bob
     replica_set: belcher
@@ -136,7 +136,7 @@ EXAMPLES = '''
 # To login with such user, the connection string should be MONGO_OPLOG_URL="mongodb://oplog_reader:oplog_reader_password@server1,server2/local?authSource=admin"
 # This syntax requires mongodb 2.6+ and pymongo 2.5+
 - name: Roles as a dictionary
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_user: root
     login_password: root_password
     database: admin

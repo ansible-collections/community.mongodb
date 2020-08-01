@@ -36,11 +36,11 @@ requirements:
 
 EXAMPLES = r'''
 - name: Enable maintenance mode
-  mongodb_maintenance:
+  community.mongodb.mongodb_maintenance:
     maintenance: true
 
 - name: Disable maintenance mode
-  mongodb_maintenance:
+  community.mongodb.mongodb_maintenance:
     maintnenance: false
 '''
 

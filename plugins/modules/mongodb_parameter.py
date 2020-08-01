@@ -54,7 +54,7 @@ author: "Loic Blot (@nerzhul)"
 
 EXAMPLES = r'''
 - name: Set MongoDB syncdelay to 60 (this is an int)
-  mongodb_parameter:
+  community.mongodb.mongodb_parameter:
     param: syncdelay
     value: 60
     param_type: int
