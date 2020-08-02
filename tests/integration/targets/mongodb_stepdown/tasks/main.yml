@@ -11,7 +11,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module - mongodb_replicaset1
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -42,7 +42,7 @@
     - '''localhost:3003'' in mongo_output.stdout'
 
 - name: Check with bad port and ssl = true to boost codecov
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3002
     ssl: true
@@ -50,7 +50,7 @@
   ignore_errors: yes
 
 - name: This node should be primary - Run stepdown check_mode
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
   check_mode: yes
@@ -62,7 +62,7 @@
       - "stepdown.changed == True"
 
 - name: Ensure replicaset reaches a good state
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -70,7 +70,7 @@
     interval: 10
 
 - name: This node should still be primary
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
   register: stepdown
@@ -81,7 +81,7 @@
       - "stepdown.changed == True"
 
 - name: Ensure replicaset reaches a good state
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -89,7 +89,7 @@
     interval: 10
 
 - name: Add mongodb admin user
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -126,7 +126,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Ensure the replicaset converges
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -136,7 +136,7 @@
     interval: 10
 
 - name: Test with bad password
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_user: '{{ mongodb_admin_user }}'
     login_password: XXXXXXXXXXXXXXXX
     login_host: localhost
@@ -160,7 +160,7 @@
   script: /root/ensure_primary.sh 3001 1
 
 - name: Run stepdown on 3002
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -173,7 +173,7 @@
       - "stepdown.changed == False"
 
 - name: Run stepdown on 3003
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3003
     login_user: '{{ mongodb_admin_user }}'
@@ -186,7 +186,7 @@
       - "stepdown.changed == False"
 
 - name: Run stepdown with force = true and check_mode
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -201,7 +201,7 @@
       - "stepdown.changed == True"
 
 - name: This node should still be primary
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -215,7 +215,7 @@
       - "stepdown.changed == True"
 
 - name: Ensure replicaset reaches a good state
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -225,7 +225,7 @@
     interval: 10
 
 - name: This node should now be secondary
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -239,7 +239,7 @@
       - "stepdown.changed == False"
 
 - name: Test with secondary_catch_up param
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -254,7 +254,7 @@
       - "stepdown.changed == False"
 
 - name: Test with stepdown_seconds and secondary_catch_up params
-  mongodb_stepdown:
+  community.mongodb.mongodb_stepdown:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'

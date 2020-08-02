@@ -11,7 +11,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -42,7 +42,7 @@
     - '''localhost:3003'' in mongo_output.stdout'
 
 - name: Attempt to set to another rs name
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -62,7 +62,7 @@
       - "nochange.msg == 'The replica_set name of rs1 does not match the expected: rsnamecannotbechanged'"
 
 - name: Add mongodb admin user
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -100,7 +100,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Validate replicaset previously created
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
@@ -130,7 +130,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -167,7 +167,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -200,7 +200,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -238,7 +238,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -284,7 +284,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -330,7 +330,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -364,7 +364,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module protocolVersion 1
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -391,7 +391,7 @@
     - '''electionTimeoutMillis" : 9000,'' in mongo_output.stdout'
 
 - name: Test invalid arbiter handling 1
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -411,7 +411,7 @@
       == invalid_num.msg'
 
 - name: Test invalid arbiter handling 2
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -440,7 +440,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with members as dictionaries - mongodb_replicaset9
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -479,7 +479,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with members as dictionaries - mongodb_replicaset10
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -521,7 +521,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset member tags - mongodb_replicaset11
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin

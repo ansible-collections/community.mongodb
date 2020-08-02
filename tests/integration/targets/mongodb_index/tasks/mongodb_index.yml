@@ -3,7 +3,7 @@
 
 # Simple index
 - name: Create an index on a collection (check mode)
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -26,7 +26,7 @@
     - result.indexes_created == ["test.rhys.myindex"]
 
 - name: Create an index on a collection
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -59,7 +59,7 @@
       - '"myindex" in output.stdout'
 
 - name: Drop the index we just created (check mode)
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -79,7 +79,7 @@
       - result.indexes_dropped == ["test.rhys.myindex"]
 
 - name: Drop the index we just created
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -114,7 +114,7 @@
 
 # UNIQUE
 - name: Add a unique index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -148,7 +148,7 @@
       - '"unique\" : true," in output.stdout'
 
 - name: Drop the unique index we just created
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -180,7 +180,7 @@
 
 # TTL
 - name: Add a ttl index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -214,7 +214,7 @@
       - '"expireAfterSeconds\" : 3600" in output.stdout'
 
 - name: Drop the ttl index we just created
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -246,7 +246,7 @@
 
 # SPARSE
 - name: Add a sparse index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -280,7 +280,7 @@
       - '"sparse\" : true" in output.stdout'
 
 - name: Drop the sparse index we just created
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -312,7 +312,7 @@
 
 # PARTIAL
 - name: Add a partial index
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -349,7 +349,7 @@
       - '"rating\" :" in output.stdout'
 
 - name: Drop the partial index we just created
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -381,7 +381,7 @@
 
 # Background. Option ignored from 4.2
 - name: Add a index in the background (deprecated)
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -414,7 +414,7 @@
       - '"idxbackground" in output.stdout'
 
 - name: Drop the background index we just created
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -445,7 +445,7 @@
 
 # Module validation tests
 - name: Missing database key
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -467,7 +467,7 @@
       - 'result.msg == "Missing required index key database"'
 
 - name: database key not a string
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -491,7 +491,7 @@
       - 'result.msg == "database key should be str"'
 
 - name: collection key not a string
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -515,7 +515,7 @@
       - 'result.msg == "collection key should be str"'
 
 - name: Check when key spec for index is not a dict
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -537,7 +537,7 @@
       - 'result.msg == "keys key should be dict"'
 
 - name: Check when options is not a dict
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -559,7 +559,7 @@
       - 'result.msg == "options key should be dict"'
 
 - name: Check when "name" key is not in options dict
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -582,7 +582,7 @@
       - 'result.msg == "The options dict must contain a name field"'
 
 - name: Check when state is something other that "absent" or "present"
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -605,7 +605,7 @@
       - 'result.msg == "state must be one of present or absent"'
 
 - name: Check when state is present and no keys are supplied
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -626,7 +626,7 @@
       - 'result.msg == "keys must be supplied when state is present"'
 # EOF VALIDATION
 - name: Check creating 5 index all with multiple options specified
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -693,7 +693,7 @@
       - "result.indexes_dropped|length == 0"
 
 - name: Drop and create a bunch of indexes
-  mongodb_index:
+  community.mongodb.mongodb_index:
     login_port: 27017
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
