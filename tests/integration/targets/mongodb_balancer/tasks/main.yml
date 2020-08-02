@@ -188,6 +188,68 @@
 
 - include_tasks: mongod_replicaset.yml
 
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3004
+    - 3005
+    - 3006
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset1 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+
+- name: Create replicaset2 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3004
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset2 }}'
+    members:
+    - localhost:3004
+    - localhost:3005
+    - localhost:3006
+
+- name: Launch cfg server
+  command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
+    }}" --fork
+
+- name: Create config srv replicaset with module
+  community.mongodb.mongodb_replicaset:
+    login_port: 4000
+    login_database: admin
+    replica_set: '{{ configsrv_replicaset }}'
+    validate: false
+    members:
+    - localhost:4000
+
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
+- name: Ensure host reaches primary before proceeding 3001
+  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Ensure host reaches primary before proceeding 3004
+  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Ensure host reaches primary before proceeding 4000
+  command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
 - name:  admin user to each shard inc config rs
   community.mongodb.mongodb_user:
     login_host: localhost
