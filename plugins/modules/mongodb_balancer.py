@@ -231,15 +231,18 @@ def main():
         module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
 
     try:
-        client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-    except Exception as excep:
-        if excep.code == 13:
-            if login_user is not None and login_password is not None:
-                client.admin.authenticate(login_user, login_password, source=login_database)
+        try:
+            client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
+        except Exception as excep:
+            if excep.code == 13:
+                if login_user is not None and login_password is not None:
+                    client.admin.authenticate(login_user, login_password, source=login_database)
+                else:
+                    module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
             else:
-                module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
-        else:
-            module.fail_json(msg='Unknown error: %s' % to_native(excep))
+                module.fail_json(msg='Unknown error: %s' % to_native(excep))
+    except Exception as excep:
+        module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
     # Get server version:
     try:
         srv_version = LooseVersion(client.server_info()['version'])
