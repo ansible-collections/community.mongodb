@@ -14,7 +14,7 @@
 
   - name: Get info
     <<: *task_parameters
-    mongodb_info:
+    community.mongodb.mongodb_info:
       <<: *mongo_parameters
 
   - assert:
@@ -29,7 +29,7 @@
 
   - name: Get info with filter
     <<: *task_parameters
-    mongodb_info:
+    community.mongodb.mongodb_info:
       <<: *mongo_parameters
       filter: general, total_size
 
@@ -45,7 +45,7 @@
 
   - name: Get info with filter
     <<: *task_parameters
-    mongodb_info:
+    community.mongodb.mongodb_info:
       <<: *mongo_parameters
       filter: '!parameters'
 

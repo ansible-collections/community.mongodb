@@ -17,7 +17,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - name: Create current_replicaset with module
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_port: 3001
     replica_set: '{{ current_replicaset }}'
     members:
@@ -26,7 +26,7 @@
     - localhost:3003
 
 - name: Check the status of the replicaset with mongodb_status module
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ current_replicaset }}'
@@ -45,7 +45,7 @@
 #- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
 
 - name: Create admin user with module
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_port: 3001
     replica_set: '{{ current_replicaset }}'
     database: admin
@@ -79,7 +79,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - name: Check the status of the replicaset with mongodb_status module
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
@@ -89,7 +89,7 @@
     interval: 10
 
 - name: Run admin user creation again
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: admin
@@ -108,7 +108,7 @@
     - mongodb_admin_user_created.changed == False
 
 - name: Run admin user creation again with forced pw update
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: admin
@@ -127,7 +127,7 @@
     - mongodb_admin_user_created.changed == True
 
 - name: Run user creation
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: admin
@@ -176,7 +176,7 @@
     - '''userAdmin'' in test_db_users.stdout'
 
 - name: Drop users in test db
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: admin
@@ -201,7 +201,7 @@
     - '''user4'' not in test_db_users.stdout'
 
 - name: Create user with multiple roles in test db
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: admin

@@ -11,7 +11,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module - mongodb_replicaset1
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -43,7 +43,7 @@
 
 
 - name: Check the status of the replicaset with mongodb_status module
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -51,7 +51,7 @@
     interval: 1
 
 - name: Add mongodb admin user
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -88,7 +88,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Validate replicaset previously created
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
@@ -107,7 +107,7 @@
     that: mongodb_replicaset.changed == False
 
 - name: Check the status of the replicaset with mongodb_status module (auth)
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -117,7 +117,7 @@
     interval: 5
 
 - name: Test with bad password
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_user: '{{ mongodb_admin_user }}'
     login_password: XXXXXXXXXXXXXXXX
     login_host: localhost
@@ -145,7 +145,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset with module - mongodb_replicaset2
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -158,7 +158,7 @@
     heartbeat_timeout_secs: 1
 
 - name: Check the status of the replicaset with mongodb_status module (no auth) - 2
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset2 }}'
@@ -185,7 +185,7 @@
     seconds: 5
 
 - name: Check the status of the replicaset with mongodb_status module  - 3
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset2 }}'
@@ -217,7 +217,7 @@
     - 3003
 
 - name: Check the replicaset returns to a good status
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset2 }}'
@@ -253,7 +253,7 @@
     seconds: 5
 
 - name: Create replicaset with module - mongodb_replicaset3
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -264,7 +264,7 @@
       - localhost:3003
 
 - name: Add mongodb admin user - mongodb_replicaset3
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset3 }}'
@@ -276,7 +276,7 @@
     state: present
 
 - name: Check the replicaset has a good status (with auth)
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: "{{ mongodb_admin_user }}"
@@ -306,7 +306,7 @@
     seconds: 5
 
 - name: Check the status of the replicaset with mongodb_status module (with auth) - replicaset3
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: "{{ mongodb_admin_user }}"
@@ -344,7 +344,7 @@
     chdir: '{{ remote_tmp_dir }}'
 
 - name: Check the replicaset returns to a good status - mongodb_replicaset3
-  mongodb_status:
+  community.mongodb.mongodb_status:
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_host: localhost

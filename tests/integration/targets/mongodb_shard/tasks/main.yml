@@ -677,7 +677,7 @@
   assert:
     that:
     - mongodb_shard_bad_pw.changed == False
-    - '''unable to connect to database: Authentication failed.'' == mongodb_shard_bad_pw.msg'
+    - "'unable to connect to database: Authentication failed' in mongodb_shard_bad_pw.msg"
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"

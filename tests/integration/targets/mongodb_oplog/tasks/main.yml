@@ -15,7 +15,7 @@
   include_tasks: mongod_replicaset.yml
 
 - name: Create replicaset
-  mongodb_replicaset:
+  community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
     login_database: admin
@@ -45,7 +45,7 @@
     dest: mongodb_role.js
 
 - name: Add mongodb admin user
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: 3001
     replica_set: '{{ mongodb_replicaset1 }}'
@@ -60,7 +60,7 @@
   shell: mongo admin --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }} mongodb_role.js
 
 - name: Add compactLocal role to user
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -75,7 +75,7 @@
     state: present
 
 - name: Resize the oplog - 3001 (check mode)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -91,7 +91,7 @@
       - "'to 1384 mb' in oplog.msg"
 # Tests 3001
 - name: Resize the oplog - 3001
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -107,7 +107,7 @@
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3001 (no change)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -122,7 +122,7 @@
       - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
 # Tests 3002
 - name: Resize the oplog - 3002 (check mode)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -138,7 +138,7 @@
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3002
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -153,7 +153,7 @@
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3002 (no change)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -168,7 +168,7 @@
       - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
 # Tests 3303
 - name: Resize the oplog - 3003 (check mode)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3003
     login_user: '{{ mongodb_admin_user }}'
@@ -184,7 +184,7 @@
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3003
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3003
     login_user: '{{ mongodb_admin_user }}'
@@ -199,7 +199,7 @@
       - "'to 1384 mb' in oplog.msg"
 
 - name: Resize the oplog - 3003 (no change)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3003
     login_user: '{{ mongodb_admin_user }}'
@@ -215,7 +215,7 @@
       - "oplog.msg == 'oplog_size_mb is already 1384 mb'"
 
 - name: Make the oplog bigger - 3001 (check mode)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -232,7 +232,7 @@
         - "'to 2048 mb' in oplog.msg"
 
 - name: Make the oplog bigger - 3001
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -248,7 +248,7 @@
         - "'to 2048 mb' in oplog.msg"
 
 - name: Make the oplog bigger - 3001 (should be no change)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
@@ -264,7 +264,7 @@
         - "oplog.msg == 'oplog_size_mb is already 2048 mb'"
 
 - name: shrink the oplogto 1000MB - 3002 (check mode, no compact)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -281,7 +281,7 @@
         - "'to 1000 mb' in oplog.msg"
 
 - name: shrink the oplogto 10MB - 3002 (compact)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -298,7 +298,7 @@
         - "'to 1000 mb' in oplog.msg"
 
 - name: Run shrink again should be no change - 3002 (compact)
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'
@@ -315,7 +315,7 @@
         - "oplog.msg == 'oplog_size_mb is already 1000 mb'"
 
 - name: Try to shrink to 10MB will fail - 3003
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3003
     login_user: '{{ mongodb_admin_user }}'
@@ -328,10 +328,10 @@
 - assert:
     that:
         - "oplog.changed == False"
-        - "oplog.msg == 'Unable to set oplog size: oplog size should be 990MB at least'"
+        - "'Unable to set oplog size: oplog size should be 990MB at least' in oplog.msg"
 
 - name: Test with unsupported version of MongoDB
-  mongodb_oplog:
+  community.mongodb.mongodb_oplog:
     login_host: localhost
     login_port: 3003
     login_user: '{{ mongodb_admin_user }}'

@@ -7,7 +7,7 @@
 - include_tasks: mongod_singlenode.yml
 
 - name: Set syncdelay to 99
-  mongodb_parameter:
+  community.mongodb.mongodb_parameter:
     login_port: 3001
     param: syncdelay
     value: 99
@@ -21,7 +21,7 @@
     - sd_change.changed == True
 
 - name: Set syncdelay to 99 (again)
-  mongodb_parameter:
+  community.mongodb.mongodb_parameter:
     login_port: 3001
     param: syncdelay
     value: 99
@@ -35,7 +35,7 @@
     - sd_change.changed == False
 
 - name: Create admin user with module
-  mongodb_user:
+  community.mongodb.mongodb_user:
     login_port: 3001
     database: admin
     name: '{{ mongodb_admin_user }}'
@@ -70,7 +70,7 @@
 - include_tasks: mongod_singlenode.yml
 
 - name: Set syncdelay to 59 with auth
-  mongodb_parameter:
+  community.mongodb.mongodb_parameter:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -86,7 +86,7 @@
     - sd_change.changed == True
 
 - name: Set syncdelay to 59 (again) with auth
-  mongodb_parameter:
+  community.mongodb.mongodb_parameter:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -102,7 +102,7 @@
     - sd_change.changed == False
 
 - name: Set authenticationMechanisms to MONGODB-X509 with auth (will fail)
-  mongodb_parameter:
+  community.mongodb.mongodb_parameter:
     login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -116,5 +116,5 @@
     that:
     - '"unable to change parameter" in diag_change.msg'
     - diag_change.failed == True
-    
+
 - include_tasks: mongod_teardown.yml
