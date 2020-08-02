@@ -156,11 +156,13 @@
     autosplit: false
   register: balancer
 
-- assert:
-    that:
-      - "balancer.changed == True"
-      - "balancer.old_autosplit == True"
-      - "balancer.new_autosplit == False"
+- name: Test only relevant before 4.2
+  block:
+    - assert:
+        that:
+          - "balancer.changed == True"
+          - "balancer.old_autosplit == True"
+          - "balancer.new_autosplit == False"
   when: balancer.old_autosplit is defined
 
 - name: Enable autosplit
@@ -170,12 +172,14 @@
     autosplit: true
   register: balancer
 
-- assert:
-    that:
-      - "balancer.changed == True"
-      - "balancer.old_autosplit == False"
-      - "balancer.new_autosplit == True"
-    when: balancer.old_autosplit is defined
+- name: Test only relevant before 4.2
+  block:
+    - assert:
+        that:
+          - "balancer.changed == True"
+          - "balancer.old_autosplit == False"
+          - "balancer.new_autosplit == True"
+  when: balancer.old_autosplit is defined
 
 - include_tasks: mongod_teardown.yml
 
