@@ -293,7 +293,7 @@ def main():
     except Exception as excep:
         module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
 
-    changed = None
+    changed = False
 
     cluster_balancer_state = None
     cluster_autosplit = None
