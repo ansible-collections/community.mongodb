@@ -195,6 +195,7 @@ def get_autosplit(client):
         autosplit = result['enabled']
     return autosplit
 
+
 def get_chunksize(client):
     '''
     Default chunksize is 64MB
