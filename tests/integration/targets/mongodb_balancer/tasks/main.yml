@@ -149,7 +149,7 @@
       - "balancer.old_balancer_state == 'started'"
       - "balancer.new_balancer_state == 'stopped'"
 
-- name: Disable autosplit
+- name: Disable autosplit (will already be disabled from 4.2)
   community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin
@@ -161,6 +161,7 @@
       - "balancer.changed == True"
       - "balancer.old_autosplit == True"
       - "balancer.new_autosplit == False"
+  when: balancer.old_autosplit is defined
 
 - name: Enable autosplit
   community.mongodb.mongodb_balancer:
@@ -174,6 +175,7 @@
       - "balancer.changed == True"
       - "balancer.old_autosplit == False"
       - "balancer.new_autosplit == True"
+    when: balancer.old_autosplit is defined
 
 - include_tasks: mongod_teardown.yml
 
