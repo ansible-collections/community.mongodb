@@ -128,7 +128,7 @@ def get_balancer_state(client):
     { "_id" : "balancer", "mode" : "full", "stopped" : false }
     { "_id" : "autosplit", "enabled" : true }
     '''
-    balancer_state = "stopped"
+    balancer_state = None
     result = client["config"].settings.find_one({"_id": "balancer"})
     if not result:
         balancer_state = "stopped"
@@ -230,84 +230,81 @@ def main():
     elif login_password is None or login_user is None:
         module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
 
-
-
-
-        try:
-            client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-        except Exception as excep:
-            if excep.code == 13:
-                if login_user is not None and login_password is not None:
-                    client.admin.authenticate(login_user, login_password, source=login_database)
-                else:
-                    module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+    try:
+        client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
+    except Exception as excep:
+        if excep.code == 13:
+            if login_user is not None and login_password is not None:
+                client.admin.authenticate(login_user, login_password, source=login_database)
             else:
-                module.fail_json(msg='Unknown error: %s' % to_native(excep))
-        # Get server version:
-        try:
-            srv_version = LooseVersion(client.server_info()['version'])
-        except Exception as excep:
-            module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
-        try:
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
-        except Exception as excep:
-            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+                module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+        else:
+            module.fail_json(msg='Unknown error: %s' % to_native(excep))
+    # Get server version:
+    try:
+        srv_version = LooseVersion(client.server_info()['version'])
+    except Exception as excep:
+        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
+    try:
+        # Get driver version::
+        driver_version = LooseVersion(PyMongoVersion)
+        # Check driver and server version compatibility:
+        check_compatibility(module, srv_version, driver_version)
+    except Exception as excep:
+        module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
 
-        cluster_autosplit = None
-        old_balancer_state = None
-        new_balancer_state = None
-        old_autosplit = None
-        new_autosplit = None
+    cluster_autosplit = None
+    old_balancer_state = None
+    new_balancer_state = None
+    old_autosplit = None
+    new_autosplit = None
 
-        try:
+    try:
 
-            if client["admin"].command("serverStatus")["process"] != mongos_process:
-                module.fail_json(msg="Process running on {0}:{1} is not a {2}".format(login_host, login_port, mongos_process))
+        if client["admin"].command("serverStatus")["process"] != mongos_process:
+            module.fail_json(msg="Process running on {0}:{1} is not a {2}".format(login_host, login_port, mongos_process))
 
-            cluster_balancer_state = get_balancer_state(client)
-            if autosplit is not None:
-                cluster_autosplit = get_autosplit(client)
+        cluster_balancer_state = get_balancer_state(client)
+        if autosplit is not None:
+            cluster_autosplit = get_autosplit(client)
 
-            if module.check_mode:
-                if balancer_state != cluster_balancer_state:
+        if module.check_mode:
+            if balancer_state != cluster_balancer_state:
+                old_balancer_state = cluster_balancer_state
+                new_balancer_state = balancer_state
+                changed = True
+            if (autosplit is not None
+                    and autosplit != cluster_autosplit):
+                old_autosplit = cluster_autosplit
+                new_autosplit = autosplit
+                changed = True
+        else:
+            if balancer_state is not None \
+                    and balancer_state != cluster_balancer_state:
+                if balancer_state == "started":
+                    start_balancer(client)
                     old_balancer_state = cluster_balancer_state
-                    new_balancer_state = balancer_state
+                    new_balancer_state = get_balancer_state(client)
                     changed = True
-                if (autosplit is not None
-                        and autosplit != cluster_autosplit):
-                    old_autosplit = cluster_autosplit
-                    new_autosplit = autosplit
+                else:
+                    stop_balancer(client)
+                    old_balancer_state = cluster_balancer_state
+                    new_balancer_state = get_balancer_state(client)
                     changed = True
-            else:
-                if balancer_state is not None \
-                        and balancer_state != cluster_balancer_state:
-                    if balancer_state == "started":
-                        start_balancer(client)
-                        old_balancer_state = cluster_balancer_state
-                        new_balancer_state = get_balancer_state(client)
+                if autosplit is not None \
+                        and autosplit != cluster_autosplit:
+                    if autosplit:
+                        enable_autosplit(client)
+                        old_autosplit = cluster_autosplit
+                        new_autosplit = autosplit
                         changed = True
                     else:
-                        stop_balancer(client)
-                        old_balancer_state = cluster_balancer_state
-                        new_balancer_state = get_balancer_state(client)
+                        disable_autosplit(client)
+                        old_autosplit = cluster_autosplit
+                        new_autosplit = autosplit
                         changed = True
-                    if autosplit is not None \
-                            and autosplit != cluster_autosplit:
-                        if autosplit:
-                            enable_autosplit(client)
-                            old_autosplit = cluster_autosplit
-                            new_autosplit = autosplit
-                            changed = True
-                        else:
-                            disable_autosplit(client)
-                            old_autosplit = cluster_autosplit
-                            new_autosplit = autosplit
-                            changed = True
-        except Exception as excep:
-            result["msg"] = "An error occurred: {0}".format(excep)
+    except Exception as excep:
+        result["msg"] = "An error occurred: {0}".format(excep)
 
     if old_balancer_state is not None:
         result['old_balancer_state'] = old_balancer_state
