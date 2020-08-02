@@ -86,7 +86,7 @@ new_autosplit:
   type: str
 msg:
   description: A short description of what happened.
-  returned: success
+  returned: failure
   type: str
 failed:
   description: If something went wrong
@@ -306,6 +306,7 @@ def main():
     except Exception as excep:
         result["msg"] = "An error occurred: {0}".format(excep)
 
+    result['changed'] = changed
     if old_balancer_state is not None:
         result['old_balancer_state'] = old_balancer_state
         result['new_balancer_state'] = new_balancer_state
