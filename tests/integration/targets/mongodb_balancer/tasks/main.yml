@@ -162,7 +162,7 @@
       - "balancer.old_autosplit == True"
       - "balancer.new_autosplit == False"
 
-- name: Ensable autosplit
+- name: Enable autosplit
   community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin

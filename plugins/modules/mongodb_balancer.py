@@ -253,12 +253,13 @@ def main():
     except Exception as excep:
         module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
 
+    changed = None
+
     cluster_autosplit = None
     old_balancer_state = None
     new_balancer_state = None
     old_autosplit = None
     new_autosplit = None
-    changed = None
 
     try:
 
@@ -292,18 +293,18 @@ def main():
                     old_balancer_state = cluster_balancer_state
                     new_balancer_state = get_balancer_state(client)
                     changed = True
-                if autosplit is not None \
-                        and autosplit != cluster_autosplit:
-                    if autosplit:
-                        enable_autosplit(client)
-                        old_autosplit = cluster_autosplit
-                        new_autosplit = autosplit
-                        changed = True
-                    else:
-                        disable_autosplit(client)
-                        old_autosplit = cluster_autosplit
-                        new_autosplit = autosplit
-                        changed = True
+            if autosplit is not None \
+                    and autosplit != cluster_autosplit:
+                if autosplit:
+                    enable_autosplit(client)
+                    old_autosplit = cluster_autosplit
+                    new_autosplit = autosplit
+                    changed = True
+                else:
+                    disable_autosplit(client)
+                    old_autosplit = cluster_autosplit
+                    new_autosplit = autosplit
+                    changed = True
     except Exception as excep:
         result["msg"] = "An error occurred: {0}".format(excep)
 
