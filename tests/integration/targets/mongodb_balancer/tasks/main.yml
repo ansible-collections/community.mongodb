@@ -172,8 +172,8 @@
 - assert:
     that:
       - "balancer.changed == True"
-      - "old_autosplit == False"
-      - "new_autosplit == True"
+      - "balancer.old_autosplit == False"
+      - "balancer.new_autosplit == True"
 
 - include_tasks: mongod_teardown.yml
 
