@@ -22,6 +22,17 @@ extends_documentation_fragment:
   - community.mongodb.ssl_options
 
 options:
+  autosplit:
+    description:
+      - Disable or enable the autosplit flag in the config.settings collection.
+    required: false
+    type: bool
+  chunksize:
+    description:
+      - Control the size of chunks in the sharded cluster.
+      - Value should be given in MB.
+    required: false
+    type: int
   state:
     description:
       - Manage the Balancer for the Cluster
@@ -29,11 +40,6 @@ options:
     type: str
     choices: ["started", "stopped"]
     default: "started"
-  autosplit:
-    description:
-      - Disable or enable the autosplit flag in the config.settings collection.
-    required: false
-    type: bool
   mongos_process:
     description:
       - Provide a custom name for the mongos process you are connecting to.
@@ -61,6 +67,10 @@ EXAMPLES = r'''
 - name: Enable autosplit
   community.mongodb.mongodb_balancer:
     autosplit: true
+
+- name: Chnage the default chunksize to 128MB
+  community.mongodb.mongodb_balancer:
+    chunksize: 128
 '''
 
 RETURN = r'''
@@ -84,6 +94,14 @@ new_autosplit:
   description: The new state of autosplit.
   returned: When autosplit is changed.
   type: str
+old_chunksize:
+  description: The previous value for chunksize.
+  returned: When chunksize is changed.
+  type: int
+new_chunksize:
+  description: The new value for chunksize.
+  returned: When chunksize is changed.
+  type: int
 msg:
   description: A short description of what happened.
   returned: failure
@@ -177,11 +195,29 @@ def get_autosplit(client):
         autosplit = result['enabled']
     return autosplit
 
+def get_chunksize(client):
+    '''
+    Default chunksize is 64MB
+    '''
+    chunksize = None
+    result = client["config"].settings.find_one({"_id": "chunksize"})
+    if not result:
+        chunksize = 64
+    else:
+        chunksize = result['chunksize']
+    return chunksize
+
+
+def set_chunksize(client, chunksize):
+    client["config"].settings.save({"_id": "chunksize",
+                                    "value": chunksize})
+
 
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
         autosplit=dict(type='bool', default=None),
+        chunksize=dict(type='int', default=None),
         mongos_process=dict(type='str', required=False, default="mongos"),
         state=dict(type='str', default="started", choices=["started", "stopped"]),
     )
@@ -202,6 +238,7 @@ def main():
     login_port = module.params['login_port']
     balancer_state = module.params['state']
     autosplit = module.params['autosplit']
+    chunksize = module.params['chunksize']
     mongos_process = module.params['mongos_process']
     ssl = module.params['ssl']
 
@@ -258,11 +295,15 @@ def main():
 
     changed = None
 
+    cluster_balancer_state = None
     cluster_autosplit = None
+    cluster_chunksize = None
     old_balancer_state = None
     new_balancer_state = None
     old_autosplit = None
     new_autosplit = None
+    old_chunksize = None
+    new_chunksize = None
 
     try:
 
@@ -272,6 +313,8 @@ def main():
         cluster_balancer_state = get_balancer_state(client)
         if autosplit is not None:
             cluster_autosplit = get_autosplit(client)
+        if chunksize is not None:
+            cluster_chunksize = get_chunksize(client)
 
         if module.check_mode:
             if balancer_state != cluster_balancer_state:
@@ -282,6 +325,11 @@ def main():
                     and autosplit != cluster_autosplit):
                 old_autosplit = cluster_autosplit
                 new_autosplit = autosplit
+                changed = True
+            if (chunksize is not None
+                    and chunksize != cluster_chunksize):
+                old_chunksize = cluster_chunksize
+                new_chunksize = chunksize
                 changed = True
         else:
             if balancer_state is not None \
@@ -308,6 +356,12 @@ def main():
                     old_autosplit = cluster_autosplit
                     new_autosplit = autosplit
                     changed = True
+            if (chunksize is not None
+                    and chunksize != cluster_chunksize):
+                set_chunksize(client, chunksize)
+                old_chunksize = cluster_chunksize
+                new_chunksize = chunksize
+                changed = True
     except Exception as excep:
         result["msg"] = "An error occurred: {0}".format(excep)
 
@@ -318,6 +372,9 @@ def main():
     if old_autosplit is not None:
         result['old_autosplit'] = old_autosplit
         result['new_autosplit'] = new_autosplit
+    if old_chunksize is not None:
+        result['old_chunksize'] = old_chunksize
+        result['new_chunksize'] = new_chunksize
 
     module.exit_json(**result)
 

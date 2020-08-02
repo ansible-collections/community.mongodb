@@ -562,4 +562,82 @@
     - mongodb_balancer_bad_pw.changed == False
     - "'unable to connect to database: Authentication failed' in  mongodb_balancer_bad_pw.msg"
 
+- name: Set chunksize to 64MB
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    chunksize: 64
+  register: chunk
+
+- assert:
+    that:
+      - "chunk.changed == False"
+      - "chunk.old_chunksize is not defined"
+
+- name: Set chunksize to 128MB check mode
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    chunksize: 128
+  check_mode: yes
+  register: chunk
+
+- assert:
+    that:
+      - "chunk.changed == True"
+      - "chunk.old_chunksize == 64"
+      - "chunk.new_chunksize == 128"
+
+- name: Set chunksize to 128MB
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    chunksize: 128
+  register: chunk
+
+- assert:
+    that:
+      - "chunk.changed == True"
+      - "chunk.old_chunksize == 64"
+      - "chunk.new_chunksize == 128"
+
+- name: Set chunksize to 64MB check mode
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    chunksize: 64
+  check_mode: yes
+  register: chunk
+
+- assert:
+    that:
+      - "chunk.changed == True"
+      - "chunk.old_chunksize == 128"
+      - "chunk.new_chunksize == 64"
+
+- name: Set chunksize to 128MB
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    chunksize: 128
+  register: chunk
+
+- assert:
+    that:
+      - "chunk.changed == True"
+      - "chunk.old_chunksize == 128"
+      - "chunk.new_chunksize == 64"
+
+- name: attempt to set chunksize to a too high level
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    chunksize: 1289999
+  register: chunk
+  ignore_errors: true
+
+- assert:
+    that:
+      "chunk.failed"
+
 - include_tasks: mongod_teardown.yml
