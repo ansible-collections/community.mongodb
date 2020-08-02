@@ -258,6 +258,7 @@ def main():
     new_balancer_state = None
     old_autosplit = None
     new_autosplit = None
+    changed = None
 
     try:
 
