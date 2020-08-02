@@ -99,6 +99,7 @@ from copy import deepcopy
 import os
 import ssl as ssl_lib
 from distutils.version import LooseVersion
+import time
 
 
 from ansible.module_utils.basic import AnsibleModule
@@ -200,6 +201,7 @@ def main():
     login_port = module.params['login_port']
     balancer_state = module.params['state']
     autosplit = module.params['autosplit']
+    mongos_process = module.params['mongos_process']
     ssl = module.params['ssl']
 
     result = dict(
