@@ -615,11 +615,11 @@
       - "chunk.old_chunksize == 128"
       - "chunk.new_chunksize == 64"
 
-- name: Set chunksize to 128MB
+- name: Set chunksize to 64MB
   community.mongodb.mongodb_balancer:
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
-    chunksize: 128
+    chunksize: 64
   register: chunk
 
 - assert:
