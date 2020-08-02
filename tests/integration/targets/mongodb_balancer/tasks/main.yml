@@ -146,8 +146,8 @@
 - assert:
     that:
       - "balancer.changed == True"
-      - "old_balancer_state == 'started'"
-      - "new_balancer_state == 'stopped'"
+      - "balancer.old_balancer_state == 'started'"
+      - "balancer.new_balancer_state == 'stopped'"
 
 - name: Disable autosplit
   community.mongodb.mongodb_balancer:
@@ -159,8 +159,8 @@
 - assert:
     that:
       - "balancer.changed == True"
-      - "old_autosplit == True"
-      - "new_autosplit == False"
+      - "balancer.old_autosplit == True"
+      - "balancer.new_autosplit == False"
 
 - name: Ensable autosplit
   community.mongodb.mongodb_balancer:
@@ -492,6 +492,6 @@
   assert:
     that:
     - mongodb_balancer_bad_pw.changed == False
-    - "'unable to connect to database: Authentication failed' in mongodb_shard_bad_pw.msg"
+    - "'unable to connect to database: Authentication failed' in  mongodb_balancer_bad_pw.msg"
 
 - include_tasks: mongod_teardown.yml
