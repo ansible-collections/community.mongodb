@@ -100,20 +100,6 @@
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- name: Run module with incorrect mongos name
-  community.mongodb.mongodb_balancer:
-    login_user: admin
-    login_password: admin
-    state: started
-    mongos_process: "wrong-process-name"
-  register: mongos_process
-  ignore_errors: yes
-
-- assert:
-    that:
-      - "mongos_process.changed == False"
-      - "mongos_process.msg == 'Process running on localhost:27017 is not a wrong-process-name'"
-
 - name: Add shard 1
   community.mongodb.mongodb_shard:
     login_user: admin
@@ -459,7 +445,7 @@
       - myshard.new_balancer_state == "started"
 
 - name: balancer started without check mode
-  community.mongodb.mongodb_shard:
+  community.mongodb.mongodb_balancer:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     state: "started"
@@ -479,6 +465,20 @@
   assert:
     that:
       - "'true' in balancer_state.stdout"
+
+- name: Run module with incorrect mongos name
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    state: started
+    mongos_process: "wrong-process-name"
+  register: mongos_process
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "mongos_process.changed == False"
+      - "mongos_process.msg == 'Process running on localhost:27017 is not a wrong-process-name'"
 
 - name: Test with bad password
   community.mongodb.mongodb_balancer:
