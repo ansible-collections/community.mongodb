@@ -628,16 +628,4 @@
       - "chunk.old_chunksize == 128"
       - "chunk.new_chunksize == 64"
 
-- name: attempt to set chunksize to a too high level
-  community.mongodb.mongodb_balancer:
-    login_user: "{{ mongodb_admin_user }}"
-    login_password: "{{ mongodb_admin_password }}"
-    chunksize: 1289999
-  register: chunk
-  ignore_errors: true
-
-- assert:
-    that:
-      "chunk.failed"
-
 - include_tasks: mongod_teardown.yml
