@@ -100,21 +100,6 @@
 - name: Ensure host reaches primary before proceeding 3004
   command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- name: Attempt to add shard with incorrect mongos process name set
-  community.mongodb.mongodb_shard:
-    login_user: admin
-    login_password: admin
-    shard: '{{ mongodb_replicaset1 }}/localhost:3001'
-    state: present
-    mongos_process: "wrong-process-name"
-  register: mongos_process
-  ignore_errors: yes
-
-- assert:
-    that:
-      - "mongos_process.changed == False"
-      - "mongos_process.msg == 'Process running on localhost:27017 is not a wrong-process-name'"
-
 - name: Add shard 1
   community.mongodb.mongodb_shard:
     login_user: admin
@@ -143,52 +128,58 @@
       in mongo_output.stdout'
     - '''balancer'' in mongo_output.stdout'
 
-- name: Remove shard 2
-  community.mongodb.mongodb_shard:
+- name: Ensure balancer is started before begining and autosplit is enabled
+  community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin
-    shard: '{{ mongodb_replicaset2 }}'
-    state: absent
+    state: started
+    autosplit: true
+  register: balancer
 
-- pause:
-    seconds: 3
-
-- name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
-  register: mongo_output
-
-- name: Assert shard 2 is draining
-  assert:
-    that:
-    - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''"draining" : true'' in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
-
-- name: Run remove command again to finalize shard removal
-  community.mongodb.mongodb_shard:
+- name: Stop the balancer
+  community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin
-    shard: '{{ mongodb_replicaset2 }}'
-    state: absent
+    state: stopped
+  register: balancer
 
-- pause:
-    seconds: 10
-
-- name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
-  register: mongo_output
-
-- name: Assert shard 2 is not present
-  assert:
+- assert:
     that:
-    - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      not in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+      - "balancer.changed == True"
+      - "balancer.old_balancer_state == 'started'"
+      - "balancer.new_balancer_state == 'stopped'"
+
+- name: Disable autosplit (will already be disabled from 4.2)
+  community.mongodb.mongodb_balancer:
+    login_user: admin
+    login_password: admin
+    autosplit: false
+  register: balancer
+
+- name: Test only relevant before 4.2
+  block:
+    - assert:
+        that:
+          - "balancer.changed == True"
+          - "balancer.old_autosplit == True"
+          - "balancer.new_autosplit == False"
+  when: balancer.old_autosplit is defined
+
+- name: Enable autosplit
+  community.mongodb.mongodb_balancer:
+    login_user: admin
+    login_password: admin
+    autosplit: true
+  register: balancer
+
+- name: Test only relevant before 4.2
+  block:
+    - assert:
+        that:
+          - "balancer.changed == True"
+          - "balancer.old_autosplit == False"
+          - "balancer.new_autosplit == True"
+  when: balancer.old_autosplit is defined
 
 - include_tasks: mongod_teardown.yml
 
@@ -265,7 +256,7 @@
 - name: Ensure host reaches primary before proceeding 4000
   command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
 
-- name: Add mongodb admin user to each shard inc config rs
+- name:  admin user to each shard inc config rs
   community.mongodb.mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
@@ -371,167 +362,204 @@
     that:
       - myshard.changed == True
 
-- pause:
-    seconds: 5
-
-- name: Add shard 2 - Second
-  community.mongodb.mongodb_shard:
+- name: Ensure the balancer is started
+  community.mongodb.mongodb_balancer:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-  register: myshard
-
-- assert:
-    that:
-      - myshard.changed == False
-
-- name: Add shard 2 - Third
-  community.mongodb.mongodb_shard:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-    sharded_databases:
-      - db1
-      - db2
+    state: "started"
   register: myshard
 
 - assert:
     that:
       - myshard.changed == True
-      - myshard.sharded_enabled == ["db1", "db2"]
+      - myshard.old_balancer_state == "stopped"
+      - myshard.new_balancer_state == "started"
 
-- pause:
-    seconds: 5
-
-- name: Add shard 2 - Fourth - Nothing should change
-  community.mongodb.mongodb_shard:
+- name: Ensure autosplit starts at an off state
+  community.mongodb.mongodb_balancer:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-    sharded_databases:
-      - db1
-      - db2
-  register: myshard
+    autosplit: false
+
+- name: Activate autosplit check mode
+  community.mongodb.mongodb_balancer:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    autosplit: true
+  register: autosplit
+  check_mode: yes
 
 - assert:
     that:
-      - myshard.changed == False
-      - myshard.sharded_enabled is not defined
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == False"
+      - "autosplit.new_autosplit == True"
 
-- name: Add shard 2 - Fifth - new db but check mode
-  community.mongodb.mongodb_shard:
+- name: Activate autosplit without check mode
+  community.mongodb.mongodb_balancer:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-    sharded_databases:
-      - db1
-      - db2
-      - db3
+    autosplit: true
+  register: autosplit
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == False"
+      - "autosplit.new_autosplit == True"
+
+- name: Disable autosplit check mode
+  community.mongodb.mongodb_balancer:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    autosplit: false
+  register: autosplit
+  check_mode: yes
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == True"
+      - "autosplit.new_autosplit == False"
+
+- name: Disable autosplit without check mode
+  community.mongodb.mongodb_balancer:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    autosplit: false
+  register: autosplit
+
+- assert:
+    that:
+      - "autosplit.changed == True"
+      - "autosplit.old_autosplit == True"
+      - "autosplit.new_autosplit == False"
+
+- name: Get balancer state
+  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer really on?
+  assert:
+    that:
+      - "'true' in balancer_state.stdout"
+
+- name: balancer check mode stopped
+  community.mongodb.mongodb_balancer:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    state: "stopped"
   register: myshard
   check_mode: yes
 
 - assert:
     that:
       - myshard.changed == True
-      - myshard.sharded_enabled == ["db3"]
+      - myshard.old_balancer_state == "started"
+      - myshard.new_balancer_state == "stopped"
 
-- name: Add shard 2 - Sixth - new db without check mode
-  community.mongodb.mongodb_shard:
+- name: Get balancer state - Should still be on
+  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer still on?
+  assert:
+    that:
+      - "'true' in balancer_state.stdout"
+
+- name: balancer stopped without check mode
+  community.mongodb.mongodb_balancer:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-    sharded_databases:
-      - db1
-      - db2
-      - db3
+    state: "stopped"
   register: myshard
 
 - assert:
     that:
       - myshard.changed == True
-      - myshard.sharded_enabled == ["db3"]
+      - myshard.old_balancer_state == "started"
+      - myshard.new_balancer_state == "stopped"
+
+- name: Get balancer state - Should now be off
+  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer now off?
+  assert:
+    that:
+      - "'false' in balancer_state.stdout"
+
+- name: balancer started with check mode
+  community.mongodb.mongodb_balancer:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    state: "started"
+  register: myshard
+  check_mode: yes
+
+- name: Get balancer state
+  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer still off?
+  assert:
+    that:
+      - "'false' in balancer_state.stdout"
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.old_balancer_state == "stopped"
+      - myshard.new_balancer_state == "started"
+
+- name: balancer started without check mode
+  community.mongodb.mongodb_balancer:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    state: "started"
+  register: myshard
+
+- assert:
+    that:
+      - myshard.changed == True
+      - myshard.old_balancer_state == "stopped"
+      - myshard.new_balancer_state == "started"
+
+- name: Get balancer state - Should now be on again
+  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  register: balancer_state
+
+- name: Is the balancer now off?
+  assert:
+    that:
+      - "'true' in balancer_state.stdout"
+
+- name: Run module with incorrect mongos name
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    state: started
+    mongos_process: "wrong-process-name"
+  register: mongos_process
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "mongos_process.changed == False"
+      - "mongos_process.msg == 'Process running on localhost:27017 is not a wrong-process-name'"
 
 - name: Test with bad password
-  community.mongodb.mongodb_shard:
+  community.mongodb.mongodb_balancer:
     login_user: '{{ mongodb_admin_user }}'
     login_password: XXXXXXXXXXXX
-    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
-    state: present
-  register: mongodb_shard_bad_pw
+    state: started
+  register: mongodb_balancer_bad_pw
   ignore_errors: true
 
 - name: Assert login failed
   assert:
     that:
-    - mongodb_shard_bad_pw.changed == False
-    - "'unable to connect to database: Authentication failed' in mongodb_shard_bad_pw.msg"
-
-- name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"
-  register: mongo_output
-
-- name: Assert shard name is in mongo_output
-  assert:
-    that:
-    - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
-
-- name: Remove shard 2
-  community.mongodb.mongodb_shard:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}'
-    state: absent
-
-- name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
-    }}" -p "{{ mongodb_admin_password }}"
-  register: mongo_output
-
-- name: Assert shard 2 is draining
-  assert:
-    that:
-    - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''"draining" : true'' in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
-
-- name: Run remove command again to finalize shard removal
-  community.mongodb.mongodb_shard:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    shard: '{{ mongodb_replicaset2 }}'
-    state: absent
-
-- pause:
-    seconds: 3
-
-- name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
-    }}" -p "{{ mongodb_admin_password }}"
-  register: mongo_output
-
-- name: Assert shard 2 is not present
-  assert:
-    that:
-    - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      not in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+    - mongodb_balancer_bad_pw.changed == False
+    - "'unable to connect to database: Authentication failed' in  mongodb_balancer_bad_pw.msg"
 
 - include_tasks: mongod_teardown.yml
-
-# ssl tests
-- include_tasks: ssl_sharded_cluster.yml
