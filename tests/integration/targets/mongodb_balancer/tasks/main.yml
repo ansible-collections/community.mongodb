@@ -189,7 +189,7 @@
 - include_tasks: mongod_replicaset.yml
 
 - set_fact:
-    current_replicaset: '{{ mongodb_replicaset1 }}'
+    current_replicaset: '{{ mongodb_replicaset2 }}'
 
 - set_fact:
     mongodb_nodes:
