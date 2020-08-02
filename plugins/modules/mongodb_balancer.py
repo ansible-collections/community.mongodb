@@ -204,7 +204,7 @@ def get_chunksize(client):
     if not result:
         chunksize = 64
     else:
-        chunksize = result['chunksize']
+        chunksize = result['value']
     return chunksize
 
 
