@@ -128,7 +128,7 @@
       in mongo_output.stdout'
     - '''balancer'' in mongo_output.stdout'
 
-- name: Ensure balancer is started before begining and autosplit is enable
+- name: Ensure balancer is started before begining and autosplit is enabled
   community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin
@@ -140,7 +140,7 @@
   community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin
-    state: started
+    state: stopped
   register: balancer
 
 - assert:
