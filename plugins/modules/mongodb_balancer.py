@@ -100,7 +100,7 @@ import os
 import ssl as ssl_lib
 from distutils.version import LooseVersion
 import time
-
+import traceback
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import binary_type, text_type
@@ -242,7 +242,7 @@ def main():
             else:
                 module.fail_json(msg='Unknown error: %s' % to_native(excep))
     except Exception as excep:
-        module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
+        module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
     # Get server version:
     try:
         srv_version = LooseVersion(client.server_info()['version'])
