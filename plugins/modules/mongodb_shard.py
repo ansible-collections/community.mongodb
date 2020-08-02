@@ -34,17 +34,6 @@ options:
       - Sharding cannot be disabled on a database.
     required: false
     type: raw
-  balancer_state:
-    description:
-      - Manage the Balancer for the Cluster
-    required: false
-    type: str
-    choices: ["started", "stopped", None]
-  autosplit:
-    description:
-      - Disable or enable the autosplit flag in the config.settings collection.
-    required: false
-    type: bool
   mongos_process:
     description:
       - Provide a custom name for the mongos process you are connecting to.
@@ -144,8 +133,12 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     ssl_connection_options
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
-
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
 
 def shard_find(client, shard):
     """Check if a shard exists.
@@ -225,63 +218,6 @@ def any_dbs_to_shard(client, sharded_databases):
     return dbs_to_shard
 
 
-def get_balancer_state(client):
-    '''
-    Gets the state of the MongoDB balancer. The config.settings collection does
-    not exist until the balancer has been started for the first time
-    { "_id" : "balancer", "mode" : "full", "stopped" : false }
-    { "_id" : "autosplit", "enabled" : true }
-    '''
-    balancer_state = "stopped"
-    result = client["config"].settings.find_one({"_id": "balancer"})
-    if not result:
-        balancer_state = "stopped"
-    else:
-        if result['stopped'] is False:
-            balancer_state = "started"
-        else:
-            balancer_state = "stopped"
-    return balancer_state
-
-
-def stop_balancer(client):
-    '''
-    Stops MongoDB balancer
-    '''
-    client['admin'].command({'balancerStop': 1, 'maxTimeMS': 60000})
-    time.sleep(1)
-
-
-def start_balancer(client):
-    '''
-    Starts MongoDB balancer
-    '''
-    client['admin'].command({'balancerStart': 1, 'maxTimeMS': 60000})
-    time.sleep(1)
-
-
-def enable_autosplit(client):
-    client["config"].settings.update({"_id": "autosplit"},
-                                     {"$set": {"enabled": True}},
-                                     upsert=True,
-                                     w="majority")
-
-
-def disable_autosplit(client):
-    client["config"].settings.update({"_id": "autosplit"},
-                                     {"$set": {"enabled": False}},
-                                     upsert=True,
-                                     w="majority")
-
-
-def get_autosplit(client):
-    autosplit = False
-    result = client["config"].settings.find_one({"_id": "autosplit"})
-    if result is not None:
-        autosplit = result['enabled']
-    return autosplit
-
-
 # =========================================
 # Module execution.
 #
@@ -290,8 +226,6 @@ def get_autosplit(client):
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
-        autosplit=dict(type='bool', required=False, default=None),
-        balancer_state=dict(type='str', required=False, choices=["started", "stopped", None], default=None),
         mongos_process=dict(type='str', required=False, default="mongos"),
         shard=dict(type='str', required=True),
         sharded_databases=dict(type="raw", required=False),
@@ -316,8 +250,6 @@ def main():
     shard = module.params['shard']
     state = module.params['state']
     sharded_databases = module.params['sharded_databases']
-    balancer_state = module.params['balancer_state']
-    autosplit = module.params['autosplit']
     mongos_process = module.params['mongos_process']
 
     try:
@@ -380,33 +312,16 @@ def main():
             module.fail_json(msg="Process running on {0}:{1} is not a {2}".format(login_host, login_port, mongos_process))
         shard_created = False
         dbs_to_shard = []
-        cluster_autosplit = None
-        old_balancer_state = None
-        new_balancer_state = None
-        old_autosplit = None
-        new_autosplit = None
+
         if sharded_databases is not None:
             if isinstance(sharded_databases, str):
                 sharded_databases = list(sharded_databases)
             dbs_to_shard = any_dbs_to_shard(client, sharded_databases)
-        if balancer_state is not None:
-            cluster_balancer_state = get_balancer_state(client)
-        if autosplit is not None:
-            cluster_autosplit = get_autosplit(client)
+
         if module.check_mode:
             if state == "present":
                 changed = False
                 if not shard_find(client, shard) or len(dbs_to_shard) > 0:
-                    changed = True
-                if (balancer_state is not None
-                        and balancer_state != cluster_balancer_state):
-                    old_balancer_state = cluster_balancer_state
-                    new_balancer_state = balancer_state
-                    changed = True
-                if (autosplit is not None
-                        and autosplit != cluster_autosplit):
-                    old_autosplit = cluster_autosplit
-                    new_autosplit = autosplit
                     changed = True
             elif state == "absent":
                 if not shard_find(client, shard):
@@ -424,30 +339,6 @@ def main():
                     for db in dbs_to_shard:
                         enable_database_sharding(client, db)
                     changed = True
-                if balancer_state is not None \
-                        and balancer_state != cluster_balancer_state:
-                    if balancer_state == "started":
-                        start_balancer(client)
-                        old_balancer_state = cluster_balancer_state
-                        new_balancer_state = get_balancer_state(client)
-                        changed = True
-                    else:
-                        stop_balancer(client)
-                        old_balancer_state = cluster_balancer_state
-                        new_balancer_state = get_balancer_state(client)
-                        changed = True
-                if autosplit is not None \
-                        and autosplit != cluster_autosplit:
-                    if autosplit:
-                        enable_autosplit(client)
-                        old_autosplit = cluster_autosplit
-                        new_autosplit = autosplit
-                        changed = True
-                    else:
-                        disable_autosplit(client)
-                        old_autosplit = cluster_autosplit
-                        new_autosplit = autosplit
-                        changed = True
             elif state == "absent":
                 if shard_find(client, shard):
                     shard_remove(client, shard)
@@ -466,12 +357,6 @@ def main():
     }
     if len(dbs_to_shard) > 0:
         result['sharded_enabled'] = dbs_to_shard
-    if old_balancer_state is not None:
-        result['old_balancer_state'] = old_balancer_state
-        result['new_balancer_state'] = new_balancer_state
-    if old_autosplit is not None:
-        result['old_autosplit'] = old_autosplit
-        result['new_autosplit'] = new_autosplit
 
     module.exit_json(**result)
 

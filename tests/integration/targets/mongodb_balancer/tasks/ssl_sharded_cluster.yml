@@ -1,0 +1,304 @@
+#################################################################
+# This file includes tasks to setup a shared cluster with ssl   #
+# certificates. We should test all MongoDB modules in this file.#
+#################################################################
+- include_tasks: mongod_teardown.yml
+
+- include_tasks: create_ssl_certs.yml
+
+# Create the shared cluster
+
+- name: Create directories for mongod processes
+  file:
+    path: '{{ remote_tmp_dir }}/mongod{{ item }}'
+    state: directory
+    owner: '{{ mongodb_user }}'
+    group: '{{ mongodb_user }}'
+    mode: '0755'
+    recurse: true
+  with_items:
+    - ssl0
+    - ssl1
+    - sslcfg
+
+- name: Spawn mongod process with auth and with SSL - ssl0 3001
+  command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
+    --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
+    --sslAllowInvalidHostnames --shardsvr {{ mongod_storage_engine_opts }}
+    --dbpath mongodssl0 --port 3001 --replSet ssl0 --logpath mongodssl0/log.log --fork --auth --keyFile my.key
+  args:
+    chdir: "{{ remote_tmp_dir }}"
+
+
+- name: Spawn mongod process with auth and with SSL - ssl1 3004
+  command: mongod --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
+    --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
+    --sslAllowInvalidHostnames --shardsvr {{ mongod_storage_engine_opts }}
+    --dbpath mongodssl1 --port 3004 --replSet ssl1 --logpath mongodssl1/log.log --fork --auth --keyFile my.key
+  args:
+    chdir: "{{ remote_tmp_dir }}"
+
+- name: Wait for mongod to start responding
+  wait_for:
+    port: '{{ item }}'
+  with_items:
+    - 3001
+    - 3004
+
+- name: Launch cfg server
+  command: mongod --configsvr --port 4000 --dbpath mongodsslcfg --logpath {{ remote_tmp_dir }}/sslcfg.log
+    --sslMode requireSSL --sslAllowConnectionsWithoutCertificates --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem
+    --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem --sslAllowInvalidHostnames --replSet sslcfg
+    --auth --keyFile {{ remote_tmp_dir }}/my.key --fork
+  args:
+    chdir: "{{ remote_tmp_dir }}"
+
+- name: Wait for mongod cfg server to start responding
+  wait_for:
+    port: '{{ item }}'
+  with_items:
+    - 4000
+
+- name: Run module with invalid ssl_certfile path
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: "{{ item.port }}"
+    login_database: admin
+    replica_set: "{{ item.rs }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem.idonotexist"
+    members:
+      - "localhost:{{ item.port }}"
+    validate: no
+  with_items:
+    - { "port": 3001, "rs": "ssl0" }
+    - { "port": 3004, "rs": "ssl1" }
+    - { "port": 4000, "rs": "sslcfg" }
+  ignore_errors: yes
+  register: ssl_cert_invalid
+
+- assert:
+    that:
+      - "'No such file or directory' in item.msg"
+  with_items:
+    - "{{ ssl_cert_invalid.results }}"
+
+#- shell: cat mongodssl0/log.log
+#  args:
+#    chdir: "{{ remote_tmp_dir }}"
+
+- name: Create replicasets with ssl enabled
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: "{{ item.port }}"
+    login_database: admin
+    replica_set: "{{ item.rs }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+    members:
+      - "localhost:{{ item.port }}"
+    validate: no
+  with_items:
+    - { "port": 3001, "rs": "ssl0" }
+    - { "port": 3004, "rs": "ssl1" }
+    - { "port": 4000, "rs": "sslcfg" }
+
+- name: Verify replicasets with ssl enabled
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+    - 4000
+
+- name: Add mongodb admin user to each shard inc config rs
+  community.mongodb.mongodb_user:
+    login_host: localhost
+    login_port: '{{ item.port }}'
+    replica_set: '{{ item.rs }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
+    state: present
+    ssl: yes
+    ssl_cert_reqs: CERT_REQUIRED
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  register: mongo_admin_user
+  with_items:
+  - port: 3001
+    rs: ssl0
+  - port: 3004
+    rs: ssl1
+  - port: 4000
+    rs: sslcfg
+
+- name: Launch mongos
+  command: mongos --configdb "sslcfg/localhost:4000" --logpath "{{ remote_tmp_dir }}/tests/mongos.log"
+    --port 27017 --sslMode requireSSL --sslAllowConnectionsWithoutCertificates
+    --sslCAFile {{ remote_tmp_dir }}/ca-chain.pem --sslPEMKeyFile  {{ remote_tmp_dir }}/mongo-chain.pem
+    --sslAllowInvalidHostnames --keyFile {{ remote_tmp_dir }}/my.key --fork
+  args:
+    chdir: "{{ remote_tmp_dir }}"
+
+- name: Wait for mongos server to start responding
+  wait_for:
+    port: '{{ item }}'
+  with_items:
+    - 27017
+
+- name: Add shards ssl0 and ssl1
+  community.mongodb.mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ item.rs }}/localhost:{{ item.port }}'
+    state: present
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - { "port": 3001, "rs": "ssl0" }
+    - { "port": 3004, "rs": "ssl1" }
+  ignore_errors: yes
+
+- name: Create index with ssl enabled
+  community.mongodb.mongodb_index:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    indexes:
+      - database: mydb
+        collection: test
+        keys:
+            username: 1
+            last_login: -1
+        options:
+          name: myindex
+        state: present
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run info module with ssl
+  mongodb_info:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+    filter: databases, total_size
+  register: info
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run maint module with ssl
+  mongodb_maintenance:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run oplog module with ssl
+  mongodb_oplog:
+    oplog_size_mb:  8000
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Set param with ssl
+  mongodb_parameter:
+    param: syncdelay
+    value: 60
+    param_type: int
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run stepdown with ssl
+  mongodb_stepdown:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+  register: stepdown
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "'No electable secondaries caught up as of' in item.msg"
+  with_items: "{{ stepdown.results }}"
+
+- name: Wait for replicasets to stabilise
+  mongodb_status:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- name: Run shutdown with ssl
+  mongodb_shutdown:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: "{{ item }}"
+    ssl: yes
+    ssl_cert_reqs: CERT_OPTIONAL
+    ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
+    ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
+  with_items:
+    - 3001
+    - 3004
+
+- include_tasks: mongod_teardown.yml
