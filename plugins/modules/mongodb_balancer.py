@@ -119,6 +119,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+
 def get_balancer_state(client):
     '''
     Gets the state of the MongoDB balancer. The config.settings collection does

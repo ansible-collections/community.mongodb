@@ -140,6 +140,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+
 def shard_find(client, shard):
     """Check if a shard exists.
 

@@ -202,7 +202,7 @@
 
 - include_tasks: mongod_replicaset.yml
 
-- set_fact:  admin user to each shard inc config rs
+- name:  admin user to each shard inc config rs
   community.mongodb.mongodb_user:
     login_host: localhost
     login_port: '{{ item.port }}'
