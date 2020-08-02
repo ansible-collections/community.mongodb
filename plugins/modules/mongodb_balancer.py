@@ -181,8 +181,9 @@ def get_autosplit(client):
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
+        autosplit=dict(type='bool', default=None),
+        mongos_process=dict(type='str', required=False, default="mongos"),
         state=dict(type='str', default="started", choices=["started", "stopped"]),
-        autosplit=dict(type='bool', default=None)
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
