@@ -233,28 +233,28 @@ def main():
 
 
 
-            try:
-                client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-            except Exception as excep:
-                if excep.code == 13:
-                    if login_user is not None and login_password is not None:
-                        client.admin.authenticate(login_user, login_password, source=login_database)
-                    else:
-                        module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+        try:
+            client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
+        except Exception as excep:
+            if excep.code == 13:
+                if login_user is not None and login_password is not None:
+                    client.admin.authenticate(login_user, login_password, source=login_database)
                 else:
-                    module.fail_json(msg='Unknown error: %s' % to_native(excep))
-            # Get server version:
-            try:
-                srv_version = LooseVersion(client.server_info()['version'])
-            except Exception as excep:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
-            try:
-                # Get driver version::
-                driver_version = LooseVersion(PyMongoVersion)
-                # Check driver and server version compatibility:
-                check_compatibility(module, srv_version, driver_version)
-            except Exception as excep:
-                module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+                    module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+            else:
+                module.fail_json(msg='Unknown error: %s' % to_native(excep))
+        # Get server version:
+        try:
+            srv_version = LooseVersion(client.server_info()['version'])
+        except Exception as excep:
+            module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
+        try:
+            # Get driver version::
+            driver_version = LooseVersion(PyMongoVersion)
+            # Check driver and server version compatibility:
+            check_compatibility(module, srv_version, driver_version)
+        except Exception as excep:
+            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
 
         cluster_autosplit = None
         old_balancer_state = None
