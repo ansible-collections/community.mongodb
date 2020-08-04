@@ -1,6 +1,6 @@
 # Mongodb Collection
 |Category|Status|
------------------
+|---|---|
 |Github CI|![CI](https://github.com/ansible-collections/community.mongodb/workflows/CI/badge.svg)|
 |Github Docs|![documentation](https://github.com/ansible-collections/community.mongodb/workflows/documentation/badge.svg)|
 |Codecov|[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.mongodb)](https://codecov.io/gh/ansible-collections/community.mongodb)|
