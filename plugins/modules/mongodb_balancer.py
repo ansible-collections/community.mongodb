@@ -242,8 +242,8 @@ def set_balancing_window(client, start, stop):
                                                       "activeWindow": {
                                                           "start": start,
                                                           "stop": stop
-                                                            }
                                                         }
+                                                    }
                                                    },
                                                   upsert=True)
     if result.modified_count == 1 or result.upserted_id is not None:
@@ -407,16 +407,16 @@ def main():
                 new_chunksize = chunksize
                 changed = True
             if window is not None:
-                if balancing_window(client):
+                if balancing_window(client, window['start'], window['stop']):
                     if window['state'] == "present":
-                        changed = False
+                        pass
                     else:
                         changed = True
                 else:
                     if window['state'] == "present":
                         changed = True
                     else:
-                        changed = False
+                        pass
         else:
             if balancer_state is not None \
                     and balancer_state != cluster_balancer_state:
@@ -449,9 +449,9 @@ def main():
                 new_chunksize = chunksize
                 changed = True
             if window is not None:
-                if balancing_window(client):
+                if balancing_window(client, window['start'], window['stop']):
                     if window['state'] == "present":
-                        changed = False
+                        pass
                     else:
                         remove_balancing_window(client)
                         changed = True
@@ -462,7 +462,7 @@ def main():
                                              window['stop'])
                         changed = True
                     else:
-                        changed = False
+                        pass
     except Exception as excep:
         result["msg"] = "An error occurred: {0}".format(excep)
 
