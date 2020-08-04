@@ -696,4 +696,16 @@
     that:
       - "window.changed"
 
+- name: Delete window - Should be no change
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    window:
+      state: "absent"
+  register: window
+
+- assert:
+    that:
+      - "window.changed == False"
+
 - include_tasks: mongod_teardown.yml
