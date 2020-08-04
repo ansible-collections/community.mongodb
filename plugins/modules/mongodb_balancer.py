@@ -15,6 +15,7 @@ description:
   - Manages the MongoDB Sharded Cluster Balancer.
   - Start or stop the balancer.
   - Enable or disable the autosplit feature.
+  - Adds or removes a balancer window.
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
@@ -64,7 +65,7 @@ requirements:
 '''
 
 EXAMPLES = r'''
-- name: Stop the balancer
+- name: Start the balancer
   community.mongodb.mongodb_balancer:
     state: started
 
@@ -77,7 +78,7 @@ EXAMPLES = r'''
   community.mongodb.mongodb_balancer:
     autosplit: true
 
-- name: Chnage the default chunksize to 128MB
+- name: Change the default chunksize to 128MB
   community.mongodb.mongodb_balancer:
     chunksize: 128
 
