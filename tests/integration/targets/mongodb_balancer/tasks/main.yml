@@ -630,6 +630,8 @@
 
 - name: Set balancer window to 23:00 to 06:00 (check mode)
   community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
     window:
       start: "23:00"
       stop: "06:00"
@@ -643,6 +645,8 @@
 
 - name: Set balancer window to 23:00 to 06:00
   community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
     window:
       start: "23:00"
       stop: "06:00"
@@ -655,6 +659,8 @@
 
 - name: Set balancer window to 23:00 to 06:00 - Should not change
   community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
     window:
       start: "23:00"
       stop: "06:00"
@@ -667,6 +673,8 @@
 
 - name: Delete window (check mode)
   community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
     window:
       state: "absent"
   check_mode: yes
@@ -678,6 +686,8 @@
 
 - name: Delete window
   community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
     window:
       state: "absent"
   register: window
@@ -685,7 +695,5 @@
 - assert:
     that:
       - "window.changed"
-
-
 
 - include_tasks: mongod_teardown.yml

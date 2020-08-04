@@ -238,12 +238,12 @@ def set_chunksize(client, chunksize):
 def set_balancing_window(client, start, stop):
     s = False
     result = client["config"].settings.update_one({"_id": "balancer"},
-                                                  {"$set":{
-                                                      "activeWindow":{
+                                                  {"$set": {
+                                                      "activeWindow": {
                                                           "start": start,
                                                           "stop": stop
-                                                          }
-                                                      }
+                                                        }
+                                                            }
                                                    },
                                                   upsert=True)
     if result.modified_count == 1 or result.upserted_id is not None:
@@ -278,7 +278,7 @@ def validate_window(window, module):
             module.fail_json(msg="Balancing window state must be present or absent")
         elif window['state'] == "present" \
                 and ("start" not in window.keys()
-                     or"stop" not in window.keys()):
+                     or "stop" not in window.keys()):
             module.fail_json(msg="Balancing window start and stop values must be specified")
     return True
 
