@@ -237,11 +237,11 @@ def set_chunksize(client, chunksize):
 
 def set_balancing_window(client, start, stop):
     s = False
-    result = client["config"].settings.update_one({ "_id": "balancer" },
-                                                  { "$set": {
-                                                      "activeWindow" : {
-                                                          "start" : start,
-                                                          "stop" : stop
+    result = client["config"].settings.update_one({"_id": "balancer"},
+                                                  {"$set":{
+                                                      "activeWindow":{
+                                                          "start": start,
+                                                          "stop": stop
                                                           }
                                                       }
                                                    },
@@ -253,8 +253,8 @@ def set_balancing_window(client, start, stop):
 
 def remove_balancing_window(client):
     s = False
-    result = client["config"].settings.update_one({ "_id" : "balancer" },
-                                                  { "$unset" : { "activeWindow" : True } })
+    result = client["config"].settings.update_one({"_id": "balancer"},
+                                                  {"$unset": {"activeWindow": True}})
     if result.modified_count == 1:
         s = True
     return s
