@@ -264,7 +264,7 @@ def balancing_window(client, start, stop):
                                                      "activeWindow.start": start,
                                                      "activeWindow.stop": stop})
     else:
-        result = client["config"].settings.find_one({"_id": "balancer", "activeWindow":{ "$exists": True}})
+        result = client["config"].settings.find_one({"_id": "balancer", "activeWindow": { "$exists": True}})
     if result:
         s = True
     return s
