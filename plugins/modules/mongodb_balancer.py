@@ -241,10 +241,7 @@ def set_balancing_window(client, start, stop):
                                                   {"$set": {
                                                       "activeWindow": {
                                                           "start": start,
-                                                          "stop": stop
-                                                        }
-                                                    }
-                                                   },
+                                                          "stop": stop}}},
                                                   upsert=True)
     if result.modified_count == 1 or result.upserted_id is not None:
         s = True
@@ -262,9 +259,12 @@ def remove_balancing_window(client):
 
 def balancing_window(client, start, stop):
     s = False
-    result = client["config"].settings.find_one({"_id": "balancer",
-                                                 "activeWindow.start": start,
-                                                 "activeWindow.stop": stop})
+    if start is not None and stop is not None:
+        result = client["config"].settings.find_one({"_id": "balancer",
+                                                     "activeWindow.start": start,
+                                                     "activeWindow.stop": stop})
+    else:
+        result = client["config"].settings.find_one({"_id": "balancer"})
     if result:
         s = True
     return s
@@ -407,7 +407,7 @@ def main():
                 new_chunksize = chunksize
                 changed = True
             if window is not None:
-                if balancing_window(client, window['start'], window['stop']):
+                if balancing_window(client, window.get('start'), window.get('stop')):
                     if window['state'] == "present":
                         pass
                     else:
@@ -449,7 +449,7 @@ def main():
                 new_chunksize = chunksize
                 changed = True
             if window is not None:
-                if balancing_window(client, window['start'], window['stop']):
+                if balancing_window(client, window.get('start')], window.get('stop')):
                     if window['state'] == "present":
                         pass
                     else:
