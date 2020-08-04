@@ -671,6 +671,20 @@
     that:
       - "window.changed == False"
 
+- name: Modify existing balancer window
+  community.mongodb.mongodb_balancer:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    window:
+      start: "22:00"
+      stop: "08:00"
+      state: "present"
+  register: window
+
+- assert:
+    that:
+      - "window.changed"
+
 - name: Delete window (check mode)
   community.mongodb.mongodb_balancer:
     login_user: "{{ mongodb_admin_user }}"
