@@ -628,4 +628,64 @@
       - "chunk.old_chunksize == 128"
       - "chunk.new_chunksize == 64"
 
+- name: Set balancer window to 23:00 to 06:00 (check mode)
+  community.mongodb.mongodb_balancer:
+    window:
+      start: "23:00"
+      stop: "06:00"
+      state: "present"
+  check_mode: yes
+  register: window
+
+- assert:
+    that:
+      - "window.changed"
+
+- name: Set balancer window to 23:00 to 06:00
+  community.mongodb.mongodb_balancer:
+    window:
+      start: "23:00"
+      stop: "06:00"
+      state: "present"
+  register: window
+
+- assert:
+    that:
+      - "window.changed"
+
+- name: Set balancer window to 23:00 to 06:00 - Should not change
+  community.mongodb.mongodb_balancer:
+    window:
+      start: "23:00"
+      stop: "06:00"
+      state: "present"
+  register: window
+
+- assert:
+    that:
+      - "window.changed == False"
+
+- name: Delete window (check mode)
+  community.mongodb.mongodb_balancer:
+    window:
+      state: "absent"
+  check_mode: yes
+  register: window
+
+- assert:
+    that:
+      - "window.changed"
+
+- name: Delete window
+  community.mongodb.mongodb_balancer:
+    window:
+      state: "absent"
+  register: window
+
+- assert:
+    that:
+      - "window.changed"
+
+
+
 - include_tasks: mongod_teardown.yml
