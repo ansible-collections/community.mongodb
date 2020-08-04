@@ -242,8 +242,8 @@ def set_balancing_window(client, start, stop):
                                                       "activeWindow": {
                                                           "start": start,
                                                           "stop": stop
-                                                        }
                                                             }
+                                                        }
                                                    },
                                                   upsert=True)
     if result.modified_count == 1 or result.upserted_id is not None:
