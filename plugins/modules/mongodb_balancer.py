@@ -14,7 +14,9 @@ short_description: Manages the MongoDB Sharded Cluster Balancer.
 description:
   - Manages the MongoDB Sharded Cluster Balancer.
   - Start or stop the balancer.
+  - Manage the cluster chunksize.
   - Enable or disable the autosplit feature.
+  - Adds or removes a balancer window.
 author: Rhys Campbell (@rhysmeister)
 
 extends_documentation_fragment:
@@ -47,6 +49,15 @@ options:
     required: false
     type: str
     default: "mongos"
+  window:
+    description:
+      - Schedule the balancer window.
+      - Provide the following dictionary keys start, stop, state
+      - The state key should be "present" or "absent".
+      - The start and stop keys are ignored when state is "absent".
+      - start and stop should be strings in "HH:MM" format indicating the bounds of the window.
+    type: raw
+    required: false
 notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
@@ -55,7 +66,7 @@ requirements:
 '''
 
 EXAMPLES = r'''
-- name: Stop the balancer
+- name: Start the balancer
   community.mongodb.mongodb_balancer:
     state: started
 
@@ -68,9 +79,21 @@ EXAMPLES = r'''
   community.mongodb.mongodb_balancer:
     autosplit: true
 
-- name: Chnage the default chunksize to 128MB
+- name: Change the default chunksize to 128MB
   community.mongodb.mongodb_balancer:
     chunksize: 128
+
+- name: Add or update a balancing window
+  community.mongodb.mongodb_balancer:
+    window:
+      start: "23:00"
+      stop: "06:00"
+      state: "present"
+
+- name: Remove a balancing window
+  community.mongodb.mongodb_balancer:
+    window:
+      state: "absent"
 '''
 
 RETURN = r'''
@@ -214,6 +237,54 @@ def set_chunksize(client, chunksize):
                                     "value": chunksize})
 
 
+def set_balancing_window(client, start, stop):
+    s = False
+    result = client["config"].settings.update_one({"_id": "balancer"},
+                                                  {"$set": {
+                                                      "activeWindow": {
+                                                          "start": start,
+                                                          "stop": stop}}},
+                                                  upsert=True)
+    if result.modified_count == 1 or result.upserted_id is not None:
+        s = True
+    return s
+
+
+def remove_balancing_window(client):
+    s = False
+    result = client["config"].settings.update_one({"_id": "balancer"},
+                                                  {"$unset": {"activeWindow": True}})
+    if result.modified_count == 1:
+        s = True
+    return s
+
+
+def balancing_window(client, start, stop):
+    s = False
+    if start is not None and stop is not None:
+        result = client["config"].settings.find_one({"_id": "balancer",
+                                                     "activeWindow.start": start,
+                                                     "activeWindow.stop": stop})
+    else:
+        result = client["config"].settings.find_one({"_id": "balancer", "activeWindow": {"$exists": True}})
+    if result:
+        s = True
+    return s
+
+
+def validate_window(window, module):
+    if window is not None:
+        if 'state' not in window.keys():
+            module.fail_json(msg="Balancing window state must be specified")
+        elif window['state'] not in ['present', 'absent']:
+            module.fail_json(msg="Balancing window state must be present or absent")
+        elif window['state'] == "present" \
+                and ("start" not in window.keys()
+                     or "stop" not in window.keys()):
+            module.fail_json(msg="Balancing window start and stop values must be specified")
+    return True
+
+
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
@@ -221,6 +292,7 @@ def main():
         chunksize=dict(type='int', default=None),
         mongos_process=dict(type='str', required=False, default="mongos"),
         state=dict(type='str', default="started", choices=["started", "stopped"]),
+        window=dict(type='raw', default=None)
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -242,6 +314,10 @@ def main():
     chunksize = module.params['chunksize']
     mongos_process = module.params['mongos_process']
     ssl = module.params['ssl']
+    window = module.params['window']
+
+    # Validate window
+    validate_window(window, module)
 
     result = dict(
         changed=False,
@@ -332,6 +408,17 @@ def main():
                 old_chunksize = cluster_chunksize
                 new_chunksize = chunksize
                 changed = True
+            if window is not None:
+                if balancing_window(client, window.get('start'), window.get('stop')):
+                    if window['state'] == "present":
+                        pass
+                    else:
+                        changed = True
+                else:
+                    if window['state'] == "present":
+                        changed = True
+                    else:
+                        pass
         else:
             if balancer_state is not None \
                     and balancer_state != cluster_balancer_state:
@@ -363,6 +450,21 @@ def main():
                 old_chunksize = cluster_chunksize
                 new_chunksize = chunksize
                 changed = True
+            if window is not None:
+                if balancing_window(client, window.get('start'), window.get('stop')):
+                    if window['state'] == "present":
+                        pass
+                    else:
+                        remove_balancing_window(client)
+                        changed = True
+                else:
+                    if window['state'] == "present":
+                        set_balancing_window(client,
+                                             window['start'],
+                                             window['stop'])
+                        changed = True
+                    else:
+                        pass
     except Exception as excep:
         result["msg"] = "An error occurred: {0}".format(excep)
 
