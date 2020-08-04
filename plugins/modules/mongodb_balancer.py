@@ -276,7 +276,7 @@ def validate_window(window, module):
             module.fail_json(msg="Balancing window state must be specified")
         elif window['state'] not in ['present', 'absent']:
             module.fail_json(msg="Balancing window state must be present or absent")
-        elif window['state'] == "present"
+        elif window['state'] == "present" \
                 and ("start" not in window.keys()
                      or"stop" not in window.keys()):
             module.fail_json(msg="Balancing window start and stop values must be specified")
