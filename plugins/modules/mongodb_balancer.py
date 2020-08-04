@@ -449,7 +449,7 @@ def main():
                 new_chunksize = chunksize
                 changed = True
             if window is not None:
-                if balancing_window(client, window.get('start')], window.get('stop')):
+                if balancing_window(client, window.get('start'), window.get('stop')):
                     if window['state'] == "present":
                         pass
                     else:
