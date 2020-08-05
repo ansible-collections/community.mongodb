@@ -25,6 +25,23 @@ except ImportError:
     pymongo_found = False
 
 
+def autoinstall_pymongo(module):
+    if module.check_mode:
+        module.fail_json(msg="pymongo must be installed to use check mode. "
+                             "If run normally this module can auto-install it.")
+    try:
+        module.run_command(['pip', 'install', 'pymongo', '--yes'], check_rc=True)
+        from pymongo.errors import ConnectionFailure
+        from pymongo.errors import OperationFailure
+        from pymongo import version as PyMongoVersion
+        from pymongo import MongoClient
+        pymongo_found = True
+    except ImportError as excep:
+        module.fail_json(msg="Could not import python pymongo: {0}".format(excep))
+    except Exception as excep:
+        module.fail_json(msg="Unknown error: {0}".format(excep))
+
+
 def check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
 
