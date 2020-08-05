@@ -34,7 +34,7 @@ def autoinstall_pymongo(module):
         module.warn("Attempting installation of pymongo via pip.")
         module.run_command(['/usr/bin/pip3', 'install', 'pymongo'], check_rc=True)
         module.warn("Successfully installed pymongo.")
-        pymongo_found = True
+        installed = True
     except ImportError as excep:
         module.fail_json(msg="Could not import python pymongo: {0}".format(excep))
     except Exception as excep:
