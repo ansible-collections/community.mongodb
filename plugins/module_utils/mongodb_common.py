@@ -31,6 +31,7 @@ def autoinstall_pymongo(module):
                              "If run normally this module can auto-install it.")
     try:
         module.run_command(['/usr/bin/pip3', 'install', 'pymongo'], check_rc=True)
+        module.warn("Automatically install pymongo via pip.")
         from pymongo.errors import ConnectionFailure
         from pymongo.errors import OperationFailure
         from pymongo import version as PyMongoVersion

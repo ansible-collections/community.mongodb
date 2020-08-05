@@ -32,7 +32,7 @@
     {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork
 
-- name: Ensure pymongo is not install to test autoinstall
+- name: Ensure pymongo is not installed to test autoinstall
   pip:
     name: pymongo
     state: absent
