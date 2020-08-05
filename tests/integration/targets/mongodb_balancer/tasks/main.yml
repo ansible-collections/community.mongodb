@@ -32,6 +32,11 @@
     {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork
 
+- name: Ensure pymongo is not install to test autoinstall
+  pip:
+    name: pymongo
+    state: absent
+
 - name: Create replicaset1 with module
   community.mongodb.mongodb_replicaset:
     login_host: localhost
