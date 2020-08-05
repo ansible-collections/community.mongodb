@@ -292,7 +292,15 @@ def main():
     )
 
     if not pymongo_found:
-        ConnectionFailure, OperationFailure, PyMongoVersion, MongoClient = autoinstall_pymongo(module)
+        try:
+            from pymongo.errors import ConnectionFailure
+            from pymongo.errors import OperationFailure
+            from pymongo import version as PyMongoVersion
+            from pymongo import MongoClient
+            pymongo_found = True
+        except ImportError:
+            module.fail(msg="Could not import pymongo. Please install")
+
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
