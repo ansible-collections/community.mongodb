@@ -25,6 +25,17 @@ except ImportError:
     pymongo_found = False
 
 
+def global_imports(modulename,shortname = None, asfunction = False):
+    ''' From https://stackoverflow.com/questions/11990556/how-to-make-global-imports-from-a-function
+    '''
+    if shortname is None:
+        shortname = modulename
+    if asfunction is False:
+        globals()[shortname] = __import__(modulename)
+    else:
+        globals()[shortname] = eval(modulename + "." + shortname)
+
+
 def autoinstall_pymongo(module):
     pymongo_found = False
     if module.check_mode:
@@ -34,10 +45,10 @@ def autoinstall_pymongo(module):
         module.warn("Attempting installation of pymongo via pip.")
         module.run_command(['/usr/bin/pip3', 'install', 'pymongo'], check_rc=True)
         module.warn("Successfully installed pymongo.")
-        globals()[ConnectionFailure] = __import__('pymongo.errors.ConnectionFailure')
-        globals()[OperationFailure] = __import__('pymongo.errors.OperationFailure')
-        globals()[PyMongoVersion] = __import__('pymongo.version')
-        globals()[MongoClient] = __import__('pymongo.MongoClient')
+        global_imports("pymongo.errors","ConnectionFailure",True)
+        global_imports("pymongo.errors","OperationFailure",True)
+        global_imports("pymongo","pymongo",True)
+        global_imports("pymongo","MongoClient",True)
         pymongo_found = True
     except ImportError as excep:
         module.fail_json(msg="Could not import python pymongo: {0}".format(excep))
