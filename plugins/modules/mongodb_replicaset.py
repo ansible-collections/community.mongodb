@@ -180,12 +180,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     ssl_connection_options,
     autoinstall_pymongo
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    PyMongoVersion,
-    PYMONGO_IMP_ERR,
-    pymongo_found,
-    MongoClient
-)
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
 def replicaset_find(client):
