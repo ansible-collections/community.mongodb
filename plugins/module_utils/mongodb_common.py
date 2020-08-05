@@ -30,7 +30,7 @@ def autoinstall_pymongo(module):
         module.fail_json(msg="pymongo must be installed to use check mode. "
                              "If run normally this module can auto-install it.")
     try:
-        module.run_command(['/usr/bin/pip', 'install', '--yes', 'pymongo'], check_rc=True)
+        module.run_command(['/usr/bin/pip3', 'install', '--yes', 'pymongo'], check_rc=True)
         from pymongo.errors import ConnectionFailure
         from pymongo.errors import OperationFailure
         from pymongo import version as PyMongoVersion
