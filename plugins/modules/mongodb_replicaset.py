@@ -176,9 +176,15 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    autoinstall_pymongo
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
 
 
 def replicaset_find(client):
@@ -285,8 +291,9 @@ def main():
     )
 
     if not pymongo_found:
-        module.fail_json(msg=missing_required_lib('pymongo'),
-                         exception=PYMONGO_IMP_ERR)
+        autoinstall_pymongo(module)
+        # module.fail_json(msg=missing_required_lib('pymongo'),
+        #                 exception=PYMONGO_IMP_ERR)
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
