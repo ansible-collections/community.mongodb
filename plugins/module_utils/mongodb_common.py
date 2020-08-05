@@ -26,12 +26,14 @@ except ImportError:
 
 
 def autoinstall_pymongo(module):
+    pymongo_found = False
     if module.check_mode:
         module.fail_json(msg="pymongo must be installed to use check mode. "
                              "If run normally this module can auto-install it.")
     try:
+        module.warn("Attempting installation of pymongo via pip.")
         module.run_command(['/usr/bin/pip3', 'install', 'pymongo'], check_rc=True)
-        module.warn("Automatically install pymongo via pip.")
+        module.warn("Successfully installed pymongo.")
         from pymongo.errors import ConnectionFailure
         from pymongo.errors import OperationFailure
         from pymongo import version as PyMongoVersion
@@ -41,6 +43,7 @@ def autoinstall_pymongo(module):
         module.fail_json(msg="Could not import python pymongo: {0}".format(excep))
     except Exception as excep:
         module.fail_json(msg="Unknown error: {0}".format(excep))
+    return pymongo_found
 
 
 def check_compatibility(module, srv_version, driver_version):
