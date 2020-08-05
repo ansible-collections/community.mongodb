@@ -34,10 +34,10 @@ def autoinstall_pymongo(module):
         module.warn("Attempting installation of pymongo via pip.")
         module.run_command(['/usr/bin/pip3', 'install', 'pymongo'], check_rc=True)
         module.warn("Successfully installed pymongo.")
-        globals["ConnectionFailure"] = eval('from pymongo.errors import ConnectionFailure')
-        globals["OperationFailure"] = eval('from pymongo.errors import OperationFailure')
-        globals["PyMongoVersion"] = eval('from pymongo import version')
-        globals["MongoClient"] = eval('from pymongo import MongoClient')
+        globals["ConnectionFailure"] = eval('pymongo.errors.ConnectionFailure')
+        globals["OperationFailure"] = eval('pymongo.errors.OperationFailure')
+        globals["PyMongoVersion"] = eval('pymongo.version')
+        globals["MongoClient"] = eval('pymongo.MongoClient')
         pymongo_found = True
     except ImportError as excep:
         module.fail_json(msg="Could not import python pymongo: {0}".format(excep))
