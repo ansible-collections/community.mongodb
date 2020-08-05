@@ -293,13 +293,15 @@ def main():
 
     if not pymongo_found:
         try:
+            global ConnectionFailure, OperationFailure, PyMongoVersion, MongoClient
             from pymongo.errors import ConnectionFailure
             from pymongo.errors import OperationFailure
             from pymongo import version as PyMongoVersion
             from pymongo import MongoClient
             pymongo_found = True
         except ImportError:
-            module.fail(msg="Could not import pymongo. Please install")
+            PYMONGO_IMP_ERR = traceback.format_exc()
+            pymongo_found = False
 
 
     login_user = module.params['login_user']
