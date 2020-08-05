@@ -387,7 +387,8 @@ def main():
 
             module.exit_json(**result)
     except Exception as e:
-        module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
+        MSG = traceback.format_exc()
+        module.fail_json(msg='Unable to connect to database: %s' % to_native(e) + ": " + MSG)
 
 
 if __name__ == '__main__':
