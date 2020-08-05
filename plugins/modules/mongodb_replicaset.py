@@ -292,9 +292,7 @@ def main():
     )
 
     if not pymongo_found:
-        if not autoinstall_pymongo(module):
-            module.fail_json(msg=missing_required_lib('pymongo'),
-                            exception=PYMONGO_IMP_ERR)
+        ConnectionFailure, OperationFailure, PyMongoVersion, MongoClient = autoinstall_pymongo(module)
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']

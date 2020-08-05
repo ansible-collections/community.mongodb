@@ -34,8 +34,6 @@ def autoinstall_pymongo(module):
         module.warn("Attempting installation of pymongo via pip.")
         module.run_command(['/usr/bin/pip3', 'install', 'pymongo'], check_rc=True)
         module.warn("Successfully installed pymongo.")
-        global ConnectionFailure, OperationFailure, PyMongoVersion, MongoClient
-        import pymongo
         ConnectionFailure = eval('pymongo.errors.ConnectionFailure')
         OperationFailure = eval('pymongo.errors.OperationFailure')
         PyMongoVersion = eval('pymongo.version')
@@ -45,7 +43,7 @@ def autoinstall_pymongo(module):
         module.fail_json(msg="Could not import python pymongo: {0}".format(excep))
     except Exception as excep:
         module.fail_json(msg="Unknown error: {0}".format(excep))
-    return pymongo_found
+    return ConnectionFailure, OperationFailure, PyMongoVersion, MongoClient
 
 
 def check_compatibility(module, srv_version, driver_version):
