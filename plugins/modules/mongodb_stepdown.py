@@ -18,6 +18,7 @@ description: >
   if the member state is currently STARTUP, RECOVERING, STARTUP2 or ROLLBACK,
   before taking any needed action.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

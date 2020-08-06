@@ -1,15 +1,23 @@
 namespace: community
 name: mongodb
-version: 0.1.2
+version: 1.0.0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
   - Rhys Campbell (https://github.com/rhysmeister)
+  - Andrew Klychkov (https://github.com/Andersson007)
+  - Marcos Diez (https://github.com/marcosdiez)
+  - Elliott Foster (http://fourkitchens.com)
+  - Loic Blot (http://www.infopro-digital.com/)
+  - Matt Martz (https://github.com/sivel)
 description: null
 license_file: COPYING
-tags: null
+tags:
+  - mongodb
+  - database
+  - nosql
 dependencies:
-  community.general: '>=0.1.1'
+  community.general: '>=1.0.0'
 repository: https://github.com/ansible-collections/community.mongodb
 documentation: https://github.com/ansible-collections/community.mongodb/tree/master/docs
 homepage: https://github.com/ansible-collections/community.mongodb

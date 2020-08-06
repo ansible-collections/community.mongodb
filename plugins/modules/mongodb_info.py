@@ -18,6 +18,7 @@ description:
 - Gather information about MongoDB instance.
 
 author: Andrew Klychkov (@Andersson007)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options
