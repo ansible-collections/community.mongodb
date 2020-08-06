@@ -301,7 +301,6 @@ def main():
         else:
             module.fail_json(msg="Could not auto install pymongo which this module requires to function.")
 
-
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     login_database = module.params['login_database']
