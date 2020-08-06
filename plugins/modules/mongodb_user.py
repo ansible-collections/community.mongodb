@@ -12,11 +12,10 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: community.mongodb.mongodb_user
+module: "community.mongodb.mongodb_user"
 short_description: Adds or removes a user from a MongoDB database
 description:
     - Adds or removes a user from a MongoDB database.
-author: Elliott Foster
 version_added: "1.0.0"
 
 extends_documentation_fragment:

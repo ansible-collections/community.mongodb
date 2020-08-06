@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: community.mongodb.mongodb_shutdown
+module: "community.mongodb.mongodb_shutdown"
 short_description: Cleans up all database resources and then terminates the process.
 description:
 - Cleans up all database resources and then terminates the process.

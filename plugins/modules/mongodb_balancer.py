@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: community.mongodb.mongodb_balancer
+module: "community.mongodb.mongodb_balancer"
 short_description: Manages the MongoDB Sharded Cluster Balancer.
 description:
   - Manages the MongoDB Sharded Cluster Balancer.

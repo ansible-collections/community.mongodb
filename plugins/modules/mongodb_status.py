@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: community.mongodb.mongodb_status
+module: "community.mongodb.mongodb_status"
 short_description: Validates the status of the cluster.
 description:
 - Validates the status of the cluster.

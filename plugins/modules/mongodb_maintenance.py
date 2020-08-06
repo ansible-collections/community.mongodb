@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: community.mongodb.mongodb_maintenance
+module: "community.mongodb.mongodb_maintenance"
 short_description: Enables or disables maintnenance mode for a secondary member.
 description:
 - Enables or disables maintnenance mode for a secondary member.

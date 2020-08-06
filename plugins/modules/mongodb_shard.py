@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: community.mongodb.mongodb_shard
+module: "community.mongodb.mongodb_shard"
 short_description: Add or remove shards from a MongoDB Cluster
 description:
     -  Add or remove shards from a MongoDB Cluster.

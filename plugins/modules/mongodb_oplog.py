@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: community.mongodb.mongodb_oplog
+module: "community.mongodb.mongodb_oplog"
 short_description: Resizes the MongoDB oplog.
 description:
   - Resizes the MongoDB oplog.
