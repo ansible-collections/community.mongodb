@@ -18,6 +18,7 @@ description:
   - Enable or disable the autosplit feature.
   - Adds or removes a balancer window.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

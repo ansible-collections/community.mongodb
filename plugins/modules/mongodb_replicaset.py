@@ -15,6 +15,7 @@ description:
 - Initialises a MongoDB replicaset in a new deployment.
 - Validates the replicaset name for existing deployments.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

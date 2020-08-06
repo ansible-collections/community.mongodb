@@ -16,6 +16,7 @@ module: mongodb_user
 short_description: Adds or removes a user from a MongoDB database
 description:
     - Adds or removes a user from a MongoDB database.
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

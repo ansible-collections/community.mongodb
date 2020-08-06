@@ -17,6 +17,7 @@ module: mongodb_parameter
 short_description: Change an administrative parameter on a MongoDB server
 description:
     - Change an administrative parameter on a MongoDB server.
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options
