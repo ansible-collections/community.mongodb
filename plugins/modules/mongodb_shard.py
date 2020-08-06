@@ -9,11 +9,12 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: mongodb_shard
+module: community.mongodb.mongodb_shard
 short_description: Add or remove shards from a MongoDB Cluster
 description:
     -  Add or remove shards from a MongoDB Cluster.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

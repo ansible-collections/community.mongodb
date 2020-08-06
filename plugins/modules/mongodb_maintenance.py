@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: mongodb_maintenance
+module: community.mongodb.mongodb_maintenance
 short_description: Enables or disables maintnenance mode for a secondary member.
 description:
 - Enables or disables maintnenance mode for a secondary member.
@@ -17,6 +17,7 @@ description:
 - Has no effect when executed against a PRIMARY member.
 - When enabled the SECONDARY member will not service reads.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

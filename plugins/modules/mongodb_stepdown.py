@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: mongodb_stepdown
+module: community.mongodb.mongodb_stepdown
 short_description: Step down the MongoDB node from a PRIMARY state.
 description: >
   Step down the MongoDB node from the PRIMARY state if it has that status.
@@ -18,6 +18,7 @@ description: >
   if the member state is currently STARTUP, RECOVERING, STARTUP2 or ROLLBACK,
   before taking any needed action.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options

@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: mongodb_balancer
+module: community.mongodb.mongodb_balancer
 short_description: Manages the MongoDB Sharded Cluster Balancer.
 description:
   - Manages the MongoDB Sharded Cluster Balancer.
@@ -18,6 +18,7 @@ description:
   - Enable or disable the autosplit feature.
   - Adds or removes a balancer window.
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.0.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options
