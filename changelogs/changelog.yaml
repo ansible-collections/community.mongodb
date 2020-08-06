@@ -1,0 +1,41 @@
+ancestor: null
+releases:
+  1.0.0:
+    modules:
+    - description: Manages the MongoDB Sharded Cluster Balancer.
+      name: mongodb_balancer
+      namespace: ''
+    - description: Creates or drops indexes on MongoDB collections.
+      name: mongodb_index
+      namespace: ''
+    - description: Gather information about MongoDB instance.
+      name: mongodb_info
+      namespace: ''
+    - description: Enables or disables maintnenance mode for a secondary member.
+      name: mongodb_maintenance
+      namespace: ''
+    - description: Resizes the MongoDB oplog.
+      name: mongodb_oplog
+      namespace: ''
+    - description: Change an administrative parameter on a MongoDB server
+      name: mongodb_parameter
+      namespace: ''
+    - description: Initialises a MongoDB replicaset.
+      name: mongodb_replicaset
+      namespace: ''
+    - description: Add or remove shards from a MongoDB Cluster
+      name: mongodb_shard
+      namespace: ''
+    - description: Cleans up all database resources and then terminates the process.
+      name: mongodb_shutdown
+      namespace: ''
+    - description: Validates the status of the cluster.
+      name: mongodb_status
+      namespace: ''
+    - description: Step down the MongoDB node from a PRIMARY state.
+      name: mongodb_stepdown
+      namespace: ''
+    - description: Adds or removes a user from a MongoDB database
+      name: mongodb_user
+      namespace: ''
+    release_date: '2020-08-06'
