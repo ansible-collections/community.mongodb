@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: "community.mongodb.mongodb_info"
+module: mongodb_info
 
 short_description: Gather information about MongoDB instance.
 

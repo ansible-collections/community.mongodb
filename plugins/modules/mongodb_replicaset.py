@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: "community.mongodb.mongodb_replicaset"
+module: mongodb_replicaset
 short_description: Initialises a MongoDB replicaset.
 description:
 - Initialises a MongoDB replicaset in a new deployment.

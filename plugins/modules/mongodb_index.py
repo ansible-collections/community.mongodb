@@ -10,7 +10,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: "community.mongodb.mongodb_index"
+module: mongodb_index
 
 short_description: Creates or drops indexes on MongoDB collections.
 

@@ -13,7 +13,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: "community.mongodb.mongodb_parameter"
+module: mongodb_parameter
 short_description: Change an administrative parameter on a MongoDB server
 description:
     - Change an administrative parameter on a MongoDB server.

@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: "community.mongodb.mongodb_stepdown"
+module: mongodb_stepdown
 short_description: Step down the MongoDB node from a PRIMARY state.
 description: >
   Step down the MongoDB node from the PRIMARY state if it has that status.
