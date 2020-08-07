@@ -11,7 +11,7 @@ releases:
     - description: Gather information about MongoDB instance.
       name: mongodb_info
       namespace: ''
-    - description: Enables or disables maintnenance mode for a secondary member.
+    - description: Enables or disables maintenance mode for a secondary member.
       name: mongodb_maintenance
       namespace: ''
     - description: Resizes the MongoDB oplog.

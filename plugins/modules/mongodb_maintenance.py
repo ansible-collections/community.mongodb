@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: mongodb_maintenance
-short_description: Enables or disables maintnenance mode for a secondary member.
+short_description: Enables or disables maintenance mode for a secondary member.
 description:
-- Enables or disables maintnenance mode for a secondary member.
+- Enables or disables maintenance mode for a secondary member.
 - Wrapper around the replSetMaintenance command.
 - Has no effect when executed against a PRIMARY member.
 - When enabled the SECONDARY member will not service reads.
@@ -25,7 +25,7 @@ extends_documentation_fragment:
 
 options:
   maintenance:
-    description: Enable or disable maintnenance mode.
+    description: Enable or disable maintenance mode.
     type: bool
     default: false
 notes:
@@ -42,7 +42,7 @@ EXAMPLES = r'''
 
 - name: Disable maintenance mode
   community.mongodb.mongodb_maintenance:
-    maintnenance: false
+    maintenance: false
 '''
 
 RETURN = r'''
