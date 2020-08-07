@@ -14,7 +14,7 @@ New Modules
 - community.mongodb.mongodb_balancer - Manages the MongoDB Sharded Cluster Balancer.
 - community.mongodb.mongodb_index - Creates or drops indexes on MongoDB collections.
 - community.mongodb.mongodb_info - Gather information about MongoDB instance.
-- community.mongodb.mongodb_maintenance - Enables or disables maintnenance mode for a secondary member.
+- community.mongodb.mongodb_maintenance - Enables or disables maintenance mode for a secondary member.
 - community.mongodb.mongodb_oplog - Resizes the MongoDB oplog.
 - community.mongodb.mongodb_parameter - Change an administrative parameter on a MongoDB server
 - community.mongodb.mongodb_replicaset - Initialises a MongoDB replicaset.

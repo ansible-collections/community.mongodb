@@ -32,7 +32,7 @@ plugins:
       namespace: ''
       version_added: 1.0.0
     mongodb_maintenance:
-      description: Enables or disables maintnenance mode for a secondary member.
+      description: Enables or disables maintenance mode for a secondary member.
       name: mongodb_maintenance
       namespace: ''
       version_added: 1.0.0
