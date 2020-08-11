@@ -30,12 +30,12 @@ options:
     default: rs0
   poll:
     description:
-      - The maximum number of times query for the replicaset status.
+      - The maximum number of times to query for the replicaset status before the set converges or we fail.
     type: int
     default: 1
   interval:
     description:
-      - The number of seconds to wait between poll executions.
+      - The number of seconds to wait between polling executions.
     type: int
     default: 30
 notes:
@@ -64,7 +64,7 @@ failed:
   description: If the mnodule had failed or not.
   returned: always
   type: bool
-iteration:
+iterations:
   description: Number of times the module has queried the replicaset status.
   returned: always
   type: int
