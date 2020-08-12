@@ -26,7 +26,7 @@ extends_documentation_fragment:
 options:
   oplog_size_mb:
     description:
-      - Desired new size in MB of the oplog.
+      - New size of the oplog in MB.
     type: int
     required: true
   compact:
