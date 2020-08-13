@@ -14,9 +14,9 @@ short_description: Manages the MongoDB Sharded Cluster Balancer.
 description:
   - Manages the MongoDB Sharded Cluster Balancer.
   - Start or stop the balancer.
-  - Manage the cluster chunksize.
-  - Enable or disable the autosplit feature.
-  - Adds or removes a balancer window.
+  - Adjust the cluster chunksize.
+  - Enable or disable the autosplit.
+  - Adds or remove a balancer window.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
@@ -41,11 +41,13 @@ options:
       - Manage the Balancer for the Cluster
     required: false
     type: str
-    choices: ["started", "stopped"]
+    choices:
+      - "started"
+      - "stopped"
     default: "started"
   mongos_process:
     description:
-      - Provide a custom name for the mongos process you are connecting to.
+      - Provide a custom name for the mongos process.
       - Most users can ignore this setting.
     required: false
     type: str
@@ -56,7 +58,7 @@ options:
       - Provide the following dictionary keys start, stop, state
       - The state key should be "present" or "absent".
       - The start and stop keys are ignored when state is "absent".
-      - start and stop should be strings in "HH:MM" format indicating the bounds of the window.
+      - start and stop should be strings in "HH:MM" format indicating the time bounds of the window.
     type: raw
     required: false
 notes:
