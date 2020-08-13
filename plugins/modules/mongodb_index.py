@@ -15,7 +15,9 @@ module: mongodb_index
 short_description: Creates or drops indexes on MongoDB collections.
 
 description:
-- Creates or drops indexes on MongoDB collections.
+  - Creates or drops indexes on MongoDB collections.
+  - Supports multiple index options, i.e. unique, sparse and partial.
+  - Validates existence of indexes by name only.
 
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
@@ -34,7 +36,8 @@ options:
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
 
-requirements: [ 'pymongo' ]
+requirements:
+  - pymongo
 '''
 
 EXAMPLES = r'''
