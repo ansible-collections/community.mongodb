@@ -12,10 +12,10 @@ DOCUMENTATION = r'''
 module: mongodb_maintenance
 short_description: Enables or disables maintenance mode for a secondary member.
 description:
-- Enables or disables maintenance mode for a secondary member.
-- Wrapper around the replSetMaintenance command.
-- Has no effect when executed against a PRIMARY member.
-- When enabled the SECONDARY member will not service reads.
+  - Enables or disables maintenance mode for a secondary member.
+  - Wrapper around the replSetMaintenance command.
+  - Performs no actions against a PRIMARY member.
+  - When enabled SECONDARY members will not service reads.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
@@ -29,10 +29,10 @@ options:
     type: bool
     default: false
 notes:
-- Requires the pymongo Python package on the remote host, version 2.4.2+. This
-  can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
+  - Requires the pymongo Python package on the remote host, version 2.4.2+. This
+    can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
 requirements:
-- pymongo
+  - pymongo
 '''
 
 EXAMPLES = r'''
