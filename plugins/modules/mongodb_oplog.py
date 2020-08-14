@@ -32,7 +32,7 @@ options:
   compact:
     description:
       - Runs compact against the oplog.rs collection in the local database to reclaim disk space.
-      - Will not run against PRIMARY members.
+      - Performs no actions against PRIMARY members.
       - The MongoDB user must have the compact role on the local database for this feature to work.
     type: bool
     default: false
@@ -45,10 +45,10 @@ options:
     type: str
     default: "3.6"
 notes:
-- Requires the pymongo Python package on the remote host, version 2.4.2+. This
-  can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
+  - Requires the pymongo Python package on the remote host, version 2.4.2+. This
+    can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
 requirements:
-- pymongo
+  - pymongo
 '''
 
 EXAMPLES = r'''
