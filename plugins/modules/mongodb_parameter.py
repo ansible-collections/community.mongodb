@@ -86,7 +86,12 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     ssl_connection_options
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion, 
+    PYMONGO_IMP_ERR, 
+    pymongo_found, 
+    MongoClient
+)
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import ConnectionFailure, OperationFailure
 
 # =========================================
