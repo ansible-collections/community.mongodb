@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: mongodb_shutdown
-short_description: Cleans up all database resources and then terminates the process.
+short_description: Cleans up all database resources and then terminates the mongod/mongos process.
 description:
-- Cleans up all database resources and then terminates the process.
+  - Cleans up all database resources and then terminates the process.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
@@ -36,7 +36,7 @@ notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
 requirements:
-- pymongo
+  - pymongo
 '''
 
 EXAMPLES = r'''
