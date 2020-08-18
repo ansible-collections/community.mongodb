@@ -12,8 +12,8 @@ DOCUMENTATION = r'''
 module: mongodb_replicaset
 short_description: Initialises a MongoDB replicaset.
 description:
-- Initialises a MongoDB replicaset in a new deployment.
-- Validates the replicaset name for existing deployments.
+  - Initialises a MongoDB replicaset in a new deployment.
+  - Validates the replicaset name for existing deployments.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
@@ -31,7 +31,7 @@ options:
     description:
     - Yaml list consisting of the replicaset members.
     - Csv string will also be accepted i.e. mongodb1:27017,mongodb2:27017,mongodb3:27017.
-    - A dict can also be used to specify advanced replicaset member options.
+    - A dictionary can also be used to specify advanced replicaset member options.
     - If a port number is not provided then 27017 is assumed.
     type: list
     elements: raw
