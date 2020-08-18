@@ -48,7 +48,9 @@ options:
     required: false
     type: str
     default: present
-    choices: [absent, present]
+    choices:
+      - "absent"
+      - "present"
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
