@@ -5,6 +5,10 @@ python:
   - "3.6"
 jobs:
   if: branch = master
+  python:
+    - "2.7"
+    - "3.5"
+    - "3.6"    
   include:
     - env: MONGODB_ROLE="roles/mongodb_config"
     - env: MONGODB_ROLE="roles/mongodb_install"
