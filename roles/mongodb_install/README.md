@@ -16,10 +16,12 @@ mongodb_repository
 Example Playbook
 ----------------
 
+```yaml
     - hosts: servers
       roles:
          - mongodb_repository
          - mongodb_install
+```
 
 License
 -------

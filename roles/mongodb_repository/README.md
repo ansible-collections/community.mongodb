@@ -14,9 +14,11 @@ Example Playbook
 
 Set mongodb_version to 4.0.
 
+```yaml
     - hosts: servers
       roles:
          - { role: mongodb_repository, mongodb_version: "4.0" }
+```
 
 License
 -------

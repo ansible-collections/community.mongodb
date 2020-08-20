@@ -25,9 +25,11 @@ ntp_service: Name of ntp service. Default ntpd.
 Example Playbook
 ----------------
 
+```yaml
     - hosts: servers
       roles:
          - mongodb_linux
+```
 
 License
 -------

@@ -12,9 +12,11 @@ required_packages: Package required for this role. Currently checkpolicy & polic
 Example Playbook
 ----------------
 
+```yaml
     - hosts: servers
       roles:
          - "mongodb_selinux"
+```
 
 License
 -------
