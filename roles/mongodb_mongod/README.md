@@ -32,10 +32,12 @@ Example Playbook
 
 Install MongoDB preparing hosts for a Sharded Cluster.
 
+```yaml
     - hosts: servers
       roles:
          - { role: mongodb_repository }
          - { role: mongodb_mongod, mongod_port: 27018, sharding: true }
+```
 
 License
 -------
