@@ -3,6 +3,15 @@ python:
   - "2.7"
   - "3.5"
   - "3.6"
+env:
+  jobs:
+    - ROLE="roles/mongodb_config"
+    - ROLE="roles/mongodb_install"
+    - ROLE="roles/mongodb_linux"
+    - ROLE="roles/mongodb_mongod"
+    - ROLE="roles/mongodb_mongos"
+    - ROLE="roles/mongodb_repository"
+    - ROLE="roles/mongodb_selinux"
 before_install:
   - python --version
   - pip install --upgrade pip
@@ -16,6 +25,7 @@ before_install:
   - molecule --version
   - pytest --version
 script:
-  - ./travis_run.sh
+  - cd "$ROLE"
+  - molecule test
 after_success:
   - codecov # submit coverage
