@@ -6,14 +6,13 @@ python:
 jobs:
   include:
     if: branch = master
-    env:
-      - MONGODB_ROLE="roles/mongodb_config"
-      - MONGODB_ROLE="roles/mongodb_install"
-      - MONGODB_ROLE="roles/mongodb_linux"
-      - MONGODB_ROLE="roles/mongodb_mongod"
-      - MONGODB_ROLE="roles/mongodb_mongos"
-      - MONGODB_ROLE="roles/mongodb_repository"
-      - MONGODB_ROLE="roles/mongodb_selinux"
+    - env: MONGODB_ROLE="roles/mongodb_config"
+    - env: MONGODB_ROLE="roles/mongodb_install"
+    - env: MONGODB_ROLE="roles/mongodb_linux"
+    - env: MONGODB_ROLE="roles/mongodb_mongod"
+    - env: MONGODB_ROLE="roles/mongodb_mongos"
+    - env: MONGODB_ROLE="roles/mongodb_repository"
+    - env: MONGODB_ROLE="roles/mongodb_selinux"
 before_install:
   - python --version
   - pip install --upgrade pip
