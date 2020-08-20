@@ -19,18 +19,29 @@ test_count=0;
 
 declare -a role_list=();
 
-for role in $(git diff --name-only HEAD~1 | grep roles/ | cut -d'/' -f -2 | sort | uniq); do
-    if [[ -d "$role/molecule" ]]; then
-      if [[ ! -f "$role/molecule/.travisignore" ]]; then
-        echo "Adding $role to test queue"
-        role_list+=( $role );
+if [ -z ${ISMASTER+x} ]; then
+  for role in $(git diff --name-only HEAD~1 | grep roles/ | cut -d'/' -f -2 | sort | uniq); do
+      if [[ -d "$role/molecule" ]]; then
+        if [[ ! -f "$role/molecule/.travisignore" ]]; then
+          echo "Adding $role to test queue"
+          role_list+=( $role );
+        else
+          echo "The role $role has been specifically excluded from travis with a .travisignore file";
+        fi;
       else
-        echo "The role $role has been specifically excluded from travis with a .travisignore file";
+          echo "The role $role does not have a molecule sub-directoy so skipping tests."
       fi;
+  done
+else  # Do all roles
+  for role in $(find roles/*/molecule -type d -maxdepth 0 | cut -d / -f2); then
+    if [[ ! -f "$role/molecule/.travisignore" ]]; then
+      echo "Adding $role to test queue"
+      role_list+=( $role );
     else
-        echo "The role $role does not have a molecule sub-directoy so skipping tests."
+      echo "The role $role has been specifically excluded from travis with a .travisignore file";
     fi;
-done
+  done
+fi;
 
 if [ ${#role_list[@]} -ne 0 ]; then
   for role in "${role_list[@]}"; do
