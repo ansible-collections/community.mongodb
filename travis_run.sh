@@ -32,15 +32,12 @@ if [ -z "${ISMASTER+x}" ]; then
           echo "The role $role does not have a molecule sub-directoy so skipping tests."
       fi;
   done
-else  # Do all roles
-  for role in $(find roles/*/molecule -type d -maxdepth 0 | cut -d / -f2); do
-    if [[ ! -f "$role/molecule/.travisignore" ]]; then
-      echo "Adding $role to test queue"
-      role_list+=( $role );
-    else
-      echo "The role $role has been specifically excluded from travis with a .travisignore file";
-    fi;
-  done
+else  # MONGODB_ROLE should be defined
+  if [ -z "$MONGODB_ROLE" ]; then
+    echo "MONGODB_ROLE was not set as expected.";
+  else
+    role_list+=( $MONGODB_ROLE );
+  fi;
 fi;
 
 if [ ${#role_list[@]} -ne 0 ]; then
