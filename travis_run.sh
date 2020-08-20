@@ -33,11 +33,13 @@ if [ -z "${ISMASTER+x}" ]; then
       fi;
   done
 else  # MONGODB_ROLE should be defined
+  set +u;
   if [ -z "$MONGODB_ROLE" ]; then
     echo "MONGODB_ROLE was not set as expected.";
   else
     role_list+=( "$MONGODB_ROLE" );
   fi;
+  set -u;
 fi;
 
 if [ ${#role_list[@]} -ne 0 ]; then
