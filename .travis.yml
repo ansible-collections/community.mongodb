@@ -3,18 +3,16 @@ python:
   - "2.7"
   - "3.5"
   - "3.6"
-jobs:
-  include:
-    - python: "2.7"
-    - python: "3.5"
-    - python: "3.6"
-    - env: MONGODB_ROLE="roles/mongodb_config"
-    - env: MONGODB_ROLE="roles/mongodb_install"
-    - env: MONGODB_ROLE="roles/mongodb_linux"
-    - env: MONGODB_ROLE="roles/mongodb_mongod"
-    - env: MONGODB_ROLE="roles/mongodb_mongos"
-    - env: MONGODB_ROLE="roles/mongodb_repository"
-    - env: MONGODB_ROLE="roles/mongodb_selinux"
+env:
+  if: branch = master
+  jobs:
+    - MONGODB_ROLE="roles/mongodb_config"
+    - MONGODB_ROLE="roles/mongodb_install"
+    - MONGODB_ROLE="roles/mongodb_linux"
+    - MONGODB_ROLE="roles/mongodb_mongod"
+    - MONGODB_ROLE="roles/mongodb_mongos"
+    - MONGODB_ROLE="roles/mongodb_repository"
+    - MONGODB_ROLE="roles/mongodb_selinux"
 before_install:
   - python --version
   - pip install --upgrade pip
