@@ -33,7 +33,7 @@ if [ -z ${ISMASTER+x} ]; then
       fi;
   done
 else  # Do all roles
-  for role in $(find roles/*/molecule -type d -maxdepth 0 | cut -d / -f2); then
+  for role in $(find roles/*/molecule -type d -maxdepth 0 | cut -d / -f2); do
     if [[ ! -f "$role/molecule/.travisignore" ]]; then
       echo "Adding $role to test queue"
       role_list+=( $role );
