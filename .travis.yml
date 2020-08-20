@@ -4,8 +4,8 @@ python:
   - "3.5"
   - "3.6"
 jobs:
+  if: branch = master
   include:
-    if: branch = master
     - env: MONGODB_ROLE="roles/mongodb_config"
     - env: MONGODB_ROLE="roles/mongodb_install"
     - env: MONGODB_ROLE="roles/mongodb_linux"
