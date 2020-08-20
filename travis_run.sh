@@ -19,7 +19,7 @@ test_count=0;
 
 declare -a role_list=();
 
-if [ -z ${ISMASTER+x} ]; then
+if [ -z "${ISMASTER+x}" ]; then
   for role in $(git diff --name-only HEAD~1 | grep roles/ | cut -d'/' -f -2 | sort | uniq); do
       if [[ -d "$role/molecule" ]]; then
         if [[ ! -f "$role/molecule/.travisignore" ]]; then
