@@ -36,7 +36,7 @@ else  # MONGODB_ROLE should be defined
   if [ -z "$MONGODB_ROLE" ]; then
     echo "MONGODB_ROLE was not set as expected.";
   else
-    role_list+=( $MONGODB_ROLE );
+    role_list+=( "$MONGODB_ROLE" );
   fi;
 fi;
 
