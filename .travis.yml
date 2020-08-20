@@ -3,10 +3,9 @@ python:
   - "2.7"
   - "3.5"
   - "3.6"
-env:
-  jobs:
-  if: branch = master
+jobs:
   include:
+    if: branch = master
     - env: MONGODB_ROLE="roles/mongodb_config"
     - env: MONGODB_ROLE="roles/mongodb_install"
     - env: MONGODB_ROLE="roles/mongodb_linux"
@@ -30,3 +29,4 @@ script:
   - ./travis_run.sh
 after_success:
   - codecov # submit coverage
+
