@@ -119,7 +119,7 @@ def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
         compact=dict(type='bool', default=False),
-        oplog_size_mb=dict(type='int', required=True),
+        oplog_size_mb=dict(type='float', required=True),
         ver=dict(type='str', default='3.6')
     )
     module = AnsibleModule(
