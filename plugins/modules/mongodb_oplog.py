@@ -190,7 +190,7 @@ def main():
         except Exception as excep:
             module.fail_json(msg='Unable to get current oplog size: %s' % to_native(excep))
         if oplog_size_mb == current_oplog_size:
-            result["msg"] = "oplog_size_mb is already {0} mb".format(oplog_size_mb)
+            result["msg"] = "oplog_size_mb is already {0} mb".format(int(oplog_size_mb))
             result["compacted"] = False
         else:
             try:
