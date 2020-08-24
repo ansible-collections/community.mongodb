@@ -1,4 +1,4 @@
-mongodb_version: '4.0'
+mongodb_version: '4.2'
 apt:
   #keyserver: keyserver.ubuntu.com
   #keyserver_id: 9DA31620334BD75D9DCB49F368818C72E52529D4
