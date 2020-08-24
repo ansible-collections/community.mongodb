@@ -328,7 +328,7 @@
 - assert:
     that:
         - "oplog.changed == False"
-        - "'Unable to set oplog size: oplog size should be 990MB at least' in oplog.msg" or "'"Unable to set oplog size: BSON field 'size' value must be >= 990' in oplog.msg"  # Second tests is intriduced in 4.4. Stuff before or can probably be removed when 4.4 is the lowest test version
+        - "'Unable to set oplog size: oplog size should be 990MB at least' in oplog.msg or 'value must be >= 990' in oplog.msg"  # Second tests is intriduced in 4.4. Stuff before or can probably be removed when 4.4 is the lowest test version
 
 - name: Test with unsupported version of MongoDB
   community.mongodb.mongodb_oplog:
