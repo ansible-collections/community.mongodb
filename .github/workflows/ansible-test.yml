@@ -59,8 +59,8 @@ jobs:
         python_version:
           - "3.6"
         mongodb_version:
-          - "4.0"
           - "4.2"
+          - "4.4"
         mongodb_module:
           - mongodb_balancer
           - mongodb_index
@@ -110,6 +110,3 @@ jobs:
 
       - name: Upload Coverage data
         run: tests/coverage.sh
-
-# FIXME FUTURE: Other Python Versions
-# FIXME FUTURE: Other Operating Systems
