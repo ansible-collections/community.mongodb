@@ -26,6 +26,7 @@ options:
     description:
       - The MongoDB shell command.
     type: str
+    default: "mongo"
   db:
     description:
       - The database to run commands against
@@ -54,7 +55,7 @@ options:
     description:
       - Silences output from the shell during the connection process..
     type: bool
-    default: false
+    default: true
   debug:
     description:
       - show additional debug info.
@@ -191,7 +192,7 @@ def transform_output(output, transform_type, split_char):
 
 
 def main():
-    argument_spec = mongodb_common_argument_spec()
+    argument_spec = mongodb_common_argument_spec(ssl_options=False)
     argument_spec.update(
         mongo_cmd=dict(type='str', default="mongo"),
         file=dict(type='str', required=False),
@@ -242,7 +243,7 @@ def main():
 
     if rc != 0:
         if err is None or err == "":
-            err=out
+            err = out
         module.fail_json(msg=err.strip(), **result)
     else:
         result['changed'] = True
