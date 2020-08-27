@@ -143,9 +143,11 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
     )
-    ssl_option_dict = dict (
+    ssl_options_dict = dict (
         ssl=dict(type='bool', required=False, default=False),
-        ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
+        ssl_cert_reqs=dict(type='str',
+                           required=False,
+                           default='CERT_REQUIRED',
                            choices=['CERT_NONE',
                                     'CERT_OPTIONAL',
                                     'CERT_REQUIRED']),
@@ -156,7 +158,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
     )
     if ssl_options:
-        options.update(ssl_options)
+        options.update(ssl_options_dict)
     return options
 
 
