@@ -121,4 +121,19 @@
 - debug:
     var: showRoles
 
+- name: Run an unsupported shell helper cmd
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "show dbs"
+    debug: yes
+  register: bad_cmd
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "bad_cmd.failed"
+      - "'the eval parameter because they are not valid JavaScript' in bad_cmd.msg"
+
 - include_tasks: mongod_teardown.yml

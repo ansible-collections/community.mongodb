@@ -216,6 +216,10 @@ def main():
         module.params['db']
     ]
 
+    if module.params['eval'].startswith("show "):
+        module.fail_json("You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.) \
+                          inside the eval parameter because they are not valid JavaScript.")
+
     args = add_arg_to_cmd(args, "--host", module.params['login_host'])
     args = add_arg_to_cmd(args, "--port", module.params['login_port'])
     args = add_arg_to_cmd(args, "--username", module.params['login_user'])
