@@ -143,7 +143,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
     )
-    ssl_options_dict = dict (
+    ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False),
         ssl_cert_reqs=dict(type='str',
                            required=False,
