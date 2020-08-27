@@ -30,6 +30,8 @@ options:
     description:
       - The database to run commands against
     type: str
+    required: false
+    default: "test"
   file:
     description:
       - Path to a file containing MongoDB commands.
@@ -149,8 +151,8 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
     """
     if is_bool is False and param_value is not None:
         cmd_list.append(param_name)
-        if param_name == "--execute":
-            cmd_list.append("'{0}'".format(param_value))
+        if param_name == "--eval":
+            cmd_list.append("\"{0}\"".format(param_value))
         else:
             cmd_list.append(param_value)
     elif is_bool is True:
@@ -160,7 +162,7 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
 
 def transform_output(output, transform_type, split_char):
     if transform_type == "auto":  # determine what transform_type to perform
-        if output.strip().startswith("[json]"):
+        if output.strip().startswith("{") or output.strip().startswith("["):
             transform_type = "json"
         elif isinstance(output.strip().split(None), list):  # Splits on whitespace
             transform_type = "split"
@@ -180,15 +182,7 @@ def transform_output(output, transform_type, split_char):
         else:
             tranform_type = "raw"
     if transform_type == "json":
-        json_list = []
-        if output.strip().split("\n")[-1] == "(0 rows)":
-            output = json_list
-        else:
-            results = output.strip().split("\n")[2:-2]
-            if len(results) > 0:
-                for item in results:
-                    json_list.append(json.loads(item))
-            output = json_list
+        output = json.loads(output)
     elif transform_type == "split":
         output = output.strip().split(split_char)
     elif transform_type == "raw":
@@ -202,7 +196,7 @@ def main():
         mongo_cmd=dict(type='str', default="mongo"),
         file=dict(type='str', required=False),
         eval=dict(type='str', required=False),
-        db=dict(type='str', required=True),
+        db=dict(type='str', required=False, default="test"),
         nodb=dict(type='bool', required=False, default=False),
         norc=dict(type='bool', required=False, default=False),
         quiet=dict(type='bool', required=False, default=True),
@@ -221,13 +215,10 @@ def main():
         module.params['db']
     ]
 
+    args = add_arg_to_cmd(args, "--host", module.params['login_host'])
+    args = add_arg_to_cmd(args, "--port", module.params['login_port'])
     args = add_arg_to_cmd(args, "--username", module.params['login_user'])
     args = add_arg_to_cmd(args, "--password", module.params['login_password'])
-
-    args.append("{0}:{1}/{2)".format(module.params['login_host'],
-                                     module.params['login_port'],
-                                     module.params['login_database']))
-
     args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'])
     args = add_arg_to_cmd(args, "--file", module.params['file'])
     args = add_arg_to_cmd(args, "--eval", module.params['eval'])
@@ -239,12 +230,22 @@ def main():
     out = ''
     err = ''
     result = {}
+    cmd = " ".join(str(item) for item in args)
 
-    (rc, out, err) = module.run_command(" ".join(str(item) for item in args), check_rc=False)
+    (rc, out, err) = module.run_command(cmd, check_rc=False)
+
+    if module.params['debug']:
+        result['out'] = out
+        result['err'] = err
+        result['rc'] = rc
+        result['cmd'] = cmd
+
     if rc != 0:
-        module.fail_json(msg=err.strip())
+        if err is None or err == "":
+            err=out
+        module.fail_json(msg=err.strip(), **result)
     else:
-        result['changed'] = False
+        result['changed'] = True
         try:
             output = transform_output(out,
                                       module.params['transform'],
@@ -256,11 +257,6 @@ def main():
         except Exception as excep:
             result['msg'] = "Error tranforming output: {0}".format(str(excep))
             result['transformed_output'] = None
-
-    if module.params['debug']:
-        result['out'] = out
-        result['err'] = err
-        result['rc'] = rc
 
     module.exit_json(**result)
 

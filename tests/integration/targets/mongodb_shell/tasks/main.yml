@@ -39,14 +39,86 @@
       - root
     state: present
 
-- name: Run the show dbs cmd
+- name: Run the listDatabases cmd
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
-    password: '{{ mongodb_admin_password }}'
-    eval: "show dbs"
-  register: show_dbs
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.adminCommand('listDatabases')"
+    debug: yes
+  register: listDatabases
+
+- assert:
+    that:
+      - "'databases' in listDatabases['transformed_output']"
+      - "'totalSize' in listDatabases['transformed_output']"
 
 - debug:
-    var: show_dbs
+    var: listDatabases
+
+- name: List collections
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.adminCommand('listCollections')"
+    debug: yes
+  register: listCollections
+
+- debug:
+    var: listCollections  # TODO Fix this jsob parsing result
+
+- name: Get log types
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.adminCommand({ 'getLog' : '*' })"
+    debug: yes
+  register: getLog
+
+- assert:
+    that:
+      - "'global' in getLog['transformed_output']['names']"
+      - "'rs' in getLog['transformed_output']['names']"
+      - "'startupWarnings' in getLog['transformed_output']['names']"
+
+- debug:
+    var: getLog
+
+- name: Get log startupWarnings
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.adminCommand({ 'getLog' : 'startupWarnings' })"
+    debug: yes
+  register: getLogstartupWarnings
+
+- assert:
+    that:
+      - "'log' in getLogstartupWarnings['transformed_output']"
+      - "'initandlisten' in getLogstartupWarnings['transformed_output'] | string"
+      - "getLogstartupWarnings['transformed_output']['totalLinesWritten'] > 0"
+
+- debug:
+    var: getLogstartupWarnings
+
+- name: Show roles
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.getRoles({showBuiltinRoles: true})"
+    debug: yes
+  register: showRoles
+
+- assert:
+    that:
+      - "showRoles['transformed_output'] is iterable"
+      - "'inheritedRoles' in showRoles['transformed_output'] | string"
+
+- debug:
+    var: showRoles
 
 - include_tasks: mongod_teardown.yml
