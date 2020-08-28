@@ -80,7 +80,6 @@
 - assert:
     that:
       - "'global' in getLog['transformed_output']['names']"
-      - "'rs' in getLog['transformed_output']['names']"
       - "'startupWarnings' in getLog['transformed_output']['names']"
 
 - debug:
