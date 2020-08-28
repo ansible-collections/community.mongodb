@@ -80,6 +80,12 @@ options:
       - Used by the split action in the transform stage.
     type: str
     default: " "
+  stringify:
+    description:
+      - Wraps the command in eval in JSON.stringify(<js cmd>).
+      - Useful for escaping documents that are returned in Extended JSON format.
+    type: bool
+    default: false
 '''
 
 EXAMPLES = '''
@@ -204,6 +210,7 @@ def main():
         debug=dict(type='bool', required=False, default=False),
         transform=dict(type='str', choices=["auto", "split", "json", "raw"], default="auto"),
         split_char=dict(type='str', default=" "),
+        stringify=dict(type='bool', default=False),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -217,8 +224,12 @@ def main():
     ]
 
     if module.params['eval'].startswith("show "):
-        module.fail_json("You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.) \
-                          inside the eval parameter because they are not valid JavaScript.")
+        msg = "You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.)"\
+              "inside the eval parameter because they are not valid JavaScript."
+        module.fail_json(msg=msg)
+
+    if module.params['stringify']:
+        module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
 
     args = add_arg_to_cmd(args, "--host", module.params['login_host'])
     args = add_arg_to_cmd(args, "--port", module.params['login_port'])
