@@ -53,9 +53,6 @@
       - "'databases' in listDatabases['transformed_output']"
       - "'totalSize' in listDatabases['transformed_output']"
 
-- debug:
-    var: listDatabases
-
 - name: List collections
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
@@ -66,8 +63,9 @@
     stringify: yes
   register: listCollections
 
-- debug:
-    var: listCollections  # TODO Fix this jsob parsing result
+- assert:
+    that:
+      - "listCollections['transformed_output']['cursor']['firstBatch'] is iterable"
 
 - name: Get log types
   community.mongodb.mongodb_shell:
@@ -82,9 +80,6 @@
     that:
       - "'global' in getLog['transformed_output']['names']"
       - "'startupWarnings' in getLog['transformed_output']['names']"
-
-- debug:
-    var: getLog
 
 - name: Get log startupWarnings
   community.mongodb.mongodb_shell:
@@ -101,9 +96,6 @@
       - "'initandlisten' in getLogstartupWarnings['transformed_output'] | string"
       - "getLogstartupWarnings['transformed_output']['totalLinesWritten'] > 0"
 
-- debug:
-    var: getLogstartupWarnings
-
 - name: Show roles
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
@@ -117,9 +109,6 @@
     that:
       - "showRoles['transformed_output'] is iterable"
       - "'inheritedRoles' in showRoles['transformed_output'] | string"
-
-- debug:
-    var: showRoles
 
 - name: Run an unsupported shell helper cmd
   community.mongodb.mongodb_shell:

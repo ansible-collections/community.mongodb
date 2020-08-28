@@ -225,7 +225,7 @@ def main():
 
     if module.params['eval'].startswith("show "):
         msg = "You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.)"\
-              "inside the eval parameter because they are not valid JavaScript."
+              " inside the eval parameter because they are not valid JavaScript."
         module.fail_json(msg=msg)
 
     if module.params['stringify']:
