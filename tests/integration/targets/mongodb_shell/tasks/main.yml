@@ -61,7 +61,7 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
-    eval: "db.adminCommand('listCollections')"
+    eval: "JSON.stringify(db.adminCommand('listCollections'))"
     debug: yes
   register: listCollections
 
