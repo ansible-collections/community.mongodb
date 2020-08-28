@@ -132,18 +132,22 @@ def member_state(client):
     return state
 
 
-def mongodb_common_argument_spec():
+def mongodb_common_argument_spec(ssl_options=True):
     """
     Returns a dict containing common options shared across the MongoDB modules.
     """
-    return dict(
+    options = dict(
         login_user=dict(type='str', required=False),
         login_password=dict(type='str', required=False, no_log=True),
         login_database=dict(type='str', required=False, default='admin'),
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
+    )
+    ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False),
-        ssl_cert_reqs=dict(type='str', required=False, default='CERT_REQUIRED',
+        ssl_cert_reqs=dict(type='str',
+                           required=False,
+                           default='CERT_REQUIRED',
                            choices=['CERT_NONE',
                                     'CERT_OPTIONAL',
                                     'CERT_REQUIRED']),
@@ -153,6 +157,9 @@ def mongodb_common_argument_spec():
         ssl_keyfile=dict(type='str', default=None),
         ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
     )
+    if ssl_options:
+        options.update(ssl_options_dict)
+    return options
 
 
 def ssl_connection_options(connection_params, module):
