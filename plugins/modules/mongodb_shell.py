@@ -89,17 +89,30 @@ options:
 '''
 
 EXAMPLES = '''
-- name: Run the DESC KEYSPACES cql command
+- name: Run the listDatabases command
   community.mongodb.mongodb_shell:
-    eval: "show dbs"
+    login_user: user
+    login_password: secret
+    eval: "db.adminCommand('listDatabases')"
+
+- name: List collections and stringify the output
+  community.mongodb.mongodb_shell:
+    login_user: user
+    login_password: secret
+    eval: "db.adminCommand('listCollections')"
+    stringify: yes
+
+- name: Run the showBuiltinRoles command
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    eval: "db.getRoles({showBuiltinRoles: true})"
 
 - name: Run a file containing MongoDB commands
   community.mongodb.mongodb_shell:
+    login_user: user
+    login_password: secret
     file: "/path/to/mongo/file.js"
-
-- name: Run a cql query returning json data
-  community.cassandra.cassandra_cqlsh:
-    execute: "SELECT json * FROM my_keyspace.my_table WHERE partition = 'key' LIMIT 10"
 '''
 
 RETURN = '''
