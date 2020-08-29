@@ -89,17 +89,30 @@ options:
 '''
 
 EXAMPLES = '''
-- name: Run the DESC KEYSPACES cql command
+- name: Run the listDatabases command
   community.mongodb.mongodb_shell:
-    eval: "show dbs"
+    login_user: user
+    login_password: secret
+    eval: "db.adminCommand('listDatabases')"
+
+- name: List collections and stringify the output
+  community.mongodb.mongodb_shell:
+    login_user: user
+    login_password: secret
+    eval: "db.adminCommand('listCollections')"
+    stringify: yes
+
+- name: Run the showBuiltinRoles command
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    eval: "db.getRoles({showBuiltinRoles: true})"
 
 - name: Run a file containing MongoDB commands
   community.mongodb.mongodb_shell:
+    login_user: user
+    login_password: secret
     file: "/path/to/mongo/file.js"
-
-- name: Run a cql query returning json data
-  community.cassandra.cassandra_cqlsh:
-    execute: "SELECT json * FROM my_keyspace.my_table WHERE partition = 'key' LIMIT 10"
 '''
 
 RETURN = '''
@@ -216,6 +229,7 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         required_together=[['login_user', 'login_password']],
+        mutually_exclusive=[["eval", "file"]]
     )
 
     args = [
@@ -223,24 +237,26 @@ def main():
         module.params['db']
     ]
 
-    if module.params['eval'].startswith("show "):
-        msg = "You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.)"\
-              " inside the eval parameter because they are not valid JavaScript."
-        module.fail_json(msg=msg)
-
-    if module.params['stringify']:
-        module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
+    if not module.params['file']:
+        if module.params['eval'].startswith("show "):
+            msg = "You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.)"\
+                  " inside the eval parameter because they are not valid JavaScript."
+            module.fail_json(msg=msg)
+        if module.params['stringify']:
+            module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
 
     args = add_arg_to_cmd(args, "--host", module.params['login_host'])
     args = add_arg_to_cmd(args, "--port", module.params['login_port'])
     args = add_arg_to_cmd(args, "--username", module.params['login_user'])
     args = add_arg_to_cmd(args, "--password", module.params['login_password'])
     args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'])
-    args = add_arg_to_cmd(args, "--file", module.params['file'])
     args = add_arg_to_cmd(args, "--eval", module.params['eval'])
     args = add_arg_to_cmd(args, "--nodb", None, module.params['nodb'])
     args = add_arg_to_cmd(args, "--norc", None, module.params['norc'])
     args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'])
+    if module.params['file']:
+        args.pop(1)
+        args.append(module.params['file'])
 
     rc = None
     out = ''
