@@ -15,16 +15,6 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
 
-- name: Ensure /var/run/mongodb/ exists on RedHat 8
-  file:
-    path: /var/run/mongodb/
-    state: directory
-    owner: "{{ mongodb_user }}"
-    group: "{{ mongodb_group }}"
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
-
 - name: Copy config file
   template:
     src: mongod.conf.j2
@@ -42,36 +32,36 @@
     mode: 0400
   when: authorization == "enabled"
 
-- name: Create systemd service file on RedHat 8+
-  copy:
-    dest: /etc/systemd/system/mongod.service
-    content: |
-      [Unit]
-      Description=MongoDB
-      After=syslog.target network.target
+#- name: Create systemd service file on RedHat 8+
+#  copy:
+#    dest: /etc/systemd/system/mongod.service
+#    content: |
+#      [Unit]
+#      Description=MongoDB
+#      After=syslog.target network.target
+#
+#      [Service]
+#      Type=forking
+#
+#      User=mongod
+#      Group=mongod
+#
+#      ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+#
+#      [Install]
+#      WantedBy=multi-user.target
+#  register: systemd
+#  when:
+#    - ansible_os_family == "RedHat"
+#    - ansible_distribution_major_version|int >= 8
 
-      [Service]
-      Type=forking
-
-      User=mongod
-      Group=mongod
-
-      ExecStart=/usr/bin/mongod --config /etc/mongod.conf
-
-      [Install]
-      WantedBy=multi-user.target
-  register: systemd
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
-
-- name: Reload systemd
-  systemd:
-    daemon_reload: yes
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
-    - systemd.changed == True
+#- name: Reload systemd
+#  systemd:
+#    daemon_reload: yes
+#  when:
+#    - ansible_os_family == "RedHat"
+#    - ansible_distribution_major_version|int >= 8
+#    - systemd.changed == True
 
 - name: Start mongod service
   service:
