@@ -229,6 +229,7 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         required_together=[['login_user', 'login_password']],
+        mutually_exclusive=[["eval", "file"]]
     )
 
     args = [
@@ -236,24 +237,26 @@ def main():
         module.params['db']
     ]
 
-    if module.params['eval'].startswith("show "):
-        msg = "You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.)"\
-              " inside the eval parameter because they are not valid JavaScript."
-        module.fail_json(msg=msg)
-
-    if module.params['stringify']:
-        module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
+    if not module.params['file']:
+        if module.params['eval'].startswith("show "):
+            msg = "You cannot use any shell helper (e.g. use <dbname>, show dbs, etc.)"\
+                  " inside the eval parameter because they are not valid JavaScript."
+            module.fail_json(msg=msg)
+        if module.params['stringify']:
+            module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
 
     args = add_arg_to_cmd(args, "--host", module.params['login_host'])
     args = add_arg_to_cmd(args, "--port", module.params['login_port'])
     args = add_arg_to_cmd(args, "--username", module.params['login_user'])
     args = add_arg_to_cmd(args, "--password", module.params['login_password'])
     args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'])
-    args = add_arg_to_cmd(args, "--file", module.params['file'])
     args = add_arg_to_cmd(args, "--eval", module.params['eval'])
     args = add_arg_to_cmd(args, "--nodb", None, module.params['nodb'])
     args = add_arg_to_cmd(args, "--norc", None, module.params['norc'])
     args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'])
+    if module.params['file']:
+        args.pop(1)
+        args.append(module.params['file'])
 
     rc = None
     out = ''
