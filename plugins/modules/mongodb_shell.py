@@ -125,7 +125,7 @@ msg:
   returned: always
   type: str
 transformed_output:
-  description: Output from the cqlsh command. We attempt to parse this into a list or json where possible.
+  description: Output from the mongo command. We attempt to parse this into a list or json where possible.
   returned: on success
   type: list
 changed:
@@ -141,11 +141,11 @@ out:
   returned: when debug is set to true
   type: str
 err:
-  description: Raw stderr from cqlsh.
+  description: Raw stderr from mongo.
   returned: when debug is set to true
   type: str
 rc:
-  description: Return code from cqlsh.
+  description: Return code from mongo.
   returned: when debug is set to true
   type: int
 '''
