@@ -104,11 +104,11 @@ EXAMPLES = '''
 
 - name: Run the showBuiltinRoles command
   community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
+    login_user: user
+    login_password: secret
     eval: "db.getRoles({showBuiltinRoles: true})"
 
-- name: Run a file containing MongoDB commands
+- name: Run a js file containing MongoDB commands
   community.mongodb.mongodb_shell:
     login_user: user
     login_password: secret
