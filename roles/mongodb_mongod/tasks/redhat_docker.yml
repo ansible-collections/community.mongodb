@@ -7,15 +7,10 @@
     backrefs: yes
     state: present
 
-- name: Start mongod service
-  service:
-    name: "{{ mongod_service }}"
-    enabled: yes
-
 - name: Comment out PIDFile in systemd file
   lineinfile:
     path: /etc/systemd/system/multi-user.target.wants/mongod.service
-    line: '^PIDFile'
+    regexp: '^PIDFile'
     line: '# \1'
     backrefs: yes
     state: present
@@ -29,4 +24,5 @@
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
-    state: restarted
+    state: started
+    enabled: yes
