@@ -68,3 +68,12 @@
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
+  when:
+    - ansible_os_family != "RedHat"
+    - ansible_distribution_major_version|int < 8
+
+- name: Include tasks for RedHat 8 docker issue
+  import_tasks: redhat_docker.yml
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version|int >= 8
