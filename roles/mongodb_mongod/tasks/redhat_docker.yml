@@ -2,7 +2,7 @@
 - name: Comment out pidFilePath
   lineinfile:
     path: /etc/mongod.conf
-    regexp: '*pidFilePath*'
+    regexp: '.*pidFilePath.*'
     line: '# \1'
     backrefs: yes
     state: present
