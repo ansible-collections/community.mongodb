@@ -3,17 +3,13 @@
   lineinfile:
     path: /etc/mongod.conf
     regexp: '.*pidFilePath.*'
-    line: '# \1'
-    backrefs: yes
-    state: present
+    state: absent
 
 - name: Comment out PIDFile in systemd file
   lineinfile:
     path: /etc/systemd/system/multi-user.target.wants/mongod.service
-    regexp: '^PIDFile'
-    line: '# \1'
-    backrefs: yes
-    state: present
+    regexp: '^PIDFile.*'
+    state: absent
   register: systemd
 
 - name: Reload systemd
