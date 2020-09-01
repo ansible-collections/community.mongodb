@@ -1,10 +1,4 @@
 ---
-- name: Comment out pidFilePath
-  lineinfile:
-    path: /etc/mongod.conf
-    regexp: '.*pidFilePath.*'
-    state: absent
-
 - name: Comment out PIDFile in systemd file
   lineinfile:
     path: /etc/systemd/system/multi-user.target.wants/mongod.service
