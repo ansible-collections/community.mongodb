@@ -21,6 +21,17 @@
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
+  when:
+    - not (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True)
+
+- name: Copy config file (RH8 Docker)
+  template:
+    src: rh8_docker_mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_group }}"
+  when:
+    - ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True
 
 - name: Copy keyfile to host
   copy:
