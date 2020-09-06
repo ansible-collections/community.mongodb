@@ -58,7 +58,7 @@ EXAMPLES = r'''
 
 - name: Resize oplog to 8 gigabytes and compact secondaries to reclaim space
   mongodb_maintenance:
-    oplog_size_mb:  8000
+    community.mongodb.mongodb_oplog:  8000
     compact: true
 '''
 
