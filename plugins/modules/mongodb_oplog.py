@@ -54,11 +54,11 @@ requirements:
 EXAMPLES = r'''
 - name: Resize oplog to 16 gigabytes, or 16000 megabytes
   community.mongodb.mongodb_oplog:
-    oplog_size_mb:  16000
+    oplog_size_mb: 16000
 
 - name: Resize oplog to 8 gigabytes and compact secondaries to reclaim space
-  mongodb_maintenance:
-    community.mongodb.mongodb_oplog:  8000
+  community.mongodb.mongodb_oplog:
+    oplog_size_mb: 8000
     compact: true
 '''
 
