@@ -57,6 +57,21 @@ EXAMPLES = r'''
     poll: 5
     interval: 10
   when: ansible_hostname == "mongodb1"
+
+# Get the replicaset status and then lookup the primary's hostname and save to a variable
+- name: Ensure replicaset is stable before beginning
+  community.mongodb.mongodb_status:
+    login_user: "{{ admin_user }}"
+    login_password: "{{ admin_user_password }}"
+    poll: 3
+    interval: 10
+  register: rs
+
+- name: Lookup PRIMARY replicaset member
+  set_fact:
+    primary: "{{ item.key.split('.')[0] }}"
+  loop: "{{ lookup('dict', rs.replicaset) }}"
+  when: "'PRIMARY' in item.value"
 '''
 
 RETURN = r'''
