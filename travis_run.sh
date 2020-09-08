@@ -46,7 +46,7 @@ if [ ${#role_list[@]} -ne 0 ]; then
   for role in "${role_list[@]}"; do
     echo "Executing tests for $role.";
     cd "$role"
-    molecule test;
+    molecule. --debug test;
     cd ../../ && echo "Back in $(pwd)"; # back to project root
     test_count=$(( test_count + 1 ));
   done;
