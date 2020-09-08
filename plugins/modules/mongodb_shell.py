@@ -16,6 +16,7 @@ requirements:
   - mongo
 description:
     - Run commands via the MongoDB shell.
+    - Commands can be included in a Javascript file or provided with the eval parameter.
     - Attempts to parse returned data into a format that Ansible can use.
 
 extends_documentation_fragment:
