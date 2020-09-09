@@ -15,6 +15,7 @@ description:
   - Validates the status of the cluster.
   - The module expects all replicaset nodes to be PRIMARY, SECONDARY or ARBITER.
   - Will wait until a timeout for the replicaset state to converge if required.
+  - Can also be used to lookup the current PRIMARY member (see examples).
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
