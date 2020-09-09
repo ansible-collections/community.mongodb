@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright: (c) 2018, Rhys Campbell <rhys.james.campbell@googlemail.com>
+# Copyright: (c) 2020, Rhys Campbell <rhys.james.campbell@googlemail.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -65,7 +65,7 @@ EXAMPLES = r'''
     login_password: secret
 
 - name: Step down the current MongoDB member, poll a maximum of 5 times if member state is recovering
-  mongodb_status:
+  community.mongodb.mongodb_stepdown:
     login_user: admin
     login_password: secret
     poll: 5
