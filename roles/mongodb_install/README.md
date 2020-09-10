@@ -6,7 +6,7 @@ Install MongoDB packages on Debian and RedHat based platforms. Installs the mong
 Role Variables
 --------------
 
-specific_mongodb_version - Install a specific version of mongodb i.e. 4.4.1. Default is undefined. The specified version must be available in the system repositories.
+specific_mongodb_version - Install a specific version of mongodb i.e. 4.4.1. The specified version must be available in the system repositories. By default this variable is undefined.
 
 Dependencies
 ------------

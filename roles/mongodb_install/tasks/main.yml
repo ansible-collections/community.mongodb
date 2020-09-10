@@ -8,6 +8,22 @@
 
 - name: Install MongoDB Packages (Specific version)
   package:
-    name: "mongodb-org*{{ specific_mongodb_version }}*"
+    name: "mongodb-org-{{ specific_mongodb_version }}"
     state: present
-  when: specific_mongodb_version is defined
+  when:
+    - specific_mongodb_version is defined
+    - ansible_os_family == "RedHat"
+
+# apt silliness - https://dba.stackexchange.com/questions/197336/how-to-install-specific-mongo-version-from-the-ppa
+- name: Install MongoDB Packages (Specific version)
+  package:
+    name:
+      - "mongodb-org={{ specific_mongodb_version }}"
+      - "mongodb-org-server={{ specific_mongodb_version }}"
+      - "mongodb-org-shell={{ specific_mongodb_version }}"
+      - "mongodb-org-mongos={{ specific_mongodb_version }}"
+      - "mongodb-org-tools={{ specific_mongodb_version }}"
+    state: present
+  when:
+    - specific_mongodb_version is defined
+    - ansible_os_family == "Debian"
