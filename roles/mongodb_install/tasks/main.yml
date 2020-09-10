@@ -4,3 +4,10 @@
   package:
     name: mongodb-org
     state: present
+  when: specific_mongodb_version is not defined
+
+- name: Install MongoDB Packages (Specific version)
+  package:
+    name: "mongodb-org*{{ specific_mongodb_version }}*"
+    state: present
+  when: specific_mongodb_version is defined
