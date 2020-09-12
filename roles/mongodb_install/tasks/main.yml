@@ -14,7 +14,10 @@
     - specific_mongodb_version is defined
     - ansible_os_family == "RedHat"
 
-# apt silliness - https://dba.stackexchange.com/questions/197336/how-to-install-specific-mongo-version-from-the-ppa
+# apt silliness:
+# In order to upgrade/downgrade to a specific version of mongodb-org,
+# we must also specifiy version of mongodb-org deps.
+# https://dba.stackexchange.com/questions/197336/how-to-install-specific-mongo-version-from-the-ppa
 - name: Install MongoDB Packages (Specific version)
   package:
     name:
