@@ -40,7 +40,8 @@ options:
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
 
-requirements: [ 'pymongo' ]
+requirements:
+  - pymongo
 '''
 
 EXAMPLES = r'''
