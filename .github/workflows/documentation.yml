@@ -79,8 +79,7 @@ jobs:
         if: success()
         uses: crazy-max/ghaction-github-pages@v1
         with:
-          path: ansible_collections/community/mongodb
           target_branch: gh-pages
-          build_dir: docs
+          build_dir: ansible_collections/community/mongodb/docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
