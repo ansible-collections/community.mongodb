@@ -7,15 +7,15 @@
 
 - name: Load vars for os family
   include_vars:
-    file: "{{ ansible_os_family }}.yml"
+    file: "{{ ansible_facts.os_family }}.yml"
 
 - name: Set vars for RedHat 8
   set_fact:
     ntp_package: chrony
     ntp_service: chronyd
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version|int >= 8
 
 - name: Set swappiness
   sysctl:
@@ -35,8 +35,8 @@
     group: root
     state: directory
   when:
-    - ansible_os_family == "RedHat" 
-    - ansible_distribution_major_version|int >= 8
+    - ansible_facts.os_family == "RedHat" 
+    - ansible_facts.distribution_major_version|int >= 8
 
 - name: Ensure ntp service is configured
   service:
