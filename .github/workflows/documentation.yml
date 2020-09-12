@@ -13,13 +13,15 @@ jobs:
         working-directory: ansible_collections/community/mongodb
     steps:
 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path:  ansible_collections/community/mongodb
+
       - name: Set up Python 3.6
         uses: actions/setup-python@v1
         with:
           python-version: 3.6
-
-      - name: Checkout
-        uses: actions/checkout@v2
 
       #- name: Install ansible-base (devel) - Docker image now has ansible pre-installed?
       #  run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
