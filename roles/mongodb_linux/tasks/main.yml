@@ -5,17 +5,19 @@
     path: is_docker.txt
   register: d
 
-- name: Load vars for os family
+- name: Include OS-specific vars
   include_vars:
-    file: "{{ ansible_facts.os_family }}.yml"
-
-- name: Set vars for RedHat 8
-  set_fact:
-    ntp_package: chrony
-    ntp_service: chronyd
-  when:
-    - ansible_facts.os_family == "RedHat"
-    - ansible_facts.distribution_major_version|int >= 8
+    file: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_version }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+        - default.yml
 
 - name: Set swappiness
   sysctl:
