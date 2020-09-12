@@ -6,12 +6,15 @@ on:
 
 jobs:
   build_publish:
-  
+
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           path: ansible_collections/community/mongodb
 
