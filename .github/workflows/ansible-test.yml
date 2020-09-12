@@ -8,10 +8,13 @@ env:
 jobs:
   sanity:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           path: ansible_collections/community/mongodb
 
@@ -28,9 +31,12 @@ jobs:
 
   units:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
     steps:
       - name: Check out code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           path: ansible_collections/community/mongodb
 
@@ -53,7 +59,10 @@ jobs:
           fail_ci_if_error: false
 
   integration:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
     strategy:
       matrix:
         python_version:
@@ -85,7 +94,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           path: ansible_collections/community/mongodb
 
