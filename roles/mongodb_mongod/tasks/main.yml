@@ -36,15 +36,6 @@
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
-  when: not is_redhat_8_in_docker
-
-- name: Copy config file (RH8 Docker)
-  template:
-    src: rh8_docker_mongod.conf.j2
-    dest: /etc/mongod.conf
-    owner: "{{ mongodb_user }}"
-    group: "{{ mongodb_group }}"
-  when: is_redhat_8_in_docker
 
 - name: Copy keyfile to host
   copy:

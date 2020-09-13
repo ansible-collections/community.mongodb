@@ -21,7 +21,9 @@ storage:
 processManagement:
 {% if ansible_facts.os_family == "RedHat" %}  # Breaks Ubuntu / Debian
   fork: true
+{% if not is_redhat_8_in_docker %}
   pidFilePath: /var/run/mongodb/mongod.pid
+{% endif %}
 {% endif %}
   timeZoneInfo: /usr/share/zoneinfo
 
