@@ -19,6 +19,8 @@
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
 
+# Tasks based on: https://docs.mongodb.com/manual/administration/production-notes/
+
 - name: Set swappiness
   sysctl:
     name: vm.swappiness
@@ -30,7 +32,7 @@
     name: "{{ ntp_package }}"
     state: present
 
-- name: Update perms on pid dir on RedHat 8
+- name: Update perms on chrony pid dir on RedHat 8
   file:
     path: /run/chrony/
     owner: root
@@ -59,6 +61,7 @@
     reload: yes
   when: d.stat.exists == False
 
+# https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
   copy:
     src: thp-disable.service
@@ -79,7 +82,9 @@
     enabled: yes
   when: d.stat.exists == False
 
-- name: Set pam limits 1
+# Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
+
+- name: Set pam limits (nproc and nofile)
   pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
@@ -89,9 +94,9 @@
     - ["root", "mongodb"]
     - ["hard", "soft"]
     - ["nproc", "nofile"]
-    - [64000]
+    - ["{{ nproc_and_nofile_limit }}"]
 
-- name: Set pam limits 2
+- name: Set pam limits (memlock)
   pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
@@ -101,7 +106,9 @@
     - ["root", "mongodb"]
     - ["hard", "soft"]
     - ["memlock"]
-    - [1024]
+    - ["{{ memlock_limit }}"]
+
+# Other tuning settings
 
 - name: Set sysctl values
   sysctl:
@@ -109,6 +116,7 @@
     value: "{{ item['value'] }}"
     state: present
   loop:
+    # TODO: These may need to be configurable for different usage patterns.
     - { "name": "vm.dirty_ratio", "value": "15" }
     - { "name": "vm.dirty_background_ratio", "value": "5" }
     - { "name": "net.core.somaxconn ", "value": "4096" }
