@@ -40,7 +40,7 @@ security:
 {% if replicaset %}
 replication:
   replSetName: {{ config_repl_set_name }}
-  {% endif %}
+{% endif %}
 
 sharding:
   clusterRole: configsvr
