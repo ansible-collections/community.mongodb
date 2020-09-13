@@ -2,7 +2,7 @@
 # tasks file for mongodb_mongod
 - name: Include variables for os family
   include_vars:
-    file: "{{ ansible_os_family }}.yml"
+    file: "{{ ansible_facts.os_family }}.yml"
 
 - name: Ensure mongod package is installed
   package:
@@ -22,7 +22,7 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
   when:
-    - not (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True)
+    - not (ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int == 8 and d.stat.exists == True)
 
 - name: Copy config file (RH8 Docker)
   template:
@@ -31,7 +31,7 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
   when:
-    - ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True
+    - ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int == 8 and d.stat.exists == True
 
 - name: Copy keyfile to host
   copy:
@@ -63,16 +63,16 @@
 #      WantedBy=multi-user.target
 #  register: systemd
 #  when:
-#    - ansible_os_family == "RedHat"
-#    - ansible_distribution_major_version|int >= 8
+#    - ansible_facts.os_family == "RedHat"
+#    - ansible_facts.distribution_major_version|int >= 8
 
 #- name: Reload systemd
 #  systemd:
 #    daemon_reload: yes
 #  when:
-#    - ansible_os_family == "RedHat"
-#    - ansible_distribution_major_version|int >= 8
-#    - systemd.changed == True
+#    - ansible_facts.os_family == "RedHat"
+#    - ansible_facts.distribution_major_version|int >= 8
+#    - systemd is changed
 
 - name: Are we in docker?
   stat:
@@ -85,11 +85,11 @@
     state: started
     enabled: yes
   when:
-    - not (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True)
+    - not (ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int == 8 and d.stat.exists == True)
 
 - name: Include tasks for RedHat 8 docker issue
   import_tasks: redhat_docker.yml
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version|int >= 8
     - d.stat.exists == True
