@@ -15,7 +15,7 @@ description:
   - Manages the MongoDB Sharded Cluster Balancer.
   - Start or stop the balancer.
   - Adjust the cluster chunksize.
-  - Enable or disable the autosplit.
+  - Enable or disable autosplit.
   - Adds or remove a balancer window.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
