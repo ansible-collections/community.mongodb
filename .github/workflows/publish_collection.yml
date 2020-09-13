@@ -39,10 +39,10 @@ jobs:
           path: ansible_collections/community/mongodb/community-mongodb-latest.tar.gz
 
       - name: Upload files to release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ansible_collections/community/mongodb/community-mongodb-latest.tar.gz
           asset_name: community-mongodb-latest.tar.gz
-          tag: ${{ github.ref }}
+          tag: latest
           overwrite: true
