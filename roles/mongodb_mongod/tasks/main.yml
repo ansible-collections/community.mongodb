@@ -1,5 +1,10 @@
 ---
 # tasks file for mongodb_mongod
+- name: Are we in docker?
+  stat:
+    path: is_docker.txt
+  register: d
+
 - name: Include OS-specific vars
   include_vars:
     file: "{{ lookup('first_found', params) }}"
@@ -31,8 +36,7 @@
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
-  when:
-    - not (ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int == 8 and d.stat.exists == True)
+  when: not is_redhat_8_in_docker
 
 - name: Copy config file (RH8 Docker)
   template:
@@ -40,8 +44,7 @@
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
-  when:
-    - ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int == 8 and d.stat.exists == True
+  when: is_redhat_8_in_docker
 
 - name: Copy keyfile to host
   copy:
@@ -79,27 +82,15 @@
 #- name: Reload systemd
 #  systemd:
 #    daemon_reload: yes
-#  when:
-#    - ansible_facts.os_family == "RedHat"
-#    - ansible_facts.distribution_major_version|int >= 8
-#    - systemd is changed
-
-- name: Are we in docker?
-  stat:
-    path: is_docker.txt
-  register: d
+#  when: is_redhat_8_in_docker
 
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
-  when:
-    - not (ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int == 8 and d.stat.exists == True)
+  when: not is_redhat_8_in_docker
 
 - name: Include tasks for RedHat 8 docker issue
   import_tasks: redhat_docker.yml
-  when:
-    - ansible_facts.os_family == "RedHat"
-    - ansible_facts.distribution_major_version|int >= 8
-    - d.stat.exists == True
+  when: is_redhat_8_in_docker
