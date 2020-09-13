@@ -11,6 +11,8 @@ lint:
 platforms:
   - name: centos_7
     image: centos:7
+  - name: centos_8
+    image: centos:8
   - name: ubuntu_16
     image: ubuntu:16.04
   - name: ubuntu_18
@@ -19,9 +21,6 @@ platforms:
     image: debian:buster
   - name: debian_stretch
     image: debian:stretch
-  - name: centos_8
-    image: centos:8
-    dockerfile: Dockerfile-CentOS8.j2
 provisioner:
   name: ansible
   lint:

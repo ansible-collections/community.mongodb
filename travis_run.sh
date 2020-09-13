@@ -45,15 +45,24 @@ else  # MONGODB_ROLE should be defined
     echo "MONGODB_ROLE was not set as expected.";
   elif [ -n "${TRAVIS_TAG}" ] || [[ "master" == "${TRAVIS_BRANCH}" ]] || [[ "$ROLES" == *"${MONGODB_ROLE}"* ]]; then
     # Include all roles (one per Travis job) when this is:
-	#   a tag build (TRAVIS_TAG is set)
-	#   a master branch build or a PR targetting the master branch (TRAVIS_BRANCH == master)
-	# Include only changed roles when this is:
-	#	a non-master push or PR and the current job's MONGODB_ROLE was changed.
+    #   a tag build (TRAVIS_TAG is set)
+    #   a master branch build or a PR targetting the master branch (TRAVIS_BRANCH == master)
+    # Include only changed roles when this is:
+    #  a non-master push or PR and the current job's MONGODB_ROLE was changed.
     role_list+=( "$MONGODB_ROLE" );
   fi;
   set -u;
 fi;
 
+# prevent timeout during idempotence runs where no output for over 10min is common
+progress_file=$(mktemp)
+progress() {
+  while [ -e "${progress_file}" ]; do
+    sleep 300  # 5 min (< 10min travis timeout)
+    echo -ne "\r\n.\r\n"
+  done
+}
+progress &
 if [ ${#role_list[@]} -ne 0 ]; then
   for role in "${role_list[@]}"; do
     echo "Executing tests for $role.";
@@ -71,3 +80,4 @@ if [ ${#role_list[@]} -ne 0 ]; then
 else
   echo "No roles in commit. Bailing without doing anything"
 fi;
+rm -f "${progress_file}"
