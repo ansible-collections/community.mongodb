@@ -22,6 +22,9 @@
 - name: Ensure mongod package is installed
   package:
     name: "{{ mongod_package }}"
+  register: _pkg
+  until: _pkg is succeeded
+  retries: 5
 
 - name: Ensure db_path dir exists
   file:
