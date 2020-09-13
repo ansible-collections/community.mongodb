@@ -4,6 +4,9 @@
   rpm_key:
     key: https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc
     state: present
+  register: _yum
+  until: _yum is not failed
+  retries: 5
 
 - name: Ensure MongoDB yum repository exists
   yum_repository:
@@ -12,3 +15,6 @@
     baseurl: "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/"
     gpgcheck: true
     gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+  register: _yum
+  until: _yum is not failed
+  retries: 5

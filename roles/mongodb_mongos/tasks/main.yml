@@ -72,6 +72,9 @@
 - name: Ensure mongos package is installed
   package:
     name: "{{ mongos_package }}"
+  register: _pkg
+  until: _pkg is not failed
+  retries: 5
 
 - name: Start mongos service
   service:

@@ -17,6 +17,9 @@
 - name: Install required packages
   package:
     name: "{{ required_packages }}"
+  register: _pkg
+  until: _pkg is not failed
+  retries: 5
 
 - name: Copy custom MongoDB SeLinux Policy to Host
   copy:

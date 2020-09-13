@@ -31,6 +31,9 @@
   package:
     name: "{{ ntp_package }}"
     state: present
+  register: _pkg
+  until: _pkg is not failed
+  retries: 5
 
 - name: Update perms on chrony pid dir on RedHat 8
   file:
@@ -52,6 +55,9 @@
   package:
     name: "{{ gnu_c_lib }}"
     state: latest
+  register: _pkg
+  until: _pkg is not failed
+  retries: 5
 
 - name: Ensure NUMA zone reclaim is disabled
   sysctl:
