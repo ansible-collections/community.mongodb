@@ -6,6 +6,7 @@
 |Codecov|[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.mongodb)](https://codecov.io/gh/ansible-collections/community.mongodb)|
 |Travis MongoDB Roles|[![Travis Status](https://travis-ci.com/ansible-collections/community.mongodb.svg)](https://travis-ci.com/ansible-collections/community.mongodb)|
 |MongoDB Clusters|[![Build Status](https://travis-ci.com/rhysmeister/AutomatingMongoDBWithAnsible.svg?token=EZq8qB3ASZpTwAxAkbiU&branch=master)](https://travis-ci.com/rhysmeister/AutomatingMongoDBWithAnsible)|
+|Latest Build|![Build & Publish Collection](https://github.com/ansible-collections/community.mongodb/workflows/Build%20&%20Publish%20Collection/badge.svg)|
 
 This collection called `mongodb` aims at providing all Ansible modules allowing to interact with MongoDB.
 The modules present in Ansible 2.9 are included in this collection and will benefit from the evolutions and quality requirements from this collection.
