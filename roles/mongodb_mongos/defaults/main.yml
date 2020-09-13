@@ -1,11 +1,8 @@
 ---
 # defaults file for mongodb_mongos
-mongos_port: 27017
-mongos_service: "mongos"
-mongodb_user: "mongod"
-mongodb_group: "mongod"
 pid_file: /run/mongodb/mongos.pid
 bind_ip: 0.0.0.0
+# mongos_port in vars to facilitate molecule tests
 mypy: python
 mongos_package: "mongodb-org-mongos"
 config_repl_set_name: cfg
