@@ -73,7 +73,7 @@
 - name: Reload systemd
   systemd:
     daemon_reexec: yes
-  when: thp.changed == True
+  when: thp is changed
 
 - name: Enable disable-transparent-huge-pages service
   service:
