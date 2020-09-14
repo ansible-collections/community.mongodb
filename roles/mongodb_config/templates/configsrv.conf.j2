@@ -18,7 +18,7 @@ storage:
 
 # how the process runs
 processManagement:
-{% if ansible_os_family == "RedHat" %}  # Breaks Ubuntu / Debian
+{% if ansible_facts.os_family == "RedHat" %}  # Breaks Ubuntu / Debian
   fork: true
   pidFilePath: /var/run/mongodb/mongod.pid
 {% endif %}
@@ -40,7 +40,7 @@ security:
 {% if replicaset %}
 replication:
   replSetName: {{ config_repl_set_name }}
-  {% endif %}
+{% endif %}
 
 sharding:
   clusterRole: configsvr

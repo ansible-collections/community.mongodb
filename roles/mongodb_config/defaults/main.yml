@@ -1,11 +1,8 @@
 ---
 # defaults file for mongodb_config
-config_port: 27019
-mongod_service: "mongod"
-mongodb_user: "mongod"
-mongodb_group: "mongod"
 pid_file: /var/run/mongodb/mongod.pid
 bind_ip: 0.0.0.0
+# config_port is in vars to facilitate molecule tests
 config_repl_set_name: cfg
 authorization: enabled
 openssl_keyfile_content: |

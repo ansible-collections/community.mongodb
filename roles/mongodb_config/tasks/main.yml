@@ -1,8 +1,18 @@
 ---
 # tasks file for mongodb_config
-- name: Include variables for os family
+- name: Include OS-specific vars
   include_vars:
-    file: "{{ ansible_os_family }}.yml"
+    file: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_version }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+        - default.yml
 
 - name: Ensure mongod package is installed
   package:
@@ -51,16 +61,16 @@
       WantedBy=multi-user.target
   register: systemd
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version|int >= 8
 
 - name: Reload systemd
   systemd:
     daemon_reload: yes
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
-    - systemd.changed == True
+    - ansible_facts.os_family == "RedHat"
+    - ansible_facts.distribution_major_version|int >= 8
+    - systemd is changed
 
 - name: Start mongod service
   service:
