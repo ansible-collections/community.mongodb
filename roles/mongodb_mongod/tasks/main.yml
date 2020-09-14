@@ -1,8 +1,23 @@
 ---
 # tasks file for mongodb_mongod
-- name: Include variables for os family
+- name: Are we in docker?
+  stat:
+    path: is_docker.txt
+  register: d
+
+- name: Include OS-specific vars
   include_vars:
-    file: "{{ ansible_os_family }}.yml"
+    file: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_version }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+        - default.yml
 
 - name: Ensure mongod package is installed
   package:
@@ -21,17 +36,6 @@
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
-  when:
-    - not (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True)
-
-- name: Copy config file (RH8 Docker)
-  template:
-    src: rh8_docker_mongod.conf.j2
-    dest: /etc/mongod.conf
-    owner: "{{ mongodb_user }}"
-    group: "{{ mongodb_group }}"
-  when:
-    - ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True
 
 - name: Copy keyfile to host
   copy:
@@ -63,33 +67,21 @@
 #      WantedBy=multi-user.target
 #  register: systemd
 #  when:
-#    - ansible_os_family == "RedHat"
-#    - ansible_distribution_major_version|int >= 8
+#    - ansible_facts.os_family == "RedHat"
+#    - ansible_facts.distribution_major_version|int >= 8
 
 #- name: Reload systemd
 #  systemd:
 #    daemon_reload: yes
-#  when:
-#    - ansible_os_family == "RedHat"
-#    - ansible_distribution_major_version|int >= 8
-#    - systemd.changed == True
-
-- name: Are we in docker?
-  stat:
-    path: is_docker.txt
-  register: d
+#  when: is_redhat_8_in_docker
 
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
-  when:
-    - not (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 8 and d.stat.exists == True)
+  when: not is_redhat_8_in_docker
 
 - name: Include tasks for RedHat 8 docker issue
   import_tasks: redhat_docker.yml
-  when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version|int >= 8
-    - d.stat.exists == True
+  when: is_redhat_8_in_docker

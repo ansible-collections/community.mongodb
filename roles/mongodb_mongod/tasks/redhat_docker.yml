@@ -9,7 +9,7 @@
 - name: Reload systemd
   systemd:
     daemon_reload: yes
-  when: "systemd.changed"
+  when: systemd is changed
 
 - name: Start mongod service
   service:
