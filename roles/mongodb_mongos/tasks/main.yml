@@ -1,8 +1,18 @@
 ---
 # tasks file for mongodb_mongos
-- name: Include variables for os family
+- name: Include OS-specific vars
   include_vars:
-    file: "{{ ansible_os_family }}.yml"
+    file: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_version }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+        - default.yml
 
 - name: Create mongodb_group
   group:
@@ -50,7 +60,7 @@
 - name: Run systemctl daemon-reload
   systemd:
     daemon_reload: yes
-  when: sysd.changed == True
+  when: sysd is changed
 
 - name: Ensure mongos.conf file exists
   template:
