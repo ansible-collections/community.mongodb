@@ -12,15 +12,21 @@ set -e;
 pwd;
 
 FILES=$(git diff --name-only HEAD~1 | wc -l | xargs);
+ROLES=$(git diff --name-only HEAD~1 | grep roles/ | cut -d'/' -f -2 | sort | uniq)
 
 echo "There are $FILES files in this commit.";
+echo "This commit touches $(echo "${ROLES}" | wc -w) roles: $(echo "${ROLES//roles\/}" | tr '\n' ' ')"
 
 test_count=0;
 
 declare -a role_list=();
 
-if [ -z "${ISMASTER+x}" ]; then
-  for role in $(git diff --name-only HEAD~1 | grep roles/ | cut -d'/' -f -2 | sort | uniq); do
+# https://docs.travis-ci.com/user/environment-variables/#default-environment-variables
+# vars used below: TRAVIS, TRAVIS_BRANCH, TRAVIS_TAG
+
+if [ -z "${TRAVIS:+x}" ]; then
+  # This should only be triggered if running outside of travis (eg for local testing)
+  for role in ${ROLES}; do
       if [[ -d "$role/molecule" ]]; then
         if [[ ! -f "$role/molecule/.travisignore" ]]; then
           echo "Adding $role to test queue"
@@ -34,9 +40,15 @@ if [ -z "${ISMASTER+x}" ]; then
   done
 else  # MONGODB_ROLE should be defined
   set +u;
+  # MONGODB_ROLE is set per travis job to one role.
   if [ -z "$MONGODB_ROLE" ]; then
     echo "MONGODB_ROLE was not set as expected.";
-  else
+  elif [ -n "${TRAVIS_TAG}" ] || [[ "master" == "${TRAVIS_BRANCH}" ]] || [[ "$ROLES" == *"${MONGODB_ROLE}"* ]]; then
+    # Include all roles (one per Travis job) when this is:
+	#   a tag build (TRAVIS_TAG is set)
+	#   a master branch build or a PR targetting the master branch (TRAVIS_BRANCH == master)
+	# Include only changed roles when this is:
+	#	a non-master push or PR and the current job's MONGODB_ROLE was changed.
     role_list+=( "$MONGODB_ROLE" );
   fi;
   set -u;

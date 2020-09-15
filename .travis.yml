@@ -1,10 +1,10 @@
+---
 language: python
 python:
   - "2.7"
   - "3.5"
   - "3.6"
 env:
-  if: branch = master
   jobs:
     - MONGODB_ROLE="roles/mongodb_config"
     - MONGODB_ROLE="roles/mongodb_install"
