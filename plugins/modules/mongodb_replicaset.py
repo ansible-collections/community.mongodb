@@ -327,7 +327,7 @@ def main():
     try:
         client = MongoClient(**connection_params)
     except Exception as e:
-            module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
+        module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     try:
         rs = replicaset_find(client)
