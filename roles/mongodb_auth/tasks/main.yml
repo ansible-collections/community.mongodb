@@ -1,0 +1,109 @@
+---
+# tasks file for mongodb_auth
+- name: Ensure mongod and pyyaml packages are installed
+  become: yes
+  package:
+    name:
+      - "{{ mongod_package }}"
+      - "{{ mongodb_shell_package }}"
+      # pyyaml is used to validate yaml files on change
+      - "{% if ansible_facts.os_family == 'RedHat' %}PyYAML{% else %}python-yaml{% endif %}"
+  register: _pkg
+  until: _pkg is succeeded
+  retries: 5
+
+- name: See if mongodb authorization is enabled and users are configured
+  command: 'mongo admin --port {{ mongod_port }} --eval "db.getUsers()"'
+  # this will fail (rc 252) if auth is enabled and users are configured
+  # With the localhost exception, this will succeed (rc 0) when users are not configured even if auth is enabled.
+  # see:
+  #   - https://docs.mongodb.com/manual/core/security-users/#localhost-exception
+  #   - https://stackoverflow.com/q/31949586/1134951
+  #   - https://github.com/ansible/ansible/issues/33832#issuecomment-358031733
+  register: _mongo_authorization
+  changed_when: no # this does not change anything, it only checks
+  failed_when: no # The rc determines whether or not auth is required to create/update the admin user
+
+- name: Show mongodb auth check output
+  # the purpose of this task is to make sure task output is visible in travis if there are problems
+  debug:
+    var: _mongo_authorization
+    verbosity: 2
+
+- name: Warn about default credentials
+  when: mongodb_admin_pwd == mongodb_default_admin_pwd
+  debug:
+    msg: "[WARNING] Using default admin credentials for mongodb admin account! Please change them!"
+
+- name: Add mongo admin
+  community.mongodb.mongodb_user:
+    state: present
+
+    # NOTE: on_create is idempotent - see comment below
+    # Also, on_create is required to use localhost exception.
+    update_password: on_create
+
+    name: "{{ mongodb_admin_user }}"
+    password: "{{ mongodb_admin_pwd }}"
+    database: "{{ mongodb_admin_db }}"
+    # roles: userAdminAnyDatabase
+    roles: "root"
+
+    # This does NOT include the mongo_auth_user.yml because of the
+    # special omit handling of login_* when mongo auth is not enabled/configured
+    # login_host: "{{ mongod_host }}"
+    login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
+    # login_user: "{{ (_mongo_authorization.rc == 0) | ternary(omit, mongodb_admin_user) }}"
+    # login_password: "{{ (_mongo_authorization.rc == 0) | ternary(omit, mongodb_admin_pwd) }}"
+    # login_database: "{{ (_mongo_authorization.rc == 0) | ternary(omit, mongodb_admin_db) }}"
+
+- name: Enable security section in mongod.conf
+  become: yes
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: |-
+      ^[#'"\s]*security['"]?\s*:
+    line: 'security:'
+    validate: |
+      {{ mongodb_python }} -c '
+      import yaml, io
+      if "security" not in yaml.safe_load(io.open("%s")):
+          exit(1)
+      '
+
+- name: Enable authentication in mongod.conf
+  become: yes
+  lineinfile:
+    path: /etc/mongod.conf
+    insertafter: '^security:'
+    # two space indentation (the default) assumed
+    line: '  authorization: {{ authorization }}'
+    regexp: |-
+      ^[#'"\s]+authorization['"]?\s*:
+    validate: |
+      {{ mongodb_python }} -c '
+      import yaml, io
+      if yaml.safe_load(io.open("%s"))["security"]["authorization"] != "{{ authorization }}":
+          exit(1)
+      '
+  register: _enable_mongo_auth
+
+# This is a task instead of a handler so we can add users right away
+- name: Restart mongodb to enable auth before adding additional users
+  # This allows us to safely assume auth is already enabled when adding more users
+  when:
+    - mongodb_users | bool
+    - _enable_mongo_auth is changed
+  become: yes
+  service:
+    name: mongod
+    state: restarted
+
+- name: Add additional mongo users
+  include_tasks: mongodb_auth_user.yml
+  loop: "{{ mongodb_users }}"
+  loop_control:
+    loop_var: _mongodb_user
+  # using loop_control: label does not obscure the password in output for verbosity > 1
+  # So, loop over an include where the task name will include the username + db, but the loop var won't print out.
+  no_log: yes

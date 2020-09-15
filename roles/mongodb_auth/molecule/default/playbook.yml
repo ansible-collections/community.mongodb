@@ -1,0 +1,57 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    # each machine is an isolated mongod instance
+    replicaset: false
+    sharding: false
+
+  tasks:
+    - include_role:
+        name: mongodb_repository
+
+    - name: Install MongoDB Shell
+      package:
+        name: mongodb-org-shell
+
+    - name: Check mongo auth
+      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
+      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
+      changed_when: no
+      failed_when: no
+
+    - include_role:
+        name: mongodb_mongod
+      vars:
+      # does bindIp=0.0.0.0 remove localhost exception?
+        bind_ip: 127.0.0.1
+
+    - name: Check mongo auth
+      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
+      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
+      changed_when: no
+      failed_when: no
+
+    - name: Install python stuff
+      package:
+        name: ["python-setuptools", "python-pip"]
+
+    - name: Check mongo auth
+      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
+      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
+      changed_when: no
+      failed_when: no
+
+    - name: Install pymongo
+      pip:
+        name: pymongo
+
+    - name: Check mongo auth
+      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
+      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
+      changed_when: no
+      failed_when: no
+
+    - name: Enable mongo auth
+      include_role:
+        name: mongodb_auth

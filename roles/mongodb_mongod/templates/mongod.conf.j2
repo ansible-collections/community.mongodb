@@ -35,7 +35,9 @@ net:
 {% if authorization == "enabled" %}
 security:
     authorization: {{ authorization }}
+{% if replicaset or sharding %}
     keyFile: /etc/keyfile
+{% endif %}
 {% endif %}
 
 #operationProfiling:

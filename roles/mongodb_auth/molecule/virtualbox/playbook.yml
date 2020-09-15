@@ -1,0 +1,24 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+
+  roles:
+    - role: mongodb_repository
+    - role: mongodb_mongod
+      # each machine is an isolated mongod instance
+      replicaset: false
+      sharding: false
+
+  tasks:
+    - name: Install python stuff
+      package:
+        name: ["python-setuptools", "python-pip"]
+
+    - name: Install pymongo
+      pip:
+        name: pymongo
+
+    - name: Enable mongo auth
+      include_role:
+        name: mongodb_auth

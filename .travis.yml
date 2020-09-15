@@ -6,6 +6,7 @@ python:
   - "3.6"
 env:
   jobs:
+    - MONGODB_ROLE="roles/mongodb_auth"
     - MONGODB_ROLE="roles/mongodb_config"
     - MONGODB_ROLE="roles/mongodb_install"
     - MONGODB_ROLE="roles/mongodb_linux"
