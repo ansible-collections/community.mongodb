@@ -5,6 +5,9 @@
     name: mongodb-org
     state: present
   when: specific_mongodb_version is not defined
+  register: _pkg
+  until: _pkg is succeeded
+  retries: 5
 
 - name: Install MongoDB Packages (Specific version)
   package:
@@ -13,6 +16,9 @@
   when:
     - specific_mongodb_version is defined
     - ansible_facts.os_family == "RedHat"
+  register: _pkg
+  until: _pkg is succeeded
+  retries: 5
 
 # apt silliness:
 # In order to upgrade/downgrade to a specific version of mongodb-org,
@@ -30,3 +36,6 @@
   when:
     - specific_mongodb_version is defined
     - ansible_facts.os_family == "Debian"
+  register: _pkg
+  until: _pkg is succeeded
+  retries: 5
