@@ -1,56 +1,35 @@
 ---
 - name: Converge
   hosts: all
+  become: yes
   vars:
-    # each machine is an isolated mongod instance
+    # for this test, each machine is an isolated mongod instance
     replicaset: false
     sharding: false
 
+  roles:
+    - mongodb_repository
+    - mongodb_mongod
+
   tasks:
-    - include_role:
-        name: mongodb_repository
-
-    - name: Install MongoDB Shell
-      package:
-        name: mongodb-org-shell
-
-    - name: Check mongo auth
-      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
-      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
-      changed_when: no
-      failed_when: no
-
-    - include_role:
-        name: mongodb_mongod
-      vars:
-      # does bindIp=0.0.0.0 remove localhost exception?
-        bind_ip: 127.0.0.1
-
-    - name: Check mongo auth
-      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
-      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
-      changed_when: no
-      failed_when: no
+    - name: Add EPEL repo to CentOS 7 to allow installing pip package
+      become: yes
+      yum:
+        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts.distribution_major_version }}.noarch.rpm"
+        state: present
+      when: ansible_hostname == 'centos_7'
 
     - name: Install python stuff
       package:
-        name: ["python-setuptools", "python-pip"]
-
-    - name: Check mongo auth
-      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
-      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
-      changed_when: no
-      failed_when: no
+        name:
+          - "python{% if needs_3 %}3{% endif %}-setuptools"
+          - "python{% if needs_3 %}3{% endif %}-pip"
+      vars:
+        needs_3: "{{ ansible_facts.python.version.major == 3 }}"
 
     - name: Install pymongo
       pip:
         name: pymongo
-
-    - name: Check mongo auth
-      raw: 'mongo admin --port 27017 --eval "db.getUsers()"'
-      # raw: 'mongo admin --port 27017 --username admin --password admin --eval "db.getUsers()"'
-      changed_when: no
-      failed_when: no
 
     - name: Enable mongo auth
       include_role:

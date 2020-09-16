@@ -1,64 +1,58 @@
 ---
 # tasks file for mongodb_auth
+- name: Include OS-specific vars
+  include_vars:
+    file: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        - "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_version }}.yml"
+        - "{{ ansible_facts.os_family }}-{{ ansible_facts.distribution_major_version }}.yml"
+        - "{{ ansible_facts.distribution }}.yml"
+        - "{{ ansible_facts.os_family }}.yml"
+        - default.yml
+
 - name: Ensure mongod and pyyaml packages are installed
-  become: yes
   package:
     name:
       - "{{ mongod_package }}"
-      - "{{ mongodb_shell_package }}"
       # pyyaml is used to validate yaml files on change
-      - "{% if ansible_facts.os_family == 'RedHat' %}PyYAML{% else %}python-yaml{% endif %}"
+      - "{{ pyyaml_package }}"
   register: _pkg
   until: _pkg is succeeded
   retries: 5
-
-- name: See if mongodb authorization is enabled and users are configured
-  command: 'mongo admin --port {{ mongod_port }} --eval "db.getUsers()"'
-  # this will fail (rc 252) if auth is enabled and users are configured
-  # With the localhost exception, this will succeed (rc 0) when users are not configured even if auth is enabled.
-  # see:
-  #   - https://docs.mongodb.com/manual/core/security-users/#localhost-exception
-  #   - https://stackoverflow.com/q/31949586/1134951
-  #   - https://github.com/ansible/ansible/issues/33832#issuecomment-358031733
-  register: _mongo_authorization
-  changed_when: no # this does not change anything, it only checks
-  failed_when: no # The rc determines whether or not auth is required to create/update the admin user
-
-- name: Show mongodb auth check output
-  # the purpose of this task is to make sure task output is visible in travis if there are problems
-  debug:
-    var: _mongo_authorization
-    verbosity: 2
 
 - name: Warn about default credentials
   when: mongodb_admin_pwd == mongodb_default_admin_pwd
   debug:
     msg: "[WARNING] Using default admin credentials for mongodb admin account! Please change them!"
 
-- name: Add mongo admin
+- name: Has MongoDB Admin User been created already?
+  stat:
+    path: /root/mongodb_admin.success
+  register: _mongodb_admin
+
+- name: Add mongo admin user with localhost exception
   community.mongodb.mongodb_user:
     state: present
 
-    # NOTE: on_create is idempotent - see comment below
-    # Also, on_create is required to use localhost exception.
-    update_password: on_create
+    # on_create triggers additional queries that are not compatible with localhost exception
+    update_password: always
 
     name: "{{ mongodb_admin_user }}"
     password: "{{ mongodb_admin_pwd }}"
-    database: "{{ mongodb_admin_db }}"
-    # roles: userAdminAnyDatabase
-    roles: "root"
+    database: admin
+    roles: "{{ mongodb_admin_roles }}"
 
-    # This does NOT include the mongo_auth_user.yml because of the
-    # special omit handling of login_* when mongo auth is not enabled/configured
-    # login_host: "{{ mongod_host }}"
+    login_host: localhost
     login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
-    # login_user: "{{ (_mongo_authorization.rc == 0) | ternary(omit, mongodb_admin_user) }}"
-    # login_password: "{{ (_mongo_authorization.rc == 0) | ternary(omit, mongodb_admin_pwd) }}"
-    # login_database: "{{ (_mongo_authorization.rc == 0) | ternary(omit, mongodb_admin_db) }}"
+  # this will error when users are already configured outside of this role.
+  ignore_errors: yes
+  when: not _mongodb_admin.stat.exists
 
 - name: Enable security section in mongod.conf
-  become: yes
   lineinfile:
     path: /etc/mongod.conf
     regexp: |-
@@ -72,7 +66,6 @@
       '
 
 - name: Enable authentication in mongod.conf
-  become: yes
   lineinfile:
     path: /etc/mongod.conf
     insertafter: '^security:'
@@ -91,13 +84,28 @@
 # This is a task instead of a handler so we can add users right away
 - name: Restart mongodb to enable auth before adding additional users
   # This allows us to safely assume auth is already enabled when adding more users
-  when:
-    - mongodb_users | bool
-    - _enable_mongo_auth is changed
-  become: yes
+  when: _enable_mongo_auth is changed
   service:
     name: mongod
     state: restarted
+
+- name: Test mongo auth credentials
+  community.mongodb.mongodb_info:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_pwd }}"
+    login_database: admin
+    login_host: localhost
+    login_port: "{{ mongod_port | string }}"
+    filter: '!parameters'
+  register: _mongodb_info
+
+- name: Signal that MongoDB Admin User has been created
+  file:
+    state: touch
+    path: /root/mongodb_admin.success
+  when:
+    - not _mongodb_admin.stat.exists
+    - _mongodb_info is succeeded
 
 - name: Add additional mongo users
   include_tasks: mongodb_auth_user.yml

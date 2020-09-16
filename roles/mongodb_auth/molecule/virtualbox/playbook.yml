@@ -2,18 +2,30 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    # for this test, each machine is an isolated mongod instance
+    replicaset: false
+    sharding: false
 
   roles:
-    - role: mongodb_repository
-    - role: mongodb_mongod
-      # each machine is an isolated mongod instance
-      replicaset: false
-      sharding: false
+    - mongodb_repository
+    - mongodb_mongod
 
   tasks:
+    - name: Add EPEL repo to CentOS 7 to allow installing pip package
+      become: yes
+      yum:
+        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts.distribution_major_version }}.noarch.rpm"
+        state: present
+      when: ansible_hostname == 'centos_7'
+
     - name: Install python stuff
       package:
-        name: ["python-setuptools", "python-pip"]
+        name:
+          - "python{% if needs_3 %}3{% endif %}-setuptools"
+          - "python{% if needs_3 %}3{% endif %}-pip"
+      vars:
+        needs_3: "{{ ansible_facts.python.version.major == 3 }}"
 
     - name: Install pymongo
       pip:

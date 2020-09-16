@@ -18,8 +18,8 @@
     database: "{{ _mongodb_user.db }}"
     roles: "{{ _mongodb_user.roles|default('readWrite') }}"
 
-    login_host: "{{ mongod_host }}"
-    login_port: "{{ mongod_port }}"
+    login_host: localhost
+    login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_pwd }}"
     login_database: "{{ mongodb_admin_db }}"
