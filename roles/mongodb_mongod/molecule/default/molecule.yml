@@ -9,10 +9,24 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  #- name: centos_7  Failed to load nf_conntrack module: modprobe: ERROR:...ack
-  #  image: centos:7
-  #  command: /sbin/init
-  #  privileged: True
+  - name: centos_7
+    image: centos:7
+    command: /sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
+  - name: centos_8
+    image: centos:8
+    command: /sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
   - name: ubuntu_16
     image: ubuntu:16.04
     command: /sbin/init
@@ -27,10 +41,13 @@ platforms:
     networks:
       - name: "mongod"
     network_mode: "mongod"
-  #- name: debian_buster ERROR: Failed to load nf_conntrack module
-  #  image: debian:buster
-  #  command: /sbin/init
-  #  privileged: True
+  - name: debian_buster
+    image: debian:buster
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
   - name: debian_stretch
     image: debian:stretch
     command: /sbin/init
