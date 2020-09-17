@@ -130,5 +130,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert "authMechanism" in ssl_dict
         assert ssl_dict["authMechanism"] == "MONGODB-X509"
 
+
 if __name__ == '__main__':
     unittest.main()
