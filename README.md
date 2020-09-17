@@ -13,7 +13,7 @@ The modules present in Ansible 2.9 are included in this collection and will bene
 
 As this is an independent Collection, it can be release on it's own release cadance.
 
-## Running the integration tests
+## Running the integration and unit tests
 
 Clone the collection git project. The ansible-test tool requires a specific directory setup to function correctly so please follow carefully.
 
@@ -53,6 +53,12 @@ Run tests for everything in the collection.
 
 ```
 ansible-test integration --docker default -v --color --python 3.6
+```
+
+Run the units tests
+
+```
+ansible-test units --docker default -v --color --python 3.6
 ```
 
 ## GitHub workflow
