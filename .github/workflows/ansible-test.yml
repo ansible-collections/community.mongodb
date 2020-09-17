@@ -24,7 +24,7 @@ jobs:
           python-version: 3.6
 
       - name: Install ansible-base (devel)
-        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+        run: 'for i in {1..5}; do [ "${i}" -ne 1 ] && sleep 5; pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check && break; done'
 
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python 3.6
@@ -46,7 +46,7 @@ jobs:
           python-version: 3.6
 
       - name: Install ansible-base (devel)
-        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+        run: 'for i in {1..5}; do [ "${i}" -ne 1 ] && sleep 5; pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check && break; done'
 
       - name: Run unit tests
         run: ansible-test units --docker -v --color --python 3.6 --coverage
@@ -104,13 +104,13 @@ jobs:
           python-version: ${{ matrix.python_version }}
 
       - name: Install community.general
-        run: ansible-galaxy collection install community.general -p ../../
+        run: 'for i in {1..5}; do [ "${i}" -ne 1 ] && sleep 5; ansible-galaxy collection install community.general -p ../../ && break; done'
 
       - name: Install community.crypto
-        run: ansible-galaxy collection install community.crypto -p ../../
+        run: 'for i in {1..5}; do [ "${i}" -ne 1 ] && sleep 5; ansible-galaxy collection install community.crypto -p ../../ && break; done'
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
-        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+        run: 'for i in {1..5}; do [ "${i}" -ne 1 ] && sleep 5; pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check && break; done'
 
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"

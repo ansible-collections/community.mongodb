@@ -59,7 +59,7 @@ progress_file=$(mktemp)
 progress() {
   while [ -e "${progress_file}" ]; do
     sleep 300  # 5 min (< 10min travis timeout)
-    echo -ne "\r\n.\r\n"
+    echo -ne "\n.\n"
   done
 }
 progress &

@@ -14,11 +14,12 @@ env:
     - MONGODB_ROLE="roles/mongodb_repository"
     - MONGODB_ROLE="roles/mongodb_selinux"
 before_install:
+  # travis_retry tries 3x (not configurable)
   - python --version
-  - pip install --upgrade pip
+  - travis_retry pip install --upgrade pip
   - export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
-  - pip install --requirement requirements-${pyv}.txt
-  - ansible-galaxy collection install community.general
+  - travis_retry pip install --requirement requirements-${pyv}.txt
+  - travis_retry ansible-galaxy collection install community.general
   - ansible-galaxy collection build
   - ansible-galaxy collection install community-mongodb-*.tar.gz
   - pip --version
