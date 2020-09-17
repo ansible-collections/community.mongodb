@@ -66,11 +66,13 @@ options:
     description:
       - C(always) will always update passwords and cause the module to return changed.
       - C(on_create) will only set the password for newly created users.
+      - This must be C(always) to use the localhost exception when adding the first admin user.
     type: str
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
-      can be installed using pip or the OS package manager. @see http://api.mongodb.org/python/current/installation.html
+      can be installed using pip or the OS package manager. Newer mongo server versionss require newer 
+      pymongo versions. @see http://api.mongodb.org/python/current/installation.html
 requirements:
   - "pymongo"
 author:
