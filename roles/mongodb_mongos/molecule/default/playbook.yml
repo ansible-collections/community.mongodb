@@ -9,9 +9,15 @@
 
   roles:
     - role: mongodb_repository
-    - { role: mongodb_install, when: "'config' in ansible_hostname" }
-    - { role: mongodb_config, when: "'config' in ansible_hostname" }
-    - { role: mongodb_mongos, when: "'config' not in ansible_hostname" }
+      tags: molecule-idempotence-notest
+    - role: mongodb_install
+      when: "'config' in ansible_hostname"
+      tags: molecule-idempotence-notest
+    - role: mongodb_config
+      when: "'config' in ansible_hostname"
+      tags: molecule-idempotence-notest
+    - role: mongodb_mongos
+      when: "'config' not in ansible_hostname"
 
   tasks:
 
