@@ -156,6 +156,14 @@ def mongodb_common_argument_spec(ssl_options=True):
         ssl_certfile=dict(type='str', default=None),
         ssl_keyfile=dict(type='str', default=None),
         ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
+        auth_mechanism=dict(type='str',
+                            required=False,
+                            default=None,
+                            choices=['SCRAM-SHA-256',
+                                     'SCRAM-SHA-1',
+                                     'MONGODB-X509',
+                                     'GSSAPI',
+                                     'PLAIN']),
     )
     if ssl_options:
         options.update(ssl_options_dict)
@@ -170,4 +178,6 @@ def ssl_connection_options(connection_params, module):
     connection_params['ssl_certfile'] = module.params['ssl_certfile']
     connection_params['ssl_keyfile'] = module.params['ssl_keyfile']
     connection_params['ssl_pem_passphrase'] = module.params['ssl_pem_passphrase']
+    if module.params['auth_mechanism'] is not None:
+        connection_params['authMechanism'] = module.params['auth_mechanism']
     return connection_params
