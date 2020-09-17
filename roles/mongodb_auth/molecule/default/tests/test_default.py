@@ -4,12 +4,12 @@ import yaml
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
-    os.environ['MOLECULE_INVENTORY_FILE']
-).get_hosts('all')
+    os.environ["MOLECULE_INVENTORY_FILE"]
+).get_hosts("all")
 
 
 def include_vars(host):
-    ansible = host.ansible('include_vars',
+    ansible = host.ansible("include_vars",
                            'file="../../defaults/main.yml"',
                            False,
                            False)
@@ -17,14 +17,14 @@ def include_vars(host):
 
 
 def test_mongod_cnf_file(host):
-    f = host.file('/etc/mongod.conf')
+    f = host.file("/etc/mongod.conf")
 
     assert f.exists
     assert yaml.safe_load(f.content)["security"]["authorization"] == "enabled"
 
 
 def test_mongod_service(host):
-    mongod_service = include_vars(host)['ansible_facts']['mongod_service']
+    mongod_service = include_vars(host)["ansible_facts"].get("mongod_service", "mongod")
     s = host.service(mongod_service)
 
     assert s.is_running
@@ -32,27 +32,25 @@ def test_mongod_service(host):
 
 
 def test_mongod_port(host):
-    try:
-        port = include_vars(host)['ansible_facts']['mongod_port']
-    except KeyError:
-        port = 27017
+    port = include_vars(host)["ansible_facts"].get("mongod_port", 27017)
     s = host.socket("tcp://0.0.0.0:{0}".format(port))
     assert s.is_listening
 
 
-def test_mongod_replicaset(host):
-    '''
-    Ensure that the MongoDB replicaset has been created successfully
-    '''
-    try:
-        port = include_vars(host)['ansible_facts']['mongod_port']
-    except KeyError:
-        port = 27017
-    cmd = "mongo --port {0} --eval 'rs.status()'".format(port)
-    # We only want to run this once
-    if host.ansible.get_variables()['inventory_hostname'] == "ubuntu_16":
-        r = host.run(cmd)
-        assert "rs0" in r.stdout
-        assert "ubuntu_16:{0}".format(port) in r.stdout
-        assert "ubuntu_18:{0}".format(port) in r.stdout
-        assert "debian_stretch:{0}".format(port) in r.stdout
+def test_mongo_shell_connectivity(host):
+    """
+    Tests that we can connect to mongos via the shell annd run a cmd
+    """
+    facts = include_vars(host)["ansible_facts"]
+    port = facts.get("mongod_port", 27017)
+    user = facts.get("mongod_admin_user", "admin")
+    pwd = facts.get("mongod_default_admin_pwd", "admin")
+
+    cmd = host.run(
+        "mongo admin --username {user} --password {pwd} --port {port} --eval 'db.runCommand({{listDatabases: 1}})'".format(
+            user=user, pwd=pwd, port=port
+        )
+    )
+
+    assert cmd.rc == 0
+    assert "admin" in cmd.stdout

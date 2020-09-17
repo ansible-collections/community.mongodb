@@ -17,8 +17,8 @@ mongodb_admin_roles: "root"
 # Additional users to add.
 mongodb_users: []
 #  - db: somedatabase
-#    username: someuser
-#    password: "S0meP@ss"
+#    user: someuser
+#    pwd: "S0meP@ss"
 #    roles: readWrite
 
 # whether or not to force a password update for any users in mongodb_users

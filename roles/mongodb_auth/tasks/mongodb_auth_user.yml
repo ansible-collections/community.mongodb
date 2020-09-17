@@ -22,4 +22,4 @@
     login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_pwd }}"
-    login_database: "{{ mongodb_admin_db }}"
+    login_database: admin
