@@ -1,0 +1,15 @@
+---
+# tasks file for MongoDB
+- name: Create certificate for {{ansible_operator_meta.name}}
+  k8s:
+    resource_definition: "{{ lookup('template', 'certificate.yaml') }}"
+
+- name: "Wait for certificate to be ready"
+  k8s_info:
+    api_version: cert-manager.io/v1
+    kind: Certificate
+    name: "certificate-{{ansible_operator_meta.name}}"
+    namespace: "{{ansible_operator_meta.namespace}}"
+  register: certificate_status
+  until: certificate_status|json_query('resources[0].status.conditions[*].reason')|unique == ["Ready"]
+  changed_when: false

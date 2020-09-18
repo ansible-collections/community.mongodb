@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  gather_facts: no
+  collections:
+    - community.kubernetes
+    - operator_sdk.util
+    - community.mongodb
+  tasks:
+
+    - include_role:
+        name: create-certificates
+
+    - include_role:
+        name: get-certificates
+
+    - name: Create standalone mongodb
+      k8s:
+        resource_definition: "{{ lookup('template', 'mongo.yaml') }}"
+
+    - name: Create mongodb service
+      k8s:
+        resource_definition: "{{ lookup('template', 'service.yaml') }}"
+
+    - name: Wait for StatefulSet to be ready
+      k8s_info:
+        api_version: apps/v1
+        kind: StatefulSet
+        name: "{{ansible_operator_meta.name}}"
+        namespace: "{{ansible_operator_meta.namespace}}"
+      register: statefulset_status
+      until: statefulset_status|json_query('resources[0].status.replicas') == statefulset_status|json_query('resources[0].status.readyReplicas')
+      changed_when: false
+
+    - name: create admin user
+      community.mongodb.mongodb_user:
+        login_host: "{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}.svc.cluster.local"
+        login_port: 27001
+        login_database: "$external"
+        database: "admin"
+        name: "admin"
+        password: "{{admin_password}}"
+        roles:
+          - dbAdminAnyDatabase
+        ssl: true
+        ssl_ca_certs: "/tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}/ca.crt"
+        ssl_certfile: "/tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}/tls.key"
+        state: present
+        auth_mechanism: "MONGODB-X509"
+      when: admin_password is defined and true
+      register: test
+
+    - name: create root user
+      command: |
+        /usr/bin/mongo {{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}.svc.cluster.local \
+              --tls \
+              --tlsCAFile /tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}/ca.crt \
+              --tlsCertificateKeyFile=/tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}/tls.key \
+              --authenticationMechanism MONGODB-X509 \
+              --authenticationDatabase '$external' \
+              --eval \
+              '{{ lookup('template', 'templates/create-admin-user.js') }}'
+      register: mongoout
+      changed_when: "'{ \0ok\0 : 1 }' in mongoout.stdout"
+      when: admin_password is defined and false
