@@ -68,10 +68,17 @@ options:
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
     type: str
+  create_for_localhost_exception:
+    type: path
+    description:
+      - This is parmeter is only useful for handling special treatment around the localhost exception.
+      - If C(login_user) is defined, then the localhost exception is not active and this parameter has no effect.
+      - If this file is NOT present (and C(login_user) is not defined), then touch this file after successfully adding the user.
+      - If this file is present (and C(login_user) is not defined), then skip this task.
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+. This
-      can be installed using pip or the OS package manager. Newer mongo server versionss require newer 
+      can be installed using pip or the OS package manager. Newer mongo server versions require newer
       pymongo versions. @see http://api.mongodb.org/python/current/installation.html
 requirements:
   - "pymongo"
@@ -188,7 +195,7 @@ from operator import itemgetter
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six import binary_type, text_type
 from ansible.module_utils.six.moves import configparser
-from ansible.module_utils._text import to_native
+from ansible.module_utils._text import to_native, to_bytes
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     check_compatibility,
     missing_required_lib,
@@ -229,12 +236,11 @@ def user_add(module, client, db_name, user, password, roles):
     try:
         exists = user_find(client, user, db_name)
     except Exception as excep:
-        # We get this exception "not authorized on admin to execute command"
-        # When there auth is enabled on a new instance. loalhost Exception
-        # Should allow us to create the first user. So we assume this is the case
-        # Might be able to do something with db.getUsers() if this approach needs
-        # a rethink
-        if hasattr(excep, 'code') and excep.code == 13:  # Unauthorized
+        # We get this exception: "not authorized on admin to execute command"
+        # when auth is enabled on a new instance. The loalhost exception should
+        # allow us to create the first user. If the localhost exception does not apply,
+        # then user creation will also fail with unauthorized. So, ignore Unauthorized here.
+        if hasattr(excep, 'code') and excep.code == 13:  # 13=Unauthorized
             exists = False
         else:
             raise
@@ -309,7 +315,8 @@ def main():
         replica_set=dict(default=None),
         roles=dict(default=None, type='list', elements='raw'),
         state=dict(default='present', choices=['absent', 'present']),
-        update_password=dict(default="always", choices=["always", "on_create"], no_log=False)
+        update_password=dict(default="always", choices=["always", "on_create"], no_log=False),
+        create_for_localhost_exception=dict(default=None, type='path'),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -325,6 +332,11 @@ def main():
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     login_database = module.params['login_database']
+    create_for_localhost_exception = module.params['create_for_localhost_exception']
+    b_create_for_localhost_exception = (
+        to_bytes(create_for_localhost_exception, errors='surrogate_or_strict')
+        if create_for_localhost_exception is not None else None
+    )
 
     replica_set = module.params['replica_set']
     db_name = module.params['database']
@@ -382,6 +394,14 @@ def main():
         if password is None and update_password == 'always':
             module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
 
+        if login_user is None and create_for_localhost_exception is not None:
+            if os.path.exists(b_create_for_localhost_exception):
+                try:
+                    client.close()
+                except Exception:
+                    pass
+            module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
+
         try:
             if update_password != 'always':
                 uinfo = user_find(client, user, db_name)
@@ -405,6 +425,18 @@ def main():
             # newuinfo = user_find(client, user, db_name)
             # if uinfo['role'] == newuinfo['role'] and CheckPasswordHere:
             #    module.exit_json(changed=False, user=user)
+
+        if login_user is None and create_for_localhost_exception is not None:
+            # localhost exception applied.
+            try:
+                # touch the file
+                open(b_create_for_localhost_exception, 'wb').close()
+            except Exception as e:
+                module.fail_json(
+                    changed=True,
+                    msg='Added user but unable to touch create_for_localhost_exception file %s: %s' % (create_for_localhost_exception, to_native(e)),
+                    exception=traceback.format_exc()
+                )
 
     elif state == 'absent':
         try:
