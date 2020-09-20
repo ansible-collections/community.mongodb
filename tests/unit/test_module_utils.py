@@ -15,11 +15,11 @@ class FakeAnsibleModule:
     params = {
         "ssl": False,
         "ssl_cert_reqs": "CERT_REQUIRED",
-        "ssl_ca_certs": None,
-        "ssl_crlfile": None,
-        "ssl_certfile": None,
-        "ssl_keyfile": None,
-        "ssl_pem_passphrase": None,
+        "ssl_ca_certs": "/tmp/ca.crt",
+        "ssl_crlfile": "/tmp/tmp.crl",
+        "ssl_certfile": "/tmp/tls.key",
+        "ssl_keyfile": "/tmp/tls.key",
+        "ssl_pem_passphrase": "secret",
         "auth_mechanism": None,
         "connection_options": None
     }
