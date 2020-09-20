@@ -20,7 +20,8 @@ class FakeAnsibleModule:
         "ssl_certfile": None,
         "ssl_keyfile": None,
         "ssl_pem_passphrase": None,
-        "auth_mechanism": None
+        "auth_mechanism": None,
+        "connection_options": None
     }
 
     def __init__(self):
