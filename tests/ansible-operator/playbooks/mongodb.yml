@@ -34,7 +34,7 @@
     - name: create admin user
       community.mongodb.mongodb_user:
         login_host: "{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}.svc.cluster.local"
-        login_port: 27001
+        login_port: 27017
         login_database: "$external"
         database: "admin"
         name: "admin"
