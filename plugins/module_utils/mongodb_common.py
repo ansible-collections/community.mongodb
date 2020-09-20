@@ -172,22 +172,26 @@ def mongodb_common_argument_spec(ssl_options=True):
         options.update(ssl_options_dict)
     return options
 
+def add_option_if_not_none(param_name, module, connection_params):
+    '''
+    @param_name - The parameter name to check
+    @module - The ansible module object
+    @connection_params - Dict containing the connection params
+    '''
+    if module.params[param_name] is not None:
+        connection_params[param_name] = module.params[param_name]
+    return connection_params
+
 
 def ssl_connection_options(connection_params, module):
     connection_params['ssl'] = True
-    # TODO Tidy this up with a helper function
     if module.params['ssl_cert_reqs'] is not None:
         connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
-    if module.params['ssl_ca_certs'] is not None:
-        connection_params['ssl_ca_certs'] = module.params['ssl_ca_certs']
-    if module.params['ssl_crlfile'] is not None:
-        connection_params['ssl_crlfile'] = module.params['ssl_crlfile']
-    if module.params['ssl_certfile'] is not None:
-        connection_params['ssl_certfile'] = module.params['ssl_certfile']
-    if module.params['ssl_keyfile'] is not None:
-        connection_params['ssl_keyfile'] = module.params['ssl_keyfile']
-    if module.params['ssl_pem_passphrase'] is not None:
-        connection_params['ssl_pem_passphrase'] = module.params['ssl_pem_passphrase']
+    connection_params = add_option_if_not_none('ssl_ca_certs', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_crlfile', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_certfile', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_keyfile', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_pem_passphrase', module, connection_params)
     if module.params['auth_mechanism'] is not None:
         connection_params['authMechanism'] = module.params['auth_mechanism']
     if module.params['connection_options'] is not None:
