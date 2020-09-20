@@ -330,7 +330,7 @@ def main():
 
         if ssl:
             connection_params = ssl_connection_options(connection_params, module)
-
+            
         client = MongoClient(**connection_params)
 
         if login_user is None and login_password is None:

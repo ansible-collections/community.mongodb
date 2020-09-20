@@ -164,6 +164,9 @@ def mongodb_common_argument_spec(ssl_options=True):
                                      'MONGODB-X509',
                                      'GSSAPI',
                                      'PLAIN']),
+        connection_options=dict(type='list',
+                                elements='raw',
+                                default=None)
     )
     if ssl_options:
         options.update(ssl_options_dict)
@@ -172,12 +175,28 @@ def mongodb_common_argument_spec(ssl_options=True):
 
 def ssl_connection_options(connection_params, module):
     connection_params['ssl'] = True
-    connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
-    connection_params['ssl_ca_certs'] = module.params['ssl_ca_certs']
-    connection_params['ssl_crlfile'] = module.params['ssl_crlfile']
-    connection_params['ssl_certfile'] = module.params['ssl_certfile']
-    connection_params['ssl_keyfile'] = module.params['ssl_keyfile']
-    connection_params['ssl_pem_passphrase'] = module.params['ssl_pem_passphrase']
+    # TODO Tidy this up with a helper function
+    if module.params['ssl_cert_reqs'] is not None:
+        connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
+    if module.params['ssl_ca_certs'] is not None:
+        connection_params['ssl_ca_certs'] = module.params['ssl_ca_certs']
+    if module.params['ssl_crlfile'] is not None:
+        connection_params['ssl_crlfile'] = module.params['ssl_crlfile']
+    if module.params['ssl_certfile'] is not None:
+        connection_params['ssl_certfile'] = module.params['ssl_certfile']
+    if module.params['ssl_keyfile'] is not None:
+        connection_params['ssl_keyfile'] = module.params['ssl_keyfile']
+    if module.params['ssl_pem_passphrase'] is not None:
+        connection_params['ssl_pem_passphrase'] = module.params['ssl_pem_passphrase']
     if module.params['auth_mechanism'] is not None:
         connection_params['authMechanism'] = module.params['auth_mechanism']
+    if module.params['connection_options'] is not None:
+        for item in module.params['connection_options']:
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    connection_params[key] = value
+            elif isinstance(item, str) and "=" in item:
+                connection_params[item.split('=')[0]] = item.split('=')[1]
+            else:
+                raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
     return connection_params

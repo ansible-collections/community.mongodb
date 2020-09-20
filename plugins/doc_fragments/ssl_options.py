@@ -59,4 +59,11 @@ options:
       - 'MONGODB-X509'
       - 'GSSAPI'
       - 'PLAIN'
+  connection_options:
+    description:
+      - Additional connection options.
+      - Supply a list of dicts or strings containing key value pairs seperated with '='.
+    required: no
+    type: list
+    elements: raw
 '''
