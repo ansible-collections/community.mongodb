@@ -5,6 +5,7 @@
 
   roles:
     - role: mongodb_repository
+      tags: molecule-idempotence-notest
     - role: mongodb_config
 
   tasks:
