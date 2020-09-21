@@ -28,5 +28,5 @@ roles/mongodb_repository/molecule/default/tests/test_default.py metaclass-boiler
 roles/mongodb_repository/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_selinux/molecule/default/tests/test_default.py metaclass-boilerplate
 roles/mongodb_selinux/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
-tests/ansible-operator/config/manager/manager.yaml unparsable-with-libyaml
-tests/ansible-operator/roles/create-certificates/templates/certificate.yaml unparsable-with-libyaml
+tests/ansible-operator/config/manager/manager.yaml yamllint
+tests/ansible-operator/roles/create-certificates/templates/certificate.yaml yamllint
