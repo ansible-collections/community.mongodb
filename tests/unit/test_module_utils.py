@@ -21,7 +21,11 @@ class FakeAnsibleModule:
         "ssl_keyfile": "/tmp/tls.key",
         "ssl_pem_passphrase": "secret",
         "auth_mechanism": None,
-        "connection_options": None
+        "connection_options": [{ "one": 1 },
+                               { "two": 2 },
+                               { "three": 3 },
+                               { "four": 4 },
+                               { "five": 5 }]
     }
 
     def __init__(self):
@@ -129,6 +133,39 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert "ssl_keyfile" in ssl_dict
         assert "ssl_pem_passphrase" in ssl_dict
         assert "authMechanism" in ssl_dict
+        assert ssl_dict["one"] == 1
+        assert ssl_dict["two"] == 2
+        assert ssl_dict["three"] == 3
+        assert ssl_dict["four"] == 4
+        assert ssl_dict["five"] == 5
+        assert ssl_dict["authMechanism"] == "MONGODB-X509"
+
+    def test_ssl_connection_options_auth_mechanism_strings(self):
+        connection_params = dict()
+        fake_module = FakeAnsibleModule()
+        fake_module.params["auth_mechanism"] = "MONGODB-X509"
+        fake_module.params["connection_options"] = [
+            "one=1",
+            "two=2",
+            "three=3",
+            "four=4",
+            "five=5"
+        ]
+        ssl_dict = mongodb_common.ssl_connection_options(connection_params, fake_module)
+        assert isinstance(ssl_dict, dict)
+        assert ssl_dict["ssl"] is True
+        assert "ssl_cert_reqs" in ssl_dict
+        assert "ssl_ca_certs" in ssl_dict
+        assert "ssl_crlfile" in ssl_dict
+        assert "ssl_certfile" in ssl_dict
+        assert "ssl_keyfile" in ssl_dict
+        assert "ssl_pem_passphrase" in ssl_dict
+        assert "authMechanism" in ssl_dict
+        assert ssl_dict["one"] == '1'
+        assert ssl_dict["two"] == '2'
+        assert ssl_dict["three"] == '3'
+        assert ssl_dict["four"] == '4'
+        assert ssl_dict["five"] == '5'
         assert ssl_dict["authMechanism"] == "MONGODB-X509"
 
 
