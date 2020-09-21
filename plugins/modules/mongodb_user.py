@@ -221,7 +221,7 @@ def user_add(module, client, db_name, user, password, roles):
             else:
                 raise excep
         else:
-            raise excep
+            raise
 
     if exists:
         user_add_db_command = 'updateUser'
