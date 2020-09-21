@@ -21,11 +21,11 @@ class FakeAnsibleModule:
         "ssl_keyfile": "/tmp/tls.key",
         "ssl_pem_passphrase": "secret",
         "auth_mechanism": None,
-        "connection_options": [{ "one": 1 },
-                               { "two": 2 },
-                               { "three": 3 },
-                               { "four": 4 },
-                               { "five": 5 }]
+        "connection_options": [{"one": 1},
+                               {"two": 2},
+                               {"three": 3},
+                               {"four": 4},
+                               {"five": 5}]
     }
 
     def __init__(self):

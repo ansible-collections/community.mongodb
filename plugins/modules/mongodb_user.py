@@ -150,6 +150,23 @@ EXAMPLES = '''
       - db: local
         role: read
 
+- name: Adding a user with X.509 Member Authentication
+  community.mongodb.mongodb_user:
+    login_host: "mongodb-host.test"
+    login_port: 27001
+    login_database: "$external"
+    database: "admin"
+    name: "admin"
+    password: "test"
+    roles:
+    - dbAdminAnyDatabase
+    ssl: true
+    ssl_ca_certs: "/tmp/ca.crt"
+    ssl_certfile: "/tmp/tls.key" #cert and key in one file
+    state: present
+    auth_mechanism: "MONGODB-X509"
+    connection_options:
+     - "tlsAllowInvalidHostnames=true"
 '''
 
 RETURN = '''
