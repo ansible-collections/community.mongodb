@@ -215,13 +215,10 @@ def user_add(module, client, db_name, user, password, roles):
         # Should allow us to create the first user. So we assume this is the case
         # Might be able to do something with db.getUsers() if this approach needs
         # a rethink
-        if hasattr(excep, 'code'):
-            if excep.code == 13:  # Unauthorized
-                exists = False
-            else:
-                raise excep
+        if hasattr(excep, 'code') and excep.code == 13:  # Unauthorized
+            exists = False
         else:
-            raise excep
+            raise
 
     if exists:
         user_add_db_command = 'updateUser'
