@@ -172,6 +172,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         options.update(ssl_options_dict)
     return options
 
+
 def add_option_if_not_none(param_name, module, connection_params):
     '''
     @param_name - The parameter name to check
