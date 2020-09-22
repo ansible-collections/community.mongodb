@@ -1,0 +1,10 @@
+apiVersion: mongodb.example.com/v1alpha1
+kind: MongoDB
+metadata:
+  name: mongodb-sample
+spec:
+  issuerRef:
+    name: mongodb-cluster-ca-issuer
+    kind: Issuer
+  adminPassword: changeMe
+  standalone: true

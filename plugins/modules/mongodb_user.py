@@ -150,6 +150,23 @@ EXAMPLES = '''
       - db: local
         role: read
 
+- name: Adding a user with X.509 Member Authentication
+  community.mongodb.mongodb_user:
+    login_host: "mongodb-host.test"
+    login_port: 27001
+    login_database: "$external"
+    database: "admin"
+    name: "admin"
+    password: "test"
+    roles:
+    - dbAdminAnyDatabase
+    ssl: true
+    ssl_ca_certs: "/tmp/ca.crt"
+    ssl_certfile: "/tmp/tls.key" #cert and key in one file
+    state: present
+    auth_mechanism: "MONGODB-X509"
+    connection_options:
+     - "tlsAllowInvalidHostnames=true"
 '''
 
 RETURN = '''
@@ -215,10 +232,10 @@ def user_add(module, client, db_name, user, password, roles):
         # Should allow us to create the first user. So we assume this is the case
         # Might be able to do something with db.getUsers() if this approach needs
         # a rethink
-        if excep.code == 13:  # Unauthorized
+        if hasattr(excep, 'code') and excep.code == 13:  # Unauthorized
             exists = False
         else:
-            raise Exception
+            raise
 
     if exists:
         user_add_db_command = 'updateUser'

@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "certificate-{{ansible_operator_meta.name}}"
+  namespace: "{{ansible_operator_meta.namespace}}"
+spec:
+  secretName: "certificate-{{ansible_operator_meta.name}}"
+  issuerRef: {{ issuer_ref }}
+  subject:
+    organizations:
+      - organizationName
+    organizationalUnits:
+      - organizationUnit
+  commonName: "{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}.svc.cluster.local"
+  dnsNames:
+    - "{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}.svc.cluster.local"
+    - "*.{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}.svc.cluster.local"
+    - "*.mongodb-operator-controller-manager-metrics-service.ansible-operator-system.svc.cluster.local"
+  usages:
+    - client auth
+    - server auth

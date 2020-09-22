@@ -156,18 +156,52 @@ def mongodb_common_argument_spec(ssl_options=True):
         ssl_certfile=dict(type='str', default=None),
         ssl_keyfile=dict(type='str', default=None),
         ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
+        auth_mechanism=dict(type='str',
+                            required=False,
+                            default=None,
+                            choices=['SCRAM-SHA-256',
+                                     'SCRAM-SHA-1',
+                                     'MONGODB-X509',
+                                     'GSSAPI',
+                                     'PLAIN']),
+        connection_options=dict(type='list',
+                                elements='raw',
+                                default=None)
     )
     if ssl_options:
         options.update(ssl_options_dict)
     return options
 
 
+def add_option_if_not_none(param_name, module, connection_params):
+    '''
+    @param_name - The parameter name to check
+    @module - The ansible module object
+    @connection_params - Dict containing the connection params
+    '''
+    if module.params[param_name] is not None:
+        connection_params[param_name] = module.params[param_name]
+    return connection_params
+
+
 def ssl_connection_options(connection_params, module):
     connection_params['ssl'] = True
-    connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
-    connection_params['ssl_ca_certs'] = module.params['ssl_ca_certs']
-    connection_params['ssl_crlfile'] = module.params['ssl_crlfile']
-    connection_params['ssl_certfile'] = module.params['ssl_certfile']
-    connection_params['ssl_keyfile'] = module.params['ssl_keyfile']
-    connection_params['ssl_pem_passphrase'] = module.params['ssl_pem_passphrase']
+    if module.params['ssl_cert_reqs'] is not None:
+        connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
+    connection_params = add_option_if_not_none('ssl_ca_certs', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_crlfile', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_certfile', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_keyfile', module, connection_params)
+    connection_params = add_option_if_not_none('ssl_pem_passphrase', module, connection_params)
+    if module.params['auth_mechanism'] is not None:
+        connection_params['authMechanism'] = module.params['auth_mechanism']
+    if module.params['connection_options'] is not None:
+        for item in module.params['connection_options']:
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    connection_params[key] = value
+            elif isinstance(item, str) and "=" in item:
+                connection_params[item.split('=')[0]] = item.split('=')[1]
+            else:
+                raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
     return connection_params

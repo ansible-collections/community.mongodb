@@ -19,7 +19,10 @@ options:
     required: no
     type: str
     default: 'CERT_REQUIRED'
-    choices: ['CERT_NONE', 'CERT_OPTIONAL', 'CERT_REQUIRED']
+    choices:
+      - 'CERT_NONE'
+      - 'CERT_OPTIONAL'
+      - 'CERT_REQUIRED'
   ssl_ca_certs:
     description:
       - The ssl_ca_certs option takes a path to a CA file.
@@ -45,4 +48,22 @@ options:
       - Passphrase to decrypt encrypted private keys.
     required: no
     type: str
+  auth_mechanism:
+    description:
+      - Authentication type.
+    required: no
+    type: str
+    choices:
+      - 'SCRAM-SHA-256'
+      - 'SCRAM-SHA-1'
+      - 'MONGODB-X509'
+      - 'GSSAPI'
+      - 'PLAIN'
+  connection_options:
+    description:
+      - Additional connection options.
+      - Supply as a list of dicts or strings containing key value pairs seperated with '='.
+    required: no
+    type: list
+    elements: raw
 '''

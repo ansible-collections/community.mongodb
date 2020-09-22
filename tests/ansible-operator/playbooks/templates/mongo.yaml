@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: "{{ansible_operator_meta.name}}"
+  namespace: "{{ansible_operator_meta.namespace}}"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ansible_operator_meta.name}}"
+  serviceName: "{{ansible_operator_meta.name}}"
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: "{{ansible_operator_meta.name}}"
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo
+          image: mongo:4.2.9
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              cat /certs/tls.crt /certs/tls.key > /tls.pem
+              mongod \
+                --auth \
+                --port=27017 \
+                --dbpath=/data/db \
+                --bind_ip_all \
+                --tlsOnNormalPorts \
+                --tlsCAFile=/certs/ca.crt \
+                --tlsCertificateKeyFile=/tls.pem \
+                --tlsClusterFile=/tls.pem \
+                --tlsClusterCAFile=/certs/ca.crt \
+                --clusterAuthMode=x509
+          livenessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+          readinessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 30
+            periodSeconds: 10
+            successThreshold: 1
+          ports:
+            - containerPort: 27017
+              name: mongo
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+            - name: cert-cluster-auth
+              mountPath: /certs
+      volumes:
+        - name: cert-cluster-auth
+          secret:
+            secretName: "certificate-{{ansible_operator_meta.name}}"
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+#       storageClassName: "storageclass"
+        resources:
+          requests:
+            storage: 10Gi

@@ -1,0 +1,30 @@
+---
+# tasks file for MongoDB
+- name: get cluster Cert
+  k8s_info:
+    api_key: v1
+    kind: Secret
+    name: "certificate-mongodb-sample"
+    namespace: "default"
+  register: cert
+
+- name: create cert directory
+  file:
+    path: "/tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}"
+    state: directory
+    mode: 0700
+
+- name: save cert
+  copy:
+    content: "{{cert.resources[0].data['ca.crt'] | b64decode}}"
+    dest: "/tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}/ca.crt"
+    mode: 0600
+
+
+- name: save key
+  copy:
+    content: |
+      {{cert.resources[0].data['tls.crt'] | b64decode}}
+      {{cert.resources[0].data['tls.key'] | b64decode}}
+    dest: "/tmp/{{ansible_operator_meta.name}}.{{ansible_operator_meta.namespace}}/tls.key"
+    mode: 0600
