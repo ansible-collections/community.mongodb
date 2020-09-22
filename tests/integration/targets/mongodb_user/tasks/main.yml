@@ -53,6 +53,8 @@
     password: '{{ mongodb_admin_password }}'
     roles: root
     state: present
+    # TODO: an integration test with and without this. And a follow up test with this file that shows it skips
+    # create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
   register: mongodb_admin_user_created
 - assert:
     that:
