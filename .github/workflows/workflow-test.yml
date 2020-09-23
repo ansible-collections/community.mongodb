@@ -8,6 +8,9 @@ jobs:
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
+    outputs:
+      matrix: ${{ steps.integration_tests.outputs.tests }}
+
     steps:
 
       - name: Check out code
@@ -23,7 +26,7 @@ jobs:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{needs.job1.outputs.tests}}
+      matrix: ${{ needs.job1.outputs.tests }}
       - name: Iterate over items
         run: |
           echo ${{matrix}}
