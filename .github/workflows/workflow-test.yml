@@ -37,10 +37,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: ${{fromJson(needs.job1.outputs.modules-to-test)}}
+        module: ${{fromJson(needs.job1.outputs.matrix)}}
 
     steps:
 
       - name: Iterate over items
         run: |
-          echo ${{ matrix.modules }}
+          echo ${{ matrix }}
