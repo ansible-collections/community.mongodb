@@ -27,6 +27,7 @@ jobs:
         run: |
           output=$(python -c 'import json;print(" ".join(json.load(open("int_test_modules.txt"))).split())')
           echo "::set-output name=modules-to-test::$output"
+          echo "$output"
 
   job2:
     needs: job1
