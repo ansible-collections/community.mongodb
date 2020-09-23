@@ -3,7 +3,7 @@ on:
 - pull_request
 
 jobs:
-  sanity:
+  job1:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -15,13 +15,15 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Get integration tests
+      - name: Set integration tests matrix
         id: integration_tests
         run: |
           echo "::set-output name=tests::$(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF)"
-
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{needs.job1.outputs.tests}}
       - name: Iterate over items
-        env:
-          MYTESTS: ${{ steps.integration_tests.tests }}
         run: |
-          echo $MYTESTS
+          echo ${{matrix}}
