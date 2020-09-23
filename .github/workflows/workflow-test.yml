@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: ${{ fromJson(needs.job1.outputs.modules-to-test) }}
+        module: ${{fromJson(needs.job1.outputs.modules-to-test)}}
 
     steps:
 
