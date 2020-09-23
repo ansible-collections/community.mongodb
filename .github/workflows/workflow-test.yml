@@ -21,6 +21,7 @@ jobs:
           echo "::set-output name=tests::$(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF)"
 
       - name: Iterate over items
-
-
-        ${{ steps.integration_tests.tests.dir }}
+        env:
+          MYTESTS: ${{ steps.integration_tests.tests }}
+        run: |
+          echo $MYTESTS
