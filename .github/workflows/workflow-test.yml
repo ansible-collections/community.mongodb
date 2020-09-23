@@ -1,7 +1,6 @@
 name: TEST
 on:
-- pull_request
-
+  - pull_request
 jobs:
   job1:
     runs-on: ubuntu-latest
@@ -21,7 +20,7 @@ jobs:
       - name: Set integration tests matrix
         id: integration_tests
         run: |
-          echo "::set-output name=tests::toJson($(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF))"
+          echo "::set-output name=tests::$(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF | jq -R -s -c 'split(\"\n\")')"
 
   job2:
     needs: job1
