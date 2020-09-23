@@ -8,7 +8,7 @@ jobs:
       run:
         working-directory: ansible_collections/community/mongodb
     outputs:
-      matrix: ${{ steps.integration_tests.outputs.tests }}
+      matrix: ${{ steps.json_list.outputs.tests }}
 
     steps:
 
@@ -20,14 +20,20 @@ jobs:
       - name: Set integration tests matrix
         id: integration_tests
         run: |
-          echo ::set-output name=tests::$(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF | jq -R -s -c 'split("\n")')
+          find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF | jq -R -s -c 'split("\n") > int_test_modules.txt
+
+      - name: Format to json list
+        id: json_list
+        run: |
+          output=$(python -c 'import json;print(" ".join(json.load(open("int_test_modules.txt"))).split())')
+          echo "::set-output name=modules_to_test::$output"
 
   job2:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: ${{ fromJson(needs.job1.outputs.tests) }}
+        module: ${{ fromJson(needs.job1.outputs.modules_to_test) }}
 
     steps:
 
