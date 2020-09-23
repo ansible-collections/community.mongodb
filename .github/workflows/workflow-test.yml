@@ -1,0 +1,26 @@
+name: TEST
+on:
+- pull_request
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Get integration tests
+        id: integration_tests
+        run: |
+          echo "::set-output name=tests::$(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF)"
+
+      - name: Iterate over items
+
+
+        ${{ steps.integration_tests.tests.dir }}
