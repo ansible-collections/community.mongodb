@@ -27,6 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ needs.job1.outputs.tests }}
+
+    steps:
+
       - name: Iterate over items
         run: |
           echo ${{matrix}}
