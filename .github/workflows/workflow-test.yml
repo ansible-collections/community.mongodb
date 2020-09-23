@@ -28,7 +28,7 @@ jobs:
       - name: Format to json list
         id: json-list
         run: |
-          output=$(python -c 'import json;print(json.load(open("int_test_modules.json")))')
+          output=$(python -c 'import json;print(json.dumps(json.load(open("int_test_modules.json"))))')
           echo "::set-output name=modules-to-test::$output"
           echo "$output"
 
