@@ -30,13 +30,14 @@ jobs:
         run: |
           output=$(python -c 'import json;print(json.load(open("int_test_modules.json")))')
           echo "::set-output name=modules-to-test::$output"
+          echo "$output"
 
   job2:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: ${{fromJson(needs.job1.outputs.matrix)}}
+        module: ${{ fromJson(needs.job1.outputs.matrix) }}
 
     steps:
 
