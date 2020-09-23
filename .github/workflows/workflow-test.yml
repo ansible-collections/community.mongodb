@@ -30,7 +30,6 @@ jobs:
         run: |
           output=$(python -c 'import json;print(json.load(open("int_test_modules.json")))')
           echo "::set-output name=modules-to-test::$output"
-          echo "$output"
 
   job2:
     needs: job1
@@ -43,4 +42,4 @@ jobs:
 
       - name: Iterate over items
         run: |
-          echo ${{ matrix }}
+          echo ${{ matrix.module }}
