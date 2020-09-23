@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate json doc from module list
         run: |
-          cat int_test_modules.txt | jq -sR '{"modules": split("\n")[:-1] }' > int_test_modules.json
+          cat int_test_modules.txt | jq -sR 'split("\n")' > int_test_modules.json
 
       - name: Format to json list
         id: json-list
