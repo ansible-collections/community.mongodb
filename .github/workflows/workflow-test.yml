@@ -22,6 +22,7 @@ jobs:
         id: integration_tests
         run: |
           echo "::set-output name=tests::toJson($(find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF))"
+
   job2:
     needs: job1
     runs-on: ubuntu-latest
