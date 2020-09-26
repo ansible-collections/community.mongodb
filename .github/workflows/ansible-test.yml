@@ -58,8 +58,35 @@ jobs:
         with:
           fail_ci_if_error: false
 
+  integration_matrix:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
+    outputs:
+      matrix: ${{ steps.json-list.outputs.modules-to-test }}
+
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Generate module list
+        run: |
+          find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF | jq -sRc 'split("\n") | map(select(length > 0))' > int_test_modules.json
+
+      - name: Set output variable 
+        id: json-list
+        run: |
+          output=$(cat int_test_modules.json)
+          echo "::set-output name=modules-to-test::$output"
+          echo "$output"
+
   integration:
-    runs-on: ubuntu-latest    
+    needs: integration_matrix
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -70,21 +97,7 @@ jobs:
         mongodb_version:
           - "4.2"
           - "4.4"
-        mongodb_module:
-          - mongodb_balancer
-          - mongodb_index
-          - mongodb_info
-          - mongodb_maintenance
-          - mongodb_oplog
-          - mongodb_parameter
-          - mongodb_replicaset
-          - mongodb_shard
-          - mongodb_shell
-          - mongodb_shutdown
-          - mongodb_status
-          - mongodb_stepdown
-          - mongodb_user
-          - lookup_mongodb
+        mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         docker_image:
           - ubuntu1804
           - centos8
