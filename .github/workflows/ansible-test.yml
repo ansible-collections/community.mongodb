@@ -76,12 +76,11 @@ jobs:
       - name: Generate module list
         run: |
           find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF > int_test_modules.txt
-      - name: Remove last newline from file
-        run: |
-          perl -pi -e 'chomp if eof' int_test_modules.txt
+
       - name: Generate json doc from module list
         run: |
-          cat int_test_modules.txt | jq -sR 'split("\n")' > int_test_modules.json
+          cat int_test_modules.txt | jq -sRc 'split("\n")' > int_test_modules.json
+
       - name: Format to json list
         id: json-list
         run: |
