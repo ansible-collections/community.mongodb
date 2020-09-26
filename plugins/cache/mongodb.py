@@ -93,8 +93,9 @@ class CacheModule(BaseCacheModule):
             for index in indexes:
                 if index["name"] == "ttl":
                     exists = True
-        except pymongo.errors.OperationFailure:
-            raise AnsibleError('Error checking MongoDB index: %s' % to_native(e))
+                    break
+        except pymongo.errors.OperationFailure as excep:
+            raise AnsibleError('Error checking MongoDB index: %s' % to_native(excep))
         return exists
 
     def _manage_indexes(self, collection):
