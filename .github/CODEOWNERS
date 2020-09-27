@@ -8,6 +8,3 @@
 
 # Example of maintainer of just a single plugin
 #grafana/plugins/modules/grafana_plugin.py @someone-else
-
-
-.github/ @gundalow
