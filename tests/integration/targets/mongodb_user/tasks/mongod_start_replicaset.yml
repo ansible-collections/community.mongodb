@@ -1,3 +1,4 @@
+---
 - name: Set mongodb_user user for redhat
   set_fact:
     mongodb_user: mongod

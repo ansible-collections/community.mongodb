@@ -3,46 +3,20 @@
     path: '{{ remote_tmp_dir }}/tests'
     state: directory
 
-- include_tasks: mongod_teardown.yml
-
-- set_fact:
-    current_replicaset: mongodb_user_tests_replicaset
-
 - set_fact:
     mongodb_nodes:
     - 3001
     - 3002
     - 3003
 
-- include_tasks: mongod_replicaset.yml
+- include_tasks: mongod_teardown.yml
 
-- name: Create current_replicaset with module
-  community.mongodb.mongodb_replicaset:
-    login_port: 3001
-    replica_set: '{{ current_replicaset }}'
-    members:
-    - localhost:3001
-    - localhost:3002
-    - localhost:3003
+- set_fact:
+    current_replicaset: mongodb_user_tests_replicaset
 
-- name: Check the status of the replicaset with mongodb_status module
-  community.mongodb.mongodb_status:
-    login_host: localhost
-    login_port: 3001
-    replica_set: '{{ current_replicaset }}'
-    poll: 99
-    interval: 10
+- include_tasks: mongod_start_replicaset.yml
 
-#- name: Ensure is_primary script exists on host
-#  copy:
-#    src: js/is_primary.js
-#    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
-
-#- name: Ensure host reaches primary before proceeding 3001
-#  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-#  ignore_errors: yes
-
-#- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
+- include_tasks: mongod_config_replicaset.yml
 
 - name: Create admin user with module
   community.mongodb.mongodb_user:
@@ -57,26 +31,13 @@
 - assert:
     that:
     - mongodb_admin_user_created.changed == True
-- name: Kill all mongod processes
-  command: pkill  -{{ kill_signal }} mongod
-  ignore_errors: true
 
-- name: Getting pids for mongod
-  register: pids_of_mongod
-  community.general.pids:
-    name: mongod
-
-- name: Wait for all mongod processes to exit
-  wait_for:
-    path: /proc/{{ item }}/status
-    state: absent
-    delay: 3
-  with_items: '{{ pids_of_mongod }}'
+- include_tasks: mongod_stop.yml
 
 - set_fact:
     mongod_auth: true
 
-- include_tasks: mongod_replicaset.yml
+- include_tasks: mongod_start_replicaset.yml
 
 - name: Check the status of the replicaset with mongodb_status module
   community.mongodb.mongodb_status:
@@ -219,5 +180,63 @@
 
 - debug:
     var: test_db_users
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: mongodb_user_test_localhost_exception_replicaset
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_start_replicaset.yml
+
+- include_tasks: mongod_config_replicaset.yml
+
+- name: Check for absence of the create_for_localhost_exception file
+  stat:
+    path: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: create_for_localhost_exception_file
+- assert:
+    that:
+    - not create_for_localhost_exception_file.stat.exists
+
+- name: Create admin user with module and create_for_localhost_exception
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: mongodb_admin_user_created
+- assert:
+    that:
+    - mongodb_admin_user_created is changed
+
+- name: Check for presence of the create_for_localhost_exception file
+  stat:
+    path: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: create_for_localhost_exception_file
+- assert:
+    that:
+    - create_for_localhost_exception_file.stat.exists
+
+- name: Create admin when create_for_localhost_exception file exists
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: mongodb_admin_user_created
+- assert:
+    that:
+    - mongodb_admin_user_created is skipped
 
 - include_tasks: mongod_teardown.yml
