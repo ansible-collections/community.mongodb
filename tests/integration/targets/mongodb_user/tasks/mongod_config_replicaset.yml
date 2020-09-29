@@ -26,4 +26,3 @@
 #  ignore_errors: yes
 
 #- command: cat "{{ remote_tmp_dir }}/mongod3001/log.log"  # Debug command
-

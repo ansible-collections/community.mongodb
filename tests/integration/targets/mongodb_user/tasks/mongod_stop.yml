@@ -14,5 +14,3 @@
     state: absent
     delay: 3
   with_items: '{{ pids_of_mongod }}'
-
-
