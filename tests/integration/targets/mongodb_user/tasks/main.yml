@@ -27,8 +27,6 @@
     password: '{{ mongodb_admin_password }}'
     roles: root
     state: present
-    # TODO: an integration test with and without this. And a follow up test with this file that shows it skips
-    # create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
   register: mongodb_admin_user_created
 - assert:
     that:
@@ -182,5 +180,63 @@
 
 - debug:
     var: test_db_users
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: mongodb_user_test_localhost_exception_replicaset
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_start_replicaset.yml
+
+- include_tasks: mongod_config_replicaset.yml
+
+- name: Check for absence of the create_for_localhost_exception file
+  stat:
+    path: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: create_for_localhost_exception_file
+- assert:
+    that:
+    - not create_for_localhost_exception_file.stat.exists
+
+- name: Create admin user with module and create_for_localhost_exception
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: mongodb_admin_user_created
+- assert:
+    that:
+    - mongodb_admin_user_created is changed
+
+- name: Check for presence of the create_for_localhost_exception file
+  stat:
+    path: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: create_for_localhost_exception_file
+- assert:
+    that:
+    - create_for_localhost_exception_file.stat.exists
+
+- name: Create admin when create_for_localhost_exception file exists
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
+  register: mongodb_admin_user_created
+- assert:
+    that:
+    - mongodb_admin_user_created is skipped
 
 - include_tasks: mongod_teardown.yml
