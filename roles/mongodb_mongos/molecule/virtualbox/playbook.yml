@@ -57,12 +57,6 @@
           state: restarted
         when: "'config' not in ansible_hostname"
 
-      - name: Has MongoDB Admin User been created already?
-        stat:
-          path: /root/mongodb_admin.success
-        register: mongodb_admin
-        when: ansible_hostname == "config1"
-
       - name: Add MongoDB Admin User using localhost exception on the mongos
         community.mongodb.mongodb_user:
           name: "{{ admin_user }}"
@@ -71,14 +65,5 @@
           database: admin
           roles:
             - "root"
-        when:
-          - ansible_hostname == "config1"
-          - mongodb_admin.stat.exists == False
-
-      - shell: "mongo admin --port 27019 --username {{ admin_user }} --password {{ admin_user_password }} --eval 'db.runCommand({listDatabases: 1})' && touch /root/mongodb_admin.success"
-        args:
-          creates: /root/mongodb_admin.success
-        when:
-          - ansible_hostname == "config1"
-          - mongodb_admin.stat.exists == False
-        ignore_errors: yes
+          create_for_localhost_exception: /root/mongodb_admin.success
+        when: ansible_hostname == "config1"
