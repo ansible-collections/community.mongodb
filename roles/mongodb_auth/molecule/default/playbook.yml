@@ -1,0 +1,65 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    # for this test, each machine is an isolated mongod instance
+    replicaset: false
+    sharding: false
+
+    # initially disable authorization on some hosts
+    hosts_with_auth_disabled:
+      - ubuntu_18
+      - debian_buster
+
+    # add some users for some of the hosts
+    hosts_with_extra_user:
+      - centos_8
+      - ubuntu_16
+      - debian_buster
+    mongodb_users_empty: []
+    mongodb_users_full:
+      - db: somedatabase
+        user: someuser
+        pwd: "S0meP@ss"
+        roles: readWrite
+      - db: somedatabase
+        user: otheruser
+        pwd: "0th3rP@ss"
+        roles: readWrite
+    mongodb_users: "{% if inventory_hostname in hosts_with_extra_user %}{{ mongodb_users_full }}{% else %}{{ mongodb_users_empty }}{% endif %}"
+
+  roles:
+    - role: mongodb_repository
+      tags: molecule-idempotence-notest
+    - role: mongodb_mongod
+      authorization: "{% if inventory_hostname in hosts_with_auth_disabled %}disabled{% else %}enabled{% endif %}"
+      tags: molecule-idempotence-notest # avoids false positive where replacing conf file disables authorization again
+
+  tasks:
+    - name: Add EPEL repo to CentOS 7 to allow installing pip package
+      become: yes
+      yum:
+        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts.distribution_major_version }}.noarch.rpm"
+        state: present
+      when: inventory_hostname  == 'centos_7'
+
+    - name: Install python stuff
+      package:
+        name:
+          - "python{% if needs_3 %}3{% endif %}-setuptools"
+          - "python{% if needs_3 %}3{% endif %}-pip"
+      vars:
+        needs_3: "{{ ansible_facts.python.version.major == 3 }}"
+
+    - name: Install pymongo
+      pip:
+        name: pymongo
+
+    - name: Enable mongo auth
+      include_role:
+        name: mongodb_auth
+
+    - name: Install MongoDB Shell
+      package:
+        name: mongodb-org-shell

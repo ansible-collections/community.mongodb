@@ -4,6 +4,8 @@ plugins/modules/mongodb_shard.py use-argspec-type-path
 plugins/modules/mongodb_user.py use-argspec-type-path
 plugins/modules/mongodb_status.py use-argspec-type-path
 plugins/modules/mongodb_stepdown.py use-argspec-type-path
+roles/mongodb_auth/molecule/default/tests/test_default.py future-import-boilerplate
+roles/mongodb_auth/molecule/virtualbox/tests/test_default.py future-import-boilerplate
 roles/mongodb_config/molecule/default/tests/test_default.py future-import-boilerplate
 roles/mongodb_config/molecule/virtualbox/tests/test_default.py future-import-boilerplate
 roles/mongodb_install/molecule/default/tests/test_default.py future-import-boilerplate
@@ -19,6 +21,8 @@ roles/mongodb_repository/molecule/default/tests/test_default.py future-import-bo
 roles/mongodb_repository/molecule/virtualbox/tests/test_default.py future-import-boilerplate
 roles/mongodb_selinux/molecule/default/tests/test_default.py future-import-boilerplate
 roles/mongodb_selinux/molecule/virtualbox/tests/test_default.py future-import-boilerplate
+roles/mongodb_auth/molecule/default/tests/test_default.py metaclass-boilerplate
+roles/mongodb_auth/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_config/molecule/default/tests/test_default.py metaclass-boilerplate
 roles/mongodb_config/molecule/virtualbox/tests/test_default.py metaclass-boilerplate
 roles/mongodb_install/molecule/default/tests/test_default.py metaclass-boilerplate

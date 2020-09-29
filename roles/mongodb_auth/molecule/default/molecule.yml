@@ -1,0 +1,50 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-data:
+      line-length: disable
+platforms:
+  - name: centos_7
+    image: centos:7
+    command: /sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: centos_8
+    image: centos:8
+    command: /sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: ubuntu_16
+    image: ubuntu:16.04
+    command: /sbin/init
+    privileged: True
+  - name: ubuntu_18
+    image: ubuntu:18.04
+    command: /sbin/init
+    privileged: True
+  - name: debian_buster
+    image: debian:buster
+    command: /sbin/init
+    privileged: True
+  - name: debian_stretch
+    image: debian:stretch
+    command: /sbin/init
+    privileged: True
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+    enabled: false
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+    options:
+      ignore: 'E501'

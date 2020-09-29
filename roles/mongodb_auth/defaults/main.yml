@@ -1,0 +1,27 @@
+---
+# defaults file for mongodb_auth
+mongod_port: 27017
+mongod_package: "mongodb-org-server"
+
+authorization: "enabled"
+
+# when adding auth, the login credentials to use
+mongodb_admin_user: admin
+# For production use - please change the admin password!
+mongodb_admin_pwd: "{{ mongodb_default_admin_pwd }}"
+# The default is separate so other roles can provide a default without overriding a user provided password.
+mongodb_default_admin_pwd: admin
+# allow for alternate admin roles (eg userAdminAnyDatabase)
+mongodb_admin_roles: "root"
+
+# Additional users to add.
+mongodb_users: []
+#  - db: somedatabase
+#    user: someuser
+#    pwd: "S0meP@ss"
+#    roles: readWrite
+
+# whether or not to force a password update for any users in mongodb_users
+# Setting this to yes will result in 'changed' on every run, even if the password is the same.
+# See the comment in tasks/main.yml for more details.
+mongodb_force_update_password: no
