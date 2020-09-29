@@ -400,7 +400,7 @@ def main():
                     client.close()
                 except Exception:
                     pass
-            module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
+                module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
 
         try:
             if update_password != 'always':
