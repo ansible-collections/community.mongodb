@@ -1,7 +1,11 @@
 mongodb_auth
 ============
 
-A simple role to enable auth on MongoDB servers.
+This role to enables auth on MongoDB servers, adds the first admin user, and adds a list of other users.
+If your mongo instance requires ssl or an alternative auth_mechanism, please use
+[`module_defaults`](https://docs.ansible.com/ansible/latest/user_guide/playbooks_module_defaults.html)
+to provide the default auth details for `community.mongodb.mongodb_user` (these defaults are ignored
+when adding the initial admin user with the localhost exception).
 
 If running this on a MongoDB server that already has an admin user (ie when using this role to audit
 an alternate install method), you must touch `/root/mongodb_admin.success` or you will get an error

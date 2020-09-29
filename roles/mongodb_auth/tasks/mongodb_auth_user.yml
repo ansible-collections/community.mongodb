@@ -23,3 +23,7 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_pwd }}"
     login_database: admin
+  # to provide additional auth details (eg for ssl* or auth_mechanism, set module_defaults in playbook)
+  # module_defaults:
+  #   community.mongodb.mongodb_user:
+  #      auth_mechanism: ...
