@@ -3,16 +3,16 @@
     path: '{{ remote_tmp_dir }}/tests'
     state: directory
 
-- include_tasks: mongod_teardown.yml
-
-- set_fact:
-    current_replicaset: mongodb_user_tests_replicaset
-
 - set_fact:
     mongodb_nodes:
     - 3001
     - 3002
     - 3003
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: mongodb_user_tests_replicaset
 
 - include_tasks: mongod_replicaset.yml
 
@@ -59,21 +59,8 @@
 - assert:
     that:
     - mongodb_admin_user_created.changed == True
-- name: Kill all mongod processes
-  command: pkill  -{{ kill_signal }} mongod
-  ignore_errors: true
 
-- name: Getting pids for mongod
-  register: pids_of_mongod
-  community.general.pids:
-    name: mongod
-
-- name: Wait for all mongod processes to exit
-  wait_for:
-    path: /proc/{{ item }}/status
-    state: absent
-    delay: 3
-  with_items: '{{ pids_of_mongod }}'
+- include_tasks: mongod_stop.yml
 
 - set_fact:
     mongod_auth: true
