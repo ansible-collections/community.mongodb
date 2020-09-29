@@ -29,11 +29,6 @@
   debug:
     msg: "[WARNING] Using default admin credentials for mongodb admin account! Please change them!"
 
-- name: Has MongoDB Admin User been created already?
-  stat:
-    path: /root/mongodb_admin.success
-  register: _mongodb_admin
-
 - name: Add mongo admin user with localhost exception
   community.mongodb.mongodb_user:
     state: present
@@ -48,9 +43,7 @@
 
     login_host: localhost
     login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
-  # this will error when users are already configured outside of this role.
-  ignore_errors: yes
-  when: not _mongodb_admin.stat.exists
+    create_for_localhost_exception: /root/mongodb_admin.success
 
 - name: Enable security section in mongod.conf
   lineinfile:
@@ -88,24 +81,6 @@
   service:
     name: mongod
     state: restarted
-
-- name: Test mongo auth credentials
-  community.mongodb.mongodb_info:
-    login_user: "{{ mongodb_admin_user }}"
-    login_password: "{{ mongodb_admin_pwd }}"
-    login_database: admin
-    login_host: localhost
-    login_port: "{{ mongod_port | string }}"
-    filter: '!parameters'
-  register: _mongodb_info
-
-- name: Signal that MongoDB Admin User has been created
-  file:
-    state: touch
-    path: /root/mongodb_admin.success
-  when:
-    - not _mongodb_admin.stat.exists
-    - _mongodb_info is succeeded
 
 - name: Add additional mongo users
   include_tasks: mongodb_auth_user.yml

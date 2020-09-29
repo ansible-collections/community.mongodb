@@ -3,6 +3,10 @@ mongodb_auth
 
 A simple role to enable auth on MongoDB servers.
 
+If running this on a MongoDB server that already has an admin user (ie when using this role to audit
+an alternate install method), you must touch `/root/mongodb_admin.success` or you will get an error
+when this role tries to add the admin user again.
+
 Role Variables
 --------------
 
