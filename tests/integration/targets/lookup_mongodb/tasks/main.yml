@@ -18,7 +18,6 @@
 
 
 - include: test_lookup_mongo.yml
-  when: ansible_distribution == 'Ubuntu'
   vars:
     mongodb_parameters:
       #mandatory parameters
