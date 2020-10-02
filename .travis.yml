@@ -18,6 +18,7 @@ before_install:
   - python --version
   - pip install --upgrade pip
   - export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
+  - pip install 'git+git://github.com/cognifloyd/molecule@travis-folding-2.22#egg=molecule'
   - pip install --requirement requirements-${pyv}.txt
   - ansible-galaxy collection install community.general
   - ansible-galaxy collection build
