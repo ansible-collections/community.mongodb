@@ -23,7 +23,7 @@ jobs:
           - stable-2.10
           - devel
     outputs:
-      nopymongo: ${{ steps.pymongo.outputs.nopymongo }}
+      nopymongo: ${{ steps.nopymongo.outputs.nopymongo }}
     steps:
 
       - name: Check out code
