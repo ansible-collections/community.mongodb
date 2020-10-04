@@ -22,6 +22,10 @@ jobs:
         ansible_version:
           - stable-2.10
           - devel
+    outputs:
+      nopymongo:
+        description: "Output from cache when no pymongo driver is installed"
+        value: ${{ steps.nopymongo.outputs.nopymongo }}
     steps:
 
       - name: Check out code
@@ -58,11 +62,17 @@ jobs:
       - name: Install mongodb-org-shell
         run: sudo apt-get install mongodb-org-shell
 
-      # TODO Check cache handling of missing pymongo
-      #- name: Run ansible without pymongo installed to generate the warning
-      #  run:
-      #    ansible localhost -m setup
-      #    set output
+      - name: Run ansible without pymongo installed to generate the warning
+        id: nopymongo
+        run:
+          echo "::set-output name=nopymongo::$(ansible localhost -m setup)"
+
+      - uses: nick-invision@assert-action@v1
+        with:
+          expected: "The 'pymongo' python module is required for the mongodb fact cache"
+          actual: ${{ steps.nopymongo.outputs.nopymongo }}
+          comparison: contains
+
       - name: Install pymongo
         run: pip install pymongo
 
