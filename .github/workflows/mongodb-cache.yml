@@ -19,58 +19,58 @@ jobs:
         ansible_version:
           - stable-2.10
           - devel
-  steps:
+    steps:
 
-    - name: Check out code
-      uses: actions/checkout@v2
-      with:
-        path: ansible_collections/community/mongodb
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
 
-    - name: Set up Python 3.6
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python_version }}
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python_version }}
 
-    - name: Install ansible-base (${{ matrix.ansible_version }})
-      run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+      - name: Install ansible-base (${{ matrix.ansible_version }})
+        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
-    - name: Build the collection
-      run: ansible-galaxy collection build
+      - name: Build the collection
+        run: ansible-galaxy collection build
 
-    - name: Rename the build artifact
-      run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
 
-    - name: Install collection
-      run: ansible-galaxy collection install community-mongodb-*.tar.gz
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
 
-    - name: Create docker volume
-      run: docker volume create mongocache
+      - name: Create docker volume
+        run: docker volume create mongocache
 
-    - name: Run the mongodb cache inside a docker container
-      run:
-        docker run -d --name mongocache -e MONGO_INITDB_ROOT_USERNAME=mongoadmin
-        -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017
-        -v mongocache:/data/db mongo:latest
+      - name: Run the mongodb cache inside a docker container
+        run:
+          docker run -d --name mongocache -e MONGO_INITDB_ROOT_USERNAME=mongoadmin
+          -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017
+          -v mongocache:/data/db mongo:latest
 
-    - name: Run ansible to generate the mongodb cache
-      run: ansible localhost -m setup
+      - name: Run ansible to generate the mongodb cache
+        run: ansible localhost -m setup
 
-    - name: Repeat the action to hit the cache again
-      run: ansible localhost -m setup
+      - name: Repeat the action to hit the cache again
+        run: ansible localhost -m setup
 
-    - name: Run the action again with a modified timeout
-      env:
-        ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
-      run: ansible localhost -m setup
+      - name: Run the action again with a modified timeout
+        env:
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
+        run: ansible localhost -m setup
 
-    - name: Repeat the action
-      env:
-        ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
-      run: ansible localhost -m setup
+      - name: Repeat the action
+        env:
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
+        run: ansible localhost -m setup
 
-    - name: Set timeout back to zero
-      env:
-        ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
-      run: ansible localhost -m setup
+      - name: Set timeout back to zero
+        env:
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
+        run: ansible localhost -m setup
 
-      # TODO: Add some checks in here to make sure we actually have documents in MongoDB
+        # TODO: Add some checks in here to make sure we actually have documents in MongoDB
