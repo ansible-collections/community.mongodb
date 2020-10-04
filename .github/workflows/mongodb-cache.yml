@@ -55,6 +55,14 @@ jobs:
           -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017
           -v mongocache:/data/db mongo:latest
 
+      # TODO Check cache handling of missing pymongo
+      #- name: Run ansible without pymongo installed to generate the warning
+      #  run:
+      #    ansible localhost -m setup
+      #    set output
+      - name: Install pymongo
+        run: pip install pymongo
+
       - name: Run ansible to generate the mongodb cache
         run: ansible localhost -m setup
 
