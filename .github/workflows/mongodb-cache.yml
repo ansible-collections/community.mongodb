@@ -63,7 +63,8 @@ jobs:
         run:
           echo "::set-output name=nopymongo::$(ansible localhost -m setup)"
 
-      - uses: nick-invision@assert-action@v1
+      - name: Test cache handling of missing pymongo
+        uses: nick-invision@assert-action@v1
         with:
           expected: "The 'pymongo' python module is required for the mongodb fact cache"
           actual: ${{ steps.nopymongo.outputs.nopymongo }}
