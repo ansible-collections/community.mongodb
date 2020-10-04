@@ -56,7 +56,7 @@ jobs:
           -v mongocache:/data/db mongo:latest
 
       - name: Install mongodb-org-shell
-        run: apt-get install mongodb-org-shell
+        run: sudo apt-get install mongodb-org-shell
 
       # TODO Check cache handling of missing pymongo
       #- name: Run ansible without pymongo installed to generate the warning
