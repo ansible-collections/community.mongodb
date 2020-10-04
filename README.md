@@ -18,7 +18,7 @@ As this is an independent Collection, it can be release on it's own release cada
 * Requirements
   * [Python 3.5+](https://www.python.org/)
   * [pip](https://pypi.org/project/pip/)
-  * [virtualenv](https://virtualenv.pypa.io/en/latest/) Or [pipenv](https://pypi.org/project/pipenv/) if you prefer.
+  * [virtualenv](https://virtualenv.pypa.io/en/latest/) or [pipenv](https://pypi.org/project/pipenv/) if you prefer.
   * [git](https://git-scm.com/)
   * [docker](https://www.docker.com/)
 
