@@ -17,18 +17,31 @@ As this is an independent Collection, it can be release on it's own release cada
 
 Clone the collection git project. The ansible-test tool requires a specific directory setup to function correctly so please follow carefully.
 
+Create the required directory structure. N-B. The ansible-test tool requires this format...
+
 ```
-cd && mkdir -p git/ansible_collections/community
-git clone https://github.com/ansible-collections/community.mongodb.git ./ansible_collections/community/mongodb
-cd ./git/ansible_collections/community/mongodb
+mkdir -p git/ansible_collections/community
+cd git/ansible_collections/community
 ```
 
-Create a Python virtual environment.
+Clone the required projects...
+
+```
+git clone  https://github.com/ansible-collections/community.mongodb.git ./mongodb
+git clone  https://github.com/ansible-collections/community.general.git ./general
+```
+
+Create and sctivate a virtual environment...
 
 ```
 virtualenv venv
 source venv/bin/activate
-pip install -r requirements-3.6.txt
+```
+
+Install the devel branch of ansible-base...
+
+```
+pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 ```
 
 Run integration tests for the mongodb_shard module.
