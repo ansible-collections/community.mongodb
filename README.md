@@ -16,15 +16,15 @@ As this is an independent Collection, it can be release on it's own release cada
 ## Running the integration and unit tests
 
 * Requirements
-** [Python 3.5+](https://www.python.org/)
-** [pip](https://pypi.org/project/pip/)
-** [virtualenv](https://virtualenv.pypa.io/en/latest/) Or [pipenv](https://pypi.org/project/pipenv/) if you prefer.
-** [git](https://git-scm.com/)
-** [docker](https://www.docker.com/)
+  * [Python 3.5+](https://www.python.org/)
+  * [pip](https://pypi.org/project/pip/)
+  * [virtualenv](https://virtualenv.pypa.io/en/latest/) Or [pipenv](https://pypi.org/project/pipenv/) if you prefer.
+  * [git](https://git-scm.com/)
+  * [docker](https://www.docker.com/)
 
 * Useful Links
-** [Pip & Virtual Environments](https://docs.python-guide.org/dev/virtualenvs/)
-** [Ansible Integration Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_integration.html)
+  * [Pip & Virtual Environments](https://docs.python-guide.org/dev/virtualenvs/)
+  * [Ansible Integration Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_integration.html)
 
 The ansible-test tool requires a specific directory hierachy to function correctly so please follow carefully.
 
