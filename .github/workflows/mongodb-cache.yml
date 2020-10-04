@@ -22,10 +22,6 @@ jobs:
         ansible_version:
           - stable-2.10
           - devel
-    outputs:
-      nopymongo:
-        description: "Output from cache when no pymongo driver is installed"
-        value: ${{ steps.nopymongo.outputs.nopymongo }}
     steps:
 
       - name: Check out code
