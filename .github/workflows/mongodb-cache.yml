@@ -10,6 +10,9 @@ env:
 jobs:
   mongodb-cache:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
     strategy:
       matrix:
         python_version:
