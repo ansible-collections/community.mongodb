@@ -55,6 +55,9 @@ jobs:
           -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017
           -v mongocache:/data/db mongo:latest
 
+      - name: Install mongodb-org-shell
+        run: apt-get install mongodb-org-shell
+
       # TODO Check cache handling of missing pymongo
       #- name: Run ansible without pymongo installed to generate the warning
       #  run:
