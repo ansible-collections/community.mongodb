@@ -26,7 +26,7 @@ As this is an independent Collection, it can be release on it's own release cada
   * [Pip & Virtual Environments](https://docs.python-guide.org/dev/virtualenvs/)
   * [Ansible Integration Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_integration.html)
 
-The ansible-test tool requires a specific directory hierachy to function correctly so please follow carefully.
+The ansible-test tool requires a specific directory hierarchy to function correctly so please follow carefully.
 
 * Create the required directory structure. N-B. The ansible-test tool requires this format...
 
