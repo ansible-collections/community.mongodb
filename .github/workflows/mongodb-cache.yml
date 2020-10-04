@@ -22,8 +22,8 @@ jobs:
         ansible_version:
           - stable-2.10
           - devel
-      outputs:
-        nopymongo: ${{ steps.pymongo.outputs.nopymongo }}
+    outputs:
+      nopymongo: ${{ steps.pymongo.outputs.nopymongo }}
     steps:
 
       - name: Check out code
