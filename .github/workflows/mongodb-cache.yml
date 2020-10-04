@@ -63,7 +63,7 @@ jobs:
       - name: Run ansible without pymongo installed to generate the warning
         id: nopymongo
         run:
-          output=$(ansible localhost -m setup)
+          output=$(ansible localhost -m setup 2>&1)
           echo "::set-output name=nopymongo::$output"
           echo "$output"
 
@@ -95,7 +95,7 @@ jobs:
 
       - name: Set timeout back to zero
         env:
-          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
         run: ansible localhost -m setup
 
         # TODO: Add some checks in here to make sure we actually have documents in MongoDB
