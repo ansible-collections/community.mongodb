@@ -61,7 +61,7 @@ jobs:
       - name: Run ansible without pymongo installed to generate the warning
         id: nopymongo
         run:
-          output=$(ansible localhost -m setup 2>&1)
+          output=$(ansible localhost -m setup)
           echo "::set-output name=nopymongo::$output"
           echo "$output"
 
@@ -77,12 +77,12 @@ jobs:
       #  ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
       #  pythonLocation: /opt/hostedtoolcache/Python/3.5.10/x64
   #  Error: Expected 'echo' to contain 'The 'pymongo' python module is required for the mongodb fact cache'
-  #    - name: Test cache handling of missing pymongo
-  #      uses: nick-invision/assert-action@v1
-  #      with:
-  #        expected: "The 'pymongo' python module is required for the mongodb fact cache"
-  #        actual: ${{ steps.nopymongo.outputs.nopymongo }}
-  #        comparison: contains
+      - name: Test cache handling of missing pymongo
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "The 'pymongo' python module is required for the mongodb fact cache"
+          actual: ${{ steps.nopymongo.outputs.nopymongo }}
+          comparison: contains
 
       - name: Install pymongo
         run: pip install pymongo
