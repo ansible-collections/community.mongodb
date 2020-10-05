@@ -58,6 +58,13 @@ jobs:
       - name: Install mongodb-org-shell
         run: sudo apt-get install mongodb-org-shell
 
+      - id: test-data
+        run: echo "::set-output name=value::testing"
+      - uses: nick-invision@assert-action@v1
+        with:
+          expected: testing
+          actual: ${{ steps.test-data.outputs.value }}
+
       - name: Run ansible without pymongo installed to generate the warning
         id: no-pymongo
         run:
