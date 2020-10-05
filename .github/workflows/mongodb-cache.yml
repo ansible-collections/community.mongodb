@@ -90,22 +90,52 @@ jobs:
       - name: Run ansible to generate the mongodb cache
         run: ansible localhost -m setup
 
+      - name: Query mongo to see what we have in the cache
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+
+      - name: Collection should not have a ttl index
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+
       - name: Repeat the action to hit the cache again
         run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cache
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+
+      - name: Collection should not have a ttl index
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
 
       - name: Run the action again with a modified timeout
         env:
           ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
         run: ansible localhost -m setup
 
+      - name: Query mongo to see what we have in the cache
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+
+      - name: Collection should have a ttl index
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+
       - name: Repeat the action
         env:
           ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
         run: ansible localhost -m setup
 
+      - name: Query mongo to see what we have in the cache
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+
+      - name: Collection should have a ttl index
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+
       - name: Set timeout back to zero
         env:
           ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
         run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cache
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+
+      - name: Collection should not have a ttl index
+        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
 
         # TODO: Add some checks in here to make sure we actually have documents in MongoDB
