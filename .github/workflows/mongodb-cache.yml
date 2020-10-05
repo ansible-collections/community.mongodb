@@ -62,8 +62,8 @@ jobs:
         id: nopymongo
         run:
           output=$(ansible localhost -m setup)
-          echo "::set-output name=nopymongo::$output"
           echo "$output"
+          echo "::set-output name=nopymongo::$output"
 
       # TODO - Not setting the output properly
       #Run nick-invision/assert-action@v1
