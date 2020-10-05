@@ -60,7 +60,7 @@ jobs:
 
       - id: test-data
         run: echo "::set-output name=value::testing"
-      - uses: nick-invision@assert-action@v1
+      - uses: nick-invision/assert-action@v1
         with:
           expected: testing
           actual: ${{ steps.test-data.outputs.value }}
