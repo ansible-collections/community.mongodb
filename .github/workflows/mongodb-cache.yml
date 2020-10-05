@@ -68,7 +68,7 @@ jobs:
       - name: Run ansible without pymongo installed to generate the warning
         id: no-pymongo
         run: |
-          output=$(ansible localhost -m setup)
+          output=$(ansible localhost -m setup 2>&1)
           echo "$output"
           echo "::set-output name=nopymongo::$output"
 
