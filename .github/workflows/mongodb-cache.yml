@@ -59,7 +59,7 @@ jobs:
         run: sudo apt-get install mongodb-org-shell
 
       - name: Run ansible without pymongo installed to generate the warning
-        id: nopymongo
+        id: no-pymongo
         run:
           output=$(ansible localhost -m setup)
           echo "$output"
@@ -81,7 +81,7 @@ jobs:
         uses: nick-invision/assert-action@v1
         with:
           expected: "The 'pymongo' python module is required for the mongodb fact cache"
-          actual: ${{ steps.nopymongo.outputs.nopymongo }}
+          actual: ${{ steps.no-pymongo.outputs.nopymongo }}
           comparison: contains
 
       - name: Install pymongo
