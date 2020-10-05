@@ -67,10 +67,10 @@ jobs:
 
       - name: Run ansible without pymongo installed to generate the warning
         id: no-pymongo
-        run:
+        run: |
           output=$(ansible localhost -m setup)
           echo "$output"
-          echo "::set-output name=nopymongo::$(echo $output)"
+          echo "::set-output name=nopymongo::$output"
 
       - name: Test cache handling of missing pymongo
         uses: nick-invision/assert-action@v1
