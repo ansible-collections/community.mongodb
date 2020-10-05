@@ -65,11 +65,15 @@ jobs:
           expected: testing
           actual: ${{ steps.test-data.outputs.value }}
 
+      # https://github.community/t/set-output-truncates-multiline-strings/16852/5
       - name: Run ansible without pymongo installed to generate the warning
         id: no-pymongo
         run: |
           output=$(ansible localhost -m setup 2>&1)
           echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
           echo "::set-output name=nopymongo::$output"
 
       - name: Test cache handling of missing pymongo
