@@ -90,19 +90,44 @@ jobs:
         run: ansible localhost -m setup
 
       - name: Query mongo to see what we have in the cache
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Collection should not have a ttl index
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
 
       - name: Repeat the action to hit the cache again
         run: ansible localhost -m setup
 
       - name: Query mongo to see what we have in the cache
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Collection should not have a ttl index
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Run the action again with a modified timeout
         env:
@@ -110,10 +135,22 @@ jobs:
         run: ansible localhost -m setup
 
       - name: Query mongo to see what we have in the cache
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Collection should have a ttl index
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Repeat the action
         env:
@@ -121,10 +158,22 @@ jobs:
         run: ansible localhost -m setup
 
       - name: Query mongo to see what we have in the cache
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Collection should have a ttl index
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Set timeout back to zero
         env:
@@ -132,9 +181,19 @@ jobs:
         run: ansible localhost -m setup
 
       - name: Query mongo to see what we have in the cache
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.count()"
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
 
       - name: Collection should not have a ttl index
-        run: mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()"
-
-        # TODO: Add some checks in here to make sure we actually have documents in MongoDB
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
