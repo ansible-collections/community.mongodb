@@ -116,13 +116,12 @@ jobs:
           output="${output//$'\r'/'%0D'}"
           echo "::set-output name=mongo::$output"
 
-      # Seemingly not yet possible
-      #- name: Test that we don't have an index called ttl
-      #  uses: nick-invision/assert-action@v1
-      #  with:
-      #    expected: ttl
-      #    actual: ${{ steps.mongo2.outputs.mongo }}
-      #    comparison: notcontains
+      - name: Test that we don't have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo2.outputs.mongo }}
+          comparison: notContains
 
       - name: Repeat the action to hit the cache again
         run: ansible localhost -m setup
@@ -154,13 +153,12 @@ jobs:
           output="${output//$'\r'/'%0D'}"
           echo "::set-output name=mongo::$output"
 
-      # Seemingly not yet possible
-      #- name: Test that we don't have an index called ttl
-      #  uses: nick-invision/assert-action@v1
-      #  with:
-      #    expected: ttl
-      #    actual: ${{ steps.mongo4.outputs.mongo }}
-      #    comparison: notcontains
+      - name: Test that we don't have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo4.outputs.mongo }}
+          comparison: notContains
 
       - name: Run the action again with a modified timeout
         env:
@@ -271,11 +269,10 @@ jobs:
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
           echo "::set-output name=mongo::$output"
-          
-      # Seemingly not supported
-      #- name: Test that we don't have an index called ttl
-      #  uses: nick-invision/assert-action@v1
-      #  with:
-      #    expected: ttl
-      #    actual: ${{ steps.mongo10.outputs.mongo }}
-      #    comparison: notcontains
+
+      - name: Test that we don't have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo10.outputs.mongo }}
+          comparison: notContains
