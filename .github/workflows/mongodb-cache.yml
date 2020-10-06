@@ -123,6 +123,13 @@ jobs:
           actual: ${{ steps.mongo2.outputs.mongo }}
           comparison: notContains
 
+      - name: Test that we have good output from getindexes
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "_id_"
+          actual: ${{ steps.mongo2.outputs.mongo }}
+          comparison: contains
+
       - name: Repeat the action to hit the cache again
         run: ansible localhost -m setup
 
@@ -159,6 +166,13 @@ jobs:
           expected: ttl
           actual: ${{ steps.mongo4.outputs.mongo }}
           comparison: notContains
+
+      - name: Test that we have good output from getindexes
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "_id_"
+          actual: ${{ steps.mongo4.outputs.mongo }}
+          comparison: contains
 
       - name: Run the action again with a modified timeout
         env:
@@ -276,3 +290,10 @@ jobs:
           expected: ttl
           actual: ${{ steps.mongo10.outputs.mongo }}
           comparison: notContains
+
+      - name: Test that we have good output from getindexes
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "_id_"
+          actual: ${{ steps.mongo10.outputs.mongo }}
+          comparison: contains
