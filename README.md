@@ -49,6 +49,12 @@ virtualenv venv
 source venv/bin/activate
 ```
 
+* Change to project directory...
+
+```bash
+cd mongodb
+```
+
 * Install the devel branch of ansible-base...
 
 ```bash
