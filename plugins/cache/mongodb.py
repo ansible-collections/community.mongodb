@@ -53,6 +53,8 @@ from ansible import constants as C
 from ansible.errors import AnsibleError
 from ansible.plugins.cache import BaseCacheModule
 from ansible.utils.display import Display
+from ansible.module_utils._text import to_native
+
 
 try:
     import pymongo
@@ -80,6 +82,22 @@ class CacheModule(BaseCacheModule):
         self._cache = {}
         self._managed_indexes = False
 
+    def _ttl_index_exists(self, collection):
+        '''
+        Returns true if an index named ttl exists
+        on the given collection.
+        '''
+        exists = False
+        try:
+            indexes = collection.list_indexes()
+            for index in indexes:
+                if index["name"] == "ttl":
+                    exists = True
+                    break
+        except pymongo.errors.OperationFailure as excep:
+            raise AnsibleError('Error checking MongoDB index: %s' % to_native(excep))
+        return exists
+
     def _manage_indexes(self, collection):
         '''
         This function manages indexes on the mongo collection.
@@ -96,10 +114,12 @@ class CacheModule(BaseCacheModule):
                 )
             except pymongo.errors.OperationFailure:
                 # We make it here when the fact_caching_timeout was set to a different value between runs
-                collection.drop_index('ttl')
+                if self._ttl_index_exists(collection):
+                    collection.drop_index('ttl')
                 return self._manage_indexes(collection)
         else:
-            collection.drop_index('ttl')
+            if self._ttl_index_exists(collection):
+                collection.drop_index('ttl')
 
     @contextmanager
     def _collection(self):
