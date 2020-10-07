@@ -139,10 +139,10 @@ jobs:
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
-      env:
-        ANSIBLE_CACHE_PLUGIN: "community.mongodb.mongodb"
-        ANSIBLE_CACHE_PLUGIN_CONNECTION: "mongodb://mongoadmin:secret@localhost:27017/cache?authSource=admin"
-        ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
+    env:
+      ANSIBLE_CACHE_PLUGIN: "community.mongodb.mongodb"
+      ANSIBLE_CACHE_PLUGIN_CONNECTION: "mongodb://mongoadmin:secret@localhost:27017/cache?authSource=admin"
+      ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
     strategy:
       matrix:
         python_version:
