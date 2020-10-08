@@ -268,9 +268,9 @@ def main():
     if additional_args is not None:
         for key, value in additional_args.items():
             if isinstance(value, str) or isinstance(value, int):
-                args = "{0} --{1} {2}".format(args, key, value)
+                args.append(" --{0} {1}".format(key, value)
             elif isinstance(value, bool):
-                args = "{0} --{1}".format(args, key)
+                args.append(" --{0}".format(key)
     if module.params['file']:
         args.pop(1)
         args.append(module.params['file'])
