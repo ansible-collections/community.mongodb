@@ -92,7 +92,7 @@ options:
       - Additional arguments to supply to the mongo command.
       - Supply as key-value pairs.
       - If the parameter is a valueless flag supply an empty string as the value.
-    type: dict
+    type: raw
     default: None
 '''
 
