@@ -232,7 +232,7 @@ def main():
         transform=dict(type='str', choices=["auto", "split", "json", "raw"], default="auto"),
         split_char=dict(type='str', default=" "),
         stringify=dict(type='bool', default=False),
-        additional_args=dict(type='dict', default=False),
+        additional_args=dict(type='dict', default=None),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
