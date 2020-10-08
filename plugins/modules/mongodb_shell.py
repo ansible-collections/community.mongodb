@@ -264,10 +264,11 @@ def main():
     args = add_arg_to_cmd(args, "--norc", None, module.params['norc'])
     args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'])
 
+    additional_args = module.params['additional_args']
     if additional_args is not None:
         for key, value in additional_args.items():
             if isinstance(value, str) or isinstance(value, int):
-                args = "{0} --{1} {2}".format(args, key, value)
+                args = "{0}--{1} {2}".format(key, value)
             elif isinstance(value, bool):
                 args = "{0} --{1}".format(args, key)
     if module.params['file']:
