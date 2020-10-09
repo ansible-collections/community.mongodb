@@ -87,6 +87,12 @@ options:
       - Useful for escaping documents that are returned in Extended JSON format.
     type: bool
     default: false
+  additional_args:
+    description:
+      - Additional arguments to supply to the mongo command.
+      - Supply as key-value pairs.
+      - If the parameter is a valueless flag supply an empty string as the value.
+    type: raw
 '''
 
 EXAMPLES = '''
@@ -225,6 +231,7 @@ def main():
         transform=dict(type='str', choices=["auto", "split", "json", "raw"], default="auto"),
         split_char=dict(type='str', default=" "),
         stringify=dict(type='bool', default=False),
+        additional_args=dict(type='raw'),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -255,6 +262,14 @@ def main():
     args = add_arg_to_cmd(args, "--nodb", None, module.params['nodb'])
     args = add_arg_to_cmd(args, "--norc", None, module.params['norc'])
     args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'])
+
+    additional_args = module.params['additional_args']
+    if additional_args is not None:
+        for key, value in additional_args.items():
+            if isinstance(value, bool):
+                args.append(" --{0}".format(key))
+            elif isinstance(value, str) or isinstance(value, int):
+                args.append(" --{0} {1}".format(key, value))
     if module.params['file']:
         args.pop(1)
         args.append(module.params['file'])
