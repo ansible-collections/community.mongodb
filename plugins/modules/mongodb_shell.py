@@ -274,7 +274,6 @@ def main():
         args.pop(1)
         args.append(module.params['file'])
 
-
     rc = None
     out = ''
     err = ''
