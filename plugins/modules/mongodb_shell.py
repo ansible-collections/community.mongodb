@@ -120,7 +120,7 @@ EXAMPLES = '''
     login_user: user
     login_password: secret
     file: "/path/to/mongo/file.js"
-    
+
 - name: Provide a couple of additional cmd args
   community.mongodb.mongodb_shell:
     login_user: user
