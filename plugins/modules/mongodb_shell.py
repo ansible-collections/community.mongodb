@@ -16,7 +16,7 @@ requirements:
   - mongo
 description:
     - Run commands via the MongoDB shell.
-    - Commands can be included in a Javascript file or provided with the eval parameter.
+    - Commands provided with the eval parameter or included in a Javascript file.
     - Attempts to parse returned data into a format that Ansible can use.
 
 extends_documentation_fragment:
@@ -120,6 +120,15 @@ EXAMPLES = '''
     login_user: user
     login_password: secret
     file: "/path/to/mongo/file.js"
+
+- name: Provide a couple of additional cmd args
+  community.mongodb.mongodb_shell:
+    login_user: user
+    login_password: secret
+    eval: "db.adminCommand('listDatabases')"
+    additional_args:
+      verbose: True
+      networkMessageCompressors: "snappy"
 '''
 
 RETURN = '''
