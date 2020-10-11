@@ -41,7 +41,7 @@ jobs:
           openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
 
       - name: Wait for a bit
-        run: sleep 30
+        run: sleep 60
 
       - name: Register the certs with k8
         run: |
@@ -58,7 +58,7 @@ jobs:
         run: make deploy IMG=maaeps/test-mongodb-operator:latest
 
       - name: Wait for a bit
-        run: sleep 30
+        run: sleep 60
 
       - name: Setup the k8 mongodb env
         run: |
@@ -70,7 +70,7 @@ jobs:
         run: kubectl port-forward mongodb-sample-0 27017:27017 &
 
       - name: Get the pods
-        run: kubectl get pods -n ansible-operator-system 
+        run: kubectl get pods -n ansible-operator-system
 
       - name: Copy the certs to the localhost
         run: |
