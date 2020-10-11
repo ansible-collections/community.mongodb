@@ -52,20 +52,20 @@
   register: replset_status
 
 - debug:
-    msg: "{{ replset_status.values() | list }}"
+    msg: "{{ replset_status['replicaset'].values() | list }}"
 
 - debug:
-    msg: "{{ replset_status.values() | list | select('match', 'PRIMARY') | list}}"
+    msg: "{{ replset_status['replicaset'].values() | list | select('match', 'PRIMARY') | list}}"
 
 - debug:
-    msg: "{{ replset_status.values() | list | select('match', 'SECONDARY') | list}}"
+    msg: "{{ replset_status['replicaset'].values() | list | select('match', 'SECONDARY') | list}}"
 
 - name: Valid expected number of PRIMARY and SECONARY servers
   assert:
     that:
-      - "{{ replset_status.values() | list | length == 3 }}"
-      - "{{ replset_status.values() | list | select('match', 'PRIMARY') | length == 1 }}"
-      - "{{ replset_status.values() | list | select('match', 'SECONDARY') | length == 2 }}"
+      - "{{ replset_status['replicaset'].values() | list | length == 3 }}"
+      - "{{ replset_status['replicaset'].values() | list | select('match', 'PRIMARY') | length == 1 }}"
+      - "{{ replset_status['replicaset'].values() | list | select('match', 'SECONDARY') | length == 2 }}"
 
 - name: Add mongodb admin user
   community.mongodb.mongodb_user:
