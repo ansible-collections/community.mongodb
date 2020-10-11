@@ -1,0 +1,83 @@
+name: CI
+on:
+- pull_request
+
+jobs:
+  x508_membership_auth:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Install kubectl
+        run: |
+          sudo apt-get update && sudo apt-get install -y apt-transport-https
+          curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+          sudo apt-get update
+          sudo apt-get install -y kubectl
+
+      - name: Install minikube
+        run: |
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          chmod +x minikube
+          sudo mv minikube /usr/local/bin
+
+      - name: Install cert-manager
+        run: |
+          kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.1/cert-manager.yaml
+
+      - name: Generate certs
+        run: |
+          openssl genrsa -out ca.key 8192
+          openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
+        with:
+          path: ansible_collections/community/mongodb/tests/ansible-operator
+
+      - name: Register the certs with k8
+        run: |
+          kubectl create secret tls mongodb-cluster-ca-key-pair --key=ca.key --cert=ca.crt
+          kubectl apply -f ca-issuer.yaml
+        with:
+          path: ansible_collections/community/mongodb/tests/ansible-operator
+
+      - name: make install
+        run: make install
+        with:
+          path: ansible_collections/community/mongodb/tests/ansible-operator
+
+      - name: Create k8 namesapce
+        run: kubectl create ns ansible-operator-system
+
+      - name: make deploy
+        run: make deploy IMG=maaeps/test-mongodb-operator:latest
+        with:
+          path: ansible_collections/community/mongodb/tests/ansible-operator
+
+      - name: Setup the k8 mongodb env
+        run: |
+          kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
+          sleep 10
+          kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager --follow
+        with:
+          path: ansible_collections/community/mongodb/tests/ansible-operator
+
+      - name: Forward the local port 27018 to k8
+        run: kubectl port-forward mongodb-sample-0 27017:27017 &
+
+      - name: Run mongo shell command to test x509 membership connectivity
+        run: |
+          kubectl -n ansible-operator-system exec -ti deployment.apps/ansible-operator-controller-manager -c manager -- \
+              /usr/bin/mongo mongodb://mongodb-sample.default.svc.cluster.local \
+                    --tls \
+                    --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
+                    --tlsCertificateKeyFile=/tmp/mongodb-sample.default/tls.key \
+                    --authenticationMechanism MONGODB-X509 \
+                    --authenticationDatabase '$external' \
+                    --eval "db.adminCommand('listDatabases')"
