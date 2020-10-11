@@ -40,6 +40,9 @@ jobs:
           openssl genrsa -out ca.key 8192
           openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
 
+      - name: Wait for a bit
+        run: pause 30
+
       - name: Register the certs with k8
         run: |
           kubectl create secret tls mongodb-cluster-ca-key-pair --key=ca.key --cert=ca.crt
