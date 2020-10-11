@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ansible_collections/community/mongodb
+        working-directory: ansible_collections/community/mongodb/tests/ansible-operator
     steps:
 
       - name: Check out code
@@ -37,36 +37,26 @@ jobs:
         run: |
           openssl genrsa -out ca.key 8192
           openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
-        with:
-          path: ansible_collections/community/mongodb/tests/ansible-operator
 
       - name: Register the certs with k8
         run: |
           kubectl create secret tls mongodb-cluster-ca-key-pair --key=ca.key --cert=ca.crt
           kubectl apply -f ca-issuer.yaml
-        with:
-          path: ansible_collections/community/mongodb/tests/ansible-operator
 
       - name: make install
         run: make install
-        with:
-          path: ansible_collections/community/mongodb/tests/ansible-operator
 
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
       - name: make deploy
         run: make deploy IMG=maaeps/test-mongodb-operator:latest
-        with:
-          path: ansible_collections/community/mongodb/tests/ansible-operator
 
       - name: Setup the k8 mongodb env
         run: |
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
           sleep 10
           kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager --follow
-        with:
-          path: ansible_collections/community/mongodb/tests/ansible-operator
 
       - name: Forward the local port 27018 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 &
