@@ -52,10 +52,10 @@
   register: replset_status
 
 - debug:
-    msg: "{{ replset_status.values() | list | select('match', 'PRIMARY') | length == 1 }}"
+    msg: "{{ replset_status.values() | list | select('match', 'PRIMARY') }}"
 
 - debug:
-    msg: "{{ replset_status.values() | list | select('match', 'SECONDARY') | length == 2 }}"
+    msg: "{{ replset_status.values() | list | select('match', 'SECONDARY') }}"
 
 - name: Valid expected number of PRIMARY and SECONARY servers
   assert:
