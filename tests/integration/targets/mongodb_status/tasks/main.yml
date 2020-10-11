@@ -51,16 +51,7 @@
     interval: 1
   register: replset_status
 
-- debug:
-    msg: "{{ replset_status['replicaset'].values() | list }}"
-
-- debug:
-    msg: "{{ replset_status['replicaset'].values() | list | select('match', 'PRIMARY') | list}}"
-
-- debug:
-    msg: "{{ replset_status['replicaset'].values() | list | select('match', 'SECONDARY') | list}}"
-
-- name: Valid expected number of PRIMARY and SECONARY servers
+- name: Valid expected number of PRIMARY and SECONDARY servers
   assert:
     that:
       - "{{ replset_status['replicaset'].values() | list | length == 3 }}"
@@ -132,6 +123,14 @@
     replica_set: '{{ mongodb_replicaset1 }}'
     poll: 99
     interval: 5
+  register: replica_set
+
+- name: Valid expected number of PRIMARY and SECONDARY servers
+  assert:
+    that:
+      - "{{ replset_status['replicaset'].values() | list | length == 3 }}"
+      - "{{ replset_status['replicaset'].values() | list | select('match', 'PRIMARY') | length == 1 }}"
+      - "{{ replset_status['replicaset'].values() | list | select('match', 'SECONDARY') | length == 2 }}"
 
 - name: Test with bad password
   community.mongodb.mongodb_status:
@@ -181,6 +180,14 @@
     replica_set: '{{ mongodb_replicaset2 }}'
     poll: 99
     interval: 1
+  register: replset_status
+
+- name: Valid expected number of PRIMARY and SECONDARY servers
+  assert:
+    that:
+      - "{{ replset_status['replicaset'].values() | list | length == 3 }}"
+      - "{{ replset_status['replicaset'].values() | list | select('match', 'PRIMARY') | length == 1 }}"
+      - "{{ replset_status['replicaset'].values() | list | select('match', 'SECONDARY') | length == 2 }}"
 
 - name: Get replicaset info
   command: mongo admin --eval "rs.status()" --port 3001
