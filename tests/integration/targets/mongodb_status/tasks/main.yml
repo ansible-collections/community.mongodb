@@ -51,11 +51,12 @@
     interval: 1
   register: replset_status
 
-- assert:
+- name: Valid expected number of PRIMARY and SECONARY servers
+  assert:
     that:
       - "{{ replset_status.values() | list | length == 3 }}"
       - "{{ replset_status.values() | list | select('match', 'PRIMARY') | length == 1 }}"
-      - "{{ replset_status.values() | list | select('match', 'SECONDARY') | length == 1 }}"
+      - "{{ replset_status.values() | list | select('match', 'SECONDARY') | length == 2 }}"
 
 - name: Add mongodb admin user
   community.mongodb.mongodb_user:
