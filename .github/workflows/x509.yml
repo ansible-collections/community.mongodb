@@ -69,6 +69,11 @@ jobs:
       - name: Forward the local port 27018 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 &
 
+      - name: Copy the certs to the localhost
+        run: |
+          kubectl cp ansible-operator-system/ansible-operator-controller-manager-86bdf8f5db-wpm6f:/tmp/mongodb-sample.default/ca.crt ca.crt -c manager
+          kubectl cp ansible-operator-system/ansible-operator-controller-manager-86bdf8f5db-wpm6f:/tmp/mongodb-sample.default/tls.key tls.key -c manager
+
       - name: Run mongo shell command to test x509 membership connectivity
         run: |
           kubectl -n ansible-operator-system exec -ti deployment.apps/ansible-operator-controller-manager -c manager -- \
