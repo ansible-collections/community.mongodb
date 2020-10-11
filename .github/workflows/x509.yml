@@ -74,8 +74,9 @@ jobs:
 
       - name: Copy the certs to the localhost
         run: |
-          kubectl cp ansible-operator-system/ansible-operator-controller-manager-86bdf8f5db-wpm6f:/tmp/mongodb-sample.default/ca.crt ca.crt -c manager
-          kubectl cp ansible-operator-system/ansible-operator-controller-manager-86bdf8f5db-wpm6f:/tmp/mongodb-sample.default/tls.key tls.key -c manager
+          managerpod=$(kubectl get pods -n ansible-operator-system -no-headers | tr -s ' ' | cut -d ' ' -f 1)
+          kubectl cp ansible-operator-system/$(managerpod):/tmp/mongodb-sample.default/ca.crt ca.crt -c manager
+          kubectl cp ansible-operator-system/$(managerpod):/tmp/mongodb-sample.default/tls.key tls.key -c manager
 
       - name: Run mongo shell command to test x509 membership connectivity
         run: |
