@@ -49,6 +49,13 @@
     replica_set: '{{ mongodb_replicaset1 }}'
     poll: 999
     interval: 1
+  register: replset_status
+
+- assert:
+    that:
+      - "{{ replset_status.values() | list | length == 3 }}"
+      - "{{ replset_status.values() | list | select('match', 'PRIMARY') | length == 1 }}"
+      - "{{ replset_status.values() | list | select('match', 'SECONDARY') | length == 1 }}"
 
 - name: Add mongodb admin user
   community.mongodb.mongodb_user:
