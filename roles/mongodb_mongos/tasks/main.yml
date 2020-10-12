@@ -64,7 +64,7 @@
 
 - name: Ensure mongos.conf file exists
   template:
-    src: mongos.conf.j2
+    src: "{{ mongos_config_template }}"
     dest: /etc/mongos.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"

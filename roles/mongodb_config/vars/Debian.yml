@@ -3,4 +3,5 @@ config_port: 27019
 mongodb_user: "mongodb"
 mongodb_group: "mongodb"
 mongod_service: "mongod"
+mongod_config_template: "configsrv.conf.j2"
 db_path: /var/lib/mongodb
