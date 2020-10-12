@@ -35,7 +35,7 @@
 
 - name: Copy config file
   template:
-    src: mongod.conf.j2
+    src: "{{ mongod_config_template }}"
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
