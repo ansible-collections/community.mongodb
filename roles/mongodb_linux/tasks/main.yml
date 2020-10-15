@@ -1,9 +1,5 @@
 ---
 # tasks file for mongodb_linux
-- name: Are we in docker?
-  stat:
-    path: is_docker.txt
-  register: d
 
 - name: Include OS-specific vars
   include_vars:
@@ -42,7 +38,7 @@
     group: root
     state: directory
   when:
-    - ansible_facts.os_family == "RedHat" 
+    - ansible_facts.os_family == "RedHat"
     - ansible_facts.distribution_major_version|int >= 8
 
 - name: Ensure ntp service is configured
@@ -65,7 +61,7 @@
     value: 0
     state: present
     reload: yes
-  when: d.stat.exists == False
+  when: ansible_facts.virtualization_type == 'docker'
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
@@ -86,7 +82,7 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: d.stat.exists == False
+  when: ansible_facts.virtualization_type == 'docker'
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 

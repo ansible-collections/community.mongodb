@@ -4,7 +4,7 @@
 
   tasks:
 
-  - name: Create is_docker.txt file
-    file:
-      path: is_docker.txt
-      state: touch
+  #- name: Create is_docker.txt file
+  #  file:
+  #    path: is_docker.txt
+  #    state: touch
