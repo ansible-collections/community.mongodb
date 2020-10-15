@@ -1,10 +1,4 @@
 ---
-# tasks file for mongodb_linux
-- name: Are we in docker?
-  stat:
-    path: is_docker.txt
-  register: d
-
 - name: Include OS-specific vars
   include_vars:
     file: "{{ lookup('first_found', params) }}"
@@ -65,7 +59,7 @@
     value: 0
     state: present
     reload: yes
-  when: d.stat.exists == False
+  when: ansible_facts.virtualization_type == 'docker'
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
@@ -86,7 +80,7 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: d.stat.exists == False
+  when: ansible_facts.virtualization_type == 'docker'
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
