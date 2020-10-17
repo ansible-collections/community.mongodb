@@ -3,7 +3,10 @@ ansible-lint==4.2.0
 docker==4.1.0
 flake8==3.7.9
 molecule>=2.22,<3.0
+pylint==2.6.0
 pytest==4.6.9
 python-vagrant==0.5.15
+rstcheck==3.3.1
 # sh 1.13.1 causes molecule yamllint to fail.
 sh<1.13
+voluptuous==0.12.0
