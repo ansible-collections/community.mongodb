@@ -61,7 +61,7 @@
     value: 0
     state: present
     reload: yes
-  when: ansible_facts.ansible_virtualization_type != 'docker'
+  when: ansible_facts.virtualization_type != 'docker'
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
@@ -82,7 +82,7 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: ansible_facts.ansible_virtualization_type != 'docker'
+  when: ansible_facts.virtualization_type != 'docker'
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
