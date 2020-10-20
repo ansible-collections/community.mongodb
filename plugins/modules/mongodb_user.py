@@ -217,13 +217,14 @@ def user_find(client, user, db_name):
     Returns:
         dict: when user exists, False otherwise.
     """
-    for mongo_user in client["admin"].system.users.find():
+    for mongo_user in client[db_name].command('usersInfo')['users']:
         if mongo_user['user'] == user:
             # NOTE: there is no 'db' field in mongo 2.4.
             if 'db' not in mongo_user:
                 return mongo_user
 
-            if mongo_user["db"] == db_name:
+            if mongo_user["db"] in [db_name, "admin"]:  # Workaround to make the condition works with AWS DocumentDB, since all users are in the admin database.
+
                 return mongo_user
     return False
 
