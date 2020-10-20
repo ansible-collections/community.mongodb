@@ -1,0 +1,18 @@
+---
+- name: Comment out PIDFile in systemd file
+  lineinfile:
+    path: /etc/systemd/system/multi-user.target.wants/mongod.service
+    regexp: '^PIDFile.*'
+    state: absent
+  register: systemd
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  when: systemd is changed
+
+- name: Start mongod service
+  service:
+    name: "{{ mongod_service }}"
+    state: started
+    enabled: yes

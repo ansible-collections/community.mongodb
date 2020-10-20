@@ -8,6 +8,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_mongodb_cgroup_module_installed(host):
-    cmd = host.run("semodule --list-modules | grep mongodb_cgroup_memory")
+    with host.sudo():
+        cmd = host.run("semodule --list-modules | grep mongodb_cgroup_memory")
 
-    assert cmd.rc == 0
+        assert cmd.rc == 0

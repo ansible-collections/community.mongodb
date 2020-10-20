@@ -30,7 +30,10 @@
       state: present
     when: ansible_os_family == "Debian"
 
-  - name: Ensure avahi-daemon is restarted
+  - name: Reboot host for avahi-daemon
+    reboot:
+
+  - name: Ensure avahi-daemon is started
     service:
       name: avahi-daemon
-      state: restarted
+      state: started

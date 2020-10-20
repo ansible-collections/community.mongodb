@@ -58,7 +58,7 @@ def test_mongos_shell_connectivity(host):
     '''
     if host.ansible.get_variables()['inventory_hostname'] != 'config1':
         port = include_vars(host)['ansible_facts']['mongos_port']
-        cmd = host.run("mongo admin --port {0} --eval 'db.runCommand({{listDatabases: 1}})'".format(port))
+        cmd = host.run("mongo admin -username admin --password admin --port {0} --eval 'db.runCommand({{listDatabases: 1}})'".format(port))
 
         assert cmd.rc == 0
         assert "config" in cmd.stdout
