@@ -50,9 +50,7 @@ def test_thp_service(host):
     switches = ["/sys/kernel/mm/transparent_hugepage/enabled",
                 "/sys/kernel/mm/transparent_hugepage/defrag"]
 
-    is_docker = host.file("./is_docker.txt").exists
-
-    if is_docker is False:
+    if host.ansible("setup")["ansible_facts"]["ansible_virtualization_type"] != 'docker':
         for d in switches:
             cmd = host.run("cat {0}".format(d))
 
