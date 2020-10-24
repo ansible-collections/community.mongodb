@@ -41,8 +41,9 @@ releases:
       namespace: 'community.mongodb'
     release_date: '2020-08-06'
   1.1.0:
-    - description: Run commands via the MongoDB shell.
-      name: mongodb_shell
-      namespace: 'community.mongodb'
-      version_added: 1.1.0
+    modules:
+      - description: Run commands via the MongoDB shell.
+        name: mongodb_shell
+        namespace: 'community.mongodb'
+        version_added: 1.1.0
     release_date: '2020-10-24'

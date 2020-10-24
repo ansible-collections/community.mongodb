@@ -56,8 +56,14 @@ plugins:
       name: mongodb_shard
       namespace: ''
       version_added: 1.0.0
+    mongodb_shell:
+      description: Run commands via the MongoDB shell.
+      name: mongodb_shell
+      namespace: ''
+      version_added: 1.1.0
     mongodb_shutdown:
-      description: Cleans up all database resources and then terminates the process.
+      description: Cleans up all database resources and then terminates the mongod/mongos
+        process.
       name: mongodb_shutdown
       namespace: ''
       version_added: 1.0.0
@@ -80,4 +86,4 @@ plugins:
   shell: {}
   strategy: {}
   vars: {}
-version: 1.0.0
+version: 1.1.0
