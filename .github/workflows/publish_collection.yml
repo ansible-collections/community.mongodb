@@ -38,11 +38,21 @@ jobs:
           name: community-mongodb-latest
           path: ansible_collections/community/mongodb/community-mongodb-latest.tar.gz
 
+      # Moving the tag leaves an orphan artifact. Just changing the artifact doesn't move the tag.
+      - name: Delete latest tag and release 
+        uses: dev-drprasad/delete-tag-and-release@v0.1.2
+        with:
+          delete_release: true
+          tag_name: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload files to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ansible_collections/community/mongodb/community-mongodb-latest.tar.gz
           asset_name: community-mongodb-latest.tar.gz
+          body: "Development release"
           tag: latest
           overwrite: true
