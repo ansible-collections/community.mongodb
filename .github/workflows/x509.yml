@@ -54,8 +54,8 @@ jobs:
       - name: make deploy
         run: make deploy IMG=test-mongodb-operator:latest
 
-      - name: Wait for a bit
-        run: sleep 60
+      - name: Wait for controller to be ready
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
 
       - name: Debug step
         run: kubectl api-resources | grep mongo -i
@@ -71,6 +71,9 @@ jobs:
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
           sleep 10
           kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager
+
+      - name: Wait for a bit
+        run: sleep 60
 
       - name: Forward the local port 27018 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 &
