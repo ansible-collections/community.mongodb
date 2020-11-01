@@ -63,8 +63,8 @@ jobs:
       - name: make deploy
         run: make deploy IMG=test-mongodb-operator:latest
 
-      - name: Wait for controller to be ready
-        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
+      - name: Wait for a bit
+        run: sleep 60
 
       - name: Debug step
         run: kubectl api-resources | grep mongo -i
