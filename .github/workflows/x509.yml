@@ -23,9 +23,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y kubectl
 
-      - name: Install docker
-        run: apt-get install docker -y
-
       - name: Install minikube
         run: |
           curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
