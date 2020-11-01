@@ -66,6 +66,12 @@ jobs:
       - name: Debug step
         run: kubectl api-resources | grep mongo -i
 
+      - name: Debug step
+        run: kubectl get pods -n ansible-operator-system
+
+      - name: Debug step
+        run: kubectl describe pod -n ansible-operator-system ansible-operator-controller-manager
+
       - name: Setup the k8 mongodb env
         run: |
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
