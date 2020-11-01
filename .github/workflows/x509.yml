@@ -30,7 +30,7 @@ jobs:
 
       - name: Install docker
         run: |
-          sudo apt-get install docker.io -y
+          sudo apt-get install -y containerd docker.io
           sudo usermod -aG docker $USER && newgrp docker
 
       - name: Start minkube
