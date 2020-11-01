@@ -54,9 +54,6 @@ jobs:
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
-      - name: use minikubes docker
-        run: eval $(minikube docker-env)
-
       - name: make docker-build
         run: make docker-build IMG=test-mongodb-operator:latest
 

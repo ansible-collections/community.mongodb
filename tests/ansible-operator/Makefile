@@ -42,6 +42,7 @@ redeploy: undeploy docker-build docker-push deploy
 
 # Build the docker image
 docker-build:
+	eval $(minikube docker-env)
 	docker build ../../ -f Dockerfile -t ${IMG}
 
 # Push the docker image
