@@ -22,3 +22,6 @@ repository: https://github.com/ansible-collections/community.mongodb
 documentation: https://github.com/ansible-collections/community.mongodb/tree/master/docs
 homepage: https://github.com/ansible-collections/community.mongodb
 issues: https://github.com/ansible-collections/community.mongodb
+build_ignore:
+  - tests
+  - '*.tar.gz'
