@@ -54,8 +54,11 @@ jobs:
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
+      - name: make docker-build
+        run: make docker-build IMG=test-mongodb-operator:latest
+
       - name: make deploy
-        run: make deploy IMG=maaeps/test-mongodb-operator:latest
+        run: make deploy IMG=test-mongodb-operator:latest
 
       - name: Wait for a bit
         run: sleep 60

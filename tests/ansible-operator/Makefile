@@ -42,7 +42,7 @@ redeploy: undeploy docker-build docker-push deploy
 
 # Build the docker image
 docker-build:
-	docker build . -t ${IMG}
+	docker build ../../ -f Dockerfile -t ${IMG}
 
 # Push the docker image
 docker-push:
