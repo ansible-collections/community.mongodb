@@ -78,8 +78,11 @@ jobs:
       - name: Forward the local port 27017 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 &
 
-      - name: Get the pods
+      - name: Get the pods (Debug)
         run: kubectl get pods -n ansible-operator-system
+
+      - name: List forwards (Debug)
+        run: kubectl get svc --all-namespaces
 
       - name: Copy the certs to the localhost
         run: |
