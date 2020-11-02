@@ -75,7 +75,7 @@ jobs:
       - name: Wait for a bit
         run: sleep 60
 
-      - name: Forward the local port 27018 to k8
+      - name: Forward the local port 27017 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 &
 
       - name: Get the pods
