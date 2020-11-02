@@ -3,7 +3,7 @@ on:
 - pull_request
 
 jobs:
-  x508_membership_auth:
+  x509_membership_auth:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -120,6 +120,9 @@ jobs:
 
       - name: Install pymongo
         run: pip install pymongo
+
+      - name: Debug step
+        run: netstat -tulpen
 
       - name: Run user module with membership auth
         run: ansible localhost -m community.mongodb.mongodb_user -a "login_host=localhost login_port=27017 login_database='$external' database='admin' password='secret' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 name="test" state=present connection_options='tlsAllowInvalidHostnames=true'"
