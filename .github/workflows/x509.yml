@@ -93,7 +93,7 @@ jobs:
               /usr/bin/mongo mongodb://mongodb-sample.default.svc.cluster.local \
                     --tls \
                     --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
-                    --tlsCertificateKeyFile=/tmp/mongodb-sample.default/tls.key \
+                    --tlsCertificateKeyFile /tmp/mongodb-sample.default/tls.key \
                     --authenticationMechanism MONGODB-X509 \
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
@@ -102,8 +102,8 @@ jobs:
         run: |
           /usr/bin/mongo mongodb://localhost \
                     --tls \
-                    --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
-                    --tlsCertificateKeyFile=/tmp/mongodb-sample.default/tls.key \
+                    --tlsCAFile ca.crt \
+                    --tlsCertificateKeyFile tls.key \
                     --authenticationMechanism MONGODB-X509 \
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
