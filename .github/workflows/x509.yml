@@ -104,6 +104,7 @@ jobs:
                     --tls \
                     --tlsCAFile ca.crt \
                     --tlsCertificateKeyFile tls.key \
+                    --tlsAllowInvalidHostnames \
                     --authenticationMechanism MONGODB-X509 \
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
