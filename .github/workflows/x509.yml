@@ -79,7 +79,7 @@ jobs:
         run: kubectl port-forward mongodb-sample-0 27017:27017 --address 0.0.0.0 &
 
       - name: Get the pods (Debug)
-        run: kubectl get pods -n ansible-operator-system
+        run: kubectl get pods --all-namespaces
 
       - name: List forwards (Debug)
         run: kubectl get svc --all-namespaces
