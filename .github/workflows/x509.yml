@@ -114,7 +114,7 @@ jobs:
         continue-on-error: true
 
       - name: Debug step
-        run: kubectl logs mongodb-sample-0 --follow
+        run: kubectl logs mongodb-sample-0
 
       - name: Set up Python 3.6
         uses: actions/setup-python@v1
