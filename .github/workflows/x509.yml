@@ -100,7 +100,7 @@ jobs:
 
       - name: Run mongo shell command to test x509 membership connectivity from localhost
         run: |
-          /usr/bin/mongo mongodb://localhost \
+          /usr/bin/mongo mongodb://127.0.0.1 \
                     --tls \
                     --tlsCAFile ca.crt \
                     --tlsCertificateKeyFile tls.key \
