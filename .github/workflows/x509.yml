@@ -98,6 +98,16 @@ jobs:
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
 
+      - name: Run mongo shell command to test x509 membership connectivity from localhost
+        run: |
+          /usr/bin/mongo mongodb://localhost \
+                    --tls \
+                    --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
+                    --tlsCertificateKeyFile=/tmp/mongodb-sample.default/tls.key \
+                    --authenticationMechanism MONGODB-X509 \
+                    --authenticationDatabase '$external' \
+                    --eval "db.adminCommand('listDatabases')"
+
       - name: Set up Python 3.6
         uses: actions/setup-python@v1
         with:
