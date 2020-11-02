@@ -97,3 +97,27 @@ jobs:
                     --authenticationMechanism MONGODB-X509 \
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - name: Install ansible-base (${{ matrix.ansible_version }})
+        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+
+      - name: Build the collection
+        run: ansible-galaxy collection build
+        working-directory: ansible_collections/community/mongodb
+
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+        working-directory: ansible_collections/community/mongodb
+
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
+        working-directory: ansible_collections/community/mongodb
+
+      - name: RUn user module with membership auth
+        run: ansible localhost -m mongodb_user \
+          -a "login_host=localhost login_port=27017 login_database='$external' database='admin' password='secret' ssl=true ssl_ca_certs=/tmp/mongodb-sample.default/ca.crt ssl_certfile=/tmp/mongodb-sample.default/tls.key auth_mechanism=MONGODB-X509 name="test" state=present connection_options='tlsAllowInvalidHostnames=true'"
