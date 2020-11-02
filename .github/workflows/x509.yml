@@ -15,21 +15,12 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Install kubectl
-        run: |
-          sudo apt-get update && sudo apt-get install -y apt-transport-https
-          curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-          echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
-          sudo apt-get update
-          sudo apt-get install -y kubectl
-
-      - name: Install minikube
-        run: |
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-          sudo dpkg -i minikube_latest_amd64.deb
-
-      - name: Start minkube
-        run: minikube start
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.0.1
+        with:
+          minikube version: 'v1.13.1'
+          kubernetes version: 'v1.19.2'
+          github token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install cert-manager
         run: |
@@ -54,20 +45,35 @@ jobs:
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
-      - name: make deploy
-        run: make deploy IMG=maaeps/test-mongodb-operator:latest
+      - name: use minikubes docker
+        run: eval $(minikube docker-env --shell sh)
 
-      - name: Wait for a bit
-        run: sleep 60
+      - name: make docker-build
+        run: make docker-build IMG=test-mongodb-operator:latest
+
+      - name: make deploy
+        run: make deploy IMG=test-mongodb-operator:latest
+
+      - name: Wait for controller to be ready
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
 
       - name: Debug step
         run: kubectl api-resources | grep mongo -i
+
+      - name: Debug step
+        run: kubectl get pods -n ansible-operator-system
+
+      - name: Debug step
+        run: kubectl describe pod -n ansible-operator-system ansible-operator-controller-manager
 
       - name: Setup the k8 mongodb env
         run: |
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
           sleep 10
           kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager
+
+      - name: Wait for a bit
+        run: sleep 60
 
       - name: Forward the local port 27018 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 &

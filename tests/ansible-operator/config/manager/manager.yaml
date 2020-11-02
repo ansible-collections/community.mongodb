@@ -28,4 +28,5 @@ spec:
             - "--enable-leader-election"
             - "--leader-election-id=ansible-operator"
           image: controller:latest
+          imagePullPolicy: Never
       terminationGracePeriodSeconds: 10

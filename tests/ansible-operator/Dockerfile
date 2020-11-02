@@ -1,7 +1,7 @@
 FROM quay.io/operator-framework/ansible-operator:v1.0.0
 
 USER 0
-COPY mongodb-org-4.2.repo /etc/yum.repos.d/mongodb-org-4.2.repo
+COPY tests/ansible-operator/mongodb-org-4.2.repo /etc/yum.repos.d/mongodb-org-4.2.repo
 RUN yum -y update \
     && yum install -y python36-devel python3-pip python3-setuptools mongodb-org-shell
 
@@ -15,12 +15,15 @@ RUN yum remove -y python36-devel \
 
 USER ${USER_UID}
 
-COPY requirements.yml ${HOME}/requirements.yml
+COPY tests/ansible-operator/requirements.yml ${HOME}/requirements.yml
 RUN ansible-galaxy collection install -r ${HOME}/requirements.yml \
  && chmod -R ug+rwx ${HOME}/.ansible
 
-RUN mkdir -p ${HOME}/.ansible/collections/ansible_collections/community/mongodb  && curl -L https://github.com/ansible-collections/community.mongodb/archive/auth_mechanisms.tar.gz | tar --strip-components=1 -C ${HOME}/.ansible/collections/ansible_collections/community/mongodb -xz
+RUN mkdir -p ${HOME}/.ansible/collections/ansible_collections/community/mongodb
+ # && curl -L https://github.com/ansible-collections/community.mongodb/archive/auth_mechanisms.tar.gz | tar --strip-components=1 -C ${HOME}/.ansible/collections/ansible_collections/community/mongodb -xz
 
-COPY watches.yaml ${HOME}/watches.yaml
-COPY roles/ ${HOME}/roles/
-COPY playbooks/ ${HOME}/playbooks/
+COPY . ${HOME}/.ansible/collections/ansible_collections/community/mongodb/
+
+COPY tests/ansible-operator/watches.yaml ${HOME}/watches.yaml
+COPY tests/ansible-operator/roles/ ${HOME}/roles/
+COPY tests/ansible-operator/playbooks/ ${HOME}/playbooks/
