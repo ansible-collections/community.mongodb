@@ -61,7 +61,7 @@ jobs:
         run: kubectl api-resources | grep mongo -i
 
       - name: Debug step
-        run: kubectl get pods -n ansible-operator-system
+        run: kubectl get pods --all-namespaces
 
       - name: Debug step
         run: kubectl describe pod -n ansible-operator-system ansible-operator-controller-manager
