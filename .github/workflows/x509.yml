@@ -76,7 +76,7 @@ jobs:
         run: sleep 60
 
       - name: Forward the local port 27017 to k8
-        run: kubectl port-forward mongodb-sample-0 27017:27017 &
+        run: kubectl port-forward mongodb-sample-0 27017:27017 --address 0.0.0.0 &
 
       - name: Get the pods (Debug)
         run: kubectl get pods -n ansible-operator-system
