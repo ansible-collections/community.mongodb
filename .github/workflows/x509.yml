@@ -154,6 +154,3 @@ jobs:
 
       - name: Run mongodb_parameter module with membership auth
         run: ansible localhost -m community.mongodb.mongodb_parameter -a "login_host=localhost login_port=27017 login_database='$external' param=syncdelay value=60 param_type=int ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 connection_options='tlsAllowInvalidHostnames=true'"
-
-      - name: Run mongodb_stepdown module with membership auth
-        run: ansible localhost -m community.mongodb.mongodb_stepdown -a "login_host=localhost login_port=27017 login_database='$external' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 connection_options='tlsAllowInvalidHostnames=true'"
