@@ -113,6 +113,13 @@ jobs:
                     --eval "db.adminCommand('listDatabases')"
         continue-on-error: true
 
+      - name: Details debug step
+        run: |
+          kubectl get deployments mongodb-sample
+          kubectl describe deployments mongodb-sample
+          kubectl get replicasets
+          kubectl describe replicasets
+
       - name: Debug step
         run: kubectl logs mongodb-sample-0
 
