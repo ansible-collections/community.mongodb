@@ -146,5 +146,8 @@ jobs:
       - name: Debug step
         run: netstat -tulpen
 
-      - name: Run user module with membership auth
+      - name: Run mongodb_user module with membership auth
         run: ansible localhost -m community.mongodb.mongodb_user -a "login_host=localhost login_port=27017 login_database='$external' database='admin' password='secret' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 name="test" state=present connection_options='tlsAllowInvalidHostnames=true'"
+
+      - name: Run mongodb_status module with membership auth
+        run: ansible localhost -m community.mongodb.mongodb_status -a "login_host=localhost login_port=27017 login_database='$external' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 connection_options='tlsAllowInvalidHostnames=true'"
