@@ -116,15 +116,8 @@ jobs:
                     --authenticationMechanism MONGODB-X509 \
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
-        continue-on-error: true
 
-      - name: Details debug step
-        run: |
-          kubectl get deployments
-          kubectl get pods --all-namespaces -l -o wide
-          kubectl get svc --all-namespaces -o go-template='{{range .items}}{{range.spec.ports}}{{if .nodePort}}{{.nodePort}}{{"\n"}}{{end}}{{end}}{{end}}'
-
-      - name: Debug step
+      - name: Get the mongodb log
         run: kubectl logs mongodb-sample-0
 
       - name: Set up Python 3.6
