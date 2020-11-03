@@ -75,6 +75,11 @@ jobs:
       - name: Wait for a bit
         run: sleep 60
 
+      - name: Install socat
+        run: |
+          sudo apt update
+          sudo apt install socat
+
       - name: Forward the local port 27017 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 --address 0.0.0.0 &
 
