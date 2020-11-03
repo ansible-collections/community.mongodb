@@ -115,8 +115,8 @@ jobs:
 
       - name: Details debug step
         run: |
-          kubectl get deployments mongodb-sample
-          kubectl describe deployments mongodb-sample
+          kubectl get deployments
+          #kubectl describe deployments mongodb-sample
           kubectl get replicasets
           kubectl describe replicasets
 
