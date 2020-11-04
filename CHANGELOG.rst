@@ -8,6 +8,11 @@ Community.Mongodb Release Notes
 v1.1.0
 ======
 
+New Modules
+-----------
+
+- community.mongodb.mongodb_shell - Run commands via the MongoDB shell.
+
 v1.0.0
 ======
 
