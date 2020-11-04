@@ -46,3 +46,7 @@ releases:
         name: mongodb_shell
         namespace: ''
     release_date: '2020-10-24'
+  1.1.1:
+    bugfixes:
+      - 235 - Fix namespace.
+    release_date: '2020-11-04'
