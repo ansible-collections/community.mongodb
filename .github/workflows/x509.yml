@@ -1,0 +1,156 @@
+name: CI
+on:
+- pull_request
+
+jobs:
+  x509_membership_auth:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb/tests/ansible-operator
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.0.1
+        with:
+          minikube version: 'v1.13.1'
+          kubernetes version: 'v1.19.2'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install cert-manager
+        run: |
+          kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.1/cert-manager.yaml
+
+      - name: Generate certs
+        run: |
+          openssl genrsa -out ca.key 8192
+          openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
+
+      - name: Wait for a bit
+        run: sleep 60
+
+      - name: Register the certs with k8
+        run: |
+          kubectl create secret tls mongodb-cluster-ca-key-pair --key=ca.key --cert=ca.crt
+          kubectl apply -f ca-issuer.yaml
+
+      - name: make install
+        run: make install
+
+      - name: Create k8 namesapce
+        run: kubectl create ns ansible-operator-system
+
+      - name: use minikubes docker
+        run: eval $(minikube docker-env --shell sh)
+
+      - name: make docker-build
+        run: make docker-build IMG=test-mongodb-operator:latest
+
+      - name: make deploy
+        run: make deploy IMG=test-mongodb-operator:latest
+
+      - name: Wait for controller to be ready
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
+
+    #- name: Debug step
+    #    run: kubectl api-resources | grep mongo -i
+
+    #  - name: Debug step
+    #    run: kubectl get pods --all-namespaces
+
+    #  - name: Debug step
+    #    run: kubectl describe pod -n ansible-operator-system ansible-operator-controller-manager
+
+      - name: Setup the k8 mongodb env
+        run: |
+          kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
+          sleep 10
+          kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager
+
+      - name: Wait for a bit
+        run: sleep 60
+
+      - name: Install socat
+        run: |
+          sudo apt update
+          sudo apt install socat
+
+      - name: Forward the local port 27017 to k8
+        run: kubectl port-forward mongodb-sample-0 27017:27017 --address 0.0.0.0 &
+
+    #  - name: Get the pods (Debug)
+    #    run: kubectl get pods --all-namespaces
+
+    #  - name: List forwards (Debug)
+    #    run: kubectl get svc --all-namespaces
+
+      - name: Copy the certs to the localhost
+        run: |
+          managerpod=$(kubectl get pods -n ansible-operator-system --no-headers | tr -s ' ' | cut -d ' ' -f 1)
+          kubectl cp ansible-operator-system/${managerpod}:/tmp/mongodb-sample.default/ca.crt ca.crt -c manager
+          kubectl cp ansible-operator-system/${managerpod}:/tmp/mongodb-sample.default/tls.key tls.key -c manager
+
+      - name: Run mongo shell command to test x509 membership connectivity
+        run: |
+          kubectl -n ansible-operator-system exec -ti deployment.apps/ansible-operator-controller-manager -c manager -- \
+              /usr/bin/mongo mongodb://mongodb-sample.default.svc.cluster.local \
+                    --tls \
+                    --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
+                    --tlsCertificateKeyFile /tmp/mongodb-sample.default/tls.key \
+                    --authenticationMechanism MONGODB-X509 \
+                    --authenticationDatabase '$external' \
+                    --eval "db.adminCommand('listDatabases')"
+
+      - name: Run mongo shell command to test x509 membership connectivity from localhost
+        run: |
+          /usr/bin/mongo mongodb://127.0.0.1 \
+                    --tls \
+                    --tlsCAFile ca.crt \
+                    --tlsCertificateKeyFile tls.key \
+                    --tlsAllowInvalidHostnames \
+                    --authenticationMechanism MONGODB-X509 \
+                    --authenticationDatabase '$external' \
+                    --eval "db.adminCommand('listDatabases')"
+
+    #  - name: Get the mongodb log
+    #    run: kubectl logs mongodb-sample-0
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.6"
+
+      - name: Install ansible-base devel
+        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+
+      - name: Build the collection
+        run: ansible-galaxy collection build
+        working-directory: ansible_collections/community/mongodb
+
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+        working-directory: ansible_collections/community/mongodb
+
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
+        working-directory: ansible_collections/community/mongodb
+
+      - name: Install pymongo
+        run: pip install pymongo
+
+    #  - name: Debug step
+    #    run: netstat -tulpen
+
+      - name: Run mongodb_user module with membership auth
+        run: ansible localhost -m community.mongodb.mongodb_user -a "login_host=localhost login_port=27017 login_database='$external' database='admin' password='secret' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 name="test" state=present connection_options='tlsAllowInvalidHostnames=true'"
+
+      - name: Run mongodb_info module with membership auth
+        run: ansible localhost -m community.mongodb.mongodb_info -a "login_host=localhost login_port=27017 login_database='$external' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 connection_options='tlsAllowInvalidHostnames=true'"
+
+      - name: Run mongodb_parameter module with membership auth
+        run: ansible localhost -m community.mongodb.mongodb_parameter -a "login_host=localhost login_port=27017 login_database='$external' param=syncdelay value=60 param_type=int ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 connection_options='tlsAllowInvalidHostnames=true'"
