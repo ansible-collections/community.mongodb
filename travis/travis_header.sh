@@ -1,6 +1,6 @@
 #!/bin/bash
 # From https://raw.githubusercontent.com/travis-ci/travis-build/73f74a94957f73eb54dc821f80c0c85ad8f8aab7/lib/travis/build/script/templates/header.sh
-source /etc/profile
+#source /etc/profile
 
 ANSI_RED="\033[31;1m"
 ANSI_GREEN="\033[32;1m"
