@@ -197,7 +197,7 @@ NoneType = type(None)
 # MongoDB module specific support methods.
 #
 
-def convert_mongo_result_to_valid_json(self, result):
+def convert_mongo_result_to_valid_json(result):
     if result is None:
         return result
     if isinstance(result, integer_types + (float, bool)):
@@ -207,13 +207,13 @@ def convert_mongo_result_to_valid_json(self, result):
     elif isinstance(result, list):
         new_list = []
         for elem in result:
-            new_list.append(self.convert_mongo_result_to_valid_json(elem))
+            new_list.append(convert_mongo_result_to_valid_json(elem))
         return new_list
     elif isinstance(result, dict):
         new_dict = {}
         for key in result.keys():
             value = result[key]  # python2 and 3 compatible....
-            new_dict[key] = self.convert_mongo_result_to_valid_json(value)
+            new_dict[key] = convert_mongo_result_to_valid_json(value)
         return new_dict
     elif isinstance(result, datetime.datetime):
         # epoch
@@ -274,22 +274,21 @@ def insert_document(client, database, collection, document):
     status = None
     inserted_id = ""
     if "_id" not in document.keys():
-        inserted_id str(client[database][collection].insert_one(document))
+        result = client[database][collection].insert(document)
+        #result = convert_mongo_result_to_valid_json(result)
+        inserted_id = result.inserted_id.to_s
         status = True
     else:
         result = client[database][collection].replace_one({"_id": document["_id"]},
                                                           document,
                                                           upsert=True)
-        for r in result:
-            r = self.convert_mongo_result_to_valid_json(r)
-            ret.append(r)
         if result.modified_count == 0 and not hasattr(result, 'upserted_id'):
             status = False
         elif result.modified_count == 1:
             status = True
         elif result.upserted_id is not None:
             status = True
-            inserted_id = ret.upserted_id
+            inserted_id = u"{0}".format(result.upserted_id)
     return status, inserted_id
 
 
@@ -375,7 +374,7 @@ def load_mongocnf():
 
 
 def main():
-    module = MyCustomAnsibleModule(
+    module = AnsibleModule(
         argument_spec=dict(
             login_user=dict(type='str'),
             login_password=dict(type='str', no_log=True),
