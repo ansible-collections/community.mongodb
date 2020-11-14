@@ -83,6 +83,12 @@
 - debug:
     var: ansible_facts.virtualization_type
 
+- debug:
+    var: ansible_facts.virtualization_tech_guest
+
+- debug:
+    var: ansible_facts.virtualization_tech_host
+
 - name: Enable disable-transparent-huge-pages service
   service:
     name: disable-transparent-huge-pages
