@@ -9,6 +9,9 @@
 set -u;
 set -e;
 
+# Include travis functions
+source travis/travis_header.sh;
+
 pwd;
 
 FILES=$(git diff --name-only HEAD~1 | wc -l | xargs);
@@ -67,7 +70,7 @@ if [ ${#role_list[@]} -ne 0 ]; then
   for role in "${role_list[@]}"; do
     echo "Executing tests for $role.";
     cd "$role"
-    molecule --debug test;
+    travis_retry molecule --debug test;
     cd ../../ && echo "Back in $(pwd)"; # back to project root
     test_count=$(( test_count + 1 ));
   done;
