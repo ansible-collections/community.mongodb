@@ -55,9 +55,6 @@
   until: _pkg is succeeded
   retries: 5
 
-- debug:
-    var: ansible_facts.virtualization_type
-
 - name: Ensure NUMA zone reclaim is disabled
   sysctl:
     name: vm.zone_reclaim_mode
@@ -80,21 +77,14 @@
     daemon_reexec: yes
   when: thp is changed
 
-- debug:
-    var: ansible_facts.virtualization_type
-
-- debug:
-    var: ansible_facts.virtualization_tech_guest
-
-- debug:
-    var: ansible_facts.virtualization_tech_host
-
 - name: Enable disable-transparent-huge-pages service
   service:
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
   when: ansible_facts.virtualization_type not in ['docker', 'container']
+  tags:
+    - "molecule-idempotence-notest"  # https://github.com/ansible/ansible/issues/66304 Added because of this issue in GitHub Actions
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
