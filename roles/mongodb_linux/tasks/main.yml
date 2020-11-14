@@ -55,6 +55,9 @@
   until: _pkg is succeeded
   retries: 5
 
+- debug:
+    var: ansible_facts.virtualization_type
+
 - name: Ensure NUMA zone reclaim is disabled
   sysctl:
     name: vm.zone_reclaim_mode
