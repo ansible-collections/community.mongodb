@@ -74,7 +74,7 @@
 #  when: is_redhat_8_in_docker
 - name: Check for molcule override
   set_fact:
-    molecule_override: "'{{ lookup('env', 'MOLECULE_OVERRIDE') | default('0', True) }}'"
+    molecule_override: "{{ lookup('env', 'MOLECULE_OVERRIDE') | default('0', True) }}"
 
 - name: Start mongod service
   service:
