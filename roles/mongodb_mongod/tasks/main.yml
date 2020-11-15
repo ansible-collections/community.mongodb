@@ -72,9 +72,9 @@
 #  systemd:
 #    daemon_reload: yes
 #  when: is_redhat_8_in_docker
-- name: Check for molcule override
+- name: Check for github override
   set_fact:
-    molecule_override: "{{ lookup('env', 'MOLECULE_OVERRIDE') | default('0', True) }}"
+    x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"
 
 - name: Start mongod service
   service:
@@ -83,9 +83,9 @@
     enabled: yes
   when:
     - not is_redhat_8_in_docker
-    - molecule_override == '0'
+    - x_github_override == '0'
 
 - name: Include tasks for RedHat 8 docker issue
   import_tasks: redhat_docker.yml
   when:
-    - is_redhat_8_in_docker or molecule_override == '1'
+    - is_redhat_8_in_docker or x_github_override == '1'
