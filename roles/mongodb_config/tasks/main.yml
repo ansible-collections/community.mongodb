@@ -14,6 +14,11 @@
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
 
+- name: Check if we are in docker
+  stat:
+    path: is_docker.txt
+  register: is_docker
+
 - name: Ensure mongod package is installed
   package:
     name: "{{ mongod_package }}"
@@ -44,13 +49,22 @@
     group: "{{ mongodb_group }}"
     mode: 0400
 
+- name: Check for github override
+  set_fact:
+    x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"
+
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
-  when: not is_redhat_8_in_docker
+  when: not (ansible_facts.os_family == 'RedHat'
+    and ansible_facts.distribution_major_version|int == 8
+    and is_docker.stat.exists)
 
 - name: Include tasks for RedHat 8 docker issue
   import_tasks: redhat_docker.yml
-  when: is_redhat_8_in_docker
+  when:
+    - ansible_facts.os_family == 'RedHat'
+    - ansible_facts.distribution_major_version|int == 8
+    - is_docker.stat.exists
