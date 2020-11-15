@@ -44,13 +44,19 @@
     group: "{{ mongodb_group }}"
     mode: 0400
 
+- name: Check for github override
+  set_fact:
+    x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"
+
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
-  when: not is_redhat_8_in_docker
+  when:
+    - not is_redhat_8_in_docker
+    - x_github_override == '0'
 
 - name: Include tasks for RedHat 8 docker issue
   import_tasks: redhat_docker.yml
-  when: is_redhat_8_in_docker
+  when: is_redhat_8_in_docker or x_github_override == '1'

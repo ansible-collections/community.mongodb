@@ -60,6 +60,8 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  env:
+    X_GITHUB_OVERRIDE: 1
 verifier:
   name: testinfra
   lint:
