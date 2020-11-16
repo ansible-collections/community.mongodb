@@ -15,6 +15,11 @@
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
 
+- name: Check if we are in docker
+  stat:
+    path: is_docker.txt
+  register: is_docker
+
 # Tasks based on: https://docs.mongodb.com/manual/administration/production-notes/
 
 - name: Set swappiness
@@ -61,7 +66,7 @@
     value: 0
     state: present
     reload: yes
-  when: ansible_facts.virtualization_type not in ['docker', 'container']
+  when: not is_docker.stat.exists
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
@@ -82,9 +87,7 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: ansible_facts.virtualization_type not in ['docker', 'container']
-  tags:
-    - "molecule-idempotence-notest"  # https://github.com/ansible/ansible/issues/66304 Added because of this issue in GitHub Actions
+  when: not is_docker.stat.exists
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
