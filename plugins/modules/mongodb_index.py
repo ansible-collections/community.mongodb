@@ -63,7 +63,7 @@ EXAMPLES = r'''
       - database: mydb
         collection: test
         options:
-          index_name: myindex
+          name: myindex
         state: absent
 
 - name: Create multiple indexes
