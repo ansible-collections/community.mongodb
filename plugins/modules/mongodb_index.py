@@ -33,6 +33,10 @@ options:
     type: list
     elements: raw
     required: yes
+  replica_set:
+    description:
+      - Replica set to connect to (automatically connects to primary for writes).
+    type: str
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
 
@@ -316,7 +320,8 @@ def validate_module(module):
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
-        indexes=dict(type='list', elements='raw', required=True)
+        indexes=dict(type='list', elements='raw', required=True),
+        replica_set=dict(type='str'),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -337,11 +342,15 @@ def main():
     login_port = module.params['login_port']
     ssl = module.params['ssl']
     indexes = module.params['indexes']
+    replica_set = module.params['replica_set']
 
     connection_params = {
         'host': login_host,
         'port': login_port,
     }
+
+    if replica_set:
+        connection_params["replicaset"] = replica_set
 
     if ssl:
         connection_params = ssl_connection_options(connection_params, module)
