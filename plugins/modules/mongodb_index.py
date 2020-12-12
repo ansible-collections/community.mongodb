@@ -320,7 +320,8 @@ def validate_module(module):
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
-        indexes=dict(type='list', elements='raw', required=True)
+        indexes=dict(type='list', elements='raw', required=True),
+        replica_set=dict(type='str'),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
