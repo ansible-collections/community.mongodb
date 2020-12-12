@@ -41,4 +41,4 @@ roles/mongodb_selinux/molecule/virtualbox/tests/test_default.py metaclass-boiler
 tests/ansible-operator/config/manager/manager.yaml yamllint:unparsable-with-libyaml
 tests/ansible-operator/roles/create-certificates/templates/certificate.yaml yamllint:unparsable-with-libyaml
 travis/travis_header.sh shebang!skip
-travis/travis_header.sh shellcheck!skip 
+travis/travis_header.sh shellcheck!skip
