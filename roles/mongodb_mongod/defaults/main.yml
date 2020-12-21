@@ -26,3 +26,4 @@ mongodb_admin_pwd: admin
 mongod_package: "mongodb-org-server"
 replicaset: true
 sharding: false
+mongod_config_template: "mongod.conf.j2"
