@@ -1,6 +1,8 @@
 name: CI
 on:
-- pull_request
+  pull_request:
+  schedule:
+    - cron: "0 3 * * *"
 
 jobs:
   x509_membership_auth:

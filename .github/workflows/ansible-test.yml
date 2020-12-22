@@ -1,6 +1,8 @@
 name: CI
 on:
-- pull_request
+  pull_request:
+  schedule:
+    - cron: "0 3 * * *"
 
 env:
   mongodb_version_file: "./tests/integration/targets/setup_mongodb/defaults/main.yml"
