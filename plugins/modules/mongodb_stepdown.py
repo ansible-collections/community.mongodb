@@ -154,9 +154,10 @@ def member_stepdown(client, module):
                 else:
                     cmd_doc = {
                         'replSetStepDown': stepdown_seconds,
-                        'secondaryCatchUpPeriodSecs': secondary_catch_up,
-                        'force': force
+                        'secondaryCatchUpPeriodSecs': secondary_catch_up
                     }
+                    if force:
+                        cmd_doc['force'] = True
                     try:
                         client.admin.command(cmd_doc)  # For now we assume the stepDown was successful
                     except Exception as excep:
