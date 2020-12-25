@@ -31,12 +31,13 @@ jobs:
           output=$(cat int_test_roles.json)
           echo "::set-output name=roles-to-test::$output"
           echo "$output"
+
   roles:
     runs-on: ubuntu-latest
     needs: roles_matrix
     defaults:
       run:
-        working-directory: ansible_collections/community/moingodb
+        working-directory: ansible_collections/community/mongodb
 
     strategy:
       matrix:
