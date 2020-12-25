@@ -62,6 +62,15 @@ jobs:
       - name: Ensure wheel is installed
         run: pip install wheel
 
+      - name: Build the collection
+        run: ansible-galaxy collection build
+
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
+
       - name: Install requirements
         run: |
           export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
