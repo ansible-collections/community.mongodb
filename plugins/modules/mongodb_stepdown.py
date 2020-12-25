@@ -129,6 +129,16 @@ def member_stepdown(client, module):
     client - MongoDB Client
     module - Ansible module object
     """
+
+    try:
+        from collections import OrderedDict
+    except ImportError as excep:
+        try:
+            from ordereddict import OrderedDict
+        except ImportError as excep:
+            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
+                             % to_native(excep))
+
     iterations = 0  # How many times we have queried the member
     failures = 0  # Number of failures when querying the replicaset
     poll = module.params['poll']
@@ -152,11 +162,11 @@ def member_stepdown(client, module):
                     status = True
                     break
                 else:
-                    cmd_doc = {
-                        'replSetStepDown': stepdown_seconds,
-                        'secondaryCatchUpPeriodSecs': secondary_catch_up,
-                        'force': force
-                    }
+                    cmd_doc = OrderedDict([
+                        ('replSetStepDown', stepdown_seconds),
+                        ('secondaryCatchUpPeriodSecs', secondary_catch_up),
+                        ('force', force)
+                    ])
                     try:
                         client.admin.command(cmd_doc)  # For now we assume the stepDown was successful
                     except Exception as excep:
