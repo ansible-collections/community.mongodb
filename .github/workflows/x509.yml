@@ -128,7 +128,11 @@ jobs:
           python-version: "3.6"
 
       - name: Install ansible-base devel
-        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Build the collection
         run: ansible-galaxy collection build
@@ -143,7 +147,11 @@ jobs:
         working-directory: ansible_collections/community/mongodb
 
       - name: Install pymongo
-        run: pip install pymongo
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install pymongo
 
     #  - name: Debug step
     #    run: netstat -tulpen

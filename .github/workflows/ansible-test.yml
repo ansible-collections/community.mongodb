@@ -26,7 +26,11 @@ jobs:
           python-version: 3.6
 
       - name: Install ansible-base (devel)
-        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python 3.6
@@ -48,7 +52,11 @@ jobs:
           python-version: 3.6
 
       - name: Install ansible-base (devel)
-        run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run unit tests
         run: ansible-test units --docker -v --color --python 3.6 --coverage
@@ -119,13 +127,25 @@ jobs:
           python-version: ${{ matrix.python_version }}
 
       - name: Install community.general
-        run: ansible-galaxy collection install community.general -p ../../
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: ansible-galaxy collection install community.general -p ../../
 
       - name: Install community.crypto
-        run: ansible-galaxy collection install community.crypto -p ../../
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: ansible-galaxy collection install community.crypto -p ../../
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
-        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
@@ -166,7 +186,11 @@ jobs:
           python-version: ${{ matrix.python_version }}
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
-        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Build the collection
         run: ansible-galaxy collection build
@@ -208,7 +232,11 @@ jobs:
           comparison: contains
 
       - name: Install pymongo
-        run: pip install pymongo
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install pymongo
 
       - name: Run ansible to generate the mongodb cache
         run: ansible localhost -m setup
