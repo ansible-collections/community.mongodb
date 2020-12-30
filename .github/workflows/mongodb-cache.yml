@@ -1,0 +1,304 @@
+name: CI
+on:
+  pull_request:
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  mongodb-cache:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
+    env:
+      ANSIBLE_CACHE_PLUGIN: "community.mongodb.mongodb"
+      ANSIBLE_CACHE_PLUGIN_CONNECTION: "mongodb://mongoadmin:secret@localhost:27017/cache?authSource=admin"
+      ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
+    strategy:
+      matrix:
+        python_version:
+          - "3.5"
+          - "3.8"
+        ansible_version:
+          - stable-2.10
+          - devel
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - name: Install ansible-base (${{ matrix.ansible_version }})
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+
+      - name: Build the collection
+        run: ansible-galaxy collection build
+
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
+
+      - name: Create docker volume
+        run: docker volume create mongocache
+
+      - name: Run the mongodb cache inside a docker container
+        run:
+          docker run -d --name mongocache -e MONGO_INITDB_ROOT_USERNAME=mongoadmin
+          -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017
+          -v mongocache:/data/db mongo:latest
+
+      - name: Install mongodb-org-shell
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: sudo apt-get install mongodb-org-shell
+
+      # https://github.community/t/set-output-truncates-multiline-strings/16852/5
+      - name: Run ansible without pymongo installed to generate the warning
+        id: no-pymongo
+        run: |
+          output=$(ansible localhost -m setup 2>&1)
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=nopymongo::$output"
+
+      - name: Test cache handling of missing pymongo
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "The 'pymongo' python module is required for the mongodb fact cache"
+          actual: ${{ steps.no-pymongo.outputs.nopymongo }}
+          comparison: contains
+
+      - name: Install pymongo
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install pymongo
+
+      - name: Run ansible to generate the mongodb cache
+        run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cache
+        id: mongo1
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we have something that looks like a cache record
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ansible_processor_count
+          actual: ${{ steps.mongo1.outputs.mongo }}
+          comparison: contains
+
+      - name: Collection should not have a ttl index
+        id: mongo2
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we don't have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo2.outputs.mongo }}
+          comparison: notContains
+
+      - name: Test that we have good output from getindexes
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "_id_"
+          actual: ${{ steps.mongo2.outputs.mongo }}
+          comparison: contains
+
+      - name: Repeat the action to hit the cache again
+        run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cach3
+        id: mongo3
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we have something that looks like a cache record
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ansible_processor_count
+          actual: ${{ steps.mongo3.outputs.mongo }}
+          comparison: contains
+
+      - name: Collection should not have a ttl index
+        id: mongo4
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we don't have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo4.outputs.mongo }}
+          comparison: notContains
+
+      - name: Test that we have good output from getindexes
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "_id_"
+          actual: ${{ steps.mongo4.outputs.mongo }}
+          comparison: contains
+
+      - name: Run the action again with a modified timeout
+        env:
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
+        run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cache
+        id: mongo5
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we have something that looks like a cache record
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ansible_processor_count
+          actual: ${{ steps.mongo5.outputs.mongo }}
+          comparison: contains
+
+      - name: Collection should have a ttl index
+        id: mongo6
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we do have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo6.outputs.mongo }}
+          comparison: contains
+
+      - name: Repeat the action
+        env:
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 3600
+        run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cache
+        id: mongo7
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we have something that looks like a cache record
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ansible_processor_count
+          actual: ${{ steps.mongo7.outputs.mongo }}
+          comparison: contains
+
+      - name: Collection should have a ttl index
+        id: mongo8
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we do have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo8.outputs.mongo }}
+          comparison: contains
+
+      - name: Set timeout back to zero
+        env:
+          ANSIBLE_CACHE_PLUGIN_TIMEOUT: 0
+        run: ansible localhost -m setup
+
+      - name: Query mongo to see what we have in the cache
+        id: mongo9
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we have something that looks like a cache record
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ansible_processor_count
+          actual: ${{ steps.mongo9.outputs.mongo }}
+          comparison: contains
+
+      - name: Collection should not have a ttl index
+        id: mongo10
+        run: |
+          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          echo "$output"
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::set-output name=mongo::$output"
+
+      - name: Test that we don't have an index called ttl
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: ttl
+          actual: ${{ steps.mongo10.outputs.mongo }}
+          comparison: notContains
+
+      - name: Test that we have good output from getindexes
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: "_id_"
+          actual: ${{ steps.mongo10.outputs.mongo }}
+          comparison: contains
