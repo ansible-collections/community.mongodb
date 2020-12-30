@@ -131,14 +131,14 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: ansible-galaxy collection install community.general
+          command: ansible-galaxy collection install community.general -p ansible_collections/
 
       - name: Install community.crypto
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: ansible-galaxy collection install community.crypto -p ../../
+          command: ansible-galaxy collection install community.crypto -p ansible_collections/
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -211,7 +211,11 @@ jobs:
           -v mongocache:/data/db mongo:latest
 
       - name: Install mongodb-org-shell
-        run: sudo apt-get install mongodb-org-shell
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: sudo apt-get install mongodb-org-shell
 
       # https://github.community/t/set-output-truncates-multiline-strings/16852/5
       - name: Run ansible without pymongo installed to generate the warning
