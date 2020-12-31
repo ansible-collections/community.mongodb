@@ -1,0 +1,83 @@
+name: CI_roles
+on:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+
+  roles_matrix:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
+    outputs:
+      matrix: ${{ steps.json-list.outputs.roles-to-test }}
+
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Generate module list
+        run: |
+          find roles -type d -maxdepth 1 -mindepth 1 | cut -d '/' -f2 | awk NF | jq -sRc 'split("\n") | map(select(length > 0))' > int_test_roles.json
+
+      - name: Set output variable
+        id: json-list
+        run: |
+          output=$(cat int_test_roles.json)
+          echo "::set-output name=roles-to-test::$output"
+          echo "$output"
+
+  roles:
+    runs-on: ubuntu-latest
+    needs: roles_matrix
+    defaults:
+      run:
+        working-directory: ansible_collections/community/mongodb
+
+    strategy:
+      matrix:
+        python_version:
+          - "3.6"
+        mongodb_role: ${{ fromJson(needs.roles_matrix.outputs.matrix) }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          path: ansible_collections/community/mongodb
+
+      - name: Set up Python ${{ matrix.test_scenario.python_version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.test_scenario.python_version }}
+
+      - name: Uninstall existing ansible
+        run: sudo apt remove ansible
+
+      - name: Ensure wheel is installed
+        run: pip install wheel
+
+      - name: Install requirements
+        run: |
+          export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
+          pip install --requirement requirements-${pyv}.txt
+      - name: Add molecule location to path
+        run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
+      - name: Build the collection
+        run: ansible-galaxy collection build
+
+      - name: Rename the build artifact
+        run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
+
+      - name: Install collection
+        run: ansible-galaxy collection install community-mongodb-*.tar.gz
+
+      - name: Run molecule test for ${{ matrix.mongodb_role }}
+        run: molecule test
+        working-directory: ansible_collections/community/mongodb/roles/${{ matrix.mongodb_role }}
