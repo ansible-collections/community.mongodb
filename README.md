@@ -4,7 +4,7 @@
 |Github CI|![CI](https://github.com/ansible-collections/community.mongodb/workflows/CI/badge.svg)|
 |Github Docs|![documentation](https://github.com/ansible-collections/community.mongodb/workflows/documentation/badge.svg)|
 |Codecov|[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.mongodb)](https://codecov.io/gh/ansible-collections/community.mongodb)|
-|Travis MongoDB Roles|[![Travis Status](https://travis-ci.com/ansible-collections/community.mongodb.svg)](https://travis-ci.com/ansible-collections/community.mongodb)|
+|CI Roles|![CI_roles](https://github.com/ansible-collections/community.mongodb/workflows/CI_roles/badge.svg)|
 |MongoDB Clusters|![CI](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/workflows/CI/badge.svg)|
 |Latest Build|![Build & Publish Collection](https://github.com/ansible-collections/community.mongodb/workflows/Build%20&%20Publish%20Collection/badge.svg)|
 
