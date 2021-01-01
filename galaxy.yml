@@ -23,5 +23,6 @@ documentation: https://github.com/ansible-collections/community.mongodb/tree/mas
 homepage: https://github.com/ansible-collections/community.mongodb
 issues: https://github.com/ansible-collections/community.mongodb
 build_ignore:
-  - tests
+  - 'tests/*'
   - '*.tar.gz'
+  - 'docs/*'
