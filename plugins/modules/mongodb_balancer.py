@@ -164,6 +164,17 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+has_ordereddict = False
+try:
+    from collections import OrderedDict
+    has_ordereddict = True
+except ImportError as excep:
+    try:
+        from ordereddict import OrderedDict
+        has_ordereddict = True
+    except ImportError as excep:
+        pass
+
 
 def get_balancer_state(client):
     '''
@@ -311,18 +322,12 @@ def main():
         required_together=[['login_user', 'login_password']],
     )
 
+    if not has_ordereddict:
+        module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict')
+
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
-
-    try:
-        from collections import OrderedDict
-    except ImportError as excep:
-        try:
-            from ordereddict import OrderedDict
-        except ImportError as excep:
-            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
-                             % to_native(excep))
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']

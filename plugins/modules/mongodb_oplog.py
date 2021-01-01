@@ -100,8 +100,23 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     member_state,
     ssl_connection_options
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
 
+has_ordereddict = False
+try:
+    from collections import OrderedDict
+    has_ordereddict = True
+except ImportError as excep:
+    try:
+        from ordereddict import OrderedDict
+        has_ordereddict = True
+    except ImportError as excep:
+        pass
 
 def get_olplog_size(client):
     return int(client["local"].command("collStats", "oplog.rs")["maxSize"]) / 1024 / 1024
@@ -132,14 +147,8 @@ def main():
         required_together=[['login_user', 'login_password']],
     )
 
-    try:
-        from collections import OrderedDict
-    except ImportError as excep:
-        try:
-            from ordereddict import OrderedDict
-        except ImportError as excep:
-            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
-                             % to_native(excep))
+    if not has_ordereddict:
+        module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict')
 
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
