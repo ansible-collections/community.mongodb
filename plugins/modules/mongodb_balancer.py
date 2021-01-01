@@ -190,7 +190,7 @@ def stop_balancer(client):
     '''
     cmd_doc = OrderedDict([
         ('balancerStop', 1),
-        ('maxTimeMS': 60000)
+        ('maxTimeMS', 60000)
     ])
     client['admin'].command(cmd_doc)
     time.sleep(1)
@@ -202,7 +202,7 @@ def start_balancer(client):
     '''
     cmd_doc = OrderedDict([
         ('balancerStart', 1),
-        ('maxTimeMS': 60000)
+        ('maxTimeMS', 60000)
     ])
     client['admin'].command(cmd_doc)
     time.sleep(1)
