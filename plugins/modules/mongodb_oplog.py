@@ -118,6 +118,7 @@ except ImportError as excep:
     except ImportError as excep:
         pass
 
+
 def get_olplog_size(client):
     return int(client["local"].command("collStats", "oplog.rs")["maxSize"]) / 1024 / 1024
 
