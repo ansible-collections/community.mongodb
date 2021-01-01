@@ -164,6 +164,17 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+has_ordereddict = False
+try:
+    from collections import OrderedDict
+    has_ordereddict = True
+except ImportError as excep:
+    try:
+        from ordereddict import OrderedDict
+        has_ordereddict = True
+    except ImportError as excep:
+        pass
+
 
 def get_balancer_state(client):
     '''
@@ -188,7 +199,11 @@ def stop_balancer(client):
     '''
     Stops MongoDB balancer
     '''
-    client['admin'].command({'balancerStop': 1, 'maxTimeMS': 60000})
+    cmd_doc = OrderedDict([
+        ('balancerStop', 1),
+        ('maxTimeMS', 60000)
+    ])
+    client['admin'].command(cmd_doc)
     time.sleep(1)
 
 
@@ -196,7 +211,11 @@ def start_balancer(client):
     '''
     Starts MongoDB balancer
     '''
-    client['admin'].command({'balancerStart': 1, 'maxTimeMS': 60000})
+    cmd_doc = OrderedDict([
+        ('balancerStart', 1),
+        ('maxTimeMS', 60000)
+    ])
+    client['admin'].command(cmd_doc)
     time.sleep(1)
 
 
@@ -302,6 +321,9 @@ def main():
         supports_check_mode=True,
         required_together=[['login_user', 'login_password']],
     )
+
+    if not has_ordereddict:
+        module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict')
 
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
