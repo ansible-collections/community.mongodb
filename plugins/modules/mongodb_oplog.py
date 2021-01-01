@@ -108,7 +108,11 @@ def get_olplog_size(client):
 
 
 def set_oplog_size(client, oplog_size_mb):
-    client["admin"].command({"replSetResizeOplog": 1, "size": oplog_size_mb})
+    cmd_doc = OrderedDict([
+        ('replSetResizeOplog', 1),
+        ('size', oplog_size_mb)
+    ])
+    client["admin"].command(cmd_doc)
 
 
 def compact_oplog(client):
@@ -127,6 +131,15 @@ def main():
         supports_check_mode=True,
         required_together=[['login_user', 'login_password']],
     )
+
+    try:
+        from collections import OrderedDict
+    except ImportError as excep:
+        try:
+            from ordereddict import OrderedDict
+        except ImportError as excep:
+            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
+                             % to_native(excep))
 
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),

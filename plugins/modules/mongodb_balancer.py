@@ -188,7 +188,11 @@ def stop_balancer(client):
     '''
     Stops MongoDB balancer
     '''
-    client['admin'].command({'balancerStop': 1, 'maxTimeMS': 60000})
+    cmd_doc = OrderedDict([
+        ('balancerStop', 1),
+        ('maxTimeMS': 60000)
+    ])
+    client['admin'].command(cmd_doc)
     time.sleep(1)
 
 
@@ -196,7 +200,11 @@ def start_balancer(client):
     '''
     Starts MongoDB balancer
     '''
-    client['admin'].command({'balancerStart': 1, 'maxTimeMS': 60000})
+    cmd_doc = OrderedDict([
+        ('balancerStart', 1),
+        ('maxTimeMS': 60000)
+    ])
+    client['admin'].command(cmd_doc)
     time.sleep(1)
 
 
@@ -306,6 +314,15 @@ def main():
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
+
+    try:
+        from collections import OrderedDict
+    except ImportError as excep:
+        try:
+            from ordereddict import OrderedDict
+        except ImportError as excep:
+            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
+                             % to_native(excep))
 
     login_user = module.params['login_user']
     login_password = module.params['login_password']
