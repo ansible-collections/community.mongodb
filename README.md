@@ -11,7 +11,7 @@
 This collection called `mongodb` aims at providing all Ansible modules allowing to interact with MongoDB.
 The modules present in Ansible 2.9 are included in this collection and will benefit from the evolutions and quality requirements from this collection.
 
-As this is an independent Collection, it can be release on it's own release cadance.
+As this is an independent collection, it can be released on its own release cadence.
 
 ## Running the integration and unit tests
 
@@ -28,34 +28,34 @@ As this is an independent Collection, it can be release on it's own release cada
 
 The ansible-test tool requires a specific directory hierarchy to function correctly so please follow carefully.
 
-* Create the required directory structure. N-B. The ansible-test tool requires this format...
+* Create the required directory structure. N-B. The ansible-test tool requires this format.
 
 ```bash
 mkdir -p git/ansible_collections/community
 cd git/ansible_collections/community
 ```
 
-* Clone the required projects...
+* Clone the required projects.
 
 ```bash
 git clone  https://github.com/ansible-collections/community.mongodb.git ./mongodb
 git clone  https://github.com/ansible-collections/community.general.git ./general
 ```
 
-* Create and activate a virtual environment...
+* Create and activate a virtual environment.
 
 ```bash
 virtualenv venv
 source venv/bin/activate
 ```
 
-* Change to project directory...
+* Change to the project directory.
 
 ```bash
 cd mongodb
 ```
 
-* Install the devel branch of ansible-base...
+* Install the devel branch of ansible-base.
 
 ```bash
 pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
@@ -100,7 +100,7 @@ ansible-test units --docker default -v --color --python 3.6
 
 Any contribution is welcome and we only ask contributors to:
 * Provide *at least* integration tests for any contribution.
-* Create an issues for any significant contribution that would change a large portion of the code base.
+* Create an issue for any significant contribution that would change a large portion of the codebase.
 
 ## License
 
