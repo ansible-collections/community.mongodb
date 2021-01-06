@@ -212,6 +212,7 @@
     state: present
     create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
   register: mongodb_admin_user_created
+
 - assert:
     that:
     - mongodb_admin_user_created is changed
@@ -235,8 +236,75 @@
     state: present
     create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
   register: mongodb_admin_user_created
+
 - assert:
     that:
     - mongodb_admin_user_created is skipped
+
+- include_tasks: mongod_teardown.yml
+
+######################################
+- set_fact:
+    current_replicaset: issue_278
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_start_replicaset.yml
+
+- include_tasks: mongod_config_replicaset.yml
+
+- name: Ensure create_for_localhost_exception file does not exist
+  file:
+    path: '{{ remote_tmp_dir }}/tests/admin_create.success'
+    state: absent
+
+- name: Create admin user with module and create_for_localhost_exception
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
+
+- name: 278 - Create MongoDB user
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    name: myuser
+    roles:
+      - dbAdmin
+    database: admin
+    password: secret
+    replica_set: issue_278
+    update_password: on_create
+
+- name: 278 - Update MongoDB user
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    name: myuser
+    roles:
+      - userAdmin
+    database: admin
+    password: secret
+    replica_set: issue_278
+    update_password: on_create
+
+- name: Get myuser db users
+  shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('myuser'))"
+  register: admin_myuser
+
+- name: Assert that user setup is as expected
+  assert:
+    that:
+    - '''myuser'' in admin_myuser.stdout'
+    - '''dbAdmin'' not in admin_myuser.stdout'
+    - '''userAdmin'' in admin_myuser.stdout'
 
 - include_tasks: mongod_teardown.yml

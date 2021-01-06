@@ -251,10 +251,14 @@ def user_add(module, client, db_name, user, password, roles):
     else:
         user_add_db_command = 'createUser'
 
-    if roles is None:
-        db.command(user_add_db_command, user, pwd=password)
-    else:
-        db.command(user_add_db_command, user, pwd=password, roles=roles)
+    user_dict = {}
+
+    if password is not None:
+        user_dict["pwd"] = password
+    if roles is not None:
+        user_dict["roles"] = roles
+
+    db.command(user_add_db_command, user, **user_dict)
 
 
 def user_remove(module, client, db_name, user):
