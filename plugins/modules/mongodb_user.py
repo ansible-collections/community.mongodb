@@ -252,7 +252,7 @@ def user_add(module, client, db_name, user, password, roles):
         user_add_db_command = 'createUser'
 
     user_dict = {}
-    
+
     if password is not None:
         user_dict["pwd"] = password
     if roles is not None:
