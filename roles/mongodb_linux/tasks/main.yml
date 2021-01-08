@@ -82,12 +82,18 @@
     daemon_reexec: yes
   when: thp is changed
 
+- name: Check if disable-transparent-huge-pages service is already run
+  shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o "never"
+  register: _huge_page_status
+  ignore_errors: yes
+  changed_when: _huge_page_status.stdout == ""
+
 - name: Enable disable-transparent-huge-pages service
   service:
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: not is_docker.stat.exists
+  when: (not is_docker.stat.exists) and (_huge_page_status.stdout == "")
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
