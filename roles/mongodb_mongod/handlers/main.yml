@@ -1,0 +1,6 @@
+---
+
+- name: Restart mongod service
+  service:
+    name: "{{ mongod_service }}"
+    state: restarted

@@ -39,6 +39,8 @@
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
+  notify:
+    - Restart mongod service
 
 - name: Copy keyfile to host
   copy:
@@ -49,6 +51,8 @@
     group: "{{ mongodb_group }}"
     mode: 0400
   when: authorization == "enabled"
+  notify:
+    - Restart mongod service
 
 - name: Check for github override
   set_fact:
