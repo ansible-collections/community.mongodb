@@ -25,3 +25,4 @@ openssl_keyfile_content: |
 mongod_package: "mongodb-org-server"
 replicaset: true
 mongod_config_template: "configsrv.conf.j2"
+skip_restart: false

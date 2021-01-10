@@ -25,6 +25,7 @@ Role Variables
 * `config_servers`: "config1:27019, config2:27019, config3:27019"
 * `openssl_keyfile_content`: The kexfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.
 * `mongos_config_template`: If defined allows to override path to mongod config template with custom configuration. Default "mongos.conf.j2"
+* `skip_restart`: If set to `true` will skip restarting mongos service when config file or the keyfile content changes. Default `false`.
 
 Dependencies
 ------------

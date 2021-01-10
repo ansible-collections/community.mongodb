@@ -20,6 +20,7 @@ Role Variables
 * `replicaset`: When enabled add a replication section to the configuration. Default true.
 * `sharding`: If this replicaset member will form part of a sharded cluster. Default false.
 * `mongod_config_template`: If defined allows to override path to mongod config template with custom configuration. Default "mongod.conf.j2"
+* `skip_restart`: If set to `true` will skip restarting mongod service when config file or the keyfile content changes. Default `false`.
 
 IMPORTANT NOTE: It is expected that `mongodb_admin_user` & `mongodb_admin_pwd` values be overridden in your own file protected by Ansible Vault. These values are primary included here for Molecule/Travis CI integration. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
 

@@ -27,3 +27,4 @@ mongod_package: "mongodb-org-server"
 replicaset: true
 sharding: false
 mongod_config_template: "mongod.conf.j2"
+skip_restart: false
