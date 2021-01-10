@@ -1,0 +1,7 @@
+---
+
+- name: Restart mongos service
+  service:
+    name: "{{ mongos_service }}"
+    state: restarted
+  when: not skip_restart

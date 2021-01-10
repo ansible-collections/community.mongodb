@@ -34,6 +34,8 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
     mode: 0400
+  notify:
+    - Restart mongos service
 
 - name: Ensure /usr/local/bin/ directory exists
   file:
@@ -68,6 +70,8 @@
     dest: /etc/mongos.conf
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
+  notify:
+    - Restart mongos service
 
 - name: Ensure mongos package is installed
   package:
