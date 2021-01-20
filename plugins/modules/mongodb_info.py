@@ -217,7 +217,7 @@ class MongoDbInfo():
 
                 roles_dict[elem['role']][key] = val
 
-        return { dbname: roles_dict }
+        return {dbname: roles_dict}
 
     def get_users_info(self, dbname):
         """Gather information about users.
@@ -242,7 +242,7 @@ class MongoDbInfo():
 
                 users_dict[elem['user']][key] = val
 
-        return { dbname: users_dict }
+        return {dbname: users_dict}
 
     def get_db_info(self):
         """Gather information about databases.
