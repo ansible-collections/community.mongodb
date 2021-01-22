@@ -88,12 +88,12 @@ users:
   description: User information.
   returned: always
   type: dict
-  sample: {"new_user": {"_id": "config.new_user", "db": "config", "mechanisms": ["SCRAM-SHA-1", "SCRAM-SHA-256"], "roles": []}}
+  sample: { "db": {"new_user": {"_id": "config.new_user", "mechanisms": ["SCRAM-SHA-1", "SCRAM-SHA-256"], "roles": []}}}
 roles:
   description: Role information.
   returned: always
   type: dict
-  sample: {"restore": {"db": "admin", "inheritedRoles": [], "isBuiltin": true, "roles": []}}
+  sample: { "db": {"restore": {"inheritedRoles": [], "isBuiltin": true, "roles": []}}}
 parameters:
   description: Server parameters information.
   returned: always
@@ -203,7 +203,7 @@ class MongoDbInfo():
         Args:
             dbname (str): Database name to get role info from.
 
-        Returns a dictionary with role information.
+        Returns a dictionary with role information for the given db.
         """
         db = self.client[dbname]
         result = db.command({'rolesInfo': 1, 'showBuiltinRoles': True})['roles']
@@ -212,12 +212,12 @@ class MongoDbInfo():
         for elem in result:
             roles_dict[elem['role']] = {}
             for key, val in iteritems(elem):
-                if key == 'role':
+                if key in ['role', 'db']:
                     continue
 
                 roles_dict[elem['role']][key] = val
 
-        return roles_dict
+        return {dbname: roles_dict}
 
     def get_users_info(self, dbname):
         """Gather information about users.
@@ -225,7 +225,7 @@ class MongoDbInfo():
         Args:
             dbname (str): Database name to get user info from.
 
-        Returns a dictionary with user information.
+        Returns a dictionary with user information for the given db.
         """
         db = self.client[dbname]
         result = db.command({'usersInfo': 1})['users']
@@ -234,7 +234,7 @@ class MongoDbInfo():
         for elem in result:
             users_dict[elem['user']] = {}
             for key, val in iteritems(elem):
-                if key == 'user':
+                if key in ['user', 'db']:
                     continue
 
                 if isinstance(val, UUID):
@@ -242,7 +242,7 @@ class MongoDbInfo():
 
                 users_dict[elem['user']][key] = val
 
-        return users_dict
+        return {dbname: users_dict}
 
     def get_db_info(self):
         """Gather information about databases.

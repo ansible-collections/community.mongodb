@@ -23,8 +23,10 @@
       - result.general.version.startswith('4')
       - result.databases.admin
       - result.total_size
-      - result.users.test_root
-      - result.roles.backup
+      - result.users.admin.test_root
+      - result.roles.admin.backup
+      - result.users.test.test_root
+      - result.users.rhys.test_root
       - result.parameters.logLevel == 0
 
   - name: Get info with filter
@@ -40,8 +42,10 @@
       - result.total_size
       - result.databases is not defined
       - result.parameters is not defined
-      - result.users is not defined
-      - result.roles is not defined
+      - result.users.admin is not defined
+      - result.users.test is not defined
+      - result.users.rhys is not defined
+      - result.admin.roles is not defined
 
   - name: Get info with filter
     <<: *task_parameters
@@ -55,6 +59,8 @@
       - result.general.version.startswith('4')
       - result.databases.admin
       - result.total_size
-      - result.users.test_root
-      - result.roles.backup
+      - result.users.admin.test_root
+      - result.users.test.test_root
+      - result.users.rhys.test_root
+      - result.roles.admin.backup
       - result.parameters is not defined
