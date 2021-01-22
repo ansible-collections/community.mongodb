@@ -71,6 +71,24 @@
     - test
     - rhys
 
+- name: Create more users in the rhys db
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 27017
+    database: rhys
+    name: "{{ item }}"
+    password: secret
+    roles:
+      - read
+    state: present
+  with_items:
+    - user1
+    - user2
+    - user3
+    - user4
+    - user5
+
 - import_tasks: mongodb_info.yml
 
 - include_tasks: mongod_teardown.yml

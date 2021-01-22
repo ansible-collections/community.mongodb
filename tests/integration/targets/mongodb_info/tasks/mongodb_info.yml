@@ -27,6 +27,11 @@
       - result.roles.admin.backup
       - result.users.test.test_root
       - result.users.rhys.test_root
+      - result.users.rhys.user1
+      - result.users.rhys.user2
+      - result.users.rhys.user3
+      - result.users.rhys.user4
+      - result.users.rhys.user5
       - result.parameters.logLevel == 0
 
   - name: Get info with filter
@@ -62,5 +67,10 @@
       - result.users.admin.test_root
       - result.users.test.test_root
       - result.users.rhys.test_root
+      - result.users.rhys.user1
+      - result.users.rhys.user2
+      - result.users.rhys.user3
+      - result.users.rhys.user4
+      - result.users.rhys.user5
       - result.roles.admin.backup
       - result.parameters is not defined
