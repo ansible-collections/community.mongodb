@@ -7,7 +7,7 @@ on:
 jobs:
   build_publish:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -39,7 +39,7 @@ jobs:
           path: ansible_collections/community/mongodb/community-mongodb-latest.tar.gz
 
       # Moving the tag leaves an orphan artifact. Just changing the artifact doesn't move the tag.
-      - name: Delete latest tag and release 
+      - name: Delete latest tag and release
         uses: dev-drprasad/delete-tag-and-release@v0.1.2
         with:
           delete_release: true

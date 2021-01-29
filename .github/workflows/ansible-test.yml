@@ -9,7 +9,7 @@ env:
 
 jobs:
   sanity:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -36,7 +36,7 @@ jobs:
         run: ansible-test sanity --docker -v --color --python 3.6 --exclude docs/*
 
   units:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -69,7 +69,7 @@ jobs:
           fail_ci_if_error: false
 
   integration_matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -96,7 +96,7 @@ jobs:
 
   integration:
     needs: integration_matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
