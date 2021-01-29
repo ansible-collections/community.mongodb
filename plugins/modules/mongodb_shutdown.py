@@ -167,6 +167,8 @@ def main():
                 ('timeout', timeout)
             ])
             client['admin'].command(cmd_doc)
+            result["changed"] = True
+            result["msg"] = "mongod process was terminated sucessfully"
         except Exception as excep:
             if "connection closed" in str(excep):
                 result["changed"] = True
