@@ -20,7 +20,7 @@
 - name: Ensure that all ports are closed
   wait_for:
     port: "{{ item }}"
-    state: stoppped
+    state: stopped
   with_items:
     - 3001
     - 3002
