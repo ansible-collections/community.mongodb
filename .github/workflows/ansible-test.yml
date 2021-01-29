@@ -126,6 +126,13 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
 
+      - name: Install ansible-base (${{ matrix.ansible_version }})
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+
       - name: Install community.general
         uses: nick-invision/retry@v2
         with:
@@ -139,13 +146,6 @@ jobs:
           timeout_minutes: 3
           max_attempts: 3
           command: ansible-galaxy collection install community.crypto -p ansible_collections/
-
-      - name: Install ansible-base (${{ matrix.ansible_version }})
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 3
-          max_attempts: 3
-          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
