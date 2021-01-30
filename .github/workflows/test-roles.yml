@@ -7,7 +7,7 @@ on:
 jobs:
 
   roles_matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -33,7 +33,7 @@ jobs:
           echo "$output"
 
   roles:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: roles_matrix
     defaults:
       run:

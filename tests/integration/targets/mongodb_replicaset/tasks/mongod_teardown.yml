@@ -14,6 +14,18 @@
     delay: 1
   with_items: '{{ pids_of_mongod }}'
 
+- name: Ensure that all ports are closed
+  wait_for:
+    port: "{{ item }}"
+    state: stopped
+  with_items:
+    - 3001
+    - 3002
+    - 3003
+    - 3004
+    - 3005
+    - 3006
+
 - name: Remove all mongod folders
   file:
     path: '{{ remote_tmp_dir }}/{{ item }}'
