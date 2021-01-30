@@ -93,6 +93,13 @@ options:
       - Supply as key-value pairs.
       - If the parameter is a valueless flag supply an empty string as the value.
     type: raw
+  idempotent:
+    - Provides a form of pseudo-idempotency to the module.
+    - We perform a hash calculation on the contents of the eval key or the file name provided in the file key.
+    - When the command is first execute a file called <hash>.success will be created.
+    - The module will not rerun if this file exists and idempotent is set to true.
+  type: bool
+  default: false
 '''
 
 EXAMPLES = '''
@@ -115,11 +122,12 @@ EXAMPLES = '''
     login_password: secret
     eval: "db.getRoles({showBuiltinRoles: true})"
 
-- name: Run a js file containing MongoDB commands
+- name: Run a js file containing MongoDB commands with pseudo-idempotency
   community.mongodb.mongodb_shell:
     login_user: user
     login_password: secret
     file: "/path/to/mongo/file.js"
+    idempotent: yes
 
 - name: Provide a couple of additional cmd args
   community.mongodb.mongodb_shell:
@@ -171,6 +179,7 @@ import socket
 import re
 import time
 import json
+import os
 __metaclass__ = type
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
@@ -226,6 +235,25 @@ def transform_output(output, transform_type, split_char):
     return output
 
 
+def get_hash_value(module):
+    '''
+    Returns the hash value of either the provided file or eval command
+    '''
+    hash_value = None
+    try:
+        import hashlib
+    except ImportError as excep:
+        module.fail_json(msg="Unable to import hashlib: {0}".format(excep.message))
+    if module.params['file'] is not None:
+        hash_value = hashlib.md5(module.params['file'].encode('utf-8')).hexdigest()
+    else:
+        hash_value = hashlib.md5(module.params['eval'].encode('utf-8')).hexdigest()
+    return hash_value
+
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
+
 def main():
     argument_spec = mongodb_common_argument_spec(ssl_options=False)
     argument_spec.update(
@@ -241,6 +269,7 @@ def main():
         split_char=dict(type='str', default=" "),
         stringify=dict(type='bool', default=False),
         additional_args=dict(type='raw'),
+        idempotent=dict(type='bool', default=False)
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -253,6 +282,15 @@ def main():
         module.params['mongo_cmd'],
         module.params['db']
     ]
+
+    hash_value = get_hash_value(module)
+
+    if module.params['idempotent']:
+        if os.path.isfile("{0}.success".format(hash_value)):
+            module.exit_json(changed=False,
+                             msg="The file {0}.success was found meaning this " \
+                                    "command has already successfully executed " \
+                                    "on this MongoDB host.".format(hash_value))
 
     if not module.params['file']:
         if module.params['eval'].startswith("show "):
@@ -303,6 +341,8 @@ def main():
         module.fail_json(msg=err.strip(), **result)
     else:
         result['changed'] = True
+        if module.params['idempotent']:
+            touch("{0}.success".format(hash_value))
         try:
             output = transform_output(out,
                                       module.params['transform'],
