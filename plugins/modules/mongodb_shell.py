@@ -94,12 +94,13 @@ options:
       - If the parameter is a valueless flag supply an empty string as the value.
     type: raw
   idempotent:
-    - Provides a form of pseudo-idempotency to the module.
-    - We perform a hash calculation on the contents of the eval key or the file name provided in the file key.
-    - When the command is first execute a file called <hash>.success will be created.
-    - The module will not rerun if this file exists and idempotent is set to true.
-  type: bool
-  default: false
+    description:
+      - Provides a form of pseudo-idempotency to the module.
+      - We perform a hash calculation on the contents of the eval key or the file name provided in the file key.
+      - When the command is first execute a file called <hash>.success will be created.
+      - The module will not rerun if this file exists and idempotent is set to true.
+    type: bool
+    default: false
 '''
 
 EXAMPLES = '''
@@ -250,9 +251,11 @@ def get_hash_value(module):
         hash_value = hashlib.md5(module.params['eval'].encode('utf-8')).hexdigest()
     return hash_value
 
+
 def touch(fname, times=None):
     with open(fname, 'a'):
         os.utime(fname, times)
+
 
 def main():
     argument_spec = mongodb_common_argument_spec(ssl_options=False)
@@ -288,9 +291,9 @@ def main():
     if module.params['idempotent']:
         if os.path.isfile("{0}.success".format(hash_value)):
             module.exit_json(changed=False,
-                             msg="The file {0}.success was found meaning this " \
-                                    "command has already successfully executed " \
-                                    "on this MongoDB host.".format(hash_value))
+                             msg="The file {0}.success was found meaning this "
+                             "command has already successfully executed "
+                             "on this MongoDB host.".format(hash_value))
 
     if not module.params['file']:
         if module.params['eval'].startswith("show "):

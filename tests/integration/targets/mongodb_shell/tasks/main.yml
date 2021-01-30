@@ -308,4 +308,19 @@
       - "run_file.changed == False"
       - "'.success was found meaning this command has already successfully executed' in run_file.msg"
 
+- name: Test file with idempotent off - should run
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    file: "/root/mongo.js"
+    quiet: no
+    debug: yes
+    idempotent: no
+  register: run_file
+
+- assert:
+    that:
+      - "run_file.changed == True"
+
 - include_tasks: mongod_teardown.yml
