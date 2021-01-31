@@ -97,8 +97,8 @@ options:
     description:
       - Provides a form of pseudo-idempotency to the module.
       - We perform a hash calculation on the contents of the eval key or the file name provided in the file key.
-      - When the command is first execute a file called <hash>.success will be created.
-      - The module will not rerun if this file exists and idempotent is set to true.
+      - When the command is first execute a filed called <hash>.success will be created.
+      - The module will not rerun the command if this file exists and idempotent is set to true.
     type: bool
     default: false
 '''
