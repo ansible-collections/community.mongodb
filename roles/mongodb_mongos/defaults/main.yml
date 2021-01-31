@@ -25,4 +25,4 @@ openssl_keyfile_content: |
   sb4UreMw/WyBpANiICMlJRBgSd0f0VGMlYzLX2BL14YpNnLhmoQqKzfBN6v2XAEG
   mJfrCUVuP1nBEklk23lYkNi/ohe+aodNjdN+2DHp42sGZHYP
 mongos_config_template: "mongos.conf.j2"
-skip_restart: false
+skip_restart: true

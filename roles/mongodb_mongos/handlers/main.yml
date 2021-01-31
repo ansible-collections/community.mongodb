@@ -1,7 +1,4 @@
 ---
-
 - name: Restart mongos service
-  service:
-    name: "{{ mongos_service }}"
-    state: restarted
+  import_tasks: handlers.yml
   when: not skip_restart

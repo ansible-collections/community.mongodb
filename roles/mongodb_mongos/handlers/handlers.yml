@@ -1,0 +1,10 @@
+---
+
+- name: Restart mongos service
+  service:
+    name: "{{ mongos_service }}"
+    state: restarted
+
+- name: Wait for port to become active
+  wait_for:
+    port: "{{ mongos_port }}"
