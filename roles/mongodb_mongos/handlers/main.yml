@@ -1,5 +1,4 @@
 ---
-
 - name: Restart mongos service
   import_tasks: handlers.yml
   when: not skip_restart
