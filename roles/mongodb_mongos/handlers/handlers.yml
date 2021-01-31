@@ -7,4 +7,4 @@
 
 - name: Wait for port to become active
   wait_for:
-    port: "{{ mongod_port }}"
+    port: "{{ mongos_port }}"
