@@ -77,6 +77,7 @@
   yum:
     name: '{{ mongodb_packages.mongod }}'
     state: present
+  notify: CentOS 8 Python 2 Stuff
   when: ansible_os_family == "RedHat"
 
 - name: Ensure mongos package is installed
