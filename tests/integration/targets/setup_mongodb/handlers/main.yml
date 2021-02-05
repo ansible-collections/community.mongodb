@@ -2,12 +2,3 @@
   pip:
     name: '{{ pip_packages }}'
     state: absent
-
-- name: CentOS 8 Python 2 Stuff
-  yum:
-    name:
-      - python2-pip-wheel
-      - python2-setuptools-wheel
-      - python2-pip
-      - python2-setuptools
-    state: absent
