@@ -1,4 +1,4 @@
-# Mongodb Collection
+# Mongodb Collection 
 |Category|Status|
 |---|---|
 |Github CI|![CI](https://github.com/ansible-collections/community.mongodb/workflows/CI/badge.svg)|
