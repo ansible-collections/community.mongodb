@@ -110,7 +110,7 @@ jobs:
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         docker_image:
           - ubuntu1804
-          - centos8
+          #- centos8
         ansible_version:
           - stable-2.10
           - devel
