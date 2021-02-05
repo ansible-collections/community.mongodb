@@ -53,3 +53,15 @@
     - "(result.msg |int) > 0"
 
 - include_tasks: mongod_teardown.yml
+
+- name: CentOS 8 Python 2 Stuff
+  yum:
+    name:
+      - python2
+      - python2-libs
+      - python2-pip-wheel
+      - python2-setuptools-wheel
+      - python2-pip
+      - python2-setuptools
+    state: absent
+  when: ansible_os_family == "RedHat"
