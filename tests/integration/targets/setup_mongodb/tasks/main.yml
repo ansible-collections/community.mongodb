@@ -77,8 +77,9 @@
   yum:
     name: '{{ mongodb_packages.mongod }}'
     state: present
+  register: monogd_installed_packages
+  notify: Remove mongod installed packages
   when: ansible_os_family == "RedHat"
-  notify: CentOS 8 Python 2 Stuff
 
 - name: Ensure mongos package is installed
   yum:

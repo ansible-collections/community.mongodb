@@ -3,13 +3,9 @@
     name: '{{ pip_packages }}'
     state: absent
 
-- name: CentOS 8 Python 2 Stuff
+# Sometimes mongod pulls down a load of python2 stuff
+- name: Remove mongod installed packages
   yum:
-    name:
-      - python2
-      - python2-libs
-      - python2-pip-wheel
-      - python2-setuptools-wheel
-      - python2-pip
-      - python2-setuptools
+    name: "{{ item.split('Installed:')[1] }}"
     state: absent
+  with_items: "{{ monogd_installed_packages.results | select('search', 'Installed:') | list | reject('search', 'openssl-libs') | list }}"
