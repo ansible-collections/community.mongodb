@@ -182,7 +182,6 @@ def replicaset_good(statuses, module, votes):
     max one primary, and any even amount of
     secondary and arbiter servers
     """
-    module.debug(msg=str(statuses))
     msg = "Unset"
     status = None
     valid_statuses = ["PRIMARY", "SECONDARY", "ARBITER"]
@@ -369,7 +368,7 @@ def main():
         replicaset = return_doc['replicaset']
         iterations = return_doc['iterations']
     except Exception as e:
-        module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
+        module.fail_json(msg='Unable to query replica_set info: %s' % str(e))  # TODO Pass back msg here? Contains useful info often
 
     if status is False:
         module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations)
