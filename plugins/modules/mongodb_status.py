@@ -117,6 +117,24 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
+def replicaset_config(client):
+    """
+    Return the replicaset config document
+    https://docs.mongodb.com/manual/reference/command/replSetGetConfig/
+    """
+    rs = client.admin.command('replSetGetConfig')
+    return rs
+
+
+def replicaset_votes(config_document):
+    """
+    Return the number of votes in the replicaset
+    """
+    votes = 0
+    for member in config_document["config"]['members']:
+        votes += member['votes']
+    return votes
+
 
 def replicaset_status(client, module):
     """
@@ -156,7 +174,7 @@ def replicaset_statuses(members_document, module):
     return statuses
 
 
-def replicaset_good(statuses, module):
+def replicaset_good(statuses, module, votes):
     """
     Returns true if the replicaset is in a "good" condition.
     Good is defined as an odd number of servers >= 3, with
@@ -179,8 +197,18 @@ def replicaset_good(statuses, module):
             status = False
             msg = "replicaset is not currently in a converged state"
     else:
-        msg = "Even number of servers currently in replicaset."
-        status = False
+        # Need to validate the number of votes in the replicaset
+        if votes % 2 == 1:  # We have a good number of votes
+            if (statuses.count("PRIMARY") == 1
+                    and len(set(statuses) - set(valid_statuses)) == 0):
+                status = True
+                msg = "replicaset is in a converged state"
+            else:
+                status = False
+                msg = "replicaset is not currently in a converged state"
+        else:
+            msg = "Even number of servers or votes in replicaset."
+            status = False
     return status, msg
 
 
@@ -204,7 +232,10 @@ def replicaset_status_poll(client, module):
             members = replicaset_members(replicaset_document)
             friendly_document = replicaset_friendly_document(members)
             statuses = replicaset_statuses(friendly_document, module)
-            status, msg = replicaset_good(statuses, module)
+            config = replicaset_config(client)
+            votes = replicaset_votes(config)
+            status, msg = replicaset_good(statuses, module, votes)
+
             if status:  # replicaset looks good
                 return_doc = {"failures": failures,
                               "poll": poll,
@@ -334,6 +365,7 @@ def main():
 
     try:
         status, msg, return_doc = replicaset_status_poll(client, module)  # Sort out the return doc
+        #module.exit_json(status=status, **return_doc)
         replicaset = return_doc['replicaset']
         iterations = return_doc['iterations']
     except Exception as e:
