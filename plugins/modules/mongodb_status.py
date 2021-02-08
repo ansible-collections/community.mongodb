@@ -117,6 +117,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
+
 def replicaset_config(client):
     """
     Return the replicaset config document
@@ -365,7 +366,6 @@ def main():
 
     try:
         status, msg, return_doc = replicaset_status_poll(client, module)  # Sort out the return doc
-        #module.exit_json(status=status, **return_doc)
         replicaset = return_doc['replicaset']
         iterations = return_doc['iterations']
     except Exception as e:
