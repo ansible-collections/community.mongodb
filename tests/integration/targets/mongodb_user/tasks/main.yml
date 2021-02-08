@@ -32,6 +32,16 @@
     that:
     - mongodb_admin_user_created.changed == True
 
+- name: Check the status of the replicaset with mongodb_status module
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
+
 - include_tasks: mongod_stop.yml
 
 - set_fact:
@@ -213,6 +223,16 @@
     create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
   register: mongodb_admin_user_created
 
+- name: Check the status of the replicaset with mongodb_status module
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
+
 - assert:
     that:
     - mongodb_admin_user_created is changed
@@ -269,6 +289,16 @@
     roles: root
     state: present
     create_for_localhost_exception: '{{ remote_tmp_dir }}/tests/admin_create.success'
+
+- name: Check the status of the replicaset with mongodb_status module
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
 
 - name: 278 - Create MongoDB user
   community.mongodb.mongodb_user:
