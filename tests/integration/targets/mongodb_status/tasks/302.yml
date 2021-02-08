@@ -1,0 +1,58 @@
+- set_fact:
+    current_replicaset: '4-nodes-3-votes'
+
+- set_fact:
+    mongodb_nodes:
+      - 3001
+      - 3002
+      - 3003
+      - 3004
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Ensure replicaset exists
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    replica_set: "{{ current_replicaset }}"
+    members:
+    - host: "localhost:3001"
+    - host: "localhost:3002"
+    - host: "localhost:3003"
+    - host: "localhost:3004"
+      hidden: true
+      priority: 0
+      votes: 0
+    validate: no
+
+- name: Add mongodb admin user - rs0
+  community.mongodb.mongodb_user:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - root
+    state: present
+
+- name: check replicaset status 4 nodes, 3 votes
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    replica_set: "{{ current_replicaset }}"
+  register: rs_status
+
+- assert:
+    that:
+      - "rs_status.changed == False"
+      - "rs_status.msg == 'replicaset is in a converged state'"
+      - "rs_status.replicaset['localhost:3001'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3002'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3003'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3004'] in ['PRIMARY', 'SECONDARY']"
+
+- include_tasks: mongod_teardown.yml
