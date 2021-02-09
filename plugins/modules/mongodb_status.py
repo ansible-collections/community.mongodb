@@ -257,6 +257,7 @@ def replicaset_status_poll(client, module):
     status = None
     return_doc = {}
     votes = None
+    config = None
 
     while iterations < poll:
         try:
@@ -265,9 +266,9 @@ def replicaset_status_poll(client, module):
             members = replicaset_members(replicaset_document)
             friendly_document = replicaset_friendly_document(members)
             statuses = replicaset_statuses(friendly_document, module)
-            config = replicaset_config(client)
 
             if module.params['validate'] == "votes":  # Requires auth
+                config = replicaset_config(client)
                 votes = replicaset_votes(config)
 
             status, msg = replicaset_good(statuses, module, votes)
