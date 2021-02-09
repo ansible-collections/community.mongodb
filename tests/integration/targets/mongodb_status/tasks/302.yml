@@ -37,19 +37,59 @@
       - root
     state: present
 
-- name: check replicaset status 4 nodes, 3 votes
+- name: check replicaset status 4 nodes, 3 votes - votes
   community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     replica_set: "{{ current_replicaset }}"
+    validate: "votes"
   register: rs_status
 
 - assert:
     that:
       - "rs_status.changed == False"
       - "rs_status.msg == 'replicaset is in a converged state'"
+      - "rs_status.replicaset['localhost:3001'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3002'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3003'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3004'] in ['PRIMARY', 'SECONDARY']"
+
+- name: check replicaset status 4 nodes, 3 votes - minimal
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    replica_set: "{{ current_replicaset }}"
+    validate: "minimal"
+  register: rs_status
+
+- assert:
+    that:
+      - "rs_status.changed == False"
+      - "rs_status.msg == 'replicaset is in a converged state'"
+      - "rs_status.replicaset['localhost:3001'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3002'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3003'] in ['PRIMARY', 'SECONDARY']"
+      - "rs_status.replicaset['localhost:3004'] in ['PRIMARY', 'SECONDARY']"
+
+- name: check replicaset status 4 nodes, 3 votes - default
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    replica_set: "{{ current_replicaset }}"
+    validate: "default"
+  register: rs_status
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "rs_status.failed"
+      - "rs_status.msg == 'Even number of servers in replicaset.'"
       - "rs_status.replicaset['localhost:3001'] in ['PRIMARY', 'SECONDARY']"
       - "rs_status.replicaset['localhost:3002'] in ['PRIMARY', 'SECONDARY']"
       - "rs_status.replicaset['localhost:3003'] in ['PRIMARY', 'SECONDARY']"

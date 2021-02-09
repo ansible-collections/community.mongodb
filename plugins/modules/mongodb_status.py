@@ -39,6 +39,23 @@ options:
       - The number of seconds to wait between polling executions.
     type: int
     default: 30
+  validate:
+    description:
+      - The type of validate to perform on the replicaset.
+      - default, Suitable for most purposes. Validate that there are an odd
+        number of servers and one is PRIMARY and the remainder are in a SECONDARY
+        or ARBITER state.
+      - votes, Check the number of votes is odd and one is a PRIMARY and the
+        remainder are in a SECONDARY or ARBITER state. Authentication is
+        required here to get the replicaset configuration.
+      - minimal, Just checks that one server is in a PRIMARY state with the
+         remainder being SECONDARY or ARBITER.
+    type: str
+    choices:
+       - default
+       - votes
+       - minimal
+    default: default
 notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
@@ -185,18 +202,23 @@ def replicaset_good(statuses, module, votes):
     msg = "Unset"
     status = None
     valid_statuses = ["PRIMARY", "SECONDARY", "ARBITER"]
-    # Odd number of servers is good
-    if len(statuses) % 2 == 1:
-        if (statuses.count("PRIMARY") == 1
-            and ((statuses.count("SECONDARY")
-                  + statuses.count("ARBITER")) % 2 == 0)
-                and len(set(statuses) - set(valid_statuses)) == 0):
-            status = True
-            msg = "replicaset is in a converged state"
+    validate = module.params['validate']
+
+    if validate == "default":
+        if len(statuses) % 2 == 1:
+            if (statuses.count("PRIMARY") == 1
+                and ((statuses.count("SECONDARY")
+                      + statuses.count("ARBITER")) % 2 == 0)
+                    and len(set(statuses) - set(valid_statuses)) == 0):
+                status = True
+                msg = "replicaset is in a converged state"
+            else:
+                status = False
+                msg = "replicaset is not currently in a converged state"
         else:
+            msg = "Even number of servers in replicaset."
             status = False
-            msg = "replicaset is not currently in a converged state"
-    else:
+    elif validate == "votes":
         # Need to validate the number of votes in the replicaset
         if votes % 2 == 1:  # We have a good number of votes
             if (statuses.count("PRIMARY") == 1
@@ -207,8 +229,18 @@ def replicaset_good(statuses, module, votes):
                 status = False
                 msg = "replicaset is not currently in a converged state"
         else:
-            msg = "Even number of servers or votes in replicaset."
+            msg = "Even number of votes in replicaset."
             status = False
+    elif validate == "minimal":
+        if (statuses.count("PRIMARY") == 1
+                and len(set(statuses) - set(valid_statuses)) == 0):
+            status = True
+            msg = "replicaset is in a converged state"
+        else:
+            status = False
+            msg = "replicaset is not currently in a converged state"
+    else:
+        module.fail_json(msg="Invalid value for validate has been provided: {0}".format(validate))
     return status, msg
 
 
@@ -224,6 +256,8 @@ def replicaset_status_poll(client, module):
     interval = module.params['interval']
     status = None
     return_doc = {}
+    votes = None
+    config = None
 
     while iterations < poll:
         try:
@@ -232,8 +266,11 @@ def replicaset_status_poll(client, module):
             members = replicaset_members(replicaset_document)
             friendly_document = replicaset_friendly_document(members)
             statuses = replicaset_statuses(friendly_document, module)
-            config = replicaset_config(client)
-            votes = replicaset_votes(config)
+
+            if module.params['validate'] == "votes":  # Requires auth
+                config = replicaset_config(client)
+                votes = replicaset_votes(config)
+
             status, msg = replicaset_good(statuses, module, votes)
 
             if status:  # replicaset looks good
@@ -280,6 +317,7 @@ def main():
         interval=dict(type='int', default=30),
         poll=dict(type='int', default=1),
         replica_set=dict(type='str', default="rs0"),
+        validate=dict(type='str', choices=['default', 'votes', 'minimal'], default='default'),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -368,7 +406,7 @@ def main():
         replicaset = return_doc['replicaset']
         iterations = return_doc['iterations']
     except Exception as e:
-        module.fail_json(msg='Unable to query replica_set info: %s' % str(e))  # TODO Pass back msg here? Contains useful info often
+        module.fail_json(msg='Unable to query replica_set info: {0}: {1}'.format(str(e), msg))
 
     if status is False:
         module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations)
