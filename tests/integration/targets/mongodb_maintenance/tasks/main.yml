@@ -27,6 +27,14 @@
     - localhost:3003
   register: mongodb_replicaset
 
+- name: Check the status of the replicaset with mongodb_status module
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ mongodb_replicaset1 }}'
+    poll: 5
+    interval: 10
+
 - name: Add mongodb admin user
   community.mongodb.mongodb_user:
     login_host: localhost
@@ -38,16 +46,6 @@
     roles:
     - root
     state: present
-
-- name: Check the status of the replicaset with mongodb_status module (auth)
-  community.mongodb.mongodb_status:
-    login_host: localhost
-    login_port: 3001
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    replica_set: '{{ mongodb_replicaset1 }}'
-    poll: 5
-    interval: 10
 
 - name: Test with bad password
   community.mongodb.mongodb_maintenance:
