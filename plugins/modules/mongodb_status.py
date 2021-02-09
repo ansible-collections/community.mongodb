@@ -263,6 +263,7 @@ def replicaset_status_poll(client, module):
 
             if module.params['validate'] == "votes":  # Requires auth
                 votes = replicaset_votes(config)
+
             status, msg = replicaset_good(statuses, module, votes)
 
             if status:  # replicaset looks good
@@ -398,7 +399,7 @@ def main():
         replicaset = return_doc['replicaset']
         iterations = return_doc['iterations']
     except Exception as e:
-        module.fail_json(msg='Unable to query replica_set info: {0}: {1}'.format(str(e), msg) )  # TODO Pass back msg here? Contains useful info often
+        module.fail_json(msg='Unable to query replica_set info: {0}: {1}'.format(str(e), msg))
 
     if status is False:
         module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations)
