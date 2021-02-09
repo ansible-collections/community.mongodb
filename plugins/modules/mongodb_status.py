@@ -42,14 +42,15 @@ options:
   validate:
     description:
       - The type of validate to perform on the replicaset.
-      - "default" - Suitable for most purposes. Validate that there are an odd
-         number of servers and one is PRIMARY and the remainder are in a SECONDARY
-         or ARBITER state.
-      - "votes" - Check the number of votes is odd and one is a PRIMARY and the
-         remainder are in a SECONDARY or ARBITER state. Authentication is
-         required here to get the replicaset configuration.
-      - "minimal" - Just checks that one server is in a PRIMARY state with the
+      - default, Suitable for most purposes. Validate that there are an odd
+        number of servers and one is PRIMARY and the remainder are in a SECONDARY
+        or ARBITER state.
+      - votes, Check the number of votes is odd and one is a PRIMARY and the
+        remainder are in a SECONDARY or ARBITER state. Authentication is
+        required here to get the replicaset configuration.
+      - minimal, Just checks that one server is in a PRIMARY state with the
          remainder being SECONDARY or ARBITER.
+    type: str
     choices:
        - default
        - votes
