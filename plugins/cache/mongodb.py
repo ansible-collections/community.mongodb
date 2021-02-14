@@ -55,11 +55,12 @@ from ansible.plugins.cache import BaseCacheModule
 from ansible.utils.display import Display
 from ansible.module_utils._text import to_native
 
+pymongo_missing = False
 
 try:
     import pymongo
 except ImportError:
-    raise AnsibleError("The 'pymongo' python module is required for the mongodb fact cache, 'pip install pymongo>=3.0'")
+    pymongo_missing = True
 
 display = Display()
 
@@ -70,6 +71,8 @@ class CacheModule(BaseCacheModule):
     """
     def __init__(self, *args, **kwargs):
         try:
+            if pymongo_missing:
+                raise AnsibleError("The 'pymongo' python module is required for the mongodb fact cache, 'pip install pymongo>=3.0'")
             super(CacheModule, self).__init__(*args, **kwargs)
             self._connection = self.get_option('_uri')
             self._timeout = int(self.get_option('_timeout'))
