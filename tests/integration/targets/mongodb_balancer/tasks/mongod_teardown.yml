@@ -15,7 +15,7 @@
     path: /proc/{{ item }}/status
     state: absent
     delay: 1
-  with_items: '{{ pids_of_mongod }}'
+  with_items: '{{ pids_of_mongod.pids }}'
 
 - name: Ensure that all ports are closed
   wait_for:
