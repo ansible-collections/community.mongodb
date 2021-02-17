@@ -207,6 +207,7 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     stepdown_seconds: 120
+    poll: 3
   register: stepdown
 
 - assert:
