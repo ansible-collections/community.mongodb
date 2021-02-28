@@ -59,15 +59,6 @@ jobs:
       - name: Wait for controller to be ready
         run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
 
-    #- name: Debug step
-    #    run: kubectl api-resources | grep mongo -i
-
-    #  - name: Debug step
-    #    run: kubectl get pods --all-namespaces
-
-    #  - name: Debug step
-    #    run: kubectl describe pod -n ansible-operator-system ansible-operator-controller-manager
-
       - name: Setup the k8 mongodb env
         run: |
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
@@ -84,12 +75,6 @@ jobs:
 
       - name: Forward the local port 27017 to k8
         run: kubectl port-forward mongodb-sample-0 27017:27017 --address 0.0.0.0 &
-
-    #  - name: Get the pods (Debug)
-    #    run: kubectl get pods --all-namespaces
-
-    #  - name: List forwards (Debug)
-    #    run: kubectl get svc --all-namespaces
 
       - name: Copy the certs to the localhost
         run: |
@@ -118,9 +103,6 @@ jobs:
                     --authenticationMechanism MONGODB-X509 \
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
-
-    #  - name: Get the mongodb log
-    #    run: kubectl logs mongodb-sample-0
 
       - name: Set up Python 3.6
         uses: actions/setup-python@v1
@@ -152,9 +134,6 @@ jobs:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install pymongo
-
-    #  - name: Debug step
-    #    run: netstat -tulpen
 
       - name: Run mongodb_user module with membership auth
         run: ansible localhost -m community.mongodb.mongodb_user -a "login_host=localhost login_port=27017 login_database='$external' database='admin' password='secret' ssl=true ssl_ca_certs=ca.crt ssl_certfile=tls.key auth_mechanism=MONGODB-X509 name="test" state=present connection_options='tlsAllowInvalidHostnames=true'"
