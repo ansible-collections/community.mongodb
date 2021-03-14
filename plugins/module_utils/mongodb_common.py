@@ -154,7 +154,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         ssl_ca_certs=dict(type='str', default=None),
         ssl_crlfile=dict(type='str', default=None),
         ssl_certfile=dict(type='str', default=None),
-        ssl_keyfile=dict(type='str', default=None),
+        ssl_keyfile=dict(type='str', default=None, no_log=True),
         ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
         auth_mechanism=dict(type='str',
                             required=False,
