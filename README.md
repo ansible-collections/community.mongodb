@@ -13,6 +13,8 @@ The modules present in Ansible 2.9 are included in this collection and will bene
 
 As this is an independent collection, it can be released on its own release cadence.
 
+If you like this collection please give us a rating on [Ansible Galaxy](https://galaxy.ansible.com/community/mongodb).
+
 ## Running the integration and unit tests
 
 * Requirements
@@ -106,4 +108,4 @@ Any contribution is welcome and we only ask contributors to:
 
 GNU General Public License v3.0 or later
 
-See LICENCING to see the full text. 
+See LICENCING to see the full text.
