@@ -271,12 +271,14 @@ def main():
         # Check driver and server version compatibility:
         check_compatibility(module, srv_version, driver_version)
     except Exception as excep:
-        if "not authorized on" not in str(excep) and "there are no users authenticated" not in str(excep):
+        if hasattr(excep, 'code') and excep.code == 13:
+            if login_user is None or login_password is None:
+                raise excep
+            client.admin.authenticate(login_user, login_password, source=login_database)
+            check_compatibility(module, client)
+        else:
             raise excep
-        if login_user is None or login_password is None:
-            raise excep
-        client.admin.authenticate(login_user, login_password, source=login_database)
-        check_compatibility(module, client)
+
 
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
