@@ -271,12 +271,13 @@ def main():
         # Check driver and server version compatibility:
         check_compatibility(module, srv_version, driver_version)
     except Exception as excep:
-        if "not authorized on" not in str(excep) and "there are no users authenticated" not in str(excep):
-            raise excep
-        if login_user is None or login_password is None:
-            raise excep
-        client.admin.authenticate(login_user, login_password, source=login_database)
-        check_compatibility(module, client)
+        if hasattr(excep, 'code') and excep.code == 13:
+            if login_user is None or login_password is None:
+                raise excep
+            client.admin.authenticate(login_user, login_password, source=login_database)
+            check_compatibility(module, client)
+        else:
+            module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
 
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
@@ -289,7 +290,7 @@ def main():
     try:
         client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
     except Exception as excep:
-        if "not authorized on" in str(excep) or "command listDatabases requires authentication" in str(excep):
+        if hasattr(excep, 'code') and excep.code == 13:
             if login_user is not None and login_password is not None:
                 try:
                     client.admin.authenticate(login_user, login_password, source=login_database)
