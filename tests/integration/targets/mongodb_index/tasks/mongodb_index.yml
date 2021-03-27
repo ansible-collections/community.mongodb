@@ -48,7 +48,7 @@
     - result.indexes_created == ["test.rhys.myindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -98,7 +98,7 @@
       - result.indexes_dropped == ["test.rhys.myindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -136,7 +136,7 @@
       - result.indexes_created == ["test.rhys.myuniqueindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -167,7 +167,7 @@
       - result.indexes_dropped == ["test.rhys.myuniqueindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -202,7 +202,7 @@
       - result.indexes_created == ["test.rhys.myttlindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -233,7 +233,7 @@
       - result.indexes_dropped == ["test.rhys.myttlindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -268,7 +268,7 @@
       - result.indexes_created == ["test.rhys.mysparseindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -299,7 +299,7 @@
       - result.indexes_dropped == ["test.rhys.mysparseindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -336,7 +336,7 @@
       - result.indexes_created == ["test.rhys.mypartialindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -368,7 +368,7 @@
       - result.indexes_dropped == ["test.rhys.mypartialindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -403,7 +403,7 @@
       - result.indexes_created == ["test.rhys.idxbackground"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
@@ -433,7 +433,7 @@
       - result.indexes_dropped == ["test.rhys.idxbackground"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 27017 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
   register: output
 
 - debug:
