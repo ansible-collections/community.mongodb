@@ -1,6 +1,7 @@
 - name: Kill all mongod processes
   command: pkill  -{{ kill_signal }} mongod
   ignore_errors: true
+
 - name: Kill all mongos processes
   command: pkill  -{{ kill_signal }} mongos
   ignore_errors: true
@@ -41,5 +42,6 @@
   - mongod3005
   - mongod3006
   - config
+  
 - name: Remove all mongod sock files
   shell: rm -Rf /tmp/mongodb*.sock

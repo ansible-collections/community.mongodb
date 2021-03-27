@@ -1,11 +1,1 @@
----
-- include_tasks: mongod_stop.yml
-
-- name: Remove all mongod folders
-  file:
-    path: '{{ remote_tmp_dir }}/mongod{{ item }}'
-    state: absent
-  with_items: '{{ mongodb_nodes }}'
-
-- name: Remove all mongod sock files
-  shell: rm -Rf /tmp/mongodb*.sock
+master_tasks/mongod_teardown.yml
