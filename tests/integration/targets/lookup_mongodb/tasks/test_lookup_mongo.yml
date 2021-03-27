@@ -39,9 +39,9 @@
 - include_tasks: mongod_teardown.yml
 - include_tasks: mongod_singlenode.yml
 
-- name: Wait up to 300 seconds for port 27017 (mongodb) to become open on the host, don't start checking for 10 seconds
+- name: Wait up to 300 seconds for port 3001 (mongodb) to become open on the host, don't start checking for 10 seconds
   wait_for:
-    port: 27017
+    port: 3001
 
 - name: "make a simple query"
   debug: msg="{{ lookup('community.mongodb.mongodb', mongodb_parameters ).pid }}"
