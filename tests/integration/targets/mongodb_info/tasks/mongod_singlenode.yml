@@ -5,7 +5,7 @@
 
 - set_fact:
     mongodb_nodes:
-    - 27017
+    - 3001
 
 - name: Create directories for mongod processes
   file:
