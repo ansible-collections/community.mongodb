@@ -4,7 +4,7 @@
 # Simple index
 - name: Create an index on a collection (check mode)
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -27,7 +27,7 @@
 
 - name: Create an index on a collection
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -60,7 +60,7 @@
 
 - name: Drop the index we just created (check mode)
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -80,7 +80,7 @@
 
 - name: Drop the index we just created
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -115,7 +115,7 @@
 # UNIQUE
 - name: Add a unique index
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -149,7 +149,7 @@
 
 - name: Drop the unique index we just created
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -181,7 +181,7 @@
 # TTL
 - name: Add a ttl index
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -215,7 +215,7 @@
 
 - name: Drop the ttl index we just created
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -247,7 +247,7 @@
 # SPARSE
 - name: Add a sparse index
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -281,7 +281,7 @@
 
 - name: Drop the sparse index we just created
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -313,7 +313,7 @@
 # PARTIAL
 - name: Add a partial index
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -350,7 +350,7 @@
 
 - name: Drop the partial index we just created
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -382,7 +382,7 @@
 # Background. Option ignored from 4.2
 - name: Add a index in the background (deprecated)
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -415,7 +415,7 @@
 
 - name: Drop the background index we just created
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -446,7 +446,7 @@
 # Module validation tests
 - name: Missing database key
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -468,7 +468,7 @@
 
 - name: database key not a string
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -492,7 +492,7 @@
 
 - name: collection key not a string
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -516,7 +516,7 @@
 
 - name: Check when key spec for index is not a dict
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -538,7 +538,7 @@
 
 - name: Check when options is not a dict
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -560,7 +560,7 @@
 
 - name: Check when "name" key is not in options dict
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -583,7 +583,7 @@
 
 - name: Check when state is something other that "absent" or "present"
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -606,7 +606,7 @@
 
 - name: Check when state is present and no keys are supplied
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -627,7 +627,7 @@
 # EOF VALIDATION
 - name: Check creating 5 index all with multiple options specified
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"
@@ -694,7 +694,7 @@
 
 - name: Drop and create a bunch of indexes
   community.mongodb.mongodb_index:
-    login_port: 27017
+    login_port: 3001
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_database: "admin"

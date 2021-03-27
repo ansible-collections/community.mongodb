@@ -24,7 +24,7 @@
       database: 'local'
       #optional
       collection: "startup_log"
-      connection_string: "mongodb://localhost/"
+      connection_string: "mongodb://localhost:3001/"
       extra_connection_parameters: { "connectTimeoutMS": 5000 }
       # extra_connection_parameters: { "ssl": True , "ssl_certfile": /etc/self_signed_certificate.pem" }
       #optional query  parameters, we accept any parameter from the normal mongodb query.
