@@ -1,12 +1,12 @@
 #################################################################
-# This file includes tasks to setup a shared cluster with ssl   #
+# This file includes tasks to setup a sharded cluster with ssl  #
 # certificates. We should test all MongoDB modules in this file.#
 #################################################################
 - include_tasks: mongod_teardown.yml
 
 - include_tasks: create_ssl_certs.yml
 
-# Create the shared cluster
+# Create the sharded cluster
 
 - name: Create directories for mongod processes
   file:
