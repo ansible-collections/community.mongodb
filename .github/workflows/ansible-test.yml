@@ -85,7 +85,7 @@ jobs:
 
       - name: Generate module list
         run: |
-          find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' | cut -d '/' -f4 | sort | awk NF | jq -sRc 'split("\n") | map(select(length > 0))' > int_test_modules.json
+          find tests/integration/targets -type d -maxdepth 1 -not -name 'setup*' -not -name 'master_tasks' | cut -d '/' -f4 | sort | awk NF | jq -sRc 'split("\n") | map(select(length > 0))' > int_test_modules.json
 
       - name: Set output variable
         id: json-list

@@ -13,7 +13,7 @@
 
 - name: Create admin user with module
   community.mongodb.mongodb_user:
-    login_port: 27017
+    login_port: 3001
     database: admin
     name: '{{ mongodb_admin_user }}'
     password: '{{ mongodb_admin_password }}'
@@ -31,7 +31,7 @@
 - name: Wait for port 27017 to be drained
   wait_for:
     host: 0.0.0.0
-    port: 27017
+    port: 3001
     state: stopped
 
 - name: Restart mongod process with auth
@@ -53,14 +53,14 @@
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    login_port: 27017
+    login_port: 3001
     eval: "db = db.getSiblingDB('test'); db.rhys.insert({ 'foo': 'bar' }); db = db.getSiblingDB('rhys'); db.rhys.insert({ 'foo': 'bar' });"
 
 - name: Create admin user in test and rhys dbs
   community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    login_port: 27017
+    login_port: 3001
     database: "{{ item }}"
     name: '{{ mongodb_admin_user }}'
     password: '{{ mongodb_admin_password }}'
@@ -75,7 +75,7 @@
   community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
-    login_port: 27017
+    login_port: 3001
     database: rhys
     name: "{{ item }}"
     password: secret
