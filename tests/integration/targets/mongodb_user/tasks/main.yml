@@ -337,4 +337,21 @@
     - '''dbAdmin'' not in admin_myuser.stdout'
     - '''userAdmin'' in admin_myuser.stdout'
 
+- name: Add replicaset connectivity test
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3002
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: rs_test
+    password: 'secret'
+    roles: root
+    state: present
+  register: rs_test
+
+- assert:
+    that:
+      - "rs_test.changed"
+
 - include_tasks: mongod_teardown.yml
