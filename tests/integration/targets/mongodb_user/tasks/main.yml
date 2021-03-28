@@ -339,6 +339,8 @@
 
 - name: Add replicaset connectivity test
   community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
     login_port: 3002
     replica_set: '{{ current_replicaset }}'
     database: admin
