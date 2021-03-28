@@ -369,7 +369,7 @@ def main():
         # Check driver and server version compatibility:
         check_compatibility(module, srv_version, driver_version)
     except Exception as excep:
-        if excep.code != 13:
+        if hasattr(excep, 'code') and excep.code == 13:
             raise excep
         if login_user is None or login_password is None:
             raise excep
