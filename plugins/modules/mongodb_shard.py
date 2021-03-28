@@ -280,7 +280,7 @@ def main():
             # Check driver and server version compatibility:
             check_compatibility(module, srv_version, driver_version)
         except Exception as excep:
-            if excep.code == 13:
+            if hasattr(excep, 'code') and excep.code == 13:
                 if login_user is not None and login_password is not None:
                     client.admin.authenticate(login_user, login_password, source=login_database)
                     check_compatibility(module, client)
@@ -300,7 +300,7 @@ def main():
         try:
             client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
         except Exception as excep:
-            if excep.code == 13:
+            if hasattr(excep, 'code') and excep.code == 13:
                 if login_user is not None and login_password is not None:
                     client.admin.authenticate(login_user, login_password, source=login_database)
                 else:
