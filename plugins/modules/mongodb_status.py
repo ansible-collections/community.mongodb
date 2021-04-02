@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r'''
 ---
 module: mongodb_status
-short_description: Validates the status of the cluster.
+short_description: Validates the status of the replicaset.
 description:
-  - Validates the status of the cluster.
+  - Validates the status of the replicaset.
   - The module expects all replicaset nodes to be PRIMARY, SECONDARY or ARBITER.
   - Will wait until a timeout for the replicaset state to converge if required.
   - Can also be used to lookup the current PRIMARY member (see examples).
