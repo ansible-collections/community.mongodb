@@ -171,7 +171,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
     def test_member_state(self):
         client = MongoClient(host=['localhost:27017'],
-                             user='user',
+                             username='user',
                              password='password',
                              replicaSet='replset')
         ms = mongodb_common.member_state(client)
