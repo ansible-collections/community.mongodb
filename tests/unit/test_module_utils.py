@@ -8,6 +8,7 @@ path = "{0}/../../plugins/module_utils".format(path)
 sys.path.append(path)
 import mongodb_common
 from distutils.version import LooseVersion
+from pymongo import MongoClient
 
 
 class FakeAnsibleModule:
