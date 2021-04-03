@@ -8,6 +8,7 @@ path = "{0}/../../plugins/module_utils".format(path)
 sys.path.append(path)
 import mongodb_common
 from distutils.version import LooseVersion
+from pymongo import MongoClient
 
 
 class FakeAnsibleModule:
@@ -167,6 +168,39 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert ssl_dict["four"] == '4'
         assert ssl_dict["five"] == '5'
         assert ssl_dict["authMechanism"] == "MONGODB-X509"
+
+    def test_member_state(self):
+        client = MongoClient(host=['localhost:27017'],
+                             username='user',
+                             password='password',
+                             replicaSet='replset')
+        ms = mongodb_common.member_state(client)
+        assert ms == "PRIMARY" or ms == "SECONDARY"
+
+    def test_index_exists(self):
+        client = MongoClient(host=['localhost:27017'],
+                             username='user',
+                             password='password',
+                             replicaSet='replset')
+        mongodb_common.create_index(client,
+                                    'test',
+                                    'rhys',
+                                    {'username': 1},
+                                    {"name": "test_index"})
+        index_exists = mongodb_common.index_exists(client,
+                                                   'test',
+                                                   'rhys',
+                                                   'test_index')
+        assert isinstance(index_exists, bool) and index_exists
+        mongodb_common.drop_index(client,
+                                  'test',
+                                  'rhys',
+                                  'test_index')
+        index_exists = mongodb_common.index_exists(client,
+                                                   'test',
+                                                   'rhys',
+                                                   'test_index')
+        assert isinstance(index_exists, bool) and not index_exists
 
 
 if __name__ == '__main__':

@@ -58,8 +58,26 @@ jobs:
           max_attempts: 3
           command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
+      - name: Install mongodb
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: sudo apt-get install -y mongodb-org
+
+      - name: Install python libs
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install mtools pymongo psutil coverage==4.5.4 pytest-xdist
+
+      - name: Start a replicaset with mtools (3 nodes, starting from port 27017)
+        run: mlaunch --replicaset --auth
+        working-directory: /home/runner/work/
+
       - name: Run unit tests
-        run: ansible-test units --docker -v --color --python 3.6 --coverage
+        run: ansible-test units -v --color --python 3.6 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
@@ -67,6 +85,9 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           fail_ci_if_error: false
+
+      - name: Clean up mlaunch replicaset
+        run: mtools stop --auth-user user --auth-password password || true
 
   integration_matrix:
     runs-on: ubuntu-20.04
