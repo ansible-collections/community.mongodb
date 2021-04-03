@@ -70,7 +70,7 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install mtools pymongo
+          command: pip install mtools pymongo psutil
 
       - name: Start a replicaset with mtools (3 nodes, starting from port 27017)
         run: mlaunch --replicaset -auth
