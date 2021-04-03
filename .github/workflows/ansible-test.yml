@@ -74,6 +74,7 @@ jobs:
 
       - name: Start a replicaset with mtools (3 nodes, starting from port 27017)
         run: mlaunch --replicaset -auth
+        working-directory: /home/runner/work/
 
       - name: Run unit tests
         run: ansible-test units --docker -v --color --python 3.6 --coverage
