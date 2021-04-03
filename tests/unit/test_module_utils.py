@@ -177,6 +177,31 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         ms = mongodb_common.member_state(client)
         assert ms == "PRIMARY" or ms == "SECONDARY"
 
+    def test_index_exists(self):
+        client = MongoClient(host=['localhost:27017'],
+                             username='user',
+                             password='password',
+                             replicaSet='replset')
+        mongodb_common.create_index(client,
+                                    'test',
+                                    'rhys',
+                                    'username',
+                                    { "name": "test_index" })
+        index_exists = mongodb_common.index_exists(client,
+                                                   'test',
+                                                   'rhys',
+                                                   'test_index')
+        assert isinstance(index_exists, bool) and index_exists
+        mongodb_common.drop_index(client,
+                                  'test',
+                                  'rhys',
+                                  'test_index')
+        index_exists = mongodb_common.index_exists(client,
+                                                   'test',
+                                                   'rhys',
+                                                   'test_index')
+        assert isinstance(index_dropped, bool) and not index_exists
+
 
 if __name__ == '__main__':
     unittest.main()
