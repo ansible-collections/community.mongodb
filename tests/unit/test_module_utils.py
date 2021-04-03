@@ -200,7 +200,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                                                    'test',
                                                    'rhys',
                                                    'test_index')
-        assert isinstance(index_dropped, bool) and not index_exists
+        assert isinstance(index_exists, bool) and not index_exists
 
 
 if __name__ == '__main__':
