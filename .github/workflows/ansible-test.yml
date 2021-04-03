@@ -86,9 +86,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: Clean up mlaunch replicaset
-        run: mtools stop --auth-user user --auth-password password
-        with:
-          fail_ci_if_error: false
+        run: mtools stop --auth-user user --auth-password password || true
 
   integration_matrix:
     runs-on: ubuntu-20.04
