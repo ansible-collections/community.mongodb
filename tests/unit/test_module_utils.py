@@ -185,8 +185,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         mongodb_common.create_index(client,
                                     'test',
                                     'rhys',
-                                    'username',
-                                    { "name": "test_index" })
+                                    {'username': 1},
+                                    {"name": "test_index"})
         index_exists = mongodb_common.index_exists(client,
                                                    'test',
                                                    'rhys',
