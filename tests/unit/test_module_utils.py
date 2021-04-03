@@ -169,5 +169,13 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert ssl_dict["authMechanism"] == "MONGODB-X509"
 
 
+    def test_member_state(self):
+        client = MongoClient(host=['localhost:27017'],
+                             user='user',
+                             password='password',
+                             replicaSet='replset')
+        ms = mongodb_common.member_state(client)
+        assert ms == "PRIMARY" or ms == "SECONDARY"
+
 if __name__ == '__main__':
     unittest.main()
