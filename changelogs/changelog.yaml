@@ -50,3 +50,22 @@ releases:
     bugfixes:
       - 235 - Fix namespace.
     release_date: '2020-11-04'
+  1.1.2:
+    bugfixes:
+      - 255 - Add replica_set param to mongodb_index module.
+      - 252 - Fix config template override in various roles.
+      - 264 - Only add force parameter to shutdown command when set to true.
+      - 275 - Use OrderedDict class in the following modules, mongodb_balancer, mongodb_oplog, mongodb_shutdown.
+    release_date: '2021-01-06'
+  1.2.0:
+    bugfixes:
+      - 281 - mongodb_linux Fixes disable-transparent-huge-pages.service idempotency.
+      - 282 - Add restart handler, and bool variable to control to mongofb_config/mongod/mongos roles.
+      - 285 - Output users and roles dict by database to avoid overwriting entries.
+      - 287 - Fixes return value on older versions of MongoDB.
+      - 290 - Adds pseudo-idempotency feature to module.
+    release_date: '2021-01-31'
+  1.2.1:
+    bugfixes:
+      - 304 - Adds validate parameter to mongodb_status module.
+    release_date: '2021-02-09'
