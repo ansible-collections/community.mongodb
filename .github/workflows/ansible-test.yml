@@ -133,6 +133,7 @@ jobs:
           - ubuntu1804
           - centos8
         ansible_version:
+          - stable-2.11
           - stable-2.10
           - devel
     steps:
