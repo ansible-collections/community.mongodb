@@ -40,6 +40,12 @@ jobs:
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
+    strategy:
+      matrix:
+        ansible_version:
+          - stable-2.11
+          - stable-2.10
+          - devel
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -51,12 +57,12 @@ jobs:
         with:
           python-version: 3.6
 
-      - name: Install ansible-base (devel)
+      - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Install mongodb
         uses: nick-invision/retry@v2
