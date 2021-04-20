@@ -77,7 +77,7 @@ jobs:
         working-directory: /home/runner/work/
 
       - name: Run unit tests
-        run: ansible-test units -v --color --coverage
+        run: ansible-test units -v --color --python 3.6 --coverage
         working-directory: ansible_collections/community/mongodb
 
       - name: Debug step
