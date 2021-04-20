@@ -43,8 +43,6 @@ jobs:
     strategy:
       matrix:
         ansible_version:
-          - stable-2.11
-          - stable-2.10
           - devel
     steps:
       - name: Check out code
@@ -52,10 +50,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.6
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: 3.6
+          python-version: 3.8
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -83,11 +81,7 @@ jobs:
         working-directory: /home/runner/work/
 
       - name: Run unit tests
-        run: ansible-test units -v --color --python 3.6 --coverage
-        working-directory: ansible_collections/community/mongodb
-
-      - name: Debug step
-        run: pwd && ls -lh && find tests/
+        run: ansible-test units -v --color --python 3.8 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
