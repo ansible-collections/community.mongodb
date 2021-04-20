@@ -78,11 +78,12 @@ jobs:
 
       - name: Run unit tests
         run: ansible-test units -v --color --python 3.6 --coverage
-        working-directory: ./ansible_collections/community/mongodb
+      
+      - name: Debug step
+        run: pwd && ls -lh
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
-        working-directory: ./ansible_collections/community/mongodb
 
       - uses: codecov/codecov-action@v1
         with:
