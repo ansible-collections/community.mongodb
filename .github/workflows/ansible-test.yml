@@ -80,7 +80,7 @@ jobs:
         run: ansible-test units -v --color --python 3.6 --coverage
       
       - name: Debug step
-        run: pwd && ls -lh
+        run: pwd && ls -lh && find tests/
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
