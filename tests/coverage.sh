@@ -20,7 +20,7 @@ if find tests/output/coverage/ -mindepth 1 -name '.*' -prune -o -print -quit | g
         flags="${flags//=/,}"
         flags="${flags//[^a-zA-Z0-9_,]/_}"
 
-        bash <(curl -s https://codecov.io/bash) \
+        bash <(curl -s https://ansible-ci-files.s3.us-east-1.amazonaws.com/codecov/codecov.sh) \
             -f "${file}" \
             -F "${flags}" \
             -t c481ab27-5cd1-4c7d-bf2f-3f0ed4c836cc \
