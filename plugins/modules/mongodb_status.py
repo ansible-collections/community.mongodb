@@ -94,7 +94,7 @@ EXAMPLES = r'''
 
 RETURN = r'''
 failed:
-  description: If the mnodule had failed or not.
+  description: If the module has failed or not.
   returned: always
   type: bool
 iterations:
