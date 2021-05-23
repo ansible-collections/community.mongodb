@@ -53,6 +53,7 @@ Install MongoDB preparing hosts for a Replicaset
             replica_set: "{{ repl_set_name }}"
             members: "{{ members }}"
           when: ansible_hostname == "mongodb1"
+          register: repl
 
         - name: Ensure replicaset has reached a converged state
           community.mongodb.mongodb_status:
