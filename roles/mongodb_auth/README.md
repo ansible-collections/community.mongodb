@@ -49,16 +49,19 @@ Install MongoDB preparing hosts for a Replicaset
           community.mongodb.mongodb_replicaset:
             login_database: "admin"
             login_host: localhost
-            login_port: "{{ mongod_port }}"
-            replica_set: "{{ repl_set_name }}"
-            members: "{{ members }}"
+            login_port: 27018
+            replica_set: "rs0"
+            members:
+              - "mongodb1"
+              - "mongodb2"
+              - "mongodb3"
           when: ansible_hostname == "mongodb1"
           register: repl
 
         - name: Ensure replicaset has reached a converged state
           community.mongodb.mongodb_status:
-            replica_set: "{{ repl_set_name }}"
-            login_port: "{{ mongod_port }}"
+            replica_set: "rs0"
+            login_port: 27018
             poll: 10
             interval: 10
           when: repl.changed == True
@@ -67,8 +70,8 @@ Install MongoDB preparing hosts for a Replicaset
           include_role:
             name: mongodb_auth
           vars:
-            mongod_host: 127.0.0.1
-            mongodb_admin_pwd: f00b@r
+            mongod_host: "127.0.0.1"
+            mongodb_admin_pwd: "f00b@r"
           when: ansible_hostname == "mongodb1"
 ```
 
