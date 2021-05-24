@@ -40,8 +40,8 @@ Install MongoDB preparing hosts for a Replicaset
 ```yaml
     - hosts: servers
       roles:
-         - { role: mongodb_repository }
-         - { role: mongodb_mongod, mongod_port: 27018, sharding: true }
+         - { role: "community.mongodb.mongodb_repository" }
+         - { role: "community.mongodb.mongodb_mongod" }
 
       tasks:
 
@@ -49,7 +49,6 @@ Install MongoDB preparing hosts for a Replicaset
           community.mongodb.mongodb_replicaset:
             login_database: "admin"
             login_host: localhost
-            login_port: 27018
             replica_set: "rs0"
             members:
               - "mongodb1"
@@ -61,7 +60,6 @@ Install MongoDB preparing hosts for a Replicaset
         - name: Ensure replicaset has reached a converged state
           community.mongodb.mongodb_status:
             replica_set: "rs0"
-            login_port: 27018
             poll: 10
             interval: 10
           when: repl.changed == True
