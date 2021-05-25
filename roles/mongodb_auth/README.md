@@ -35,14 +35,42 @@ mongodb_repository
 Example Playbook
 ----------------
 
-Install MongoDB preparing hosts for a Sharded Cluster.
+Install MongoDB preparing hosts for a Replicaset
 
 ```yaml
     - hosts: servers
       roles:
-         - { role: mongodb_repository }
-         - { role: mongodb_mongod, mongod_port: 27018, sharding: true }
-         - { role: mongodb_auth, mongod_port: 27018, mongod_host: 127.0.0.1, mongodb_admin_pwd: f00b@r }
+         - { role: "community.mongodb.mongodb_repository" }
+         - { role: "community.mongodb.mongodb_mongod" }
+
+      tasks:
+
+        - name: Initialise MongoDB Replicaset rs0
+          community.mongodb.mongodb_replicaset:
+            login_database: "admin"
+            login_host: localhost
+            replica_set: "rs0"
+            members:
+              - "mongodb1"
+              - "mongodb2"
+              - "mongodb3"
+          when: ansible_hostname == "mongodb1"
+          register: repl
+
+        - name: Ensure replicaset has reached a converged state
+          community.mongodb.mongodb_status:
+            replica_set: "rs0"
+            poll: 10
+            interval: 10
+          when: repl.changed == True
+
+        - name: Import mongodb_auth role
+          include_role:
+            name: mongodb_auth
+          vars:
+            mongod_host: "127.0.0.1"
+            mongodb_admin_pwd: "f00b@r"
+          when: ansible_hostname == "mongodb1"
 ```
 
 License
