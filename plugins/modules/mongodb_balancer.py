@@ -16,7 +16,7 @@ description:
   - Start or stop the balancer.
   - Adjust the cluster chunksize.
   - Enable or disable autosplit.
-  - Adds or remove a balancer window.
+  - Add or remove a balancer window.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
