@@ -63,7 +63,7 @@
 - name: Ensure NUMA zone reclaim is disabled
   sysctl:
     name: vm.zone_reclaim_mode
-    value: 0
+    value: "0"
     state: present
     reload: yes
   when: not is_docker.stat.exists
