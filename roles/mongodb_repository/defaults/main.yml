@@ -5,8 +5,8 @@ debian_packages:
   - curl
   - gnupg
 debian:
-  repo_opts: "{% if ansible_facts.distribution == 'Ubuntu' %} [ arch=amd64,arm64 ]{% endif %}"
-  component: "{% if ansible_facts.distribution == 'Ubuntu' %}multiverse{% else %}main{% endif %}"
+  repo_opts: "{{ '[ arch=amd64,arm64 ]' if ansible_facts.distribution == 'Ubuntu' else '' }}"
+  component: "{{ 'multiverse' if ansible_facts.distribution == 'Ubuntu' else 'main' }}"
   apt_key_url: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
   apt_repository_repo: "deb{{ debian.repo_opts }} https://repo.mongodb.org/apt/{{ ansible_facts.distribution|lower }} {{ ansible_facts.distribution_release }}/mongodb-org/{{ mongodb_version }} {{ debian.component }}"
 redhat:

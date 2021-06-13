@@ -16,6 +16,12 @@
   until: _apt is succeeded
   retries: 5
 
+- set_fact:
+    repo_opts: "{% if ansible_facts.distribution == 'Ubuntu' %} [ arch=amd64,arm64 ]{% endif %}"
+
+- set_fact:
+    component: "{% if ansible_facts.distribution == 'Ubuntu' %}multiverse{% else %}main{% endif %}"
+
 - name: Ensure MongoDB apt repository exists
   apt_repository:
     repo: "{{ debian.apt_repository_repo }}"
