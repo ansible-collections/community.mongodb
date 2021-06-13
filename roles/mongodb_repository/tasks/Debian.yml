@@ -10,7 +10,7 @@
 
 - name: Add apt key for MongoDB repository
   apt_key:
-    url: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+    url: "{{ debian.apt_key_url }}"
     state: present
   register: _apt
   until: _apt is succeeded
@@ -18,13 +18,9 @@
 
 - name: Ensure MongoDB apt repository exists
   apt_repository:
-    repo: "deb{{ repo_opts }} https://repo.mongodb.org/apt/{{ ansible_facts.distribution|lower }} {{ ansible_facts.distribution_release }}/mongodb-org/{{ mongodb_version }} {{ component }}"
+    repo: "{{ debian.apt_repository_repo }}"
     state: present
     filename: "mongodb-{{ mongodb_version }}"
-  vars:
-    # include initial space in repo_opts
-    repo_opts: "{% if ansible_facts.distribution == 'Ubuntu' %} [ arch=amd64,arm64 ]{% endif %}"
-    component: "{% if ansible_facts.distribution == 'Ubuntu' %}multiverse{% else %}main{% endif %}"
   register: _apt
   until: _apt is succeeded
   retries: 5

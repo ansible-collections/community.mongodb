@@ -2,7 +2,7 @@
 # tasks file for mongodb_repository (RedHat os_family)
 - name: Add mongodb.org gpgkey
   rpm_key:
-    key: https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc
+    key: "{{ redhat.rpm_key_key }}"
     state: present
   register: _yum
   until: _yum is succeeded
@@ -11,10 +11,10 @@
 - name: Ensure MongoDB yum repository exists
   yum_repository:
     name: "mongodb-{{ mongodb_version }}"
-    description: "Official MongoDB {{ mongodb_version }} yum repo"
-    baseurl: "https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/"
-    gpgcheck: true
-    gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+    description: "{{ redhat.yum_description }}"
+    baseurl: "{{ redhat.yum_baseurl }}"
+    gpgcheck: "{{ redhat.yum_gpgcheck }}"
+    gpgkey: "{{ redhat.yum_gpgkey }}"
   register: _yum
   until: _yum is succeeded
   retries: 5
