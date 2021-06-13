@@ -16,8 +16,6 @@ Defaults
 The following two dictionaries provide configuration details for the MongoDB repositories. Most users should not need to change these.
 
 debian:
-  repo_opts: Options for repository.
-  component: Component option for repository.
   apt_key_url: Apt Key Url.
   apt_repository_repo: Apr repository string.
 redhat:
