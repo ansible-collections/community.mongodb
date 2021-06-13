@@ -7,7 +7,25 @@ Role Variables
 --------------
 
 mongodb_version: Version of MongoDB. Default "4.2".
-debian_packages: Packages needs on Debian systems for this role.
+debian_packages: Packages needed on Debian systems for this role.
+
+
+Defaults
+----------
+
+The following two dictionaries provide configuration details for the MongoDB repositories. Most users should not need to change these.
+
+debian:
+  repo_opts: Options for repository.
+  component: Component option for repository.
+  apt_key_url: Apt Key Url.
+  apt_repository_repo: Apr repository string.
+redhat:
+  rpm_key_key: Rpm Key Url.
+  yum_baseurl: Yum repository base url.
+  yum_gpgkey: Yum repository gpg key.
+  yum_gpgcheck: Enable or disable gpg check. Boolean.
+  yum_description: Yum Repository Description.
 
 Example Playbook
 ----------------
