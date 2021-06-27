@@ -85,6 +85,7 @@ def main():
     login_database = module.params['login_database']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
+    ssl = module.params['ssl']
     option_name = module.params['option_name']
 
     connection_params = dict(
