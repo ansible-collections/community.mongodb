@@ -146,16 +146,14 @@ def zone_range_exists(client, namespace, min, max, tag):
     @max - The max range value
     @tag - The tag or Zone name
     '''
-    query = {
-        "_id": {
-            "ns": namespace,
-            "min": min,
-        },
-        "ns": namespace,
-        "min": min,
-        "max": max,
-        "tag": tag
-    }
+    query = cmd_doc = OrderedDict([
+        ("_id", OrderedDict([('ns', namespace),
+                            ('min', min)]),
+        ('ns', namespace),
+        ('min', min),
+        ('max', max),
+        ('tag', tag)
+    ])
     status = None
     result = client["config"].tags.find(query)
     if result:
