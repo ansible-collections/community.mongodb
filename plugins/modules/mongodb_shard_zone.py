@@ -155,7 +155,7 @@ def zone_range_exists(client, namespace, min, max, tag):
         ('max', max),
         ('tag', tag)])
     status = None
-    result = client["config"].tags.find(query)
+    result = client["config"].tags.find_one(query)
     if result:
         status = True
     else:
