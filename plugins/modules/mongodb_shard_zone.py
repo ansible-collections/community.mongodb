@@ -157,7 +157,7 @@ def zone_range_exists(client, namespace, min, max, tag):
         "tag": tag
     }
     status = None
-    result = client["config"].tags.find_one(query)
+    result = client["config"].tags.find(query)
     if result:
         status = True
     else:
@@ -172,7 +172,7 @@ def zone_exists(client, tag):
     @tag - The zone to check for
     '''
     status = None
-    result = client["config"].shards.find_one({"tags": tag})
+    result = client["config"].shards.find({"tags": tag})
     if result:
         status = True
     else:
