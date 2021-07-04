@@ -329,6 +329,8 @@ def main():
                 for range in ranges:
                     if zone_range_exists(client, namespace, range[0], range[1], zone_name):
                         range_count += 1
+                result['range_count'] = range_count
+                result['ranges'] = len(ranges)
                 if range_count == len(ranges):  # All ranges are the same
                     result['changed'] = False
                     result['msg'] = "All Zone Ranges present for {0}".format(zone_name)
