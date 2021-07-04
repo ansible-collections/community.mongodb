@@ -170,7 +170,7 @@ def zone_exists(client, tag):
     @tag - The zone to check for
     '''
     status = None
-    result = client["config"].shards.find({"tags": tag})
+    result = client["config"].shards.find_one({"tags": tag})
     if result:
         status = True
     else:
