@@ -140,6 +140,13 @@ except ImportError as excep:
 def zone_range_exists(client, namespace, min, max, tag):
     '''
     Returns true if a particular zone range exists
+    Record format seems to be different than the docs state in 4.4.6
+    { "_id" : ObjectId("60e2e7cff7c9d447440bb114"),
+      "ns" : "records.users",
+      "min" : { "zipcode" : "10001" },
+      "max" : { "zipcode" : "10281" },
+      "tag" : "NYC" }
+
     @client - MongoDB connection
     @namespace - In the form database.collection
     @min - The min range value
@@ -147,8 +154,8 @@ def zone_range_exists(client, namespace, min, max, tag):
     @tag - The tag or Zone name
     '''
     query = {
-        "_id.ns": namespace,
-        "_id.min": min,
+        #"_id.ns": namespace, 4.4.X Bug??? ObjectId given as id
+        #"_id.min": min,
         'ns': namespace,
         'min': min,
         'max': max,
