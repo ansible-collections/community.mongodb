@@ -146,10 +146,9 @@ def zone_range_exists(client, namespace, min, max, tag):
     @max - The max range value
     @tag - The tag or Zone name
     '''
-
-    id = OrderedDict([('ns', namespace), ('min', min)])
     query = OrderedDict([
-        ("_id", id),
+        ("_id.ns", namespace),
+        ("_id.min", min),
         ('ns', namespace),
         ('min', min),
         ('max', max),
