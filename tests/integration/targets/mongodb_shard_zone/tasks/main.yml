@@ -1,0 +1,844 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3001
+    - 3002
+    - 3003
+
+- include_tasks: mongod_replicaset.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset2 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3004
+    - 3005
+    - 3006
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Launch cfg server
+  command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
+    }}" --fork
+
+- name: Create replicaset1 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+
+- name: Create replicaset2 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3004
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset2 }}'
+    members:
+    - localhost:3004
+    - localhost:3005
+    - localhost:3006
+
+- name: Create config srv replicaset with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 4000
+    login_database: admin
+    replica_set: '{{ configsrv_replicaset }}'
+    validate: false
+    members:
+    - localhost:4000
+
+- name: Get config server replset mongo_output
+  command: mongo admin --port 4000 --eval "rs.status();"
+  register: cfg_replset_output
+
+- name: Assert that replset is a config server
+  assert:
+    that:
+    - '''"configsvr" : true'' in cfg_replset_output.stdout'
+    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.stdout'
+
+- name: Launch mongos
+  command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
+    "{{ remote_tmp_dir }}/tests/mongos.log" --port 27017 --fork
+
+- name: Copy script to host
+  template:
+    src: files/bash/ensure_primary.sh.j2
+    dest: /root/ensure_primary.sh
+
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
+- name: Ensure is_primary script exists on host
+  copy:
+    src: js/is_primary.js
+    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+
+- name: Ensure host reaches primary before proceeding 3001
+  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Ensure host reaches primary before proceeding 3004
+  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Add shard 1
+  community.mongodb.mongodb_shard:
+    login_user: admin
+    login_password: admin
+    shard: '{{ mongodb_replicaset1 }}/localhost:3001'
+    state: present
+
+- name: Add shard 2
+  community.mongodb.mongodb_shard:
+    login_user: admin
+    login_password: admin
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+
+- name: Get replicaset info
+  command: mongo admin --eval "sh.status()" --port 27017
+  register: mongo_output
+
+- name: Assert shard name is in mongo_output
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
+      in mongo_output.stdout'
+    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
+      in mongo_output.stdout'
+    - '''balancer'' in mongo_output.stdout'
+
+- name: Try to add zone ranges when a tag does not exist
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "zone.failed"
+      - "zone.msg == 'The tag NYC does not exist. You need to associate a tag with a shard before using this module. You can do that with the mongodb_shard_tag module.'"
+
+- name: Assign NYC tag to rs1
+  community.mongodb.mongodb_shard_tag:
+    name: "NYC"
+    shard: "rs1"
+    state: "present"
+  register: tag
+
+- assert:
+    that:
+      - "tag.changed == True"
+      - "tag.msg == 'The tag NYC was assigned to the shard rs1'"
+
+- name: Try to add zone ranges to NYC - check mode
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  check_mode: yes
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Try to add zone ranges to NYC
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: debug info
+  command: mongo config --port 27017 -eval "db.tags.find()"
+
+- name: Try to add zone ranges to NYC again - no change
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'All Zone Ranges present for NYC'"
+
+- name: Add a new record to NYC - check mode
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "present"
+  register: zone
+  check_mode: yes
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Add a new record to NYC - should change
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Run again no change NYC
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'All Zone Ranges present for NYC'"
+
+- name: Assign LAX tag to rs2
+  community.mongodb.mongodb_shard_tag:
+    name: "LAX"
+    shard: "rs2"
+    state: "present"
+  register: tag
+
+- assert:
+    that:
+      - "tag.changed == True"
+      - "tag.msg == 'The tag LAX was assigned to the shard rs2'"
+
+- name: Try to add zone ranges to LAX
+  community.mongodb.mongodb_shard_zone:
+    name: "LAX"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "20000" }, { "zipcode": "29999" }]
+      - [{ "zipcode": "30000" }, { "zipcode": "39999" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for LAX'"
+
+- name: Get shard info
+  command: mongo admin --port 27017 -eval "sh.status()"
+  register: shard_info
+
+- assert:
+    that:
+      - "'NYC' in shard_info.stdout"
+      - "'LAX' in shard_info.stdout"
+
+- name: Remove the LAX zone ranges - check mode
+  community.mongodb.mongodb_shard_zone:
+    name: "LAX"
+    namespace: "records.users"
+    state: "absent"
+  check_mode: yes
+  register: zone
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '2 zone ranges for LAX deleted.'"
+
+- name: Remove the LAX zone ranges
+  community.mongodb.mongodb_shard_zone:
+    name: "LAX"
+    namespace: "records.users"
+    state: "absent"
+  check_mode: no
+  register: zone
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '2 zone ranges for LAX deleted.'"
+
+- name: Remove the LAX zone ranges - no change
+  community.mongodb.mongodb_shard_zone:
+    name: "LAX"
+    namespace: "records.users"
+    state: "absent"
+  check_mode: no
+  register: zone
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'No zone ranges present for LAX'"
+
+- name: Delete one range from NYC - check mode
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "absent"
+  register: zone
+  check_mode: yes
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '1 zone ranges for NYC deleted.'"
+
+- name: Delete one range from NYC
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "absent"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '1 zone ranges for NYC deleted.'"
+
+- name: Delete one range from NYC - run again no change
+  community.mongodb.mongodb_shard_zone:
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "absent"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'The provided zone ranges are not present for NYC'"
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3001
+    - 3002
+    - 3003
+
+- include_tasks: mongod_replicaset.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset2 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3004
+    - 3005
+    - 3006
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset1 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+
+- name: Create replicaset2 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3004
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset2 }}'
+    members:
+    - localhost:3004
+    - localhost:3005
+    - localhost:3006
+
+- name: Launch cfg server
+  command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
+    }}" --fork
+
+- name: Create config srv replicaset with module
+  community.mongodb.mongodb_replicaset:
+    login_port: 4000
+    login_database: admin
+    replica_set: '{{ configsrv_replicaset }}'
+    validate: false
+    members:
+    - localhost:4000
+
+- name: Execute script for 3001
+  script: /root/ensure_primary.sh 3001 0
+
+- name: Execute script for 3004
+  script: /root/ensure_primary.sh 3004 0
+
+- name: Ensure host reaches primary before proceeding 3001
+  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Ensure host reaches primary before proceeding 3004
+  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Ensure host reaches primary before proceeding 4000
+  command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name:  admin user to each shard inc config rs
+  community.mongodb.mongodb_user:
+    login_host: localhost
+    login_port: '{{ item.port }}'
+    replica_set: '{{ item.rs }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+    - root
+    state: present
+  register: mongo_admin_user
+  with_items:
+  - port: 3001
+    rs: '{{ mongodb_replicaset1 }}'
+  - port: 3004
+    rs: '{{ mongodb_replicaset2 }}'
+  - port: 4000
+    rs: '{{ configsrv_replicaset }}'
+  when: test_mongo_auth == True
+
+- name: Murder all mongod processes
+  shell: pkill -{{ kill_signal }} mongod || true;
+
+- name: Getting pids for mongod
+  register: pids_of_mongod
+  community.general.pids:
+    name: mongod
+
+- name: Wait for all mongod processes to exit
+  wait_for:
+    path: /proc/{{ item }}/status
+    state: absent
+  with_items: '{{ pids_of_mongod.pids }}'
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3001
+    - 3002
+    - 3003
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_replicaset.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset2 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3004
+    - 3005
+    - 3006
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Launch cfg server with auth
+  command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
+    }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
+
+- name: Ensure host reaches primary before proceeding 3001
+  command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
+    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Ensure host reaches primary before proceeding 3004
+  command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
+    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+
+- name: Launch mongos
+  command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
+    "{{ remote_tmp_dir }}/mongos.log" --port 27017 --fork --keyFile {{ remote_tmp_dir
+    }}/my.key
+
+- name: Wait for mongos to become active
+  wait_for:
+    host: localhost
+    port: 4000
+    delay: 1
+
+- name: Add shard 1
+  community.mongodb.mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset1 }}/localhost:3001'
+    state: present
+
+- name: Add shard 2 - First
+  community.mongodb.mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+  register: myshard
+
+- assert:
+    that:
+      - myshard.changed == True
+
+# Tests with auth
+- name: Try to add zone ranges when a tag does not exist
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  ignore_errors: yes
+
+- assert:
+    that:
+      - "zone.failed"
+      - "zone.msg == 'The tag NYC does not exist. You need to associate a tag with a shard before using this module. You can do that with the mongodb_shard_tag module.'"
+
+- name: Assign NYC tag to rs1
+  community.mongodb.mongodb_shard_tag:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    shard: "rs1"
+    state: "present"
+  register: tag
+
+- assert:
+    that:
+      - "tag.changed == True"
+      - "tag.msg == 'The tag NYC was assigned to the shard rs1'"
+
+- name: Try to add zone ranges to NYC - check mode
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  check_mode: yes
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Try to add zone ranges to NYC
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Try to add zone ranges to NYC again - no change
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'All Zone Ranges present for NYC'"
+
+- name: Add a new record to NYC - check mode
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "present"
+  register: zone
+  check_mode: yes
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Add a new record to NYC - should change
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for NYC'"
+
+- name: Run again no change NYC
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "10001" }, { "zipcode": "10281" }]
+      - [{ "zipcode": "11201" }, { "zipcode": "11240" }]
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'All Zone Ranges present for NYC'"
+
+- name: Assign LAX tag to rs2
+  community.mongodb.mongodb_shard_tag:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "LAX"
+    shard: "rs2"
+    state: "present"
+  register: tag
+
+- assert:
+    that:
+      - "tag.changed == True"
+      - "tag.msg == 'The tag LAX was assigned to the shard rs2'"
+
+- name: Try to add zone ranges to LAX
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "LAX"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "20000" }, { "zipcode": "29999" }]
+      - [{ "zipcode": "30000" }, { "zipcode": "39999" }]
+    state: "present"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == 'Added zone ranges for LAX'"
+
+- name: Get shard info
+  command: mongo admin --port 27017 --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" -eval "sh.status()"
+  register: shard_info
+
+- assert:
+    that:
+      - "'NYC' in shard_info.stdout"
+      - "'LAX' in shard_info.stdout"
+
+- name: Remove the LAX zone ranges - check mode
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "LAX"
+    namespace: "records.users"
+    state: "absent"
+  check_mode: yes
+  register: zone
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '2 zone ranges for LAX deleted.'"
+
+- name: Remove the LAX zone ranges
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "LAX"
+    namespace: "records.users"
+    state: "absent"
+  check_mode: no
+  register: zone
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '2 zone ranges for LAX deleted.'"
+
+- name: Remove the LAX zone ranges - no change
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "LAX"
+    namespace: "records.users"
+    state: "absent"
+  check_mode: no
+  register: zone
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'No zone ranges present for LAX'"
+
+- name: Delete one range from NYC - check mode
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "absent"
+  register: zone
+  check_mode: yes
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '1 zone ranges for NYC deleted.'"
+
+- name: Delete one range from NYC
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "absent"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed"
+      - "zone.msg == '1 zone ranges for NYC deleted.'"
+
+- name: Delete one range from NYC - run again no change
+  community.mongodb.mongodb_shard_zone:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    name: "NYC"
+    namespace: "records.users"
+    ranges:
+      - [{ "zipcode": "11241" }, { "zipcode": "12000" }]
+    state: "absent"
+  register: zone
+  check_mode: no
+
+- assert:
+    that:
+      - "zone.changed == False"
+      - "zone.msg == 'The provided zone ranges are not present for NYC'"
+
+- include_tasks: mongod_teardown.yml
