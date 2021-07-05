@@ -188,6 +188,9 @@
       - "zone.changed"
       - "zone.msg == 'Added zone ranges for NYC'"
 
+- name: debug info
+  command: mongo config --port 27017 -eval "db.tags.find()"
+
 - name: Try to add zone ranges to NYC again - no change
   community.mongodb.mongodb_shard_zone:
     name: "NYC"
