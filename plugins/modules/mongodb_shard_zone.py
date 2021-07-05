@@ -148,7 +148,7 @@ def zone_range_exists(client, namespace, min, max, tag):
     '''
     query = {
         "_id.ns": namespace,
-        "_id.min", min,
+        "_id.min": min,
         'ns': namespace,
         'min': min,
         'max': max,
