@@ -10,7 +10,8 @@ authors:
   - Elliott Foster (http://fourkitchens.com)
   - Loic Blot (http://www.infopro-digital.com/)
   - Matt Martz (https://github.com/sivel)
-description: null
+  - Jacob Floyd (https://github.com/cognifloyd)
+description: MongoDB related ansible Roles, Modules, and Plugins
 license_file: COPYING
 tags:
   - mongodb
