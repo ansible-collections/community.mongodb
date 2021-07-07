@@ -22,7 +22,7 @@ If you like this collection please give us a rating on [Ansible Galaxy](https://
 These roles prepare servers with Debian-based and RHEL-based distributions to run MongoDB:
 
 - `community.mongodb.mongodb_linux`: A simple role to configure Linux Operating System settings, as advised in the [MongoDB Production Notes](https://docs.mongodb.com/manual/administration/production-notes/).
-- `community.mongodb.mongodb_selinux`: Configure SELinux for MongoDB
+- `community.mongodb.mongodb_selinux`: Configure SELinux for MongoDB.
 
 - `community.mongodb.mongodb_repository`: Configures a repository for MongoDB on Debian and RedHat based platforms.
 - `community.mongodb.mongodb_install`: Install MongoDB packages on Debian and RedHat based platforms. This role, unlike all other roles, provides for installing specific versions of mongodb. Other roles merely validate that mongodb-org is installed/present; they do not install particular versions.
@@ -46,28 +46,28 @@ These roles manage configuring and starting various MongoDB services.
 
 These modules are for any MongoDB cluster (standalone, replicaset, or sharded):
 
-- `mongodb_index`: Creates or drops indexes on MongoDB collections.
-- `mongodb_info`: Gather information about MongoDB instance.
-- `mongodb_monitoring`: Manages the [free monitoring](https://docs.mongodb.com/manual/administration/free-monitoring/) feature.
-- `mongodb_oplog`: [Resizes](https://docs.mongodb.com/manual/tutorial/change-oplog-size) the MongoDB oplog (MongoDB 3.6+ only).
-- `mongodb_parameter`: Change an administrative parameter on a MongoDB server.
-- `mongodb_shell`: Run commands via the MongoDB shell.
-- `mongodb_shutdown`: Cleans up all database resources and then terminates the mongod/mongos process.
-- `mongodb_user`: 
+- `community.mongodb.mongodb_index`: Creates or drops indexes on MongoDB collections.
+- `community.mongodb.mongodb_info`: Gather information about MongoDB instance.
+- `community.mongodb.mongodb_monitoring`: Manages the [free monitoring](https://docs.mongodb.com/manual/administration/free-monitoring/) feature.
+- `community.mongodb.mongodb_oplog`: [Resizes](https://docs.mongodb.com/manual/tutorial/change-oplog-size) the MongoDB oplog (MongoDB 3.6+ only).
+- `community.mongodb.mongodb_parameter`: Change an administrative parameter on a MongoDB server.
+- `community.mongodb.mongodb_shell`: Run commands via the MongoDB shell.
+- `community.mongodb.mongodb_shutdown`: Cleans up all database resources and then terminates the mongod/mongos process.
+- `community.mongodb.mongodb_user`: 
 
 These modules are only useful for replicaset (or sharded) MongoDB clusters:
 
-- `mongodb_maintenance`: Enables or disables [maintenance](https://docs.mongodb.com/manual/reference/command/replSetMaintenance/) mode for a secondary member.
-- `mongodb_replicaset`: Initialises a MongoDB replicaset.
-- `mongodb_status`: Validates the status of the replicaset.
-- `mongodb_stepdown`: [Step down](https://docs.mongodb.com/manual/reference/command/replSetStepDown/) the MongoDB node from a PRIMARY state.
+- `community.mongodb.mongodb_maintenance`: Enables or disables [maintenance](https://docs.mongodb.com/manual/reference/command/replSetMaintenance/) mode for a secondary member.
+- `community.mongodb.mongodb_replicaset`: Initialises a MongoDB replicaset.
+- `community.mongodb.mongodb_status`: Validates the status of the replicaset.
+- `community.mongodb.mongodb_stepdown`: [Step down](https://docs.mongodb.com/manual/reference/command/replSetStepDown/) the MongoDB node from a PRIMARY state.
 
 These modules are only useful for sharded MongoDB clusters:
 
-- `mongodb_balancer`: Manages the MongoDB Sharded Cluster Balancer.
-- `mongodb_shard`: Add or remove shards from a MongoDB Cluster.
-- `mongodb_shard_tag`: Manage Shard Tags.
-- `mongodb_shard_zone`: Manage Shard Zones.
+- `community.mongodb.mongodb_balancer`: Manages the MongoDB Sharded Cluster Balancer.
+- `community.mongodb.mongodb_shard`: Add or remove shards from a MongoDB Cluster.
+- `community.mongodb.mongodb_shard_tag`: Manage Shard Tags.
+- `community.mongodb.mongodb_shard_zone`: Manage Shard Zones.
 
 
 ## Running the integration and unit tests
