@@ -24,8 +24,8 @@ These roles prepare servers with Debian-based and RHEL-based distributions to ru
 - `community.mongodb.mongodb_linux`: A simple role to configure Linux Operating System settings, as advised in the [MongoDB Production Notes](https://docs.mongodb.com/manual/administration/production-notes/).
 - `community.mongodb.mongodb_selinux`: Configure SELinux for MongoDB.
 
-- `community.mongodb.mongodb_repository`: Configures a repository for MongoDB on Debian and RedHat based platforms.
-- `community.mongodb.mongodb_install`: Install MongoDB packages on Debian and RedHat based platforms. This role, unlike all other roles, provides for installing specific versions of mongodb. Other roles merely validate that mongodb-org is installed/present; they do not install particular versions.
+- `community.mongodb.mongodb_repository`: Configures a package repository for MongoDB on Debian and RedHat based platforms.
+- `community.mongodb.mongodb_install`: Install MongoDB packages on Debian and RedHat based platforms. This role, unlike all other roles, provides for installing specific versions of mongodb-org packages. Other roles merely validate that mongodb-org is installed/present; they do not install particular versions.
 
 These roles manage configuring and starting various MongoDB services.
 
