@@ -1,9 +1,9 @@
 ---
 galaxy_info:
   author: Jacob Floyd
-  description: Configure auth on MongoDB servers
+  description: Configure auth on MongoDB servers.
 
-  license: BSD
+  license: GPLv3
 
   min_ansible_version: 2.9
 
