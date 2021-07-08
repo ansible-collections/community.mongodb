@@ -1,8 +1,7 @@
 ---
 galaxy_info:
   author: Rhys Campbell
-  description: your description
-  company: your company (optional)
+  description: Configure the mongod service (includes populating mongod.conf) which is a MongoDB replicaset or standalone server.
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
@@ -15,7 +14,7 @@ galaxy_info:
   # - GPLv3
   # - Apache
   # - CC-BY
-  license: license (GPLv2, CC-BY, etc)
+  license: GPLv3
 
   min_ansible_version: 1.2
 
