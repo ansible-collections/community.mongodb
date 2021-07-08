@@ -53,7 +53,7 @@ These modules are for any MongoDB cluster (standalone, replicaset, or sharded):
 - `community.mongodb.mongodb_parameter`: Change an administrative parameter on a MongoDB server.
 - `community.mongodb.mongodb_shell`: Run commands via the MongoDB shell.
 - `community.mongodb.mongodb_shutdown`: Cleans up all database resources and then terminates the mongod/mongos process.
-- `community.mongodb.mongodb_user`: 
+- `community.mongodb.mongodb_user`: Adds or removes a user from a MongoDB database.
 
 These modules are only useful for replicaset (or sharded) MongoDB clusters:
 
