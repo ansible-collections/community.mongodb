@@ -4,7 +4,11 @@ systemLog:
   logAppend: true
   logRotate: reopen
 net:
+{% if bind_ip_all %}
+  bindIpAll: true
+{% else %}
   bindIp: {{ bind_ip }}
+{% endif %}
   port: {{ mongos_port }}
 {% if net_compressors %}
   compression:
@@ -15,4 +19,4 @@ sharding:
 processManagement:
   timeZoneInfo: /usr/share/zoneinfo
 security:
-  keyFile: /etc/keyfile
+  keyFile: {{ openssl_keyfile_path }}

@@ -27,7 +27,11 @@ processManagement:
 # network interfaces
 net:
   port: {{ config_port }}
+{% if bind_ip_all %}
+  bindIpAll: true
+{% else %}
   bindIp: {{ bind_ip }}
+{% endif %}
 {% if net_compressors %}
   compression:
     compressors: {{ net_compressors }}
@@ -36,7 +40,7 @@ net:
 {% if authorization == "enabled" %}
 security:
   authorization: {{ authorization }}
-  keyFile: /etc/keyfile
+  keyFile: {{ openssl_keyfile_path }}
 {% endif %}
 
 #operationProfiling:

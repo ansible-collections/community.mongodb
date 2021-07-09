@@ -2,11 +2,13 @@
 # defaults file for mongodb_mongos
 pid_file: /run/mongodb/mongos.pid
 bind_ip: 0.0.0.0
+bind_ip_all: false
 # mongos_port in vars to facilitate molecule tests
 mypy: python
 mongos_package: "mongodb-org-mongos"
 config_repl_set_name: cfg
 config_servers: "config1:27019, config2:27019, config3:27019"
+openssl_keyfile_path: /etc/keyfile
 openssl_keyfile_content: |
   Z2CeA9BMcoY5AUWoegjv/XWL2MA1SQcL4HvmRjYaTjSp/xosJy+LL2X3OQb1xVWC
   rO2e6Tu6A3R4muunitI6Vr0IKeU5UbTpR0N4hSU6HDrV9z2PIEWlkQqKh01ZRLEY

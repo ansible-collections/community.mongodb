@@ -30,7 +30,7 @@
   copy:
     content: |
       {{ openssl_keyfile_content }}
-    dest: /etc/keyfile
+    dest: "{{ openssl_keyfile_path }}"
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
     mode: 0400
