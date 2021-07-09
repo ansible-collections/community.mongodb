@@ -4,6 +4,7 @@ mongod_port: 27017
 bind_ip: 0.0.0.0
 repl_set_name: rs0
 authorization: "enabled"
+openssl_keyfile_path: /etc/keyfile
 openssl_keyfile_content: |
   Z2CeA9BMcoY5AUWoegjv/XWL2MA1SQcL4HvmRjYaTjSp/xosJy+LL2X3OQb1xVWC
   rO2e6Tu6A3R4muunitI6Vr0IKeU5UbTpR0N4hSU6HDrV9z2PIEWlkQqKh01ZRLEY
