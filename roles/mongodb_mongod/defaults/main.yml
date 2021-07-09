@@ -28,5 +28,6 @@ mongodb_admin_pwd: admin
 mongod_package: "mongodb-org-server"
 replicaset: true
 sharding: false
+net_compressors: null
 mongod_config_template: "mongod.conf.j2"
 skip_restart: true

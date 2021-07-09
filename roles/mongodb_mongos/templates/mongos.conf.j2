@@ -10,6 +10,10 @@ net:
   bindIp: {{ bind_ip }}
 {% endif %}
   port: {{ mongos_port }}
+{% if net_compressors %}
+  compression:
+    compressors: {{ net_compressors }}
+{% endif %}
 sharding:
   configDB: "{{ config_repl_set_name }}/{{ config_servers }}"
 processManagement:

@@ -34,6 +34,10 @@ net:
 {% else %}
   bindIp: {{ bind_ip }}
 {% endif %}
+{% if net_compressors %}
+  compression:
+    compressors: {{ net_compressors }}
+{% endif %}
 
 {% if authorization == "enabled" %}
 security:

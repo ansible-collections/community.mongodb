@@ -19,6 +19,7 @@ Role Variables
 * `openssl_keyfile_path`: Put the openssl_keyfile at this path. Default: /etc/keyfile
 * `mongod_package`: The name of the mongod installation package. Default mongodb-org-server.
 replicaset: When enabled add a replication section to the configuration. Default true.
+* `net_compressors`: If this is set, this sets `net.compression.compressors` in mongod.conf.
 * `mongod_config_template`: If defined allows to override path to mongod config template with custom configuration. Default "mongod.conf.j2"
 * `skip_restart`: If set to `true` will skip restarting mongod service when config file or the keyfile content changes. Default `true`.
 
