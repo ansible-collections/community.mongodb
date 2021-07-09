@@ -10,7 +10,8 @@ Role Variables
 * `mongod_service`: The name of the mongod service. Default mongod.
 * `mongodb_user`: The Linux OS user for MongoDB. Default mongod.
 * `mongodb_group`: The Linux OS user group for MongoDB. Default mongod.
-* `bind_ip`: The IP address mongos will bind to. Default 0.0.0.0.
+* `bind_ip`: The IP address mongod will bind to. Default 0.0.0.0.
+* `bind_ip_all`: Have mongod bind to all IP addresses instead of specifying `bind_ip`. Default false.
 * `repl_set_name`: The name of the replicaset the member will participate in. Default rs0.
 * `authorization`: Enable authorization. Default enabled.
 * `openssl_keyfile_content`: The keyfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.

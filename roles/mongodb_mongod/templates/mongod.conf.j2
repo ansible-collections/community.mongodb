@@ -29,7 +29,11 @@ processManagement:
 # network interfaces
 net:
   port: {{ mongod_port }}
+{% if bind_ip_all %}
+  bindIpAll: true
+{% else %}
   bindIp: {{ bind_ip }}
+{% endif %}
 
 {% if authorization == "enabled" %}
 security:

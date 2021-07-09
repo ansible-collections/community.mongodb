@@ -2,6 +2,7 @@
 # defaults file for mongodb_mongod
 mongod_port: 27017
 bind_ip: 0.0.0.0
+bind_ip_all: false
 repl_set_name: rs0
 authorization: "enabled"
 openssl_keyfile_path: /etc/keyfile

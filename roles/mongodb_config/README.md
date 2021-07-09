@@ -11,7 +11,8 @@ Role Variables
 * `mongodb_user`: The Linux OS user for MongoDB. Default mongod.
 * `mongodb_group`: The Linux OS user group for MongoDB. Default mongod.
 * `pid_file`: The pid file for mongos. Default /run/mongodb/mongos.pid.
-* `bind_ip`: The IP address mongos will bind to. Default 0.0.0.0.
+* `bind_ip`: The IP address mongod will bind to. Default 0.0.0.0.
+* `bind_ip_all`: Have mongod bind to all IP addresses instead of specifying `bind_ip`. Default false.
 * `config_repl_set_name`: The replicaset name for the config servers. Default cfg.
 * `authorization`: Enable authorization. Default enabled.
 * `openssl_keyfile_content`: The kexfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.

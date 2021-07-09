@@ -4,7 +4,11 @@ systemLog:
   logAppend: true
   logRotate: reopen
 net:
+{% if bind_ip_all %}
+  bindIpAll: true
+{% else %}
   bindIp: {{ bind_ip }}
+{% endif %}
   port: {{ mongos_port }}
 sharding:
   configDB: "{{ config_repl_set_name }}/{{ config_servers }}"
