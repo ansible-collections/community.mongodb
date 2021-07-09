@@ -16,7 +16,6 @@ storage:
     enabled: true
   engine: "wiredTiger"
 
-
 # how the process runs
 processManagement:
 {% if ansible_facts.os_family == "RedHat" %}  # Breaks Ubuntu / Debian
@@ -36,7 +35,7 @@ net:
 security:
   authorization: {{ authorization }}
 {% if replicaset or sharding %}
-  keyFile: /etc/keyfile
+  keyFile: {{ openssl_keyfile_path }}
 {% endif %}
 {% endif %}
 

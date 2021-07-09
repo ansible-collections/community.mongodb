@@ -14,6 +14,7 @@ Role Variables
 * `repl_set_name`: The name of the replicaset the member will participate in. Default rs0.
 * `authorization`: Enable authorization. Default enabled.
 * `openssl_keyfile_content`: The keyfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.
+* `openssl_keyfile_path`: Put the openssl_keyfile at this path. Default: /etc/keyfile
 * `mongodb_admin_user`: MongoDB admin username. Default admin.
 * `mongodb_admin_pwd`: MongoDB admin password. Default admin.
 * `mongod_package`: The mongod package to install. Default mongodb-org-server.

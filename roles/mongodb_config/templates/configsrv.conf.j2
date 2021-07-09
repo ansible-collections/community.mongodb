@@ -32,7 +32,7 @@ net:
 {% if authorization == "enabled" %}
 security:
   authorization: {{ authorization }}
-  keyFile: /etc/keyfile
+  keyFile: {{ openssl_keyfile_path }}
 {% endif %}
 
 #operationProfiling:

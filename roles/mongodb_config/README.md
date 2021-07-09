@@ -15,6 +15,7 @@ Role Variables
 * `config_repl_set_name`: The replicaset name for the config servers. Default cfg.
 * `authorization`: Enable authorization. Default enabled.
 * `openssl_keyfile_content`: The kexfile content that MongoDB uses to authenticate within a replicaset. Generate with cmd: openssl rand -base64 756.
+* `openssl_keyfile_path`: Put the openssl_keyfile at this path. Default: /etc/keyfile
 * `mongod_package`: The name of the mongod installation package. Default mongodb-org-server.
 replicaset: When enabled add a replication section to the configuration. Default true.
 * `mongod_config_template`: If defined allows to override path to mongod config template with custom configuration. Default "mongod.conf.j2"
