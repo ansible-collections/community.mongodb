@@ -31,6 +31,10 @@ processManagement:
 net:
   port: {{ mongod_port }}
   bindIp: {{ bind_ip }}
+{% if net_compressors %}
+  compression:
+    compressors: {{ net_compressors }}
+{% endif %}
 
 {% if authorization == "enabled" %}
 security:

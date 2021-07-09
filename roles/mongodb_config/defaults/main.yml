@@ -24,5 +24,6 @@ openssl_keyfile_content: |
   mJfrCUVuP1nBEklk23lYkNi/ohe+aodNjdN+2DHp42sGZHYP
 mongod_package: "mongodb-org-server"
 replicaset: true
+net_compressors: null
 mongod_config_template: "configsrv.conf.j2"
 skip_restart: true

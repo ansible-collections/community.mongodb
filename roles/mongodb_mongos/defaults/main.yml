@@ -24,5 +24,6 @@ openssl_keyfile_content: |
   D3xVuE3WvrhldY5EOsaTt2ZXZx5REmJDIW1KcnvQKiVDJ2QzP5xdXYA0hh3TdTVE
   sb4UreMw/WyBpANiICMlJRBgSd0f0VGMlYzLX2BL14YpNnLhmoQqKzfBN6v2XAEG
   mJfrCUVuP1nBEklk23lYkNi/ohe+aodNjdN+2DHp42sGZHYP
+net_compressors: null
 mongos_config_template: "mongos.conf.j2"
 skip_restart: true
