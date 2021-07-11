@@ -1,0 +1,116 @@
+# Copyright 2021, Rhys Campbell <rhyscampbell@bluewin.ch>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_port: 3001
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_database: "admin"
+
+  block:
+
+  - name: Require that an email address field is in every document - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been added to the given collection'"
+
+  - name: Require that an email address field is in every document
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been added to the given collection'"
+
+  - name: Update a valdiator - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Update a valdiator
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Update a valdiator - no change
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == False"
+        - "schema.msg == 'The validator exists as configured on the given collection'"
+
+  - name: Remove a validator on a collection - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      state: "absent"
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been removed from the given collection'"
+
+  - name: Remove a validator on a collection
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      state: "absent"
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been removed from the given collection'"
