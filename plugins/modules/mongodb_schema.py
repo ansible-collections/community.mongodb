@@ -16,7 +16,7 @@ short_description: Manages MongoDB Document Schema Validators.
 
 description:
 - Manages MongoDB Document Schema Validators.
-- CReate, update and remove Validatorson a collection.
+- Create, update and remove Validators on a collection.
 
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
