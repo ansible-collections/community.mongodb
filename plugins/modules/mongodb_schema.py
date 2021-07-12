@@ -60,7 +60,7 @@ options:
     default: "error"
   level:
     description:
-      - The validation level.
+      - The validation level MongoDB should apply when updating existing documents.
     type: str
     choices:
       - "strict"
