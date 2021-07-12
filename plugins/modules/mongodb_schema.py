@@ -52,7 +52,7 @@ options:
     type: dict
   action:
     description:
-      - The validation action to perform.
+      - The validation action for MongoDB to perform when handling invalid documents.
     type: str
     choices:
       - "error"
