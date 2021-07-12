@@ -1,2 +1,1 @@
 ---
-is_redhat_8_in_docker: "{{ ansible_facts.os_family == 'RedHat' and ansible_facts.distribution_major_version|int == 8 and ansible_facts.virtualization_type == 'docker' }}"

@@ -1,6 +1,8 @@
 ---
 - name: Converge
   hosts: all
+  vars:
+    skip_restart: false
   roles:
     - role: mongodb_repository
       tags: molecule-idempotence-notest

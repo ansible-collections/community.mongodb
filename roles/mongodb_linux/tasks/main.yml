@@ -15,10 +15,18 @@
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
 
-- name: Check if we are in docker
-  stat:
-    path: is_docker.txt
-  register: is_docker
+- name: See if we are in docker
+  when:
+    - "ansible_facts.virtualization_role == 'guest'"
+    - not in_docker # defined in vars
+  block:
+    - name: Check if we are in docker (based on /.dockerenv file)
+      stat:
+        path: /.dockerenv
+      register: dockerenv_file
+    - name: Update in_docker var
+      set_fact:
+        in_docker: "{{ dockerenv_file.stat.exists }}"
 
 # Tasks based on: https://docs.mongodb.com/manual/administration/production-notes/
 
@@ -66,7 +74,7 @@
     value: "0"
     state: present
     reload: yes
-  when: not is_docker.stat.exists
+  when: not in_docker|bool
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
@@ -93,7 +101,7 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: (not is_docker.stat.exists) and (_huge_page_status.stdout == "")
+  when: (not in_docker|bool) and (_huge_page_status.stdout == "")
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 

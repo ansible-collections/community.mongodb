@@ -50,9 +50,15 @@ def test_thp_service(host):
     switches = ["/sys/kernel/mm/transparent_hugepage/enabled",
                 "/sys/kernel/mm/transparent_hugepage/defrag"]
 
-    f = host.file("is_docker.txt")
+    facts = host.ansible("setup")["ansible_facts"]
+    virt_types = facts.get("ansible_virtualization_tech_guest", [facts["ansible_virtualization_type"]])
+    in_docker = "container" in virt_types or "docker" in virt_types
+    # in_docker is false on GHA here since they use custom parent cgroup (actions_job)
+    if not in_docker and facts["ansible_virtualization_role"] == "guest":
+        # inspecting cgroups is iffy on GHA, so use the /.dockerenv file
+        in_docker = host.file("/.dockerenv").exists
 
-    if not f.exists:
+    if not in_docker:
         for d in switches:
             cmd = host.run("cat {0}".format(d))
 
