@@ -28,7 +28,7 @@ extends_documentation_fragment:
 options:
   db:
     description:
-      - The database to work with
+      - The database to work with.
     required: yes
     type: str
   collection:
