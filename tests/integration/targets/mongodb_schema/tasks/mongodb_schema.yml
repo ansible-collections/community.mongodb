@@ -156,20 +156,17 @@
         - "dob"
       level: "moderate"
       action: "warn"
-      properties: {
-          status: {
-            bsonType: "string",
-            enum: ["ACTIVE", "DISABLED"],
-           description: "can only be ACTIVE or DISABLED"
-          },
-          year: {
-            bsonType: "int",
-            minimum: 2021,
-            maximum: 3020,
-            exclusiveMaximum: false,
-            description: "must be an integer from 2021 to 3020"
-          }
-      }
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
     check_mode: no
     register: schema
 
