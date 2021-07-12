@@ -74,6 +74,11 @@ options:
       - "present"
       - "absent"
     default: "present"
+  debug:
+    description:
+      - Enable additional debugging output.
+    type: bool
+    default: false
 
 notes:
     - Requires the pymongo Python package on the remote host, version 2.4.2+.
@@ -116,6 +121,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     ssl_connection_options
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+import json
 
 
 has_ordereddict = False
@@ -142,6 +148,10 @@ def get_validator(client, db, collection):
         doc = results[0]
     if doc is not None and 'options' in doc and 'validator' in doc['options']:
         validator = doc['options']['validator']["$jsonSchema"]
+        if 'validationAction' in doc['options']:
+            validator['validationAction'] = doc['options']['validationAction']
+        if 'validationLevel' in doc['options']:
+            validator['validationLevel'] = doc['options']['validationLevel']
     return validator
 
 
@@ -151,19 +161,19 @@ def validator_is_different(client, db, collection, bsonType, required, propertie
     if validator is not None:
         if bsonType != validator['bsonType']:
             is_different = True
-        if not is_different and sorted(required) != sorted(validator['required']):
+        if sorted(required) != sorted(validator.get('required', [])):
             is_different = True
-        if not is_different and action != validator['validationAction']:
+        if action != validator.get('validationAction', 'error'):
             is_different = True
-        if not is_different and level != validator['validationLevel']:
+        if level != validator.get('validationLevel', 'strict'):
             is_different = True
-        if not is_different:
-            dict1 = json.dumps(properties, sort_keys=True)
-            dict2 = json.dumps(validator['properties'], sort_keys=True)
-            if dict1 != dict2:
-                is_different = True
+        dict1 = json.dumps(properties, sort_keys=True)
+        dict2 = json.dumps(validator.get('properties', {}), sort_keys=True)
+        if dict1 != dict2:
+            is_different = True
     else:
         is_different = True
+    return is_different
 
 
 def add_validator(client, db, collection, bsonType, required, properties, action, level):
@@ -178,7 +188,8 @@ def add_validator(client, db, collection, bsonType, required, properties, action
         ('validationAction', action),
         ('validationLevel', level)
     ])
-    client[db].create_collection(collection)
+    if collection not in client[db].list_collection_names():
+        client[db].create_collection(collection)
     client[db].command(cmd_doc)
 
 
@@ -205,7 +216,8 @@ def main():
         properties=dict(type='dict', default={}),
         action=dict(type='str', choices=['error', 'warn'], default="error"),
         level=dict(type='str', choices=['strict', 'moderate'], default="strict"),
-        state=dict(type='str', choices=['present', 'absent'], default='present')
+        state=dict(type='str', choices=['present', 'absent'], default='present'),
+        debug=dict(type='bool', default=False),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -235,6 +247,7 @@ def main():
     action = module.params['action']
     level = module.params['level']
     state = module.params['state']
+    debug = module.params['debug']
 
     connection_params = {
         'host': login_host,
@@ -310,9 +323,12 @@ def main():
             result['changed'] = True
             result['msg'] = "The validator has been removed from the given collection"
 
+    if debug:
+        result['v1'] = str(validator)
+        result['v2'] = str(required) + " " + str(properties) + " " + str(action) + " " + str(level)
+
 
     module.exit_json(**result)
-
 
 if __name__ == '__main__':
     main()
