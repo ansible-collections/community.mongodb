@@ -324,8 +324,11 @@ def main():
             result['msg'] = "The validator has been removed from the given collection"
 
     if debug:
-        result['v1'] = str(validator)
-        result['v2'] = str(required) + " " + str(properties) + " " + str(action) + " " + str(level)
+        result['validator'] = validator
+        result['module_config'] = { "required":required,
+                                    "properties": properties,
+                                    "validationAction": action,
+                                    "validationLevel": level }
 
 
     module.exit_json(**result)
