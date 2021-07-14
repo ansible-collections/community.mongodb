@@ -17,9 +17,11 @@ short_description: Manages MongoDB Document Schema Validators.
 description:
 - Manages MongoDB Document Schema Validators.
 - Create, update and remove Validators on a collection.
+- Supports the entire range of jsonSchema keywords.
+- See [jsonSchema Available Keywords](https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/#available-keywords) for details.
 
 author: Rhys Campbell (@rhysmeister)
-version_added: "1.0.0"
+version_added: "1.3.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options
