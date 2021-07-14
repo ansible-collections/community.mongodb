@@ -362,7 +362,7 @@
         - "schema.validator is defined"
         - "schema.module_config is defined"
 
-  - name: Remove a validator on a collection - with debug mode on - no change
+  - name: Remove a validator on a collection - with debug mode off - no change
     community.mongodb.mongodb_schema:
       <<: *mongo_parameters
       db: "rhys"

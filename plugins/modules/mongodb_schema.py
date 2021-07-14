@@ -103,7 +103,22 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-
+changed:
+  description: If the module caused a change.
+  returned: on success
+  type: bool
+msg:
+  description: Status message.
+  returned: always
+  type: str
+validator:
+  description: The validator document as read from the instance.
+  returned: when debug is true
+  type: dict
+module_config:
+  description: The validator document as indicated by the module invocation.
+  returned: when debug is true
+  type: dict
 '''
 
 from uuid import UUID
