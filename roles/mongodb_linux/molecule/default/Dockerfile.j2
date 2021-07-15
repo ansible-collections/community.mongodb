@@ -23,6 +23,7 @@ RUN if [ $(command -v apt-get) ]; then apt-get update && apt-get install -y pyth
     elif [ $(command -v xbps-install) ]; then xbps-install -Syu && xbps-install -y python sudo bash ca-certificates iproute2 && xbps-remove -O; fi
 
 {% if item.image == 'centos:8' %}
+ENV container docker
 # Stuff for systemd https://hub.docker.com/_/centos
 RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
 	systemd-tmpfiles-setup.service ] || rm -f $i; done); \
