@@ -97,11 +97,39 @@ EXAMPLES = r'''
     required:
       - "email"
 
-- name: Remove a validator on a collection
+- name: More advanced example using properties
   community.mongodb.mongodb_schema:
     db: "rhys"
     collection: "contacts"
     state: "absent"
+  - name: Test with debuging option - Without check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "first_name"
+        - "last_name"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
+        options:
+          bsonType: "array"
+          maxItems: 10
+          minItems: 5
+          uniqueItems: yes
+        email:
+          maxLength: 150
+          minLength: 5
 '''
 
 RETURN = r'''
