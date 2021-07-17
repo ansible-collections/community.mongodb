@@ -51,7 +51,7 @@ These modules are for any MongoDB cluster (standalone, replicaset, or sharded):
 - `community.mongodb.mongodb_monitoring`: Manages the [free monitoring](https://docs.mongodb.com/manual/administration/free-monitoring/) feature.
 - `community.mongodb.mongodb_oplog`: [Resizes](https://docs.mongodb.com/manual/tutorial/change-oplog-size) the MongoDB oplog (MongoDB 3.6+ only).
 - `community.mongodb.mongodb_parameter`: Change an administrative parameter on a MongoDB server.
-- `community.mongodb.mongodb_shell`: Manages MongoDB Document Schema Validators.
+- `community.mongodb.mongodb_schema`: Manages MongoDB Document Schema Validators.
 - `community.mongodb.mongodb_shell`: Run commands via the MongoDB shell.
 - `community.mongodb.mongodb_shutdown`: Cleans up all database resources and then terminates the mongod/mongos process.
 - `community.mongodb.mongodb_user`: Adds or removes a user from a MongoDB database.
