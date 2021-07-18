@@ -38,11 +38,6 @@ options:
       - The collection to work with.
     required: yes
     type: str
-  bsonType:
-    description:
-      - Expected document type.
-    type: str
-    default: "object"
   required:
     description:
       - List of fields that are required.
@@ -200,12 +195,10 @@ def get_validator(client, db, collection):
     return validator
 
 
-def validator_is_different(client, db, collection, bsonType, required, properties, action, level):
+def validator_is_different(client, db, collection, required, properties, action, level):
     is_different = False
     validator = get_validator(client, db, collection)
     if validator is not None:
-        if bsonType != validator['bsonType']:
-            is_different = True
         if sorted(required) != sorted(validator.get('required', [])):
             is_different = True
         if action != validator.get('validationAction', 'error'):
@@ -221,11 +214,11 @@ def validator_is_different(client, db, collection, bsonType, required, propertie
     return is_different
 
 
-def add_validator(client, db, collection, bsonType, required, properties, action, level):
+def add_validator(client, db, collection, required, properties, action, level):
     cmd_doc = OrderedDict([
         ('collMod', collection),
         ('validator', { '$jsonSchema': {
-                            "bsonType": bsonType,
+                            "bsonType": "object"
                             "required": required,
                             "properties": properties
                             }
@@ -256,7 +249,6 @@ def main():
     argument_spec.update(
         db=dict(type='str', required=True),
         collection=dict(type='str', required=True),
-        bsonType=dict(type='str', default="object"),
         required=dict(type='list', elements='str'),
         properties=dict(type='dict', default={}),
         action=dict(type='str', choices=['error', 'warn'], default="error"),
@@ -286,7 +278,6 @@ def main():
     ssl = module.params['ssl']
     db = module.params['db']
     collection = module.params['collection']
-    bsonType = module.params['bsonType']
     required = module.params['required']
     properties = module.params['properties']
     action = module.params['action']
@@ -329,14 +320,13 @@ def main():
     validator = get_validator(client, db, collection)
     if state == "present":
         if validator is not None:
-            diff = validator_is_different(client, db, collection, bsonType,
-                                          required, properties, action, level)
+            diff = validator_is_different(client, db, collection, required,
+                                          properties, action, level)
             if diff:
                 if not module.check_mode:
                     add_validator(client,
                                   db,
                                   collection,
-                                  bsonType,
                                   required,
                                   properties,
                                   action,
@@ -351,7 +341,6 @@ def main():
                 add_validator(client,
                               db,
                               collection,
-                              bsonType,
                               required,
                               properties,
                               action,
