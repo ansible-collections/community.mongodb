@@ -218,7 +218,7 @@ def add_validator(client, db, collection, required, properties, action, level):
     cmd_doc = OrderedDict([
         ('collMod', collection),
         ('validator', { '$jsonSchema': {
-                            "bsonType": "object"
+                            "bsonType": "object",
                             "required": required,
                             "properties": properties
                             }
