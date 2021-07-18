@@ -31,7 +31,7 @@
 # Tasks based on: https://docs.mongodb.com/manual/administration/production-notes/
 
 - name: Set swappiness
-  sysctl:
+  ansible.posix.sysctl:
     name: vm.swappiness
     value: "{{ swappiness }}"
     state: present
@@ -69,7 +69,7 @@
   retries: 5
 
 - name: Ensure NUMA zone reclaim is disabled
-  sysctl:
+  ansible.posix.sysctl:
     name: vm.zone_reclaim_mode
     value: "0"
     state: present
@@ -106,7 +106,7 @@
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
 - name: Set pam limits (nproc and nofile)
-  pam_limits:
+  community.general.pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
     limit_item: "{{ item[2] }}"
@@ -118,7 +118,7 @@
     - ["{{ nproc_and_nofile_limit }}"]
 
 - name: Set pam limits (memlock)
-  pam_limits:
+  community.general.pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
     limit_item: "{{ item[2] }}"
@@ -132,7 +132,7 @@
 # Other tuning settings
 
 - name: Set sysctl values
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item['name'] }}"
     value: "{{ item['value'] }}"
     state: present

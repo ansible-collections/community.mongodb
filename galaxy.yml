@@ -18,7 +18,12 @@ tags:
   - database
   - nosql
 dependencies:
+  # pam_limits module in mongodb_linux role; role tests use pids module
   community.general: '>=1.0.0'
+  # sysctl module in mongodb_linux role
+  ansible.posix: '>=1.0.0'
+  # role tests use openssl_ modules
+  # community.crypto: '>=1.0.0'
 repository: https://github.com/ansible-collections/community.mongodb
 documentation: https://github.com/ansible-collections/community.mongodb/tree/master/docs
 homepage: https://github.com/ansible-collections/community.mongodb
