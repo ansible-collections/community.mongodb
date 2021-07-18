@@ -1,0 +1,379 @@
+# Copyright 2021, Rhys Campbell <rhyscampbell@bluewin.ch>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_port: 3001
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_database: "admin"
+
+  block:
+
+  - name: Require that an email address field is in every document - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been added to the given collection'"
+
+  - name: Require that an email address field is in every document
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been added to the given collection'"
+
+  - name: Update a valdiator - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Update a valdiator
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Update a valdiator - no change
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == False"
+        - "schema.msg == 'The validator exists as configured on the given collection'"
+
+  - name: Update level to moderate
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+      level: "moderate"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Update action to warn
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+      level: "moderate"
+      action: "warn"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Add properties document
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+      level: "moderate"
+      action: "warn"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Update properties document
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+      level: "moderate"
+      action: "warn"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator was updated on the given collection'"
+
+  - name: Run again - no change
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "dob"
+      level: "moderate"
+      action: "warn"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
+    check_mode: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == False"
+        - "schema.msg == 'The validator exists as configured on the given collection'"
+
+  - name: Remove a validator on a collection - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      state: "absent"
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been removed from the given collection'"
+
+  - name: Remove a validator on a collection
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      state: "absent"
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been removed from the given collection'"
+
+  - name: Test with debuging option - check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "first_name"
+        - "last_name"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
+        options:
+          bsonType: "array"
+          maxItems: 10
+          minItems: 5
+          uniqueItems: yes
+        email:
+          maxLength: 150
+          minLength: 5
+      debug: yes
+    check_mode: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been added to the given collection'"
+        - "schema.validator is defined"
+        - "schema.module_config is defined"
+
+  - name: Test with debuging option - Without check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "first_name"
+        - "last_name"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
+        options:
+          bsonType: "array"
+          maxItems: 10
+          minItems: 5
+          uniqueItems: yes
+        email:
+          maxLength: 150
+          minLength: 5
+      debug: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been added to the given collection'"
+        - "schema.validator is defined"
+        - "schema.module_config is defined"
+
+  - name: Test with debuging option - Without check mode
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      required:
+        - "email"
+        - "first_name"
+        - "last_name"
+      properties:
+        status:
+          bsonType: "string"
+          enum: ["ACTIVE", "DISABLED"]
+          description: "can only be ACTIVE or DISABLED"
+        year:
+          bsonType: "int"
+          minimum: 2021
+          maximum: 3020
+          exclusiveMaximum: false
+          description: "must be an integer from 2021 to 3020"
+        options:
+          bsonType: "array"
+          maxItems: 10
+          minItems: 5
+          uniqueItems: yes
+        email:
+          maxLength: 150
+          minLength: 5
+      debug: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == False"
+        - "schema.msg == 'The validator exists as configured on the given collection'"
+        - "schema.validator is defined"
+        - "schema.module_config is defined"
+
+  - name: Remove a validator on a collection - with debug mode on
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      state: "absent"
+      debug: yes
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == True"
+        - "schema.msg == 'The validator has been removed from the given collection'"
+        - "schema.validator is defined"
+        - "schema.module_config is defined"
+
+  - name: Remove a validator on a collection - with debug mode off - no change
+    community.mongodb.mongodb_schema:
+      <<: *mongo_parameters
+      db: "rhys"
+      collection: "contacts"
+      state: "absent"
+      debug: no
+    register: schema
+
+  - assert:
+      that:
+        - "schema.changed == False"
+        - "schema.msg == 'A validator does not exist on the given collection.'"
+        - "schema.validator is not defined"
+        - "schema.module_config is not defined"

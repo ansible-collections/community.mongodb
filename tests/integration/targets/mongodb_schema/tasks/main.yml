@@ -1,0 +1,94 @@
+# Copyright 2021, Rhys Campbell <rhyscampbell@bluewin.ch>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Main mongodb_info module tests
+- include_tasks: mongod_teardown.yml
+
+# TODO Tests without auth before here?
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Create admin user with module
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+  register: mongodb_admin_user_created
+
+- assert:
+    that:
+    - mongodb_admin_user_created.changed == True
+
+- name: Shutdown the mongod
+  command: pkill mongod
+
+- name: Wait for port 27017 to be drained
+  wait_for:
+    host: 0.0.0.0
+    port: 3001
+    state: stopped
+
+- name: Restart mongod process with auth
+  command: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
+    mongod{{ item }} --port {{ item }} --logpath mongod{{ item }}/log.log --fork
+    --auth --keyFile my.key
+  args:
+    chdir: '{{ remote_tmp_dir }}'
+  with_items: '{{ mongodb_nodes | sort }}'
+
+#- name: Create file with mongodb commands
+#  copy:
+#    dest: /tmp/mongo.js
+#    content: |
+#      use test;
+
+
+- name: Ensure the dbs test & rhys exists
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db = db.getSiblingDB('test'); db.rhys.insert({ 'foo': 'bar' }); db = db.getSiblingDB('rhys'); db.rhys.insert({ 'foo': 'bar' });"
+
+- name: Create admin user in test and rhys dbs
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    database: "{{ item }}"
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles:
+      - dbAdmin
+    state: present
+  with_items:
+    - test
+    - rhys
+
+- name: Create more users in the rhys db
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    database: rhys
+    name: "{{ item }}"
+    password: secret
+    roles:
+      - read
+    state: present
+  with_items:
+    - user1
+    - user2
+    - user3
+    - user4
+    - user5
+
+- import_tasks: mongodb_schema.yml
+
+- include_tasks: mongod_teardown.yml
