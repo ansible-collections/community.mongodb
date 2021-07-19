@@ -69,3 +69,28 @@ releases:
     bugfixes:
       - 304 - Adds validate parameter to mongodb_status module.
     release_date: '2021-02-09'
+  1.3.0:
+    modules:
+      - description: Manages the free monitoring feature.
+        name: mongodb_monitoring
+        namespace: ''
+      - description: Manages MongoDB Document Schema Validators.
+        name: mongodb_schema
+        namespace: ''
+      - description: Manage Shard Tags.
+        name: mongodb_shard_tag
+        namespace: ''
+      - description: Manage Shard Zones.
+        name: mongodb_shard_zone
+        namespace: ''
+    minor_changes:
+      - 338 - role monogdb_repository - Variablize repository details.
+      - 345 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Make security.keyFile configurable.
+      - 346 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Allow using net.bindIpAll instead of net.bindIp.
+      - 347 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Allow overriding net.compression.compressors in mongo*.conf
+    bugfixes:
+      - 312 - Set no_log True for ssl_keyfile.
+      - 315 - Fix exception handling for mongodb_stepdown module on python3.6
+      - 320 - Fix exception handling for modules mongodb_balancer, mongodb_shard, and mongodb_status.
+      - 352 - Add ansible.posix collection to dependencies list.
+    release_date: '2021-02-09'
