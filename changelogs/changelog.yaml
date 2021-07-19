@@ -93,4 +93,4 @@ releases:
       - 315 - Fix exception handling for mongodb_stepdown module on python3.6
       - 320 - Fix exception handling for modules mongodb_balancer, mongodb_shard, and mongodb_status.
       - 352 - Add ansible.posix collection to dependencies list.
-    release_date: '2021-02-09'
+    release_date: '2021-07-19'
