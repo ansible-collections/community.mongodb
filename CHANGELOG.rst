@@ -8,6 +8,13 @@ Community.MongoDB Release Notes
 v1.3.0
 ======
 
+Release Summary
+---------------
+
+This release improves sharded cluster management, and adds schema validator management.
+Several bug fixes improve compatibility with python3.6.
+
+
 Minor Changes
 -------------
 
@@ -16,10 +23,14 @@ Minor Changes
 - 346 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Allow using net.bindIpAll instead of net.bindIp.
 - 347 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Allow overriding net.compression.compressors in mongo*.conf
 
+Security Fixes
+--------------
+
+- 312 - Set no_log True for ssl_keyfile.
+
 Bugfixes
 --------
 
-- 312 - Set no_log True for ssl_keyfile.
 - 315 - Fix exception handling for mongodb_stepdown module on python3.6
 - 320 - Fix exception handling for modules mongodb_balancer, mongodb_shard, and mongodb_status.
 - 352 - Add ansible.posix collection to dependencies list.
@@ -35,13 +46,19 @@ New Modules
 v1.2.1
 ======
 
-Bugfixes
---------
+Minor Changes
+-------------
 
 - 304 - Adds validate parameter to mongodb_status module.
 
 v1.2.0
 ======
+
+Release Summary
+---------------
+
+A variety of idempotency and reliability improvements.
+
 
 Bugfixes
 --------
@@ -74,6 +91,12 @@ Bugfixes
 v1.1.0
 ======
 
+Release Summary
+---------------
+
+This release adds the mongodb_shell module and the mongodb_auth role.
+
+
 New Modules
 -----------
 
@@ -86,6 +109,13 @@ New Roles
 
 v1.0.0
 ======
+
+Release Summary
+---------------
+
+The first stable release of the commmunity.mongodb collection.
+Many of the plugins and modules were previously released in ansible itself.
+
 
 New Plugins
 -----------

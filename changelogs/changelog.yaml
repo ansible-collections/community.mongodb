@@ -1,6 +1,10 @@
 ancestor: null
 releases:
   1.0.0:
+    changes:
+      release_summary: |
+        The first stable release of the commmunity.mongodb collection.
+        Many of the plugins and modules were previously released in ansible itself.
     modules:
     - description: Manages the MongoDB Sharded Cluster Balancer.
       name: mongodb_balancer
@@ -79,6 +83,9 @@ releases:
         namespace: null
     release_date: '2020-08-06'
   1.1.0:
+    changes:
+      release_summary: |
+        This release adds the mongodb_shell module and the mongodb_auth role.
     modules:
     - description: Run commands via the MongoDB shell.
       name: mongodb_shell
@@ -105,6 +112,8 @@ releases:
     release_date: '2021-01-06'
   1.2.0:
     changes:
+      release_summary: |
+        A variety of idempotency and reliability improvements.
       bugfixes:
       - 281 - mongodb_linux Fixes disable-transparent-huge-pages.service idempotency.
       - 282 - Add restart handler, and bool variable to control to mongofb_config/mongod/mongos
@@ -115,13 +124,17 @@ releases:
     release_date: '2021-01-31'
   1.2.1:
     changes:
-      bugfixes:
+      minor_changes:
       - 304 - Adds validate parameter to mongodb_status module.
     release_date: '2021-02-09'
   1.3.0:
     changes:
-      bugfixes:
+      release_summary: |
+        This release improves sharded cluster management, and adds schema validator management.
+        Several bug fixes improve compatibility with python3.6.
+      security_fixes:
       - 312 - Set no_log True for ssl_keyfile.
+      bugfixes:
       - 315 - Fix exception handling for mongodb_stepdown module on python3.6
       - 320 - Fix exception handling for modules mongodb_balancer, mongodb_shard,
         and mongodb_status.
