@@ -87,6 +87,19 @@ New Roles
 v1.0.0
 ======
 
+New Plugins
+-----------
+
+Cache
+~~~~~
+
+- community.mongodb.mongodb - This cache uses per host records saved in MongoDB.
+
+Lookup
+~~~~~~
+
+- community.mongodb.mongodb - The ``MongoDB`` lookup runs the *find()* command on a given *collection* on a given *MongoDB* server.
+
 New Modules
 -----------
 

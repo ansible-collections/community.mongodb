@@ -39,6 +39,15 @@ releases:
     - description: Adds or removes a user from a MongoDB database
       name: mongodb_user
       namespace: ''
+    plugins:
+      cache:
+      - description: This cache uses per host records saved in MongoDB.
+        name: mongodb
+        namespace: ''
+      lookup:
+      - description: 'The ``MongoDB`` lookup runs the *find()* command on a given *collection* on a given *MongoDB* server.'
+        name: mongodb
+        namespace: ''
     objects:
       role:
       - description: Configure the CSRS Config Server Replicaset for a MongoDB sharded
