@@ -11,6 +11,7 @@ DOCUMENTATION = '''
 ---
 module: mongodb_shell
 author: Rhys Campbell (@rhysmeister)
+version_added: "1.1.0"
 short_description: Run commands via the MongoDB shell.
 requirements:
   - mongo

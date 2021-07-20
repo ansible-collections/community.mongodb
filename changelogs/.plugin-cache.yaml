@@ -1,3 +1,4 @@
+objects: {}
 plugins:
   become: {}
   cache:
@@ -36,6 +37,11 @@ plugins:
       name: mongodb_maintenance
       namespace: ''
       version_added: 1.0.0
+    mongodb_monitoring:
+      description: Manages the free monitoring feature.
+      name: mongodb_monitoring
+      namespace: ''
+      version_added: 1.3.0
     mongodb_oplog:
       description: Resizes the MongoDB oplog.
       name: mongodb_oplog
@@ -51,11 +57,26 @@ plugins:
       name: mongodb_replicaset
       namespace: ''
       version_added: 1.0.0
+    mongodb_schema:
+      description: Manages MongoDB Document Schema Validators.
+      name: mongodb_schema
+      namespace: ''
+      version_added: 1.3.0
     mongodb_shard:
       description: Add or remove shards from a MongoDB Cluster
       name: mongodb_shard
       namespace: ''
       version_added: 1.0.0
+    mongodb_shard_tag:
+      description: Manage Shard Tags.
+      name: mongodb_shard_tag
+      namespace: ''
+      version_added: 1.3.0
+    mongodb_shard_zone:
+      description: Manage Shard Zones.
+      name: mongodb_shard_zone
+      namespace: ''
+      version_added: 1.3.0
     mongodb_shell:
       description: Run commands via the MongoDB shell.
       name: mongodb_shell
@@ -68,7 +89,7 @@ plugins:
       namespace: ''
       version_added: 1.0.0
     mongodb_status:
-      description: Validates the status of the cluster.
+      description: Validates the status of the replicaset.
       name: mongodb_status
       namespace: ''
       version_added: 1.0.0
@@ -86,4 +107,4 @@ plugins:
   shell: {}
   strategy: {}
   vars: {}
-version: 1.1.0
+version: 1.3.0

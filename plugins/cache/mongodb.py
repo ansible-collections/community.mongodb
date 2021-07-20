@@ -11,6 +11,7 @@ DOCUMENTATION = '''
     cache: mongodb
     name: mongodb
     author: Matt Martz
+    version_added: "1.0.0"
     short_description: Use MongoDB for caching
     description:
         - This cache uses per host records saved in MongoDB.

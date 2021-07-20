@@ -1,6 +1,10 @@
 ancestor: null
 releases:
   1.0.0:
+    changes:
+      release_summary: |
+        The first stable release of the commmunity.mongodb collection.
+        Many of the plugins and modules were previously released in ansible itself.
     modules:
     - description: Manages the MongoDB Sharded Cluster Balancer.
       name: mongodb_balancer
@@ -39,33 +43,121 @@ releases:
     - description: Adds or removes a user from a MongoDB database
       name: mongodb_user
       namespace: ''
+    plugins:
+      cache:
+      - description: This cache uses per host records saved in MongoDB.
+        name: mongodb
+        namespace: ''
+      lookup:
+      - description: 'The ``MongoDB`` lookup runs the *find()* command on a given *collection* on a given *MongoDB* server.'
+        name: mongodb
+        namespace: ''
+    objects:
+      role:
+      - description: Configure the CSRS Config Server Replicaset for a MongoDB sharded
+          cluster. (Use mongodb_mongod for Standalone installations - this does not
+          create mongo.conf)
+        name: mongodb_config
+        namespace: null
+      - description: Install MongoDB packages on Debian and RedHat based platforms.
+        name: mongodb_install
+        namespace: null
+      - description: A simple role to configure Linux Operating System settings, as
+          advised in the MongoDB Production Notes.
+        name: mongodb_linux
+        namespace: null
+      - description: Configure the mongod service (includes populating mongod.conf)
+          which is a MongoDB replicaset or standalone server.
+        name: mongodb_mongod
+        namespace: null
+      - description: Configure the mongos service (includes populating mongos.conf)
+          which only runs in a sharded MongoDB cluster.
+        name: mongodb_mongos
+        namespace: null
+      - description: Configures a package repository for MongoDB on Debian and RedHat
+          based platforms.
+        name: mongodb_repository
+        namespace: null
+      - description: Configure SELinux for MongoDB.
+        name: mongodb_selinux
+        namespace: null
     release_date: '2020-08-06'
   1.1.0:
+    changes:
+      release_summary: |
+        This release adds the mongodb_shell module and the mongodb_auth role.
     modules:
-      - description: Run commands via the MongoDB shell.
-        name: mongodb_shell
-        namespace: ''
+    - description: Run commands via the MongoDB shell.
+      name: mongodb_shell
+      namespace: ''
+    objects:
+      role:
+      - description: Configure auth on MongoDB servers.
+        name: mongodb_auth
+        namespace: null
     release_date: '2020-10-24'
   1.1.1:
-    bugfixes:
+    changes:
+      bugfixes:
       - 235 - Fix namespace.
     release_date: '2020-11-04'
   1.1.2:
-    bugfixes:
-      - 255 - Add replica_set param to mongodb_index module.
+    changes:
+      bugfixes:
       - 252 - Fix config template override in various roles.
+      - 255 - Add replica_set param to mongodb_index module.
       - 264 - Only add force parameter to shutdown command when set to true.
-      - 275 - Use OrderedDict class in the following modules, mongodb_balancer, mongodb_oplog, mongodb_shutdown.
+      - 275 - Use OrderedDict class in the following modules, mongodb_balancer, mongodb_oplog,
+        mongodb_shutdown.
     release_date: '2021-01-06'
   1.2.0:
-    bugfixes:
+    changes:
+      release_summary: |
+        A variety of idempotency and reliability improvements.
+      bugfixes:
       - 281 - mongodb_linux Fixes disable-transparent-huge-pages.service idempotency.
-      - 282 - Add restart handler, and bool variable to control to mongofb_config/mongod/mongos roles.
+      - 282 - Add restart handler, and bool variable to control to mongofb_config/mongod/mongos
+        roles.
       - 285 - Output users and roles dict by database to avoid overwriting entries.
       - 287 - Fixes return value on older versions of MongoDB.
       - 290 - Adds pseudo-idempotency feature to module.
     release_date: '2021-01-31'
   1.2.1:
-    bugfixes:
+    changes:
+      minor_changes:
       - 304 - Adds validate parameter to mongodb_status module.
     release_date: '2021-02-09'
+  1.3.0:
+    changes:
+      release_summary: |
+        This release improves sharded cluster management, and adds schema validator management.
+        Several bug fixes improve compatibility with python3.6.
+      security_fixes:
+      - 312 - Set no_log True for ssl_keyfile.
+      bugfixes:
+      - 315 - Fix exception handling for mongodb_stepdown module on python3.6
+      - 320 - Fix exception handling for modules mongodb_balancer, mongodb_shard,
+        and mongodb_status.
+      - 352 - Add ansible.posix collection to dependencies list.
+      minor_changes:
+      - 338 - role monogdb_repository - Variablize repository details.
+      - 345 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Make security.keyFile
+        configurable.
+      - 346 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Allow using net.bindIpAll
+        instead of net.bindIp.
+      - 347 - roles mongodb_config, mongodb_mongod, mongodb_mongos - Allow overriding
+        net.compression.compressors in mongo*.conf
+    modules:
+    - description: Manages the free monitoring feature.
+      name: mongodb_monitoring
+      namespace: ''
+    - description: Manages MongoDB Document Schema Validators.
+      name: mongodb_schema
+      namespace: ''
+    - description: Manage Shard Tags.
+      name: mongodb_shard_tag
+      namespace: ''
+    - description: Manage Shard Zones.
+      name: mongodb_shard_zone
+      namespace: ''
+    release_date: '2021-07-20'
