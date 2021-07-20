@@ -39,12 +39,30 @@ releases:
     - description: Adds or removes a user from a MongoDB database
       name: mongodb_user
       namespace: ''
+    add object.role:
+    - name: mongodb_config
+      description: Configure the CSRS Config Server Replicaset for a MongoDB sharded cluster. (Use mongodb_mongod for Standalone installations - this does not create mongo.conf)
+    - name: mongodb_install
+      description: Install MongoDB packages on Debian and RedHat based platforms.
+    - name: mongodb_linux
+      description: A simple role to configure Linux Operating System settings, as advised in the MongoDB Production Notes.
+    - name: mongodb_mongod
+      description: Configure the mongod service (includes populating mongod.conf) which is a MongoDB replicaset or standalone server.
+    - name: mongodb_mongos
+      description: Configure the mongos service (includes populating mongos.conf) which only runs in a sharded MongoDB cluster.
+    - name: mongodb_repository
+      description: Configures a package repository for MongoDB on Debian and RedHat based platforms.
+    - name: mongodb_selinux
+      description: Configure SELinux for MongoDB.
     release_date: '2020-08-06'
   1.1.0:
     modules:
     - description: Run commands via the MongoDB shell.
       name: mongodb_shell
       namespace: ''
+    add object.role:
+    - name: mongodb_auth
+      description: Configure auth on MongoDB servers.
     release_date: '2020-10-24'
   1.1.1:
     bugfixes:
