@@ -26,6 +26,6 @@ sections:
   - Bugfixes
 - - known_issues
   - Known Issues
-title: Community.Mongodb
+title: Community.MongoDB
 trivial_section_name: trivial
 use_fqcn: true

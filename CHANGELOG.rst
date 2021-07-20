@@ -1,9 +1,32 @@
 ===============================
-Community.Mongodb Release Notes
+Community.MongoDB Release Notes
 ===============================
 
 .. contents:: Topics
 
+
+v1.3.0
+======
+
+New Modules
+-----------
+
+- community.mongodb.mongodb_monitoring - Manages the free monitoring feature.
+- community.mongodb.mongodb_schema - Manages MongoDB Document Schema Validators.
+- community.mongodb.mongodb_shard_tag - Manage Shard Tags.
+- community.mongodb.mongodb_shard_zone - Manage Shard Zones.
+
+v1.2.1
+======
+
+v1.2.0
+======
+
+v1.1.2
+======
+
+v1.1.1
+======
 
 v1.1.0
 ======
