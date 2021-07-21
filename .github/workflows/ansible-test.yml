@@ -132,6 +132,7 @@ jobs:
         mongodb_version:
           - "4.2"
           - "4.4"
+          - "5.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         docker_image:
           - ubuntu1804
