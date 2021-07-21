@@ -229,7 +229,7 @@ def transform_output(output, transform_type, split_char):
         else:
             tranform_type = "raw"
     if transform_type == "json":
-        output = json.loads(output)
+        output = json.loads(JSON.stringify(output))
     elif transform_type == "split":
         output = output.strip().split(split_char)
     elif transform_type == "raw":
