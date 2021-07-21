@@ -229,6 +229,7 @@ def transform_output(output, transform_type, split_char):
         else:
             tranform_type = "raw"
     if transform_type == "json":
+        output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1',output)  # Strip Extended JSON Stuff
         output = json.loads(output)
     elif transform_type == "split":
         output = output.strip().split(split_char)
