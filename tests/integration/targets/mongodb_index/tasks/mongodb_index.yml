@@ -145,7 +145,7 @@
 - assert:
     that:
       - '"myuniqueindex" in output.stdout'
-      - '"unique\" : true," in output.stdout'
+      - '"unique\" : true" in output.stdout'
 
 - name: Drop the unique index we just created
   community.mongodb.mongodb_index:
