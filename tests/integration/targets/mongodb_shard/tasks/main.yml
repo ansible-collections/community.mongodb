@@ -186,7 +186,7 @@
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
       in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.stdout  or ''draining\\" : true'' in mongo_output.stdout'  # sometimes draining is very slow
+    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.stdout  or ''draining\" : true'' in mongo_output.stdout'  # sometimes draining is very slow
     - '''balancer'' in mongo_output.stdout'
 
 - include_tasks: mongod_teardown.yml
@@ -525,7 +525,7 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003'' in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.stdout or ''draining\\" : true'' in mongo_output.stdout'  # sometimes draining is very slow
+    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.stdout or ''draining\" : true'' in mongo_output.stdout'  # sometimes draining is very slow
     - '''balancer'' in mongo_output.stdout'
 
 - include_tasks: mongod_teardown.yml
