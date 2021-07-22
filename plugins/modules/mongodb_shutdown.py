@@ -164,7 +164,7 @@ def main():
             cmd_doc = OrderedDict([
                 ('shutdown', 1),
                 ('force', force),
-                ('timeout', timeout)
+                ('timeoutSecs', timeout)
             ])
             client['admin'].command(cmd_doc)
             result["changed"] = True
