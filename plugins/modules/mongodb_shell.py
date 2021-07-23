@@ -239,9 +239,8 @@ def transform_output(output, transform_type, split_char):
             output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1', output)  # Strip Extended JSON Stuff
             try:
                 output = json.loads(output)
-            except json.decoder.JSONDecodeError:
-                output = re.sub("(\w+):", r'"\1":', output)  # Double quote field names when missing - mongosh
-                output = json.loads(output)
+            except json.decoder.JSONDecodeError as excep:
+                raise excep
     elif transform_type == "split":
         output = output.strip().split(split_char)
     elif transform_type == "raw":
