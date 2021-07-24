@@ -89,7 +89,7 @@ options:
       - Useful for escaping documents that are returned in Extended JSON format.
       - Automatically set to false when using mongo.
       - Automatically set to true when using mongosh.
-      - Set explicitly to override automiatic selection.
+      - Set explicitly to override automatic selection.
     type: bool
     default: null
   additional_args:
@@ -236,7 +236,10 @@ def transform_output(output, transform_type, split_char):
         try:
             output = json.loads(output)
         except json.decoder.JSONDecodeError:
-            output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1', output)  # Strip Extended JSON Stuff
+            # Strip Extended JSON stuff like:
+            # "_id": ObjectId("58f56171ee9d4bd5e610d6b7"),
+            # "count": NumberLong(999),
+            output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1', output)
             try:
                 output = json.loads(output)
             except json.decoder.JSONDecodeError as excep:
