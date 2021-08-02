@@ -14,11 +14,12 @@ author: Rhys Campbell (@rhysmeister)
 version_added: "1.1.0"
 short_description: Run commands via the MongoDB shell.
 requirements:
-  - mongo
+  - mongo or mongosh
 description:
     - Run commands via the MongoDB shell.
     - Commands provided with the eval parameter or included in a Javascript file.
     - Attempts to parse returned data into a format that Ansible can use.
+    - Module currently uses the mongo shell by default. This will change to mongosh in an upcoming version and support for mongo will be dropped
 
 extends_documentation_fragment:
   - community.mongodb.login_options
@@ -84,10 +85,13 @@ options:
     default: " "
   stringify:
     description:
-      - Wraps the command in eval in JSON.stringify(<js cmd>).
+      - Wraps the command in eval in JSON.stringify(<js cmd>) (mongo) or EJSON.stringify(<js cmd>) (mongosh).
       - Useful for escaping documents that are returned in Extended JSON format.
+      - Automatically set to false when using mongo.
+      - Automatically set to true when using mongosh.
+      - Set explicitly to override automatic selection.
     type: bool
-    default: false
+    default: null
   additional_args:
     description:
       - Additional arguments to supply to the mongo command.
@@ -229,8 +233,17 @@ def transform_output(output, transform_type, split_char):
         else:
             tranform_type = "raw"
     if transform_type == "json":
-        output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1',output)  # Strip Extended JSON Stuff
-        output = json.loads(output)
+        try:
+            output = json.loads(output)
+        except json.decoder.JSONDecodeError:
+            # Strip Extended JSON stuff like:
+            # "_id": ObjectId("58f56171ee9d4bd5e610d6b7"),
+            # "count": NumberLong(999),
+            output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1', output)
+            try:
+                output = json.loads(output)
+            except json.decoder.JSONDecodeError as excep:
+                raise excep
     elif transform_type == "split":
         output = output.strip().split(split_char)
     elif transform_type == "raw":
@@ -272,7 +285,7 @@ def main():
         debug=dict(type='bool', required=False, default=False),
         transform=dict(type='str', choices=["auto", "split", "json", "raw"], default="auto"),
         split_char=dict(type='str', default=" "),
-        stringify=dict(type='bool', default=False),
+        stringify=dict(type='bool', default=None),
         additional_args=dict(type='raw'),
         idempotent=dict(type='bool', default=False)
     )
@@ -282,6 +295,11 @@ def main():
         required_together=[['login_user', 'login_password']],
         mutually_exclusive=[["eval", "file"]]
     )
+
+    if module.params['mongo_cmd'] == "mongo" and module.params['stringify'] is None:
+        module.params['stringify'] = False
+    elif module.params['mongo_cmd'] == "mongosh" and module.params['stringify'] is None:
+        module.params['stringify'] = True
 
     args = [
         module.params['mongo_cmd'],
@@ -303,7 +321,10 @@ def main():
                   " inside the eval parameter because they are not valid JavaScript."
             module.fail_json(msg=msg)
         if module.params['stringify']:
-            module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
+            if module.params['mongo_cmd'] != "mongosh":
+                module.params['eval'] = "JSON.stringify({0})".format(module.params['eval'])
+            else:
+                module.params['eval'] = "EJSON.stringify({0})".format(module.params['eval'])
 
     args = add_arg_to_cmd(args, "--host", module.params['login_host'])
     args = add_arg_to_cmd(args, "--port", module.params['login_port'])
