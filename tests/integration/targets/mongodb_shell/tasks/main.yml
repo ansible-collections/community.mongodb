@@ -646,4 +646,15 @@
 
   when: mongodb_version[0] | int >= 5
 
+- name: "Issue 365 test"
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    debug: yes
+    quiet: no
+    db: "test"
+    eval: 'db.organizations.update({"name": "test"},{"$set" : {"feature_toggles.test": false}})'
+    transform: json
+
 - include_tasks: mongod_teardown.yml
