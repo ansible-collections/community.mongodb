@@ -6,8 +6,8 @@ Configures a repository for MongoDB on Debian and RedHat based platforms.
 Role Variables
 --------------
 
-mongodb_version: Version of MongoDB. Default "4.2".
-debian_packages: Packages needed on Debian systems for this role.
+* mongodb_version: Version of MongoDB. Default "4.4".
+* debian_packages: Packages needed on Debian systems for this role.
 
 
 Defaults
