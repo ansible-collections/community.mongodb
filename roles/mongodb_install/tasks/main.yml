@@ -1,5 +1,10 @@
 ---
 # tasks file for mongodb_install
+- name: Manage package locks - {{ mongodb_hold_packages }}
+  script: lock_mongodb_packages.sh {{ mongodb_hold_packages }}
+  when:
+    - mongodb_hold_packages is defined
+
 - name: Install MongoDB Packages
   package:
     name: mongodb-org
