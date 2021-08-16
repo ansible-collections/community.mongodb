@@ -1,5 +1,5 @@
 ---
-mongodb_version: "4.2"
+mongodb_version: "4.4"
 debian_packages:
   - apt-transport-https
   - curl

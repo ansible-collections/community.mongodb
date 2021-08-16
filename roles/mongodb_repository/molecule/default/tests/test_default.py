@@ -30,7 +30,7 @@ def test_redhat_mongodb_repository_file(host):
         assert f.user == 'root'
         assert f.group == 'root'
         assert f.mode == 0o644
-        assert f.md5sum == "71c3a725d5aad794793a4b599f7564c0"
+        assert f.md5sum == "b588eeead0d4e192ca3ee6b526d79d51"
 
 
 def test_redhat_yum_search(host):
