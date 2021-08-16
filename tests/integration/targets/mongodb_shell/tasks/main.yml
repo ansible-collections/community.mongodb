@@ -323,6 +323,17 @@
     that:
       - "run_file.changed == True"
 
+- name: "Issue 365 test - mongo"
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    debug: yes
+    quiet: no
+    db: "test"
+    eval: 'db.organizations.update({"name": "test"},{"$set" : {"feature_toggles.test": false}})'
+    transform: json
+
 - name: Run tests for mongosh on MongoDB 5+
   block:
 
@@ -643,6 +654,18 @@
     - assert:
         that:
           - "run_file.changed == True"
+
+    - name: "Issue 365 test - mongosh"
+      community.mongodb.mongodb_shell:
+        login_user: '{{ mongodb_admin_user }}'
+        login_password: '{{ mongodb_admin_password }}'
+        login_port: 3001
+        mongo_cmd: "mongosh"
+        debug: yes
+        quiet: no
+        db: "test"
+        eval: 'db.organizations.update({"name": "test"},{"$set" : {"feature_toggles.test": false}})'
+        transform: json
 
   when: mongodb_version[0] | int >= 5
 
