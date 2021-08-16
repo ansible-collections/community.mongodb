@@ -48,19 +48,6 @@
     gpgkey: '{{ yum.gpgkey }}'
   when:
   - ansible_os_family == "RedHat"
-  - ansible_distribution_version.split('.')[0]|int <= 7
-  - not ansible_distribution == "Fedora"
-
-- name: RedHat 8 repo
-  yum_repository:
-    name: '{{ yum.name }}'
-    description: '{{ yum.description }}'
-    baseurl: '{{ yum.redhat8url }}'
-    gpgcheck: '{{ yum.gpgcheck }}'
-    gpgkey: '{{ yum.gpgkey }}'
-  when:
-  - ansible_os_family == "RedHat"
-  - ansible_distribution_version.split('.')[0]|int == 8
   - not ansible_distribution == "Fedora"
 
 - name: Another url for Fedora based systems
