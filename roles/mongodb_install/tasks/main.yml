@@ -39,3 +39,8 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+
+- name: Manage package locks - {{ mongodb_hold_packages }}
+  script: lock_mongodb_packages.sh {{ mongodb_hold_packages }}
+  when:
+    - mongodb_hold_packages is defined

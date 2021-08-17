@@ -1,0 +1,12 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Required packages
+      yum:
+        name: yum-plugin-versionlock
+        state: present
+      when: ansible_facts.os_family == "RedHat"
