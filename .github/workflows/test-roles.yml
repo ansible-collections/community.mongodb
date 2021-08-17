@@ -87,4 +87,4 @@ jobs:
           molecule test --scenario-name specific_mongodb_version
           molecule test --scenario-name mongodb_hold_packages
           molecule test --scenario-name mongodb_nohold_packages
-        working-directory: working-directory: ansible_collections/community/mongodb/roles/mongodb_install
+        working-directory: ansible_collections/community/mongodb/roles/mongodb_install
