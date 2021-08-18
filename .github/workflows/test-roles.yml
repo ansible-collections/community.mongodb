@@ -81,3 +81,12 @@ jobs:
       - name: Run molecule test for ${{ matrix.mongodb_role }}
         run: molecule test
         working-directory: ansible_collections/community/mongodb/roles/${{ matrix.mongodb_role }}
+
+      # I don't like this
+      - name: Run molecule tests for a few extra mongodb_install role scenarios
+        run: |
+          molecule test --scenario-name specific_mongodb_version
+          molecule test --scenario-name mongodb_hold_packages
+          molecule test --scenario-name mongodb_nohold_packages
+        if: ${{ matrix.mongodb_role == 'mongodb_install' }}
+        working-directory: ansible_collections/community/mongodb/roles/mongodb_install

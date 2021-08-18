@@ -5,4 +5,5 @@
     specific_mongodb_version: "4.2.2"
   roles:
     - role: mongodb_repository
+      mongodb_version: "4.2"
     - role: mongodb_install

@@ -30,3 +30,17 @@ verifier:
     name: flake8
     options:
       ignore: 'E501'
+scenario:
+  test_sequence:
+    - dependency
+    - lint
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
