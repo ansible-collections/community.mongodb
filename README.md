@@ -152,6 +152,31 @@ ansible-test integration --docker default -v --color --python 3.6
 ansible-test units --docker default -v --color --python 3.6
 ```
 
+## Release Notes
+
+Needs improvement put the general process for issuing a new release to Ansibel Galaxy is as follows...
+
+- View commits since last release and copy text for release notes
+
+```bash
+git log 1.3.0..HEAD
+git log 1.3.0..HEAD --oneline
+```
+
+- Update galaxy.yml with version and any other appropriate info
+- Update changelogs/changelog.yaml
+- Update CHANGELOG.rst
+- Create a pull request
+- Review and merge when happy
+- Tag release on the master branch
+
+```bash
+git tag <release>
+git push --tags
+```
+
+Automation will bundle the release abd push to Galaxy. Should take around 10-15 minutes.
+
 ## GitHub workflow
 
 * Maintainers would be members of this GitHub Repo
