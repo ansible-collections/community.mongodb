@@ -26,6 +26,11 @@ Minor Changes
   The task is executed at the end and it is possible that packages could be upgraded
   before the lock is initially applied.
 
+Deprecated Features
+-------------------
+
+- mongodb_shell - Support for the mongo shell is deprecated and will be removed in a future version.
+
 v1.3.0
 ======
 
