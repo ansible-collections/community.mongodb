@@ -161,3 +161,19 @@ releases:
       name: mongodb_shard_zone
       namespace: ''
     release_date: '2021-07-20'
+  1.3.1:
+    release_summary: |
+      This release is a maintenance release. The GitHub CI has been updated to include MongoDB 5.0 as well
+      as a few new features. The mongosh shell is now supported in the mongodb_shell module. Support for the
+      old mongo shell will be removed in a future release.
+    minor_changes:
+      - 360 - mongodb_shell - Adds support for the mongosh shell now available with MongoDB 5.0.
+      - 368 - mongodb_shell - Use shlex escape function.
+      - 370 - mongodb_install - Adds mongodb_hold_packages variable. Runs the lock_mongodb_packages.sh script
+        to either lock mongodb-org packages at a specific version or to release the lock.
+        Set to "HOLD" or "NOHOLD" as desired. No checks are made to see if the hold already exists or not.
+        By default this variable is undefined and the script is not executed.
+        The task is executed at the end and it is possible that packages could be upgraded
+        before the lock is initially applied.
+    deprecated_features:
+      - mongodb_shell - Support for the mongo shell is deprecated and will be removed in a future version.
