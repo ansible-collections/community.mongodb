@@ -76,14 +76,14 @@ options:
       - Only relevant when the replicaset already exists.
       - Only one member can be removed or added per invocation.
     type: bool
-    default: true
+    default: false
   force:
     description:
       - Only relevant when reconfigure = true.
       - Specify true to force the available replica set members to accept the new configuration.
       - Force reconfiguration can result in unexpected or undesired behavior, including rollback of "majority" committed writes.
     type: bool
-    default: true
+    default: false
   maxTimeMS:
     description:
       - Specifies a cumulative time limit in milliseconds for processing the replicaset reconfiguration.
@@ -374,8 +374,8 @@ def main():
         protocol_version=dict(type='int', default=1, choices=[0, 1]),
         replica_set=dict(type='str', default="rs0"),
         validate=dict(type='bool', default=True),
-        reconfigure=dict(type='bool', default=True),
-        force=dict(type='bool', default=True),
+        reconfigure=dict(type='bool', default=False),
+        force=dict(type='bool', default=False),
         max_time_ms=dict(type='int', default=None),
     )
     module = AnsibleModule(
