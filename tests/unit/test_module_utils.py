@@ -214,7 +214,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                              password=None,
                              replicaSet='replset')
 
-        success = mongo_auth(module, client)
+        success = mongodb_common.mongo_auth(module, client)
         assert success
 
 if __name__ == '__main__':
