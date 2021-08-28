@@ -241,3 +241,4 @@ def mongo_auth(module, client):
             check_compatibility(module, srv_version, driver_version)
         except Exception as excep:
             module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+    return True

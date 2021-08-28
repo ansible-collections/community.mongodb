@@ -203,5 +203,19 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert isinstance(index_exists, bool) and not index_exists
 
 
+def test_mongodb_auth(self):
+    fake_module = FakeAnsibleModule()
+    fake_module.params["login_user"] = "user"
+    fake_module.params["login_password"] = "password"
+    fake_module.params["login_database"] = "test"
+
+    client = MongoClient(host=['localhost:27017'],
+                         username=None,
+                         password=None,
+                         replicaSet='replset')
+
+    success = mongo_auth(module, client)
+    assert success
+
 if __name__ == '__main__':
     unittest.main()
