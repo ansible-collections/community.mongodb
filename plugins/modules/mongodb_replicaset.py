@@ -404,7 +404,7 @@ def main():
     force = module.params['force']
     max_time_ms = module.params['max_time_ms']
 
-    if validate:
+    if validate and reconfigure is False:
         if len(members) <= 2 or len(members) % 2 == 0:
             module.fail_json(msg="MongoDB Replicaset validation failed. Invalid number of replicaset members.")
         if arbiter_at_index is not None and len(members) - 1 < arbiter_at_index:
