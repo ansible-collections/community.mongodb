@@ -245,8 +245,8 @@ def modify_members(config, members):
             if current_member["host"] in members:
                 new_member_config.append(current_member)
                 existing_members.append(current_member["host"])
-                if new_member_config["_id"] > max_id:
-                    max_id = new_member_config["_id"]
+                if current_member["_id"] > max_id:
+                    max_id = current_member["_id"]
         member_additions = list(set(members) - set(existing_members))
         if len(member_additions) > 0:
             if ':' not in member:  # No port supplied. Assume 27017
@@ -443,7 +443,7 @@ def main():
                         config = get_replicaset_config(client)
                         modified_config = modify_members(config, members)
                         if not module.check_mode:
-                            result = replicaset_reconfigure(client, config, force, max_time_ms)
+                            result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
                         else:
                             result = { "dummy": 1 }
                         result['changed'] = True
