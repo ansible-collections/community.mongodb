@@ -38,6 +38,7 @@
     login_port: 3001
     login_database: admin
     replica_set: "{{ current_replicaset }}"
+    reconfigure: yes
     members:
        - localhost:3001
        - localhost:3002
