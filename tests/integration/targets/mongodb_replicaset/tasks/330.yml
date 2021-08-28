@@ -48,7 +48,7 @@
     login_port: 3001
     login_database: admin
     replica_set: "{{ current_replicaset }}"
-    validate: minimal    
+    validate: minimal
 
 - name: Get replicaset info
   command: mongo admin --eval "rs.status()" --port 3001
@@ -62,3 +62,7 @@
     - '''localhost:3001'' in mongo_output.stdout'
     - '''localhost:3002'' in mongo_output.stdout'
     - '''localhost:3003'' not in mongo_output.stdout'
+
+# TODO further test adding a member and then same with auth
+
+- include_tasks: mongod_teardown.yml
