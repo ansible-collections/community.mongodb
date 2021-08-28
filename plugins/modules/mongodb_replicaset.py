@@ -272,8 +272,9 @@ def replicaset_reconfigure(client, config, force, max_time_ms):
                              % to_native(excep))
 
     cmd_doc = OrderedDict([("replSetReconfig", config),
-                           ("force", force),
-                           ("maxTimeMS", max_time_ms)])
+                           ("force", force)])
+    if max_time_ms is not None:
+        cmd_doc.update({"maxTimeMS": max_time_ms})
 
     result = client.admin.command(cmd_doc)
     return result
