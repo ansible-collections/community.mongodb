@@ -444,6 +444,8 @@ def main():
                         modified_config = modify_members(config, members)
                         if not module.check_mode:
                             result = replicaset_reconfigure(client, config, force, max_time_ms)
+                        else:
+                            result = { "dummy": 1 }
                         result['changed'] = True
                         result['tmp'] = str(result)
                     else:

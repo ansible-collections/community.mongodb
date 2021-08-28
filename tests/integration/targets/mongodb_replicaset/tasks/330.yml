@@ -1,0 +1,64 @@
+- set_fact:
+    current_replicaset: "test_member_add_remove"
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Create replicaset with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    members:
+       - localhost:3001
+       - localhost:3002
+       - localhost:3003
+
+- name: Ensure is_primary script exists on host
+  copy:
+    src: js/is_primary.js
+    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.status()" --port 3001
+  register: mongo_output
+
+- name: Assert replicaset name is in mongo_output
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ current_replicaset }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' in mongo_output.stdout'
+
+- name: Remove a member from the replicaset
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    members:
+       - localhost:3001
+       - localhost:3002
+
+- name: Wait for the replicaste to stabilise
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    validate: minimal    
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.status()" --port 3001
+  register: mongo_output
+
+- name: Assert that member is no longer in replicaset
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ current_replicaset }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3003'' not in mongo_output.stdout'
