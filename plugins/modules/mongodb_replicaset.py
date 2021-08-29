@@ -278,8 +278,8 @@ def replicaset_reconfigure(client, config, force, max_time_ms):
     if max_time_ms is not None:
         cmd_doc.update({"maxTimeMS": max_time_ms})
 
-    result = client.admin.command(cmd_doc)
-    return result
+    client.admin.command(cmd_doc)
+    #return result
 
 
 def replicaset_find(client):
@@ -446,11 +446,13 @@ def main():
                         config = get_replicaset_config(client)
                         modified_config = modify_members(config, members)
                         if not module.check_mode:
-                            result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
-                        else:
-                            result = { "dummy": 1 }
+                            # Causes error Value of unknown type: <class 'bson.timestamp.Timestamp'>
+                            # result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
+                            replicaset_reconfigure(client, modified_config, force, max_time_ms)
+                        #else:
+                        #    result = { "dummy": 1 }
                         result['changed'] = True
-                        result['tmp'] = str(result)
+                        #result['tmp'] = str(result)
                     else:
                         result['changed'] = False
                 elif isinstance(members[0], dict):
