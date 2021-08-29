@@ -19,6 +19,13 @@
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
+- name: Wait for the replicaste to stabilise
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+
 - name: Get replicaset info
   command: mongo admin --eval "rs.status()" --port 3001
   register: mongo_output
@@ -43,7 +50,7 @@
        - localhost:3001
        - localhost:3002
 
-- name: Wait for the replicaste to stabilise
+- name: Wait for the replicaste to stabilise after member removal
   community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
