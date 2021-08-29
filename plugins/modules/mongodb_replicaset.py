@@ -262,6 +262,8 @@ def modify_members(config, members):
 
 def replicaset_reconfigure(client, config, force, max_time_ms):
 
+    config['version'] += 1
+
     try:
         from collections import OrderedDict
     except ImportError as excep:
