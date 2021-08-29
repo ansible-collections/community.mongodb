@@ -10,6 +10,15 @@
   block:
 
   - set_fact:
+      mongodb_nodes:
+        - 3001
+        - 3002
+        - 3003
+
+  - set_fact:
+      mongod_auth: true
+
+  - set_fact:
       current_replicaset: "test_member_add_remove"
 
   - include_tasks: mongod_replicaset.yml
