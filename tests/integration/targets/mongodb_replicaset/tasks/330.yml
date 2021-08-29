@@ -77,4 +77,50 @@
 
 # TODO further test adding a member and then same with auth
 
+- name: Set variable to create a single new member
+  set_fact:
+    mongodb_nodes:
+      - 3004
+
+- name: Ensure auth is not activated
+  set_fact:
+    mongod_auth: False
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Add a member from the replicaset
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    reconfigure: yes
+    members:
+       - localhost:3001
+       - localhost:3002
+       - localhost:3304
+
+- name: Wait for the replicaste to stabilise after member addition
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    validate: minimal
+    poll: 3
+    interval: 10
+
+- name: Get replicaset info
+  command: mongo admin --eval "rs.status()" --port 3001
+  register: mongo_output
+
+- name: Assert that member 3004 is in replicaset
+  assert:
+    that:
+    - mongo_output.changed == true
+    - '''{{ current_replicaset }}'' in mongo_output.stdout'
+    - '''localhost:3001'' in mongo_output.stdout'
+    - '''localhost:3002'' in mongo_output.stdout'
+    - '''localhost:3004'' in mongo_output.stdout'
+
 - include_tasks: mongod_teardown.yml
