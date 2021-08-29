@@ -45,7 +45,7 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001
+    command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
     register: mongo_output
 
   - name: Assert replicaset name is in mongo_output
@@ -95,7 +95,7 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001
+    command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
     register: mongo_output
 
   - name: Assert that member is no longer in replicaset
@@ -158,7 +158,7 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001
+    command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
     register: mongo_output
 
   - name: Assert that member 3004 is in replicaset
