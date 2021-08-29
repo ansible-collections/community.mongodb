@@ -3,180 +3,180 @@
 
   block:
 
-    - set_fact:
-        current_replicaset: "test_member_add_remove"
+  - set_fact:
+      current_replicaset: "test_member_add_remove"
 
-    - include_tasks: mongod_replicaset.yml
+  - include_tasks: mongod_replicaset.yml
 
-    - name: Create replicaset with module
-      community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        members:
-           - localhost:3001
-           - localhost:3002
-           - localhost:3003
+  - name: Create replicaset with module
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      members:
+         - localhost:3001
+         - localhost:3002
+         - localhost:3003
 
-    - name: Ensure is_primary script exists on host
-      copy:
-        src: js/is_primary.js
-        dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+  - name: Ensure is_primary script exists on host
+    copy:
+      src: js/is_primary.js
+      dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-    - name: Wait for the replicaset to stabilise
-      community.mongodb.mongodb_status:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        poll: 3
-        interval: 10
+  - name: Wait for the replicaset to stabilise
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      poll: 3
+      interval: 10
 
-    - name: Get replicaset info
-      command: mongo admin --eval "rs.status()" --port 3001
-      register: mongo_output
+  - name: Get replicaset info
+    command: mongo admin --eval "rs.status()" --port 3001
+    register: mongo_output
 
-    - name: Assert replicaset name is in mongo_output
-      assert:
-        that:
-        - mongo_output.changed == true
-        - '''{{ current_replicaset }}'' in mongo_output.stdout'
-        - '''localhost:3001'' in mongo_output.stdout'
-        - '''localhost:3002'' in mongo_output.stdout'
-        - '''localhost:3003'' in mongo_output.stdout'
+  - name: Assert replicaset name is in mongo_output
+    assert:
+      that:
+      - mongo_output.changed == true
+      - '''{{ current_replicaset }}'' in mongo_output.stdout'
+      - '''localhost:3001'' in mongo_output.stdout'
+      - '''localhost:3002'' in mongo_output.stdout'
+      - '''localhost:3003'' in mongo_output.stdout'
 
-    - name: Remove a member from the replicaset - check mode
-      community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        reconfigure: yes
-        members:
-           - localhost:3001
-           - localhost:3002
-      check_mode: yes
-      register: rs
+  - name: Remove a member from the replicaset - check mode
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - localhost:3001
+         - localhost:3002
+    check_mode: yes
+    register: rs
 
-    - assert:
-        that:
-          - rs.changed == True
+  - assert:
+      that:
+        - rs.changed == True
 
-    - name: Remove a member from the replicaset
-      community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        reconfigure: yes
-        members:
-           - localhost:3001
-           - localhost:3002
-      register: rs
+  - name: Remove a member from the replicaset
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - localhost:3001
+         - localhost:3002
+    register: rs
 
-    - assert:
-        that:
-          - rs.changed == True
+  - assert:
+      that:
+        - rs.changed == True
 
-    - name: Wait for the replicaset to stabilise after member removal
-      community.mongodb.mongodb_status:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        validate: minimal
-        poll: 3
-        interval: 10
+  - name: Wait for the replicaset to stabilise after member removal
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      validate: minimal
+      poll: 3
+      interval: 10
 
-    - name: Get replicaset info
-      command: mongo admin --eval "rs.status()" --port 3001
-      register: mongo_output
+  - name: Get replicaset info
+    command: mongo admin --eval "rs.status()" --port 3001
+    register: mongo_output
 
-    - name: Assert that member is no longer in replicaset
-      assert:
-        that:
-        - mongo_output.changed == true
-        - '''{{ current_replicaset }}'' in mongo_output.stdout'
-        - '''localhost:3001'' in mongo_output.stdout'
-        - '''localhost:3002'' in mongo_output.stdout'
-        - '''localhost:3003'' not in mongo_output.stdout'
+  - name: Assert that member is no longer in replicaset
+    assert:
+      that:
+      - mongo_output.changed == true
+      - '''{{ current_replicaset }}'' in mongo_output.stdout'
+      - '''localhost:3001'' in mongo_output.stdout'
+      - '''localhost:3002'' in mongo_output.stdout'
+      - '''localhost:3003'' not in mongo_output.stdout'
 
-    - name: Set variable to create a single new member
-      set_fact:
-        mongodb_nodes:
-          - 3004
+  - name: Set variable to create a single new member
+    set_fact:
+      mongodb_nodes:
+        - 3004
 
-    - name: Ensure auth is not activated
-      set_fact:
-        mongod_auth: False
+  - name: Ensure auth is not activated
+    set_fact:
+      mongod_auth: False
 
-    - include_tasks: mongod_replicaset.yml
+  - include_tasks: mongod_replicaset.yml
 
-    - name: Add a member to the replicaset - check mode
-      community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        reconfigure: yes
-        members:
-           - localhost:3001
-           - localhost:3002
-           - localhost:3004
-      check_mode: yes
-      register: rs
+  - name: Add a member to the replicaset - check mode
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - localhost:3001
+         - localhost:3002
+         - localhost:3004
+    check_mode: yes
+    register: rs
 
-    - assert:
-        that:
-          - rs.changed == True
+  - assert:
+      that:
+        - rs.changed == True
 
-    - name: Add a member to the replicaset
-      community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        reconfigure: yes
-        members:
-           - localhost:3001
-           - localhost:3002
-           - localhost:3004
-      register: rs
+  - name: Add a member to the replicaset
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - localhost:3001
+         - localhost:3002
+         - localhost:3004
+    register: rs
 
-    - assert:
-        that:
-          - rs.changed == True
+  - assert:
+      that:
+        - rs.changed == True
 
-    - name: Wait for the replicaset to stabilise after member addition
-      community.mongodb.mongodb_status:
-        <<: *mongo_parameters
-        login_host: localhost
-        login_port: 3001
-        login_database: admin
-        replica_set: "{{ current_replicaset }}"
-        validate: minimal
-        poll: 3
-        interval: 10
+  - name: Wait for the replicaset to stabilise after member addition
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+      replica_set: "{{ current_replicaset }}"
+      validate: minimal
+      poll: 3
+      interval: 10
 
-    - name: Get replicaset info
-      command: mongo admin --eval "rs.status()" --port 3001
-      register: mongo_output
+  - name: Get replicaset info
+    command: mongo admin --eval "rs.status()" --port 3001
+    register: mongo_output
 
-    - name: Assert that member 3004 is in replicaset
-      assert:
-        that:
-        - mongo_output.changed == true
-        - '''{{ current_replicaset }}'' in mongo_output.stdout'
-        - '''localhost:3001'' in mongo_output.stdout'
-        - '''localhost:3002'' in mongo_output.stdout'
-        - '''localhost:3004'' in mongo_output.stdout'
+  - name: Assert that member 3004 is in replicaset
+    assert:
+      that:
+      - mongo_output.changed == true
+      - '''{{ current_replicaset }}'' in mongo_output.stdout'
+      - '''localhost:3001'' in mongo_output.stdout'
+      - '''localhost:3002'' in mongo_output.stdout'
+      - '''localhost:3004'' in mongo_output.stdout'
 
-    - include_tasks: mongod_teardown.yml
+  - include_tasks: mongod_teardown.yml

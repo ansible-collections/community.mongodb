@@ -75,6 +75,7 @@ options:
       - Whether to perform replicaset reconfiguration actions.
       - Only relevant when the replicaset already exists.
       - Only one member can be removed or added per invocation.
+      - Members should be specific as either all strings or all dicts when reconfiguring.
     type: bool
     default: false
   force:
@@ -84,7 +85,7 @@ options:
       - Force reconfiguration can result in unexpected or undesired behavior, including rollback of "majority" committed writes.
     type: bool
     default: false
-  maxTimeMS:
+  max_time_ms:
     description:
       - Specifies a cumulative time limit in milliseconds for processing the replicaset reconfiguration.
     type: int
