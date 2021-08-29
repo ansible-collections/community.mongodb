@@ -1,5 +1,8 @@
 - vars:
     mongo_parameters: &mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
       login_user: "{{ mongodb_admin_user }}"
       login_password: "{{ mongodb_admin_password }}"
       login_database: "admin"
@@ -14,9 +17,6 @@
   - name: Create replicaset with module
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       members:
          - localhost:3001
@@ -31,9 +31,6 @@
   - name: Wait for the replicaset to stabilise
     community.mongodb.mongodb_status:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       poll: 3
       interval: 10
@@ -54,9 +51,6 @@
   - name: Remove a member from the replicaset - check mode
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       reconfigure: yes
       members:
@@ -72,9 +66,6 @@
   - name: Remove a member from the replicaset
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       reconfigure: yes
       members:
@@ -89,9 +80,6 @@
   - name: Wait for the replicaset to stabilise after member removal
     community.mongodb.mongodb_status:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       validate: minimal
       poll: 3
@@ -124,9 +112,6 @@
   - name: Add a member to the replicaset - check mode
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       reconfigure: yes
       members:
@@ -143,9 +128,6 @@
   - name: Add a member to the replicaset
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       reconfigure: yes
       members:
@@ -161,9 +143,6 @@
   - name: Wait for the replicaset to stabilise after member addition
     community.mongodb.mongodb_status:
       <<: *mongo_parameters
-      login_host: localhost
-      login_port: 3001
-      login_database: admin
       replica_set: "{{ current_replicaset }}"
       validate: minimal
       poll: 3
