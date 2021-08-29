@@ -2,7 +2,6 @@
     mongo_parameters: &mongo_parameters
       login_host: localhost
       login_port: 3001
-      login_database: admin
       login_user: "{{ mongodb_admin_user }}"
       login_password: "{{ mongodb_admin_password }}"
       login_database: "admin"
@@ -25,12 +24,25 @@
 
   - name: Create replicaset with module
     community.mongodb.mongodb_replicaset:
-      <<: *mongo_parameters
+      login_host: localhost
+      login_port: 3001
       replica_set: "{{ current_replicaset }}"
       members:
          - localhost:3001
          - localhost:3002
          - localhost:3003
+
+  - name: Add mongodb admin user
+    community.mongodb.mongodb_user:
+      login_host: localhost
+      login_port: 3001
+      replica_set: "{{ current_replicaset }}"
+      database: admin
+      name: "{{ mongodb_admin_user }}"
+      password: "{{ mongodb_admin_password }}"
+      roles:
+        - root
+      state: present
 
   - name: Ensure is_primary script exists on host
     copy:
@@ -41,7 +53,7 @@
     community.mongodb.mongodb_status:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
-      poll: 3
+      poll: 5
       interval: 10
 
   - name: Get replicaset info
@@ -91,7 +103,7 @@
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
       validate: minimal
-      poll: 3
+      poll: 5
       interval: 10
 
   - name: Get replicaset info
@@ -154,7 +166,7 @@
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
       validate: minimal
-      poll: 3
+      poll: 5
       interval: 10
 
   - name: Get replicaset info

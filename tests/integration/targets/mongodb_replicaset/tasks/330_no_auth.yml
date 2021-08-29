@@ -29,7 +29,7 @@
     community.mongodb.mongodb_status:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
-      poll: 3
+      poll: 5
       interval: 10
 
   - name: Get replicaset info
@@ -79,7 +79,7 @@
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
       validate: minimal
-      poll: 3
+      poll: 5
       interval: 10
 
   - name: Get replicaset info
@@ -142,7 +142,7 @@
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
       validate: minimal
-      poll: 3
+      poll: 5
       interval: 10
 
   - name: Get replicaset info
