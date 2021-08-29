@@ -568,4 +568,5 @@
 - include_tasks: mongod_teardown.yml
 
 # Tasks for testing replicaset modifications
-- include_tasks: 330.yml
+- include_tasks: 330_no_auth.yml
+- include_tasks: 330_with_auth.yml
