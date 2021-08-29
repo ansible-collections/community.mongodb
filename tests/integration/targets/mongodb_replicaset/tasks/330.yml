@@ -25,6 +25,8 @@
     login_port: 3001
     login_database: admin
     replica_set: "{{ current_replicaset }}"
+    poll: 3
+    interval: 10
 
 - name: Get replicaset info
   command: mongo admin --eval "rs.status()" --port 3001
@@ -57,6 +59,8 @@
     login_database: admin
     replica_set: "{{ current_replicaset }}"
     validate: minimal
+    poll: 3
+    interval: 10
 
 - name: Get replicaset info
   command: mongo admin --eval "rs.status()" --port 3001
