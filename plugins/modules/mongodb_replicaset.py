@@ -179,6 +179,10 @@ mongodb_replicaset:
   description: The name of the replicaset that has been created.
   returned: success
   type: str
+reconfigure:
+  descrption: If a replicaset reconfiguration occured.
+  returned: On rpelicaset reconfiguration
+  type: bool
 '''
 
 from copy import deepcopy
@@ -354,14 +358,6 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
 
 def replicaset_remove(module, client, replica_set):
     raise NotImplementedError
-    # exists = replicaset_find(client, replica_set)
-    # if exists:
-    #    if module.check_mode:
-    #        module.exit_json(changed=True, replica_set=replica_set)
-    #    db = client[db_name]
-    #    db.remove_user(replica_set)
-    # else:
-    #    module.exit_json(changed=False, user=user)
 
 
 # =========================================
