@@ -249,11 +249,13 @@ def modify_members(config, members):
                     max_id = current_member["_id"]
         member_additions = list(set(members) - set(existing_members))
         if len(member_additions) > 0:
-            if ':' not in member:  # No port supplied. Assume 27017
-                member += ":27017"
-            new_member_config.append(OrderedDict([("_id", max_id + 1), ("host", member)]))
+            for member in member_additions:
+                if ':' not in member:  # No port supplied. Assume 27017
+                    member += ":27017"
+                new_member_config.append(OrderedDict([("_id", max_id + 1), ("host", member)]))
+                max_id += 1
         config["members"] = new_member_config
-    elif all(isinstance(member, str) for member in members):
+    elif all(isinstance(member, dict) for member in members):
         raise NotImplementedError("reconfig through dicts not yet implemented")
     else:
         raise Exception("All items in members must be either of type dict of str")

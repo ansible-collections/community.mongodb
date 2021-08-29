@@ -19,7 +19,7 @@
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-- name: Wait for the replicaste to stabilise
+- name: Wait for the replicaset to stabilise
   community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
@@ -52,7 +52,7 @@
        - localhost:3001
        - localhost:3002
 
-- name: Wait for the replicaste to stabilise after member removal
+- name: Wait for the replicaset to stabilise after member removal
   community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
@@ -88,7 +88,7 @@
 
 - include_tasks: mongod_replicaset.yml
 
-- name: Add a member from the replicaset
+- name: Add a member to the replicaset
   community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
@@ -98,9 +98,9 @@
     members:
        - localhost:3001
        - localhost:3002
-       - localhost:3304
+       - localhost:3004
 
-- name: Wait for the replicaste to stabilise after member addition
+- name: Wait for the replicaset to stabilise after member addition
   community.mongodb.mongodb_status:
     login_host: localhost
     login_port: 3001
