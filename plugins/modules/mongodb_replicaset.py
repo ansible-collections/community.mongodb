@@ -422,6 +422,9 @@ def main():
         port=int(login_port),
     )
 
+    if reconfigure and replica_set:
+        connection_params["replicaset"] = replica_set
+
     if ssl:
         connection_params = ssl_connection_options(connection_params, module)
 

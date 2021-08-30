@@ -7,6 +7,15 @@
   block:
 
   - set_fact:
+      mongodb_nodes:
+        - 3001
+        - 3002
+        - 3003
+
+  - set_fact:
+      mongod_auth: false
+
+  - set_fact:
       current_replicaset: "test_member_add_remove"
 
   - include_tasks: mongod_replicaset.yml
@@ -19,6 +28,14 @@
          - localhost:3001
          - localhost:3002
          - localhost:3003
+
+  - name: Copy script to host
+    template:
+      src: files/bash/ensure_primary.sh.j2
+      dest: /root/ensure_primary.sh
+
+  - name: Execute script for 3001
+    script: /root/ensure_primary.sh 3001 0
 
   - name: Ensure is_primary script exists on host
     copy:
@@ -93,7 +110,7 @@
       - '''{{ current_replicaset }}'' in mongo_output.stdout'
       - '''localhost:3001'' in mongo_output.stdout'
       - '''localhost:3002'' in mongo_output.stdout'
-      - '''localhost:3003'' not in mongo_output.stdout'
+      - '''name\" : \"localhost:3003'' not in mongo_output.stdout'
 
   - name: Set variable to create a single new member
     set_fact:
@@ -102,7 +119,7 @@
 
   - name: Ensure auth is not activated
     set_fact:
-      mongod_auth: False
+      mongod_auth: false
 
   - include_tasks: mongod_replicaset.yml
 
@@ -143,7 +160,7 @@
       replica_set: "{{ current_replicaset }}"
       validate: minimal
       poll: 5
-      interval: 10
+      interval: 30
 
   - name: Get replicaset info
     command: mongo admin --eval "rs.status()" --port 3001
