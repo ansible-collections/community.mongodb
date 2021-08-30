@@ -217,5 +217,39 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         success = mongodb_common.mongo_auth(fake_module, client)
         assert success
 
+        with open(os.path.expanduser("~/.mongodb.cnf"), "w+") as w:
+            w.write("""
+            [client]
+            user = mongo_user
+            pass = 123456
+            """)
+            fake_module.params["login_user"] = "user"
+            fake_module.params["login_password"] = "password"
+            fake_module.params["login_database"] = "test"
+            client = MongoClient(host=['localhost:27017'],
+                                 username=None,
+                                 password=None,
+                                 replicaSet='replset')
+
+            success = mongodb_common.mongo_auth(fake_module, client)
+            assert success
+
+        with open(os.path.expanduser("~/.mongodb.cnf"), "w+") as w:
+            w.write("""
+            [client]
+            user = mongo_user
+            pass = 123456
+            """)
+            fake_module.params["login_user"] = None
+            fake_module.params["login_password"] = "password"
+            fake_module.params["login_database"] = "test"
+            client = MongoClient(host=['localhost:27017'],
+                                 username=None,
+                                 password=None,
+                                 replicaSet='replset')
+
+            success = mongodb_common.mongo_auth(fake_module, client)
+            assert success
+
 if __name__ == '__main__':
     unittest.main()

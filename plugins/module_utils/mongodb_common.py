@@ -210,7 +210,7 @@ def ssl_connection_options(connection_params, module):
 
 def mongo_auth(module, client):
     """
-    TODO: This function was extracted from code form the mongodb_replicaste module.
+    TODO: This function was extracted from code form the mongodb_replicaset module.
     We should refactor other modules to use this where appropriate.
     @module - The calling Ansible module
     @client - The MongoDB connection object
