@@ -70,6 +70,26 @@ options:
     type: int
     choices: [ 0, 1 ]
     default: 1
+  reconfigure:
+    description:
+      - Whether to perform replicaset reconfiguration actions.
+      - Only relevant when the replicaset already exists.
+      - Only one member can be removed or added per invocation.
+      - Members should be specific as either all strings or all dicts when reconfiguring.
+    type: bool
+    default: false
+  force:
+    description:
+      - Only relevant when reconfigure = true.
+      - Specify true to force the available replica set members to accept the new configuration.
+      - Force reconfiguration can result in unexpected or undesired behavior, including rollback of "majority" committed writes.
+    type: bool
+    default: false
+  max_time_ms:
+    description:
+      - Specifies a cumulative time limit in milliseconds for processing the replicaset reconfiguration.
+    type: int
+    default: null
 notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
@@ -160,6 +180,10 @@ mongodb_replicaset:
   description: The name of the replicaset that has been created.
   returned: success
   type: str
+reconfigure:
+  descrption: If a replicaset reconfiguration occured.
+  returned: On rpelicaset reconfiguration
+  type: bool
 '''
 
 from copy import deepcopy
@@ -178,9 +202,91 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+
+
+def get_replicaset_config(client):
+    conf = client.admin.command({'replSetGetConfig': 1})
+    return conf['config']
+
+
+def get_member_names(client):
+    conf = get_replicaset_config(client)
+    members = []
+    for member in conf['members']:
+        members.append(member['host'])
+    return members
+
+
+def lists_are_same(list1, list2):
+    same = False
+    list1.sort()
+    list2.sort()
+    if list1 == list2:
+        same = True
+    return same
+
+
+def modify_members(config, members):
+    """
+    Modifies the members section of the config document as appropriate.
+    """
+    try:  # refactor repeated code
+        from collections import OrderedDict
+    except ImportError as excep:
+        try:
+            from ordereddict import OrderedDict
+        except ImportError as excep:
+            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
+                             % to_native(excep))
+    new_member_config = []  # the list of dicts containing the members for the replicaset configuration document
+    existing_members = []  # members that are staying in the config
+    max_id = 0
+    if all(isinstance(member, str) for member in members):
+        for current_member in config['members']:
+            if current_member["host"] in members:
+                new_member_config.append(current_member)
+                existing_members.append(current_member["host"])
+                if current_member["_id"] > max_id:
+                    max_id = current_member["_id"]
+        member_additions = list(set(members) - set(existing_members))
+        if len(member_additions) > 0:
+            for member in member_additions:
+                if ':' not in member:  # No port supplied. Assume 27017
+                    member += ":27017"
+                new_member_config.append(OrderedDict([("_id", max_id + 1), ("host", member)]))
+                max_id += 1
+        config["members"] = new_member_config
+    elif all(isinstance(member, dict) for member in members):
+        raise NotImplementedError("reconfig through dicts not yet implemented")
+    else:
+        raise Exception("All items in members must be either of type dict of str")
+    return config
+
+
+def replicaset_reconfigure(client, config, force, max_time_ms):
+
+    config['version'] += 1
+
+    try:
+        from collections import OrderedDict
+    except ImportError as excep:
+        try:
+            from ordereddict import OrderedDict
+        except ImportError as excep:
+            module.fail_json(msg='Cannot import OrderedDict class. You can probably install with: pip install ordereddict: %s'
+                             % to_native(excep))
+
+    cmd_doc = OrderedDict([("replSetReconfig", config),
+                           ("force", force)])
+    if max_time_ms is not None:
+        cmd_doc.update({"maxTimeMS": max_time_ms})
+
+    client.admin.command(cmd_doc)
+    #return result
 
 
 def replicaset_find(client):
@@ -253,14 +359,6 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
 
 def replicaset_remove(module, client, replica_set):
     raise NotImplementedError
-    # exists = replicaset_find(client, replica_set)
-    # if exists:
-    #    if module.check_mode:
-    #        module.exit_json(changed=True, replica_set=replica_set)
-    #    db = client[db_name]
-    #    db.remove_user(replica_set)
-    # else:
-    #    module.exit_json(changed=False, user=user)
 
 
 # =========================================
@@ -278,7 +376,10 @@ def main():
         members=dict(type='list', elements='raw'),
         protocol_version=dict(type='int', default=1, choices=[0, 1]),
         replica_set=dict(type='str', default="rs0"),
-        validate=dict(type='bool', default=True)
+        validate=dict(type='bool', default=True),
+        reconfigure=dict(type='bool', default=False),
+        force=dict(type='bool', default=False),
+        max_time_ms=dict(type='int', default=None),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -290,9 +391,6 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     replica_set = module.params['replica_set']
@@ -304,8 +402,11 @@ def main():
     chaining_allowed = module.params['chaining_allowed']
     heartbeat_timeout_secs = module.params['heartbeat_timeout_secs']
     election_timeout_millis = module.params['election_timeout_millis']
+    reconfigure = module.params['reconfigure']
+    force = module.params['force']
+    max_time_ms = module.params['max_time_ms']
 
-    if validate:
+    if validate and reconfigure is False:
         if len(members) <= 2 or len(members) % 2 == 0:
             module.fail_json(msg="MongoDB Replicaset validation failed. Invalid number of replicaset members.")
         if arbiter_at_index is not None and len(members) - 1 < arbiter_at_index:
@@ -321,6 +422,9 @@ def main():
         port=int(login_port),
     )
 
+    if reconfigure and replica_set:
+        connection_params["replicaset"] = replica_set
+
     if ssl:
         connection_params = ssl_connection_options(connection_params, module)
 
@@ -329,6 +433,8 @@ def main():
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
+    mongo_auth(module, client)
+
     try:
         rs = replicaset_find(client)
     except Exception as e:
@@ -336,12 +442,32 @@ def main():
 
     if isinstance(rs, str):
         if replica_set == rs:
-            result['changed'] = False
+            if reconfigure:
+                if isinstance(members[0], str):  # If members are str it's just a simple add or remove action
+                    if not lists_are_same(members, get_member_names(client)):
+                        config = get_replicaset_config(client)
+                        modified_config = modify_members(config, members)
+                        if not module.check_mode:
+                            # Causes error Value of unknown type: <class 'bson.timestamp.Timestamp'>
+                            # result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
+                            replicaset_reconfigure(client, modified_config, force, max_time_ms)
+                        #else:
+                        #    result = { "dummy": 1 }
+                        result['changed'] = True
+                        #result['tmp'] = str(result)
+                    else:
+                        result['changed'] = False
+                elif isinstance(members[0], dict):
+                    module.fail_json(msg="reconfig through dicts not yet implemented")
+                else:
+                     module.fail_json(msg="members must be either str or dict")
+            else:
+                result['changed'] = False
             result['replica_set'] = rs
             module.exit_json(**result)
         else:
             module.fail_json(msg="The replica_set name of {0} does not match the expected: {1}".format(rs, replica_set))
-    else:  # replicaset does not exit
+    else:  # replicaset does not exist
 
         # Some validation stuff
         if len(replica_set) == 0:
@@ -349,30 +475,6 @@ def main():
 
         if module.check_mode is False:
             try:
-                # If we have auth details use then otherwise attempt without
-                if login_user is None and login_password is None:
-                    mongocnf_creds = load_mongocnf()
-                    if mongocnf_creds is not False:
-                        login_user = mongocnf_creds['user']
-                        login_password = mongocnf_creds['password']
-                elif login_password is None or login_user is None:
-                    module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
-
-                if login_user is not None and login_password is not None:
-                    try:
-                        client.admin.authenticate(login_user, login_password, source=login_database)
-                        # Get server version:
-                        try:
-                            srv_version = LooseVersion(client.server_info()['version'])
-                        except Exception as e:
-                            module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-                        # Get driver version::
-                        driver_version = LooseVersion(PyMongoVersion)
-                        # Check driver and server version compatibility:
-                        check_compatibility(module, srv_version, driver_version)
-                    except Exception as excep:
-                        module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
                 replicaset_add(module, client, replica_set, members,
                                arbiter_at_index, protocol_version,
                                chaining_allowed, heartbeat_timeout_secs,

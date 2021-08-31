@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
+from ansible.module_utils._text import to_native
 from distutils.version import LooseVersion
 import traceback
 import os
@@ -205,3 +206,40 @@ def ssl_connection_options(connection_params, module):
             else:
                 raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
     return connection_params
+
+
+def mongo_auth(module, client):
+    """
+    TODO: This function was extracted from code form the mongodb_replicaset module.
+    We should refactor other modules to use this where appropriate.
+    @module - The calling Ansible module
+    @client - The MongoDB connection object
+    """
+    login_user = module.params['login_user']
+    login_password = module.params['login_password']
+    login_database = module.params['login_database']
+    # If we have auth details use then otherwise attempt without
+    if login_user is None and login_password is None:
+        mongocnf_creds = load_mongocnf()
+        if mongocnf_creds is not False:
+            login_user = mongocnf_creds['user']
+            login_password = mongocnf_creds['password']
+    elif login_password is None or login_user is None:
+        module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
+
+    if login_user is not None and login_password is not None:
+        try:
+            client.admin.authenticate(login_user, login_password, source=login_database)
+            # Get server version:
+            try:
+                srv_version = LooseVersion(client.server_info()['version'])
+            except Exception as e:
+                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
+
+            # Get driver version::
+            driver_version = LooseVersion(PyMongoVersion)
+            # Check driver and server version compatibility:
+            check_compatibility(module, srv_version, driver_version)
+        except Exception as excep:
+            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+    return True
