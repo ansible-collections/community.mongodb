@@ -227,7 +227,6 @@ def mongo_auth(module, client):
     elif login_password is None or login_user is None:
         module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
 
-    uninitiated = False
     try:
         try:
             client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
