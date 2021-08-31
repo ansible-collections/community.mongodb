@@ -227,19 +227,30 @@ def mongo_auth(module, client):
     elif login_password is None or login_user is None:
         module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
 
-    if login_user is not None and login_password is not None:
+    uninitiated = False
+    try:
         try:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-            # Get server version:
-            try:
-                srv_version = LooseVersion(client.server_info()['version'])
-            except Exception as e:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
+            client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
         except Exception as excep:
-            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
-    return True
+            if hasattr(excep, 'code') and excep.code == 13:
+                if login_user is not None and login_password is not None:
+                    client.admin.authenticate(login_user, login_password, source=login_database)
+                else:
+                    module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+            else:
+                module.fail_json(msg='Unknown error: %s' % to_native(excep))
+    except Exception as excep:
+        module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
+    # Get server version:
+    try:
+        srv_version = LooseVersion(client.server_info()['version'])
+    except Exception as excep:
+        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
+    try:
+        # Get driver version::
+        driver_version = LooseVersion(PyMongoVersion)
+        # Check driver and server version compatibility:
+        check_compatibility(module, srv_version, driver_version)
+    except Exception as excep:
+        module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
+    return client

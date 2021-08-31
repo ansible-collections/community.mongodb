@@ -433,15 +433,14 @@ def main():
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
-    mongo_auth(module, client)
-
     try:
-        rs = replicaset_find(client)
+        rs = replicaset_find(client)  # does not require auth
     except Exception as e:
         module.fail_json(msg='Unable to connect to query replicaset: %s' % to_native(e))
 
     if isinstance(rs, str):
         if replica_set == rs:
+            mongo_auth(module, client)
             if reconfigure:
                 if isinstance(members[0], str):  # If members are str it's just a simple add or remove action
                     if not lists_are_same(members, get_member_names(client)):
