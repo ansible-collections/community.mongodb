@@ -261,14 +261,17 @@ def mongo_auth(module, client):
                 srv_version = LooseVersion(client.server_info()['version'])
             except Exception as e:
                 module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
             # Get driver version::
             driver_version = LooseVersion(PyMongoVersion)
-
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
+            try:
+                # Get driver version::
+                driver_version = LooseVersion(PyMongoVersion)
+                # Check driver and server version compatibility:
+                check_compatibility(module, srv_version, driver_version)
+            except Exception as excep:
+                module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
-            if module.params['db_name'] != "admin":
+            if module.params['database'] != "admin":
                 module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
             # else: this has to be the first admin user added
     return client
