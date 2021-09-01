@@ -186,6 +186,13 @@ def main():
     mongo_auth(module, client)
 
     try:
+        srv_version = LooseVersion(client.server_info()['version'])
+        if srv_version < LooseVersion(ver):
+            module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
+    except Exception as excep:
+        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
+
+    try:
         current_oplog_size = get_olplog_size(client)
     except Exception as excep:
         module.fail_json(msg='Unable to get current oplog size: %s' % to_native(excep))
