@@ -440,8 +440,8 @@ def main():
 
     if isinstance(rs, str):
         if replica_set == rs:
-            mongo_auth(module, client)
             if reconfigure:
+                mongo_auth(module, client)
                 if isinstance(members[0], str):  # If members are str it's just a simple add or remove action
                     if not lists_are_same(members, get_member_names(client)):
                         config = get_replicaset_config(client)
