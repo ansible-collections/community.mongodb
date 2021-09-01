@@ -85,7 +85,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     PYMONGO_IMP_ERR,
     pymongo_found,
     MongoClient,
-    LooseVersion
+    LooseVersion,
+    mongo_auth
 )
 
 has_ordereddict = False
@@ -181,36 +182,7 @@ def main():
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
-    try:
-        # If we have auth details use then otherwise attempt without
-        if login_user is None and login_password is None:
-            mongocnf_creds = load_mongocnf()
-            if mongocnf_creds is not False:
-                login_user = mongocnf_creds['user']
-                login_password = mongocnf_creds['password']
-        elif login_password is None or login_user is None:
-            module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
-    except Exception as e:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-    if login_user is not None and login_password is not None:
-        try:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-        except Exception as excep:
-            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-    except Exception as e:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-    # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
-
-    # Check driver and server version compatibility:
-    try:
-        check_compatibility(module, srv_version, driver_version)
-    except Exception as e:
-        module.fail_json(msg='Unable to validate MongoDB driver compatibility: %s' % to_native(e))
+    mongo_auth(module, client)
 
     current_monitoring_state, url = get_monitoring_status(client)
     result = {}
