@@ -269,8 +269,18 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     ssl_connection_options
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import index_exists, create_index, drop_index
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    index_exists,
+    create_index,
+    drop_index,
+    mongo_auth
+)
 
 
 def validate_module(module):
@@ -356,24 +366,25 @@ def main():
         connection_params = ssl_connection_options(connection_params, module)
 
     client = MongoClient(**connection_params)
+    mongo_auth(module, client)
 
-    if login_user:
-        try:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-        except Exception as e:
-            module.fail_json(msg='Unable to authenticate: %s' % to_native(e))
+    #if login_user:
+    #    try:
+    #        client.admin.authenticate(login_user, login_password, source=login_database)
+    #    except Exception as e:
+    #        module.fail_json(msg='Unable to authenticate: %s' % to_native(e))
 
     # Get server version:
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-    except Exception as e:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
+    #try:
+    #    srv_version = LooseVersion(client.server_info()['version'])
+    #except Exception as e:
+    #    module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
 
     # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
+    #driver_version = LooseVersion(PyMongoVersion)
 
     # Check driver and server version compatibility:
-    check_compatibility(module, srv_version, driver_version)
+    #check_compatibility(module, srv_version, driver_version)
 
     # Pre flight checks done
     indexes_created = []
