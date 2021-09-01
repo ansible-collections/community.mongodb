@@ -117,7 +117,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PyMongoVersion,
