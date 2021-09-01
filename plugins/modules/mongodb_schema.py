@@ -63,6 +63,11 @@ options:
       - "strict"
       - "moderate"
     default: "strict"
+  replica_set:
+    description:
+      - Replicaset name.
+    type: str
+    default: rs0
   state:
     description:
       - The state of the validator.
@@ -261,6 +266,7 @@ def main():
         level=dict(type='str', choices=['strict', 'moderate'], default="strict"),
         state=dict(type='str', choices=['present', 'absent'], default='present'),
         debug=dict(type='bool', default=False),
+        replica_set=dict(type='str', default="rs0"),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
