@@ -201,9 +201,15 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
 
 
 def user_find(client, user, db_name):
@@ -352,48 +358,23 @@ def main():
     state = module.params['state']
     update_password = module.params['update_password']
 
+    connection_params = {
+        "host": login_host,
+        "port": int(login_port),
+    }
+
+    if replica_set:
+        connection_params["replicaset"] = replica_set
+
+    if ssl:
+        connection_params = ssl_connection_options(connection_params, module)
+
     try:
-        connection_params = {
-            "host": login_host,
-            "port": int(login_port),
-        }
-
-        if replica_set:
-            connection_params["replicaset"] = replica_set
-
-        if ssl:
-            connection_params = ssl_connection_options(connection_params, module)
-
         client = MongoClient(**connection_params)
-
-        if login_user is None and login_password is None:
-            mongocnf_creds = load_mongocnf()
-            if mongocnf_creds is not False:
-                login_user = mongocnf_creds['user']
-                login_password = mongocnf_creds['password']
-        elif login_password is None or login_user is None:
-            module.fail_json(msg='when supplying login arguments, both login_user and login_password must be provided')
-
-        if login_user is not None and login_password is not None:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-            # Get server version:
-            try:
-                srv_version = LooseVersion(client.server_info()['version'])
-            except Exception as e:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
-        elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
-            if db_name != "admin":
-                module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
-            # else: this has to be the first admin user added
-
     except Exception as e:
-        module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
+        module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
+
+    mongo_auth(module, client)
 
     if state == 'present':
         if password is None and update_password == 'always':

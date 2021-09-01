@@ -100,7 +100,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PyMongoVersion,
@@ -216,39 +217,7 @@ def main():
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
-    if login_user is None and login_password is None:
-        mongocnf_creds = load_mongocnf()
-        if mongocnf_creds is not False:
-            login_user = mongocnf_creds['user']
-            login_password = mongocnf_creds['password']
-    elif login_password is None or login_user is None:
-        module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
-
-    try:
-        try:
-            client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-        except Exception as excep:
-            if hasattr(excep, 'code') and excep.code == 13:
-                if login_user is not None and login_password is not None:
-                    client.admin.authenticate(login_user, login_password, source=login_database)
-                else:
-                    module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
-            else:
-                module.fail_json(msg='Unknown error: %s' % to_native(excep))
-    except Exception as excep:
-        module.fail_json(msg='unable to connect to database: %s' % to_native(excep), exception=traceback.format_exc())
-    # Get server version:
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-    except Exception as excep:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
-    try:
-        # Get driver version::
-        driver_version = LooseVersion(PyMongoVersion)
-        # Check driver and server version compatibility:
-        check_compatibility(module, srv_version, driver_version)
-    except Exception as excep:
-        module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
+    mongo_auth(module, client)
 
     try:
         if tag_exists(client, shard, tag):
