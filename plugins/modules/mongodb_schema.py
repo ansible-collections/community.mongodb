@@ -158,7 +158,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     check_compatibility,
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
     mongo_auth
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
