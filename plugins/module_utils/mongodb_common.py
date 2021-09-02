@@ -38,30 +38,30 @@ def check_compatibility(module, srv_version, driver_version):
     """
     msg = 'pymongo driver version and MongoDB version are incompatible: '
 
-    if srv_version >= LooseVersion('4.2') and driver_version < LooseVersion('3.9'):
+    if srv_version >= LooseVersion('5.0') and driver_version < LooseVersion('3.12'):
+        msg += 'you must use pymongo 3.12+ with MongoDB >= 5.0'
+        module.fail_json(msg=msg)
+    elif srv_version >= LooseVersion('4.4') and driver_version < LooseVersion('3.11'):
+        msg += 'you must use pymongo 3.11+ with MongoDB >= 4.4'
+        module.fail_json(msg=msg)
+    elif srv_version >= LooseVersion('4.2') and driver_version < LooseVersion('3.9'):
         msg += 'you must use pymongo 3.9+ with MongoDB >= 4.2'
         module.fail_json(msg=msg)
-
     elif srv_version >= LooseVersion('4.0') and driver_version < LooseVersion('3.7'):
         msg += 'you must use pymongo 3.7+ with MongoDB >= 4.0'
         module.fail_json(msg=msg)
-
     elif srv_version >= LooseVersion('3.6') and driver_version < LooseVersion('3.6'):
         msg += 'you must use pymongo 3.6+ with MongoDB >= 3.6'
         module.fail_json(msg=msg)
-
     elif srv_version >= LooseVersion('3.4') and driver_version < LooseVersion('3.4'):
         msg += 'you must use pymongo 3.4+ with MongoDB >= 3.4'
         module.fail_json(msg=msg)
-
     elif srv_version >= LooseVersion('3.2') and driver_version < LooseVersion('3.2'):
         msg += 'you must use pymongo 3.2+ with MongoDB >= 3.2'
         module.fail_json(msg=msg)
-
     elif srv_version >= LooseVersion('3.0') and driver_version <= LooseVersion('2.8'):
         msg += 'you must use pymongo 2.8+ with MongoDB 3.0'
         module.fail_json(msg=msg)
-
     elif srv_version >= LooseVersion('2.6') and driver_version <= LooseVersion('2.7'):
         msg += 'you must use pymongo 2.7+ with MongoDB 2.6'
         module.fail_json(msg=msg)
