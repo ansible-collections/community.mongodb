@@ -207,6 +207,23 @@ def ssl_connection_options(connection_params, module):
                 raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
     return connection_params
 
+def check_srv_version(module, client):
+    try:
+        srv_version = LooseVersion(client.server_info()['version'])
+    except Exception as excep:
+        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
+    return srv_version
+
+
+def check_driver_compatibility(module, client, srv_version):
+    try:
+        # Get driver version::
+        driver_version = LooseVersion(PyMongoVersion)
+        # Check driver and server version compatibility:
+        check_compatibility(module, srv_version, driver_version)
+    except Exception as excep:
+        module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
+
 
 def mongo_auth(module, client):
     """
@@ -242,34 +259,14 @@ def mongo_auth(module, client):
         except Exception as excep:
             module.fail_json(msg='unable to connect to database: %s' % to_native(excep))
         # Get server version:
-        try:
-            srv_version = LooseVersion(client.server_info()['version'])
-        except Exception as excep:
-            module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
-        try:
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
-        except Exception as excep:
-            module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
+        srv_version = check_srv_version(module, client)
+        check_driver_compatibility(module, client, srv_version)
     else:  # this is the mongodb_user module
         if login_user is not None and login_password is not None:
             client.admin.authenticate(login_user, login_password, source=login_database)
             # Get server version:
-            try:
-                srv_version = LooseVersion(client.server_info()['version'])
-            except Exception as e:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-            try:
-                # Get driver version::
-                driver_version = LooseVersion(PyMongoVersion)
-                # Check driver and server version compatibility:
-                check_compatibility(module, srv_version, driver_version)
-            except Exception as excep:
-                module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
+            srv_version = check_srv_version(module, client)
+            check_driver_compatibility(module, client, srv_version)
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
             if module.params['database'] != "admin":
                 module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
