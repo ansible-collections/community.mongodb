@@ -251,5 +251,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             success = mongodb_common.mongo_auth(fake_module, client)
             assert success
 
+
 if __name__ == '__main__':
     unittest.main()
