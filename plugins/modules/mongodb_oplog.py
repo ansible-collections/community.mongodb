@@ -99,7 +99,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     member_state,
     ssl_connection_options,
-    mongo_auth
+    mongo_auth,
+    check_srv_version
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PyMongoVersion,
@@ -185,12 +186,9 @@ def main():
 
     mongo_auth(module, client)
 
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-        if srv_version < LooseVersion(ver):
-            module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
-    except Exception as excep:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
+    srv_version = check_srv_version(module, client)
+    if srv_version < LooseVersion(ver):
+        module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
 
     try:
         current_oplog_size = get_olplog_size(client)
