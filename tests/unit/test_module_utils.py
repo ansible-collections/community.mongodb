@@ -256,8 +256,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             assert success
 
     def test_mongo_auth(self):
-        if os.path.exists('~/.mongodb.cnf'):
-            os.remove('~/.mongodb.cnf')
+        if os.path.exists(os.path.expanduser('~/.mongodb.cnf')):
+            os.remove(os.path.expanduser('~/.mongodb.cnf'))
         client = MongoClient(host=['localhost:27017'],
                              username='user',
                              password='password',
