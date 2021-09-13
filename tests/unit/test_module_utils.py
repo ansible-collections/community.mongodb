@@ -51,8 +51,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ('3.6', '3.5', 'you must use pymongo 3.6+ with MongoDB >= 3.6'),
             ('4.0', '3.6', 'you must use pymongo 3.7+ with MongoDB >= 4.0'),
             ('4.2', '3.8', 'you must use pymongo 3.9+ with MongoDB >= 4.2'),
-            ('4.4', '3.10', 'you must use pymongo 3.9+ with MongoDB >= 4.4'),
-            ('5.0', '3.11', 'you must use pymongo 3.9+ with MongoDB >= 5.0')
+            ('4.4', '3.10', 'you must use pymongo 3.11+ with MongoDB >= 4.4'),
+            ('5.0', '3.11', 'you must use pymongo 3.12+ with MongoDB >= 5.0')
         ]
 
         for tuple in versions:
