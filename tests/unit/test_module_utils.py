@@ -283,7 +283,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_password"] = None
         client = mongodb_common.mongo_auth(fake_module, client)
         fail_msg = fake_module.get_msg()
-        self.assertTrue('Unknown error' in fail_msg, msg='{0}'.format(fail_msg))
+        self.assertTrue('When supplying login arguments' in fail_msg, msg='{0}'.format(fail_msg))
 
 if __name__ == '__main__':
     unittest.main()
