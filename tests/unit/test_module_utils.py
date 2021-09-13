@@ -283,7 +283,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_password"] = None
         client = mongodb_common.mongo_auth(fake_module, client)
         msg = fake_module.get_msg()
-        assert 'No credentials to authenticate' in msg
+        assert 'Unknown error' in msg
 
 if __name__ == '__main__':
     unittest.main()
