@@ -264,21 +264,21 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_user"] = None
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
-        mongo_auth(module, client)
+        mongodb_common.mongo_auth(module, client)
         assert module.get_msg() == "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
 
         fake_module.params["login_password"] = "password"
         fake_module.params["login_database"] = "test"
-        client = mongo_auth(module, client)
+        client = mongodb_common.mongo_auth(module, client)
         assert "MongoClient" in str(client)
 
         fake_module.params["'create_for_localhost_exception"] = None
-        client = mongo_auth(module, client)
+        client = mongodb_common.mongo_auth(module, client)
         assert "MongoClient" in str(client)
 
         fake_module.params["login_user"] = None
         fake_module.params["login_password"] = None
-        client = mongo_auth(module, client)
+        client = mongodb_common.mongo_auth(module, client)
         assert 'No credentials to authenticate' in module.get_msg()
 
 if __name__ == '__main__':
