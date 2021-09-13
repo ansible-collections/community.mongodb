@@ -255,6 +255,22 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             success = mongodb_common.mongo_auth(fake_module, client)
             assert success
 
+        def test_mongo_auth(self):
+            client = MongoClient(host=['localhost:27017'],
+                                 username='user',
+                                 password='password',
+                                 replicaSet='replset')
+            fake_module = FakeAnsibleModule()
+            fake_module.params["login_user"] = None
+            fake_module.params["login_password"] = None
+            fake_module.params["login_database"] = "test"
+            mongo_auth(module, client)
+            assert module.get_msg == "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
+            fake_module.params["login_password"] = "password"
+            fake_module.params["login_database"] = "test"
+            client = mongo_auth(module, client)
+            assert "MongoClient" in str(client)      
+
 
 if __name__ == '__main__':
     unittest.main()
