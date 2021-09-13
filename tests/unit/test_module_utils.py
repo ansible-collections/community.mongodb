@@ -265,7 +265,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
         mongodb_common.mongo_auth(fake_module, client)
-        assert fake_module.get_msg() == "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
+        assert "When supplying login arguments" in fake_module.get_msg()
 
         fake_module.params["login_password"] = "password"
         fake_module.params["login_database"] = "test"
