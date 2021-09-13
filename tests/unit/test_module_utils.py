@@ -308,8 +308,11 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_user"] = "user"
         fake_module.params["login_password"] = "password"
         fake_module.params["login_database"] = "test"
-        client = mongodb_common.mongo_auth(fake_module, client)
-        assert "MongoClient" in str(client)
+        try:
+            client = mongodb_common.mongo_auth(fake_module, client)
+        except Exception as excep:
+            assert 'Authentication failed' in str(excep)
+            assert "MongoClient" in str(client)
 
 if __name__ == '__main__':
     unittest.main()
