@@ -302,7 +302,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         client = mongodb_common.mongo_auth(fake_module, client)
         assert "MongoClient" in str(client)
 
-        client.close()
+        client.logout()
         fake_module.params['create_for_localhost_exception'] = None
         fake_module.params["login_user"] = "user"
         fake_module.params["login_password"] = "password"
