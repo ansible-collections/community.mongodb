@@ -263,7 +263,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                              password='password',
                              replicaSet='replset')
         fake_module = FakeAnsibleModule()
-        fake_module.params["login_user"] = None
+        fake_module.params["login_user"] = "dummy"
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
         mongodb_common.mongo_auth(fake_module, client)
