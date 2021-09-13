@@ -40,7 +40,7 @@
     - name: Add EPEL repo to CentOS 7 to allow installing pip package
       become: yes
       yum:
-        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts.distribution_major_version }}.noarch.rpm"
+        name: epel-release
         state: present
       when: inventory_hostname  == 'centos_7'
 
