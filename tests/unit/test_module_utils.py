@@ -285,5 +285,27 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fail_msg = fake_module.get_msg()
         self.assertTrue('When supplying login arguments' in fail_msg, msg='{0}'.format(fail_msg))
 
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = None
+        fake_module.params["login_password"] = None
+        fake_module.params["login_database"] = "test"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        fail_msg = fake_module.get_msg()
+        self.assertTrue('The localhost login exception only allows the first admin account to be created' in fail_msg)
+
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = None
+        fake_module.params["login_password"] = None
+        fake_module.params["login_database"] = "admin"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        assert "MongoClient" in str(client)
+
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = "user"
+        fake_module.params["login_password"] = "password"
+        fake_module.params["login_database"] = "test"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        assert "MongoClient" in str(client)
+
 if __name__ == '__main__':
     unittest.main()
