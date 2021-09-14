@@ -134,7 +134,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     load_mongocnf,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PyMongoVersion,
@@ -256,60 +257,21 @@ def main():
     sharded_databases = module.params['sharded_databases']
     mongos_process = module.params['mongos_process']
 
+
+    connection_params = {
+        "host": login_host,
+        "port": int(login_port)
+    }
+
+    if ssl:
+        connection_params = ssl_connection_options(connection_params, module)
+
     try:
-        connection_params = {
-            "host": login_host,
-            "port": int(login_port)
-        }
-
-        if ssl:
-            connection_params = ssl_connection_options(connection_params, module)
-
         client = MongoClient(**connection_params)
+    except Exception as excep:
+        module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
-        try:
-            # Get server version:
-            try:
-                srv_version = LooseVersion(client.server_info()['version'])
-            except Exception as e:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
-        except Exception as excep:
-            if hasattr(excep, 'code') and excep.code == 13:
-                if login_user is not None and login_password is not None:
-                    client.admin.authenticate(login_user, login_password, source=login_database)
-                    check_compatibility(module, client)
-                else:
-                    raise excep
-            else:
-                raise excep
-
-        if login_user is None and login_password is None:
-            mongocnf_creds = load_mongocnf()
-            if mongocnf_creds is not False:
-                login_user = mongocnf_creds['user']
-                login_password = mongocnf_creds['password']
-        elif login_password is None or login_user is None:
-            module.fail_json(msg='when supplying login arguments, both login_user and login_password must be provided')
-
-        try:
-            client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-        except Exception as excep:
-            if hasattr(excep, 'code') and excep.code == 13:
-                if login_user is not None and login_password is not None:
-                    client.admin.authenticate(login_user, login_password, source=login_database)
-                else:
-                    raise excep
-            else:
-                raise excep
-
-    except Exception as e:
-        module.fail_json(msg='unable to connect to database: %s' % to_native(e), exception=traceback.format_exc())
+    mongo_auth(module, client)
 
     try:
         if client["admin"].command("serverStatus")["process"] != mongos_process:

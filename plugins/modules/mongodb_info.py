@@ -113,9 +113,15 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     check_compatibility,
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
 
 
 class MongoDbInfo():
@@ -314,24 +320,7 @@ def main():
         connection_params = ssl_connection_options(connection_params, module)
 
     client = MongoClient(**connection_params)
-
-    if login_user:
-        try:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-        except Exception as e:
-            module.fail_json(msg='Unable to authenticate: %s' % to_native(e))
-
-    # Get server version:
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-    except Exception as e:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-    # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
-
-    # Check driver and server version compatibility:
-    check_compatibility(module, srv_version, driver_version)
+    mongo_auth(module, client)
 
     # Initialize an object and start main work:
     mongodb = MongoDbInfo(module, client)

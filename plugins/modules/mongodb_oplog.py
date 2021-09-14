@@ -98,7 +98,9 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     load_mongocnf,
     mongodb_common_argument_spec,
     member_state,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth,
+    check_srv_version
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PyMongoVersion,
@@ -182,68 +184,48 @@ def main():
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
-    if login_user is None and login_password is None:
-        mongocnf_creds = load_mongocnf()
-        if mongocnf_creds is not False:
-            login_user = mongocnf_creds['user']
-            login_password = mongocnf_creds['password']
-    elif login_password is None or login_user is None:
-        module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
+    mongo_auth(module, client)
 
-    if login_user is not None and login_password is not None:
+    srv_version = check_srv_version(module, client)
+    if srv_version < LooseVersion(ver):
+        module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
+
+    try:
+        current_oplog_size = get_olplog_size(client)
+    except Exception as excep:
+        module.fail_json(msg='Unable to get current oplog size: %s' % to_native(excep))
+    if oplog_size_mb == current_oplog_size:
+        result["msg"] = "oplog_size_mb is already {0} mb".format(int(oplog_size_mb))
+        result["compacted"] = False
+    else:
         try:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-            # Get server version:
-            try:
-                srv_version = LooseVersion(client.server_info()['version'])
-                if srv_version < LooseVersion(ver):
-                    module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
-            except Exception as excep:
-                module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
-
-            # Get driver version::
-            driver_version = LooseVersion(PyMongoVersion)
-            # Check driver and server version compatibility:
-            check_compatibility(module, srv_version, driver_version)
+            state = member_state(client)
         except Exception as excep:
-            module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
-
-        try:
-            current_oplog_size = get_olplog_size(client)
-        except Exception as excep:
-            module.fail_json(msg='Unable to get current oplog size: %s' % to_native(excep))
-        if oplog_size_mb == current_oplog_size:
-            result["msg"] = "oplog_size_mb is already {0} mb".format(int(oplog_size_mb))
-            result["compacted"] = False
+            module.fail_json(msg='Unable to get member state: %s' % to_native(excep))
+        if module.check_mode:
+            result["changed"] = True
+            result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(int(current_oplog_size),
+                                                                                  int(oplog_size_mb))
+            if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb:
+                result["compacted"] = True
+            else:
+                result["compacted"] = False
         else:
             try:
-                state = member_state(client)
-            except Exception as excep:
-                module.fail_json(msg='Unable to get member state: %s' % to_native(excep))
-            if module.check_mode:
+                set_oplog_size(client, oplog_size_mb)
                 result["changed"] = True
                 result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(int(current_oplog_size),
                                                                                       int(oplog_size_mb))
-                if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb:
-                    result["compacted"] = True
-                else:
-                    result["compacted"] = False
-            else:
+            except Exception as excep:
+                module.fail_json(msg='Unable to set oplog size: %s' % to_native(excep))
+            if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb:
                 try:
-                    set_oplog_size(client, oplog_size_mb)
-                    result["changed"] = True
-                    result["msg"] = "oplog has been resized from {0} mb to {1} mb".format(int(current_oplog_size),
-                                                                                          int(oplog_size_mb))
+                    compact_oplog(client)
+                    result["compacted"] = True
                 except Exception as excep:
-                    module.fail_json(msg='Unable to set oplog size: %s' % to_native(excep))
-                if state == "SECONDARY" and compact and current_oplog_size > oplog_size_mb:
-                    try:
-                        compact_oplog(client)
-                        result["compacted"] = True
-                    except Exception as excep:
-                        module.fail_json(msg='Error compacting member oplog: %s' % to_native(excep))
-                else:
-                    result["compacted"] = False
+                    module.fail_json(msg='Error compacting member oplog: %s' % to_native(excep))
+            else:
+                result["compacted"] = False
 
     module.exit_json(**result)
 

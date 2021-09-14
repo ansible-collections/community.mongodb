@@ -63,6 +63,11 @@ options:
       - "strict"
       - "moderate"
     default: "strict"
+  replica_set:
+    description:
+      - Replicaset name.
+    type: str
+    default: null
   state:
     description:
       - The state of the validator.
@@ -158,9 +163,15 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     check_compatibility,
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options
+    ssl_connection_options,
+    mongo_auth
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
+from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    PyMongoVersion,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    MongoClient
+)
 import json
 
 
@@ -255,6 +266,7 @@ def main():
         level=dict(type='str', choices=['strict', 'moderate'], default="strict"),
         state=dict(type='str', choices=['present', 'absent'], default='present'),
         debug=dict(type='bool', default=False),
+        replica_set=dict(type='str', default=None),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -275,6 +287,7 @@ def main():
     login_database = module.params['login_database']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
+    replica_set = module.params['replica_set']
     ssl = module.params['ssl']
     db = module.params['db']
     collection = module.params['collection']
@@ -290,28 +303,15 @@ def main():
         'port': login_port,
     }
 
+    if replica_set:
+        connection_params["replicaset"] = replica_set
+
     if ssl:
         connection_params = ssl_connection_options(connection_params, module)
 
     client = MongoClient(**connection_params)
 
-    if login_user:
-        try:
-            client.admin.authenticate(login_user, login_password, source=login_database)
-        except Exception as e:
-            module.fail_json(msg='Unable to authenticate: %s' % to_native(e))
-
-    # Get server version:
-    try:
-        srv_version = LooseVersion(client.server_info()['version'])
-    except Exception as e:
-        module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
-
-    # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
-
-    # Check driver and server version compatibility:
-    check_compatibility(module, srv_version, driver_version)
+    mongo_auth(module, client)
 
     result = dict(
         changed=False,

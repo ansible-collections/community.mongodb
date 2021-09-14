@@ -50,7 +50,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ('3.4', '3.3', 'you must use pymongo 3.4+ with MongoDB >= 3.4'),
             ('3.6', '3.5', 'you must use pymongo 3.6+ with MongoDB >= 3.6'),
             ('4.0', '3.6', 'you must use pymongo 3.7+ with MongoDB >= 4.0'),
-            ('4.2', '3.8', 'you must use pymongo 3.9+ with MongoDB >= 4.2')
+            ('4.2', '3.8', 'you must use pymongo 3.9+ with MongoDB >= 4.2'),
+            ('4.4', '3.10', 'you must use pymongo 3.11+ with MongoDB >= 4.4'),
+            ('5.0', '3.11', 'you must use pymongo 3.12+ with MongoDB >= 5.0')
         ]
 
         for tuple in versions:
@@ -68,7 +70,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ('3.4', '3.4'),
             ('3.6', '3.6'),
             ('4.0', '3.7'),
-            ('4.2', '3.9')
+            ('4.2', '3.9'),
+            ('4.4', '3.11'),
+            ('5.0', '3.12')
         ]
 
         for tuple in versions:
@@ -250,6 +254,65 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
             success = mongodb_common.mongo_auth(fake_module, client)
             assert success
+
+    def test_mongo_auth(self):
+        client = MongoClient(host=['localhost:27017'],
+                             username='user',
+                             password='password',
+                             replicaSet='replset')
+        fake_module = FakeAnsibleModule()
+        fake_module.params["login_user"] = "dummy"
+        fake_module.params["login_password"] = None
+        fake_module.params["login_database"] = "test"
+        mongodb_common.mongo_auth(fake_module, client)
+        msg = fake_module.get_msg()
+        assert "When supplying login arguments" in msg
+
+        fake_module.params["login_password"] = "password"
+        fake_module.params["login_database"] = "test"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        assert "MongoClient" in str(client)
+
+        fake_module.params["'create_for_localhost_exception"] = None
+        client = mongodb_common.mongo_auth(fake_module, client)
+        assert "MongoClient" in str(client)
+
+        if os.path.exists(os.path.expanduser('~/.mongodb.cnf')):
+            os.remove(os.path.expanduser('~/.mongodb.cnf'))
+        fake_module.params["login_user"] = None
+        fake_module.params["login_password"] = None
+        client = mongodb_common.mongo_auth(fake_module, client)
+        fail_msg = fake_module.get_msg()
+        self.assertTrue('When supplying login arguments' in fail_msg, msg='{0}'.format(fail_msg))
+
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = None
+        fake_module.params["login_password"] = None
+        fake_module.params["login_database"] = "test"
+        fake_module.params["database"] = "test"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        fail_msg = fake_module.get_msg()
+        self.assertTrue('The localhost login exception only allows the first admin account to be created' in fail_msg)
+
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = None
+        fake_module.params["login_password"] = None
+        fake_module.params["login_database"] = "admin"
+        fake_module.params["database"] = "admin"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        assert "MongoClient" in str(client)
+
+        client = MongoClient(host=['localhost:27017'],
+                             replicaSet='replset')
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = "user"
+        fake_module.params["login_password"] = "password"
+        fake_module.params["login_database"] = "test"
+        try:
+            client = mongodb_common.mongo_auth(fake_module, client)
+        except Exception as excep:
+            assert 'Authentication failed' in str(excep)
+            assert "MongoClient" in str(client)
 
 if __name__ == '__main__':
     unittest.main()
