@@ -314,5 +314,16 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             assert 'Authentication failed' in str(excep)
             assert "MongoClient" in str(client)
 
+        # Create a root user
+        client.admin.add_user('user', 'password', roles=[{'role':'root','db':'admin',}])
+        fake_module.params['create_for_localhost_exception'] = None
+        fake_module.params["login_user"] = "user"
+        fake_module.params["login_password"] = "password"
+        fake_module.params["login_database"] = "test"
+        client = mongodb_common.mongo_auth(fake_module, client)
+        assert "MongoClient" in str(client)
+
+        # Need another test with user but without create_for_localhost_exception key
+
 if __name__ == '__main__':
     unittest.main()
