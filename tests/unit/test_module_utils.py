@@ -315,6 +315,15 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             assert "MongoClient" in str(client)
 
         # Create a root user
+        conf = {
+            "_id": "replset",
+            "members": [
+                "localhost:27017",
+                "localhost:27018",
+                "localhost:27019",
+            ]
+        }
+        client["admin"].command('replSetInitiate', conf)
         client.admin.add_user('user', 'password', roles=[{'role':'root','db':'admin',}])
         fake_module.params['create_for_localhost_exception'] = None
         fake_module.params["login_user"] = "user"
