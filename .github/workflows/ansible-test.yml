@@ -20,10 +20,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.6
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.6
+          python-version: 3.9
 
       - name: Install ansible-base (devel)
         uses: nick-invision/retry@v2
@@ -33,7 +33,7 @@ jobs:
           command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
-        run: ansible-test sanity --docker -v --color --python 3.6 --exclude docs/*
+        run: ansible-test sanity --docker -v --color --python 3.9 --exclude docs/*
 
   units:
     runs-on: ubuntu-20.04
@@ -50,10 +50,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -128,7 +128,7 @@ jobs:
     strategy:
       matrix:
         python_version:
-          - "3.6"
+          - "3.9"
         mongodb_version:
           - "4.4"
           - "5.0"

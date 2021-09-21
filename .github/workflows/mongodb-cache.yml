@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         python_version:
-          - "3.5"
           - "3.8"
+          - "3.9"
         ansible_version:
           - stable-2.10
           - devel
@@ -29,7 +29,7 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.6
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python_version }}
