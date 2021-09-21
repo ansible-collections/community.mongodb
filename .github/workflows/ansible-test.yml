@@ -33,7 +33,7 @@ jobs:
           command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
-        run: ansible-test sanity --docker -v --color --python 3.9 --exclude docs/*
+        run: ansible-test sanity --docker -v --color --python 3.6 --exclude docs/*
 
   units:
     runs-on: ubuntu-20.04
@@ -81,7 +81,7 @@ jobs:
         working-directory: /home/runner/work/
 
       - name: Run unit tests
-        run: ansible-test units -v --color --python 3.8 --coverage
+        run: ansible-test units -v --color --python 3.6 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
