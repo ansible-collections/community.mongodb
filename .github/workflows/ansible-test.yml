@@ -134,7 +134,7 @@ jobs:
           - "5.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         docker_image:
-          - ubuntu1804
+          - ubuntu204
           - centos8
         ansible_version:
           - stable-2.11
