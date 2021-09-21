@@ -20,10 +20,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.8
 
       - name: Install ansible-base (devel)
         uses: nick-invision/retry@v2
@@ -50,10 +50,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.8
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -128,7 +128,7 @@ jobs:
     strategy:
       matrix:
         python_version:
-          - "3.6"
+          - "3.8"
         mongodb_version:
           - "4.4"
           - "5.0"

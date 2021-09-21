@@ -18,10 +18,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.8
 
       - name: Install ansible-base (devel)
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
