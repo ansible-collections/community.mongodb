@@ -127,22 +127,32 @@ jobs:
         working-directory: ansible_collections/community/mongodb
     strategy:
       matrix:
-        python_version:
-          - "3.6"
         mongodb_version:
           - "4.4"
           - "5.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
-        docker_image:
-          - ubuntu2004
-          - centos8
         versions:
-          - ansible_version: "stable-2.11"
+          - docker_image: "centos7"
+            python_version: "2.7"
+            ansible_version: "stable-2.10"
+          - docker_image: "centos7"
+            python_version: "2.7"
+            ansible_version: "stable-2.11"
+          - docker_image: "centos8"
             python_version: "3.6"
-          - ansible_version: "stable-2.10"
+            ansible_version: "stable-2.10"
+          - docker_image: "centos8"
             python_version: "3.6"
-          - ansible_version: "devel"
+            ansible_version: "stable-2.11"
+          - docker_image: "ubuntu2004"
             python_version: "3.8"
+            ansible_version: "stable-2.10"
+          - docker_image: "ubuntu2004"
+            python_version: "3.8"
+            ansible_version: "stable-2.11"
+          - docker_image: "ubuntu2004"
+            python_version: "3.8"
+            ansible_version: "dev"
     steps:
 
       - name: Check out code
@@ -155,7 +165,7 @@ jobs:
         with:
           python-version: ${{ matrix.versions.python_version }}
 
-      - name: Install ansible-base (${{ matrix.ansible_version }})
+      - name: Install ansible-base (${{ matrix.versions.ansible_version }})
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
@@ -179,8 +189,8 @@ jobs:
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
 
-      - name: Run integration tests on Python ${{ matrix.python_version }} | ${{ matrix.docker_image }} | ${{ matrix.ansible_version }} | ${{ matrix.mongodb_version }}
-        run: ansible-test integration --docker ${{ matrix.docker_image }} -v --color --retry-on-error --python ${{ matrix.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_module }}
+      - name: Run integration tests on Python ${{ matrix.versions.python_version }} | ${{ matrix.versions.docker_image }} | ${{ matrix.versions.ansible_version }} | ${{ matrix.mongodb_version }}
+        run: ansible-test integration --docker ${{ matrix.versions.docker_image }} -v --color --retry-on-error --python ${{ matrix.versions.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_module }}
 
       - name: Upload Coverage data
         run: tests/coverage.sh
