@@ -152,7 +152,7 @@ jobs:
             ansible_version: "stable-2.11"
           - docker_image: "ubuntu2004"
             python_version: "3.8"
-            ansible_version: "dev"
+            ansible_version: "devel"
     steps:
 
       - name: Check out code
