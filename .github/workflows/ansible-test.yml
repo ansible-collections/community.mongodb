@@ -136,10 +136,13 @@ jobs:
         docker_image:
           - ubuntu204
           - centos8
-        ansible_version:
-          - stable-2.11
-          - stable-2.10
-          - devel
+        versions:
+          - ansible_version: "stable-2.11"
+            python_version: "3.6"
+          - ansible_version: "stable-2.10"
+            python_version: "3.6"
+          - ansible_version: "devel"
+            python_version: "3.8"
     steps:
 
       - name: Check out code
@@ -147,17 +150,17 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python ${{ matrix.python_version }}
+      - name: Set up Python ${{ matrix.versions.python_version }}
         uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python_version }}
+          python-version: ${{ matrix.versions.python_version }}
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.versions.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Install community.general
         uses: nick-invision/retry@v2
