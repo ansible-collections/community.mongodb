@@ -81,7 +81,7 @@ jobs:
         working-directory: /home/runner/work/
 
       - name: Run unit tests
-        run: ansible-test units -v --color --python 3.6 --coverage
+        run: ansible-test units -v --color --python 3.8 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
