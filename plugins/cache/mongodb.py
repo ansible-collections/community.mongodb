@@ -8,7 +8,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'supported_by': 'community'}
 
 DOCUMENTATION = '''
-    cache: mongodb
     name: mongodb
     author: Matt Martz
     version_added: "1.0.0"
