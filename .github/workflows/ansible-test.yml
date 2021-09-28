@@ -146,7 +146,7 @@ jobs:
             docker_image: "centos8"
           - python_version: "3.8"
             ansible_version: "devel"
-            docker_image: "centos8"
+            docker_image: "fedora33"
     steps:
 
       - name: Check out code
