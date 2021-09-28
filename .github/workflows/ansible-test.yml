@@ -144,7 +144,7 @@ jobs:
           - python_version: "3.6"
             ansible_version: "stable-2.11"
             docker_image: "centos8"
-          - python_version: "3.8"
+          - python_version: "3.9"
             ansible_version: "devel"
             docker_image: "fedora33"
     steps:
