@@ -116,6 +116,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+
 def member_status(client):
     """
     Return the member status string

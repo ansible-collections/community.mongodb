@@ -90,6 +90,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(

@@ -3,6 +3,10 @@
 # Copyright: (c) 2021, Rhys Campbell rhyscampbell@blueiwn.ch
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+
 DOCUMENTATION = r'''
 ---
 module: mongodb_monitoring
@@ -100,6 +104,7 @@ except ImportError as excep:
     except ImportError as excep:
         pass
 
+
 def stop_monitoring(client):
     '''
     Stops MongoDB Free Monitoring
@@ -110,6 +115,7 @@ def stop_monitoring(client):
         ])
     client['admin'].command(cmd_doc)
 
+
 def start_monitoring(client):
     '''
     Stops MongoDB Free Monitoring
@@ -119,6 +125,7 @@ def start_monitoring(client):
         ('action', 'enable')
         ])
     client['admin'].command(cmd_doc)
+
 
 def get_monitoring_status(client):
     '''

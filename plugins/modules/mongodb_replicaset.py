@@ -181,7 +181,7 @@ mongodb_replicaset:
   returned: success
   type: str
 reconfigure:
-  descrption: If a replicaset reconfiguration occured.
+  description: If a replicaset reconfiguration occured.
   returned: On rpelicaset reconfiguration
   type: bool
 '''
@@ -230,7 +230,7 @@ def lists_are_same(list1, list2):
     return same
 
 
-def modify_members(config, members):
+def modify_members(module, config, members):
     """
     Modifies the members section of the config document as appropriate.
     """
@@ -267,7 +267,7 @@ def modify_members(config, members):
     return config
 
 
-def replicaset_reconfigure(client, config, force, max_time_ms):
+def replicaset_reconfigure(module, client, config, force, max_time_ms):
 
     config['version'] += 1
 
@@ -286,7 +286,7 @@ def replicaset_reconfigure(client, config, force, max_time_ms):
         cmd_doc.update({"maxTimeMS": max_time_ms})
 
     client.admin.command(cmd_doc)
-    #return result
+    # return result
 
 
 def replicaset_find(client):
@@ -445,21 +445,21 @@ def main():
                 if isinstance(members[0], str):  # If members are str it's just a simple add or remove action
                     if not lists_are_same(members, get_member_names(client)):
                         config = get_replicaset_config(client)
-                        modified_config = modify_members(config, members)
+                        modified_config = modify_members(module, config, members)
                         if not module.check_mode:
                             # Causes error Value of unknown type: <class 'bson.timestamp.Timestamp'>
                             # result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
-                            replicaset_reconfigure(client, modified_config, force, max_time_ms)
-                        #else:
+                            replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                        # else:
                         #    result = { "dummy": 1 }
                         result['changed'] = True
-                        #result['tmp'] = str(result)
+                        # result['tmp'] = str(result)
                     else:
                         result['changed'] = False
                 elif isinstance(members[0], dict):
                     module.fail_json(msg="reconfig through dicts not yet implemented")
                 else:
-                     module.fail_json(msg="members must be either str or dict")
+                    module.fail_json(msg="members must be either str or dict")
             else:
                 result['changed'] = False
             result['replica_set'] = rs

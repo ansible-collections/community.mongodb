@@ -191,7 +191,7 @@ def get_validator(client, db, collection):
     validator = None
     cmd_doc = OrderedDict([
         ('listCollections', 1),
-        ('filter', { "name": collection })
+        ('filter', {"name": collection})
     ])
     doc = None
     results = client[db].command(cmd_doc)["cursor"]["firstBatch"]
@@ -228,12 +228,10 @@ def validator_is_different(client, db, collection, required, properties, action,
 def add_validator(client, db, collection, required, properties, action, level):
     cmd_doc = OrderedDict([
         ('collMod', collection),
-        ('validator', { '$jsonSchema': {
+        ('validator', {'$jsonSchema':{
                             "bsonType": "object",
                             "required": required,
-                            "properties": properties
-                            }
-                       }),
+                            "properties": properties}}),
         ('validationAction', action),
         ('validationLevel', level)
     ])
@@ -359,13 +357,13 @@ def main():
 
     if debug:
         result['validator'] = validator
-        result['module_config'] = { "required":required,
-                                    "properties": properties,
-                                    "validationAction": action,
-                                    "validationLevel": level }
-
+        result['module_config'] = {"required": required,
+                                   "properties": properties,
+                                   "validationAction": action,
+                                   "validationLevel": level}
 
     module.exit_json(**result)
+
 
 if __name__ == '__main__':
     main()
