@@ -30,6 +30,7 @@ options:
   shard:
     description:
       - The name of the shard to assign or remove the tag from.
+    required: true
     type: str
   state:
     description:
