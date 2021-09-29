@@ -349,11 +349,6 @@
         name: mongodb-org-shell
         state: absent
 
-    - name: Ensure epel is available
-      package:
-        name: epel-release
-      when: ansible_os_family == "RedHat"
-
     - name: Ensure mongodb-mongosh package is installed
       package:
         name: mongodb-mongosh
