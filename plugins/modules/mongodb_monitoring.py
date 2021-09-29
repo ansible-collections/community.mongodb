@@ -14,7 +14,7 @@ short_description: Manages the free monitoring feature.
 description:
   - Manages the free monitoring feature.
   - Optionally return the monitoring url.
-author: Rhys rhyscampbell (rhysmeister)
+author: Rhys Campbell (@rhysmeister)
 version_added: "1.3.0"
 
 extends_documentation_fragment:
