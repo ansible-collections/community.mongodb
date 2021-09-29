@@ -302,7 +302,7 @@ def main():
             msg = ("The tag {0} does not exist. You need to associate a tag with"
                    " a shard before using this module. You can do that with the"
                    " mongodb_shard_tag module.".format(zone_name))
-            module.fail_json(msg=)
+            module.fail_json(msg=msg)
         else:
             # first check if the ranges exist
             range_count = 0

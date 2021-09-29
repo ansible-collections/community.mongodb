@@ -109,10 +109,8 @@ def stop_monitoring(client):
     '''
     Stops MongoDB Free Monitoring
     '''
-    cmd_doc = OrderedDict([
-        ('setFreeMonitoring', 1),
-        ('action', 'disable')
-        ])
+    cmd_doc = OrderedDict([('setFreeMonitoring', 1),
+                           ('action', 'disable')])
     client['admin'].command(cmd_doc)
 
 
@@ -120,10 +118,8 @@ def start_monitoring(client):
     '''
     Stops MongoDB Free Monitoring
     '''
-    cmd_doc = OrderedDict([
-        ('setFreeMonitoring', 1),
-        ('action', 'enable')
-        ])
+    cmd_doc = OrderedDict([('setFreeMonitoring', 1),
+                           ('action', 'enable')])
     client['admin'].command(cmd_doc)
 
 
