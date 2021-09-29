@@ -35,7 +35,7 @@
     state: stopped
 
 - name: Restart mongod process with auth
-  command: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
+  command: mongod {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --logpath mongod{{ item }}/log.log --fork
     --auth --keyFile my.key
   args:
