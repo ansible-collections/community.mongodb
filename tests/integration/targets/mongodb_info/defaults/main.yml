@@ -5,4 +5,3 @@ mongodb_nodes:
   - "3001"
 mongodb_admin_user: test_root
 mongodb_admin_password: saE_Rr9!gE6gh#e~R#nZ
-mongod_auth: true
