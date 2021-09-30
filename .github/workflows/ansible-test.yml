@@ -132,12 +132,12 @@ jobs:
           - "5.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
-          #- python_version: "2.7"
-          #  ansible_version: "stable-2.10"
-          #  docker_image: "centos7"
-          #- python_version: "2.7"
-          #  ansible_version: "stable-2.11"
-          #  docker_image: "centos7"
+          - python_version: "2.7"
+            ansible_version: "stable-2.10"
+            docker_image: "centos7"
+          - python_version: "2.7"
+            ansible_version: "stable-2.11"
+            docker_image: "centos7"
           - python_version: "3.6"
             ansible_version: "stable-2.10"
             docker_image: "ubuntu1804"
