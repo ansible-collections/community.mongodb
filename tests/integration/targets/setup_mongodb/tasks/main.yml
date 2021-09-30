@@ -80,6 +80,11 @@
     state: present
   when: ansible_os_family == "RedHat"
 
+- name: Upgrade setuptools
+  pip:
+    name: setuptools
+    state: latest
+
 - name: Install pip packages
   pip:
     name: '{{ pip_packages }}'
