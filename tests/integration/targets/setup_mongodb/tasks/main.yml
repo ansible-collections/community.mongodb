@@ -80,8 +80,12 @@
     state: present
   when: ansible_os_family == "RedHat"
 
-- name: Upgrade setuptools
-  shell: pip install --upgrade pip
+- name: Upgrade python setuptools
+  shell: yum upgrade python -y && pip install --upgrade pip
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_version | int == 7
+
 
 - name: Install pip packages
   pip:
