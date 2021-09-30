@@ -81,9 +81,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Upgrade setuptools
-  pip:
-    name: setuptools
-    state: latest
+  shell: pip install --upgrade pip
 
 - name: Install pip packages
   pip:
