@@ -90,46 +90,50 @@ requirements:
 '''
 
 EXAMPLES = r'''
+---
 - name: Require that an email address field is in every document
   community.mongodb.mongodb_schema:
-    db: "rhys"
-    collection: "contacts"
+    collection: contacts
+    db: rhys
     required:
-      - "email"
+      - email
+
+- name: Remove a schema rule
+  community.mongodb.mongodb_schema:
+    collection: contacts
+    db: rhys
+    state: absent
+
 
 - name: More advanced example using properties
   community.mongodb.mongodb_schema:
-    db: "rhys"
-    collection: "contacts"
-    state: "absent"
-  - name: Test with debuging option - Without check mode
-    community.mongodb.mongodb_schema:
-      <<: *mongo_parameters
-      db: "rhys"
-      collection: "contacts"
-      required:
-        - "email"
-        - "first_name"
-        - "last_name"
-      properties:
-        status:
-          bsonType: "string"
-          enum: ["ACTIVE", "DISABLED"]
-          description: "can only be ACTIVE or DISABLED"
-        year:
-          bsonType: "int"
-          minimum: 2021
-          maximum: 3020
-          exclusiveMaximum: false
-          description: "must be an integer from 2021 to 3020"
-        options:
-          bsonType: "array"
-          maxItems: 10
-          minItems: 5
-          uniqueItems: yes
-        email:
-          maxLength: 150
-          minLength: 5
+    collection: contacts
+    db: rhys
+    properties:
+      email:
+        maxLength: 150
+        minLength: 5
+      options:
+        bsonType: array
+        maxItems: 10
+        minItems: 5
+        uniqueItems: true
+      status:
+        bsonType: string
+        description: "can only be ACTIVE or DISABLED"
+        enum:
+          - ACTIVE
+          - DISABLED
+      year:
+        bsonType: int
+        description: "must be an integer from 2021 to 3020"
+        exclusiveMaximum: false
+        maximum: 3020
+        minimum: 2021
+    required:
+      - email
+      - first_name
+      - last_name
 '''
 
 RETURN = r'''
@@ -191,7 +195,7 @@ def get_validator(client, db, collection):
     validator = None
     cmd_doc = OrderedDict([
         ('listCollections', 1),
-        ('filter', { "name": collection })
+        ('filter', {"name": collection})
     ])
     doc = None
     results = client[db].command(cmd_doc)["cursor"]["firstBatch"]
@@ -228,12 +232,9 @@ def validator_is_different(client, db, collection, required, properties, action,
 def add_validator(client, db, collection, required, properties, action, level):
     cmd_doc = OrderedDict([
         ('collMod', collection),
-        ('validator', { '$jsonSchema': {
-                            "bsonType": "object",
-                            "required": required,
-                            "properties": properties
-                            }
-                       }),
+        ('validator', {'$jsonSchema': {"bsonType": "object",
+                                       "required": required,
+                                       "properties": properties}}),
         ('validationAction', action),
         ('validationLevel', level)
     ])
@@ -359,13 +360,13 @@ def main():
 
     if debug:
         result['validator'] = validator
-        result['module_config'] = { "required":required,
-                                    "properties": properties,
-                                    "validationAction": action,
-                                    "validationLevel": level }
-
+        result['module_config'] = {"required": required,
+                                   "properties": properties,
+                                   "validationAction": action,
+                                   "validationLevel": level}
 
     module.exit_json(**result)
+
 
 if __name__ == '__main__':
     main()

@@ -30,6 +30,7 @@ options:
   shard:
     description:
       - The name of the shard to assign or remove the tag from.
+    required: true
     type: str
   state:
     description:
@@ -58,13 +59,13 @@ EXAMPLES = r'''
 - name: Add the NYC tag to a shard called rs0
   community.mongodb.mongodb_shard_tag:
     name: "NYC"
-    shard "rs0"
+    shard: "rs0"
     state: "present"
 
 - name: Remove the NYC tag from rs0
   community.mongodb.mongodb_shard_tag:
     name: "NYC"
-    shard "rs0"
+    shard: "rs0"
     state: "absent"
 '''
 
@@ -171,7 +172,6 @@ def main():
     argument_spec.update(
         name=dict(type='str', required=True),
         shard=dict(type='str', required=True),
-        force=dict(type='bool', default=False),
         mongos_process=dict(type='str', required=False, default="mongos"),
         state=dict(type='str', default="present", choices=["present", "absent"]),
     )
@@ -198,7 +198,6 @@ def main():
     shard = module.params['shard']
     mongos_process = module.params['mongos_process']
     ssl = module.params['ssl']
-    force = module.params['force']
 
     result = dict(
         changed=False,

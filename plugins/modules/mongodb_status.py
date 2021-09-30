@@ -140,6 +140,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     MongoClient
 )
 
+
 def replicaset_config(client):
     """
     Return the replicaset config document

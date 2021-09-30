@@ -207,6 +207,7 @@ def ssl_connection_options(connection_params, module):
                 raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
     return connection_params
 
+
 def check_srv_version(module, client):
     try:
         srv_version = LooseVersion(client.server_info()['version'])

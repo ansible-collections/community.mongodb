@@ -138,6 +138,7 @@ except ImportError as excep:
     except ImportError as excep:
         pass
 
+
 def zone_range_exists(client, namespace, min, max, tag):
     '''
     Returns true if a particular zone range exists
@@ -155,8 +156,8 @@ def zone_range_exists(client, namespace, min, max, tag):
     @tag - The tag or Zone name
     '''
     query = {
-        #"_id.ns": namespace, 4.4.X Bug??? ObjectId given as id
-        #"_id.min": min,
+        # "_id.ns": namespace, 4.4.X Bug??? ObjectId given as id
+        # "_id.min": min,
         'ns': namespace,
         'min': min,
         'max': max,
@@ -298,7 +299,10 @@ def main():
 
     try:
         if not zone_exists(client, zone_name):
-            module.fail_json(msg="The tag {0} does not exist. You need to associate a tag with a shard before using this module. You can do that with the mongodb_shard_tag module.".format(zone_name))
+            msg = ("The tag {0} does not exist. You need to associate a tag with"
+                   " a shard before using this module. You can do that with the"
+                   " mongodb_shard_tag module.".format(zone_name))
+            module.fail_json(msg=msg)
         else:
             # first check if the ranges exist
             range_count = 0

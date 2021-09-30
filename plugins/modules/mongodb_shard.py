@@ -257,7 +257,6 @@ def main():
     sharded_databases = module.params['sharded_databases']
     mongos_process = module.params['mongos_process']
 
-
     connection_params = {
         "host": login_host,
         "port": int(login_port)

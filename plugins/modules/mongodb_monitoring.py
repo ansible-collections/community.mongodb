@@ -3,6 +3,10 @@
 # Copyright: (c) 2021, Rhys Campbell rhyscampbell@blueiwn.ch
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+
 DOCUMENTATION = r'''
 ---
 module: mongodb_monitoring
@@ -10,7 +14,7 @@ short_description: Manages the free monitoring feature.
 description:
   - Manages the free monitoring feature.
   - Optionally return the monitoring url.
-author: Rhys rhyscampbell (rhysmeister)
+author: Rhys Campbell (@rhysmeister)
 version_added: "1.3.0"
 
 extends_documentation_fragment:
@@ -100,25 +104,24 @@ except ImportError as excep:
     except ImportError as excep:
         pass
 
+
 def stop_monitoring(client):
     '''
     Stops MongoDB Free Monitoring
     '''
-    cmd_doc = OrderedDict([
-        ('setFreeMonitoring', 1),
-        ('action', 'disable')
-        ])
+    cmd_doc = OrderedDict([('setFreeMonitoring', 1),
+                           ('action', 'disable')])
     client['admin'].command(cmd_doc)
+
 
 def start_monitoring(client):
     '''
     Stops MongoDB Free Monitoring
     '''
-    cmd_doc = OrderedDict([
-        ('setFreeMonitoring', 1),
-        ('action', 'enable')
-        ])
+    cmd_doc = OrderedDict([('setFreeMonitoring', 1),
+                           ('action', 'enable')])
     client['admin'].command(cmd_doc)
+
 
 def get_monitoring_status(client):
     '''
