@@ -117,7 +117,7 @@
     name: "{{ mongos_service }}"
     state: started
     enabled: yes
-    tags:
-      - "setup"
-      - "mongodb"
-      - "service"
+  tags:
+    - "setup"
+    - "mongodb"
+    - "service"
