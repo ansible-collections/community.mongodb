@@ -312,8 +312,8 @@ def modify_members(module, config, members):
                 m_matched = False # if the module provided member has been matched
                 if current_member["host"] in [m["host"], m["host"] + ":27017"]:
                     m["_id"] = current_member["_id"]
-                    if max_id < current_member["host"]:
-                        max_id = current_member["host"]
+                    if max_id < current_member["_id"]:
+                        max_id = current_member["_id"]
                     new_member_config.append(m)
                     existing_members.append(current_member["host"])
                     m_matched = True

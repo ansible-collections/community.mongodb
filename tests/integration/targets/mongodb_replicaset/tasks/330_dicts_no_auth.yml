@@ -219,4 +219,6 @@
       that:
         - rs.changed == True
 
+  # to config config is correct
+
   - include_tasks: mongod_teardown.yml
