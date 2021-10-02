@@ -307,6 +307,7 @@ def modify_members(module, config, members):
         # We need to put the _id values in into the matching document and generate them for new hosts
         # TODO: https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.members-n-._id
         # Maybe we can add a new member id parameter value, stick with the incrementing for now
+        # Perhaps even save this in the mongodb instance?
         for current_member in config["members"]:
             for m in members:
                 m_matched = False # if the module provided member has been matched
@@ -318,7 +319,7 @@ def modify_members(module, config, members):
                     existing_members.append(current_member["host"])
                     m_matched = True
                 if not m_matched:  # need to add this doc with a new id
-                    members_to_add(m)
+                    members_to_add.append(m)
         for m in members_to_add:
             m["_id"] = max_id + 1
             new_member_config.append(m)
