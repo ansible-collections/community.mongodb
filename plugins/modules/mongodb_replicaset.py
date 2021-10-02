@@ -318,12 +318,9 @@ def modify_members(module, config, members):
                         max_id = current_member["_id"]
                     new_member_config.append(m)
                     existing_members.append(current_member["host"])
-                    m_matched = True
-                if not m_matched:  # need to add this doc with a new id
-                    members_to_add.append(m)
-        for m in members_to_add:
-            m["_id"] = max_id + 1
-            new_member_config.append(m)
+                else: # need to add this doc with a new id
+                    m["_id"] = max_id + 1
+                    new_member_config.append(m)
         config["members"] = new_member_config
     else:
         raise Exception("All items in members must be either of type dict of str")
