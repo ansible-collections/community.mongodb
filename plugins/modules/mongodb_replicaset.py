@@ -534,6 +534,8 @@ def main():
                             except Exception as excep:
                                 module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
                         result['changed'] = True
+                        # TODO REMove this debug
+                        result['new_config'] = modified_config
                     else:
                         result['changed'] = False
                 else:
