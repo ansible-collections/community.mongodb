@@ -319,6 +319,13 @@ def modify_members(module, config, members):
                     new_member_config.append(m)
                     existing_members.append(current_member["host"])
                 else: # need to add this doc with a new id
+                    if ':' in m["host"]:
+                        members_to_add.append(m["host"])
+                    else:
+                        members_to_add.append(m["host"] + ":27017")
+        for new_member in members_to_add:  # add new members
+            for m in members:
+                if new_member in [m["host"], m["host"] + ":27017"]:
                     m["_id"] = max_id + 1
                     new_member_config.append(m)
         config["members"] = new_member_config
