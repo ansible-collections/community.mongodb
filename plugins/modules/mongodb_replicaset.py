@@ -230,9 +230,52 @@ def lists_are_same(list1, list2):
     return same
 
 
+def member_dicts_different(client, member_config):
+    '''
+    Returns if there is a difference in the replicaset configuration that we care about
+    @client - MongoDB Client
+    @members - The member dict config provided by the module. List of dicts
+    '''
+    conf = get_replicaset_config(client)
+    current_member_config = conf['members']
+    member_config_defaults = {
+        "arbiterOnly": False,
+        "buildIndexes": True,
+        "hidden": False,
+        "priority": { "nonarbiter": 1.0, "arbiter": 0 },
+        "tags": None,
+        "secondardDelaySecs": 0,
+        "votes": 1
+    }
+    different = False
+    current_member_hosts = []
+    for member in current_member_config:
+        current_member_hosts.append(member['host'])
+    member_config_hosts = []
+    for member in member_config_hosts:
+        if ':' not in member_config_hosts['host']:  # no port supplied
+            member_config_hosts.append(member_config_hosts['host'] + ":27017")
+        else:
+            member_config_hosts.append(member_config_hosts['host'])
+    if sorted(current_member_hosts) != sorted(member_config_hosts):  # compare if members are the same
+        different = True
+    else:  # Compare dict key to see if votes, tags etc have changed. We also default value if key is not specified
+        for host in current_member_hosts:
+            member_index = next((index for (index, d) in enumerate(current_member_config) if d["host"] == host), None)
+            for config_item in member_config_defaults:
+                if current_member_config[member_index][config_item] != member_config.get(config_item, member_config_defaults[config_item])
+                    different = True
+                if different == True:
+                    break
+    return different
+
+
 def modify_members(module, config, members):
     """
     Modifies the members section of the config document as appropriate.
+    @module - Ansible module object
+    @config - Replicaset config document from MongoDB
+    @members - Members config from module
     """
     try:  # refactor repeated code
         from collections import OrderedDict
@@ -261,7 +304,25 @@ def modify_members(module, config, members):
                 max_id += 1
         config["members"] = new_member_config
     elif all(isinstance(member, dict) for member in members):
-        raise NotImplementedError("reconfig through dicts not yet implemented")
+        # We need to put the _id values in into the matching document and generate them for new hosts
+        # TODO: https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.members-n-._id
+        # Maybe we can add a new member id parameter value, stick with the incrementing for now
+        for current_member in config["members"]:
+            for m in members:
+                m_matched = False # if the module provided member has been matched
+                if current_member["host"] in [m["host"], m["host"] + ":27017"]:
+                    m["_id"] = current_member["_id"]
+                    if max_id < current_member["host"]:
+                        max_id = current_member["host"]
+                    new_member_config.append(m)
+                    existing_members.append(current_member["host"])
+                    m_matched = True
+                if not m_matched:  # need to add this doc with a new id
+                    members_to_add(m)
+        for m in members_to_add:
+            m["_id"] = max_id + 1
+            new_member_config.append(m)
+        config["members"] = new_member_config
     else:
         raise Exception("All items in members must be either of type dict of str")
     return config
@@ -457,7 +518,14 @@ def main():
                     else:
                         result['changed'] = False
                 elif isinstance(members[0], dict):
-                    module.fail_json(msg="reconfig through dicts not yet implemented")
+                    if member_dicts_different(client, members):
+                        config = get_replicaset_config(client)
+                        modified_config = modify_members(module, config, members)
+                        if not module.check_mode:
+                            replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                        result['changed'] = True
+                    else:
+                        result['changed'] = False
                 else:
                     module.fail_json(msg="members must be either str or dict")
             else:
