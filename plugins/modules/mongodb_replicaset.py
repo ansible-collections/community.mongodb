@@ -319,11 +319,11 @@ def modify_members(module, config, members):
                     new_member_config.append(m)
                     member_matched = True
                     break
-                if not member_matched:  # We've checked all the member so this must be a new one
-                    if ':' in m["host"]:
-                        members_to_add.append(m["host"])
-                    else:
-                        members_to_add.append(m["host"] + ":27017")
+            if not member_matched:  # We've checked all the member so this must be a new one
+                if ':' in m["host"]:
+                    members_to_add.append(m["host"])
+                else:
+                    members_to_add.append(m["host"] + ":27017")
         for new_member in members_to_add:  # add new members
             for m in members:
                 if new_member in [m["host"], m["host"] + ":27017"]:
