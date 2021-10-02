@@ -309,20 +309,20 @@ def modify_members(module, config, members):
         # Maybe we can add a new member id parameter value, stick with the incrementing for now
         # Perhaps even save this in the mongodb instance?
         members_to_add = []
-        member_matched = False
         for current_member in config["members"]:
             for m in members:
+                member_matched = False
                 if current_member["host"] in [m["host"], m["host"] + ":27017"]:
                     m["_id"] = current_member["_id"]
                     if max_id < current_member["_id"]:
                         max_id = current_member["_id"]
                     new_member_config.append(m)
                     member_matched = True
-            if not member_matched:  # We've checked all the member so this must be a new one
-                if ':' in m["host"]:
-                    members_to_add.append(m["host"])
-                else:
-                    members_to_add.append(m["host"] + ":27017")
+                if not member_matched:  # We've checked all the member so this must be a new one
+                    if ':' in m["host"]:
+                        members_to_add.append(m["host"])
+                    else:
+                        members_to_add.append(m["host"] + ":27017")
         for new_member in members_to_add:  # add new members
             for m in members:
                 if new_member in [m["host"], m["host"] + ":27017"]:
