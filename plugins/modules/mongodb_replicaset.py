@@ -263,7 +263,7 @@ def member_dicts_different(client, member_config):
         for host in current_member_hosts:
             member_index = next((index for (index, d) in enumerate(current_member_config) if d["host"] == host), None)
             for config_item in member_config_defaults:
-                if current_member_config[member_index][config_item] != member_config.get(config_item, member_config_defaults[config_item])
+                if current_member_config[member_index][config_item] != member_config.get(config_item, member_config_defaults[config_item]):
                     different = True
                 if different == True:
                     break
