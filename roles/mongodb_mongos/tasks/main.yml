@@ -13,11 +13,17 @@
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
+  tags:
+    - "vars"
 
 - name: Create mongodb_group
   group:
     name: "{{ mongodb_group }}"
     system: yes
+  tags:
+    - "linux"
+    - "setup"
+    - "mongodb"
 
 - name: Create mongodb_user
   user:
@@ -25,6 +31,10 @@
     group: "{{ mongodb_group }}"
     system: yes
     createhome: no
+  tags:
+    - "linux"
+    - "setup"
+    - "mongodb"
 
 - name: Copy keyfile to host
   copy:
@@ -36,12 +46,18 @@
     mode: 0400
   notify:
     - Restart mongos service
+  tags:
+    - "setup"
+    - "mongodb"
 
 - name: Ensure /usr/local/bin/ directory exists
   file:
     path: /usr/local/bin/
     state: directory
     recurse: yes
+  tags:
+    - "setup"
+    - "mongodb"
 
 - name: Ensure mongos service pre start script exists
   template:
@@ -50,6 +66,9 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
     mode: 0755
+  tags:
+    - "setup"
+    - "mongodb"
 
 - name: Ensure mongos.service file exists
   template:
@@ -58,11 +77,17 @@
     owner: root
     group: root
   register: sysd
+  tags:
+    - "setup"
+    - "mongodb"
 
 - name: Run systemctl daemon-reload
   systemd:
     daemon_reload: yes
   when: sysd is changed
+  tags:
+    - "setup"
+    - "service"
 
 - name: Ensure mongos.conf file exists
   template:
@@ -72,6 +97,9 @@
     group: "{{ mongodb_group }}"
   notify:
     - Restart mongos service
+  tags:
+    - "setup"
+    - "mongodb"
 
 - name: Ensure mongos package is installed
   package:
@@ -79,9 +107,17 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "setup"
+    - "mongodb"
+    - "pkg"
 
 - name: Start mongos service
   service:
     name: "{{ mongos_service }}"
     state: started
     enabled: yes
+  tags:
+    - "setup"
+    - "mongodb"
+    - "service"

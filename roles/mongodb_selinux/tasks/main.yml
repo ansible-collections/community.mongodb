@@ -13,6 +13,8 @@
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
+  tags:
+    - "vars"
 
 - name: Install required packages
   package:
@@ -20,6 +22,9 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "pkg"
+    - "setup"
 
 - name: Copy custom MongoDB SeLinux Policy to Host
   copy:
@@ -37,8 +42,16 @@
       allow mongod_t cgroup_t:dir search;
       allow mongod_t cgroup_t:file { getattr open read };
     dest: /root/mongodb_cgroup_memory.te
+  tags:
+    - "setup"
+    - "mongodb"
+    - "linux"
 
 - name: Compile & Install MongoDB Policy
   script: files/compile_mongodb_selinux.sh
   args:
     creates: /root/mongodb_selinux.success
+  tags:
+    - "setup"
+    - "mongodb"
+    - "linux"

@@ -8,6 +8,10 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "mongodb"
+    - "setup"
+    - "pkg"
 
 - name: Install MongoDB Packages (Specific version)
   package:
@@ -19,6 +23,10 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "mongodb"
+    - "setup"
+    - "pkg"
 
 # apt silliness:
 # In order to upgrade/downgrade to a specific version of mongodb-org,
@@ -39,8 +47,15 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "mongodb"
+    - "setup"
+    - "pkg"
+    - "debian"
 
 - name: Manage package locks - {{ mongodb_hold_packages }}
   script: lock_mongodb_packages.sh {{ mongodb_hold_packages }}
   when:
     - mongodb_hold_packages is defined
+  tags:
+    - "mongodb"

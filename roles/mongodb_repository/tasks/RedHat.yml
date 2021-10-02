@@ -7,6 +7,11 @@
   register: _yum
   until: _yum is succeeded
   retries: 5
+  tags:
+    - "pkg"
+    - "setup"
+    - "mongodb"
+    - "redhat"
 
 - name: Ensure MongoDB yum repository exists
   yum_repository:
@@ -18,3 +23,8 @@
   register: _yum
   until: _yum is succeeded
   retries: 5
+  tags:
+    - "pkg"
+    - "setup"
+    - "mongodb"
+    - "redhat"

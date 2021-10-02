@@ -14,6 +14,8 @@
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
+  tags:
+    - "vars"
 
 - name: See if we are in docker
   when:
@@ -24,9 +26,14 @@
       stat:
         path: /.dockerenv
       register: dockerenv_file
+      tags:
+        - "ci"
     - name: Update in_docker var
       set_fact:
         in_docker: "{{ dockerenv_file.stat.exists }}"
+      tags:
+        - "ci"
+
 
 # Tasks based on: https://docs.mongodb.com/manual/administration/production-notes/
 
@@ -35,6 +42,9 @@
     name: vm.swappiness
     value: "{{ swappiness }}"
     state: present
+  tags:
+    - "linux"
+    - "setup"
 
 - name: Ensure ntp service is installed
   package:
@@ -43,6 +53,10 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "linux"
+    - "setup"
+    - "pkg"
 
 - name: Update perms on chrony pid dir on RedHat 8
   file:
@@ -53,12 +67,20 @@
   when:
     - ansible_facts.os_family == "RedHat"
     - ansible_facts.distribution_major_version|int >= 8
+  tags:
+    - "linux"
+    - "setup"
+    - "redhat"
 
 - name: Ensure ntp service is configured
   service:
     name: "{{ ntp_service }}"
     state: started
     enabled: yes
+  tags:
+    - "linux"
+    - "setup"
+    - "service"
 
 - name: Ensure GNU C Library is the latest
   package:
@@ -67,6 +89,10 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "linux"
+    - "setup"
+    - "pkg"
 
 - name: Ensure NUMA zone reclaim is disabled
   ansible.posix.sysctl:
@@ -75,6 +101,9 @@
     state: present
     reload: yes
   when: not in_docker|bool
+  tags:
+    - "linux"
+    - "setup"
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
 - name: Ensure thp-disable service exists
@@ -84,17 +113,28 @@
     owner: root
     group: root
   register: thp
+  tags:
+    - "linux"
+    - "setup"
 
 - name: Reload systemd
   systemd:
     daemon_reexec: yes
   when: thp is changed
+  tags:
+    - "linux"
+    - "setup"
+    - "service"
 
 - name: Check if disable-transparent-huge-pages service is already run
   shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o "never"
   register: _huge_page_status
   ignore_errors: yes
   changed_when: _huge_page_status.stdout == ""
+  tags:
+    - "linux"
+    - "service"
+    - "setup"
 
 - name: Enable disable-transparent-huge-pages service
   service:
@@ -102,6 +142,10 @@
     state: started
     enabled: yes
   when: (not in_docker|bool) and (_huge_page_status.stdout == "")
+  tags:
+    - "linux"
+    - "service"
+    - "setup"
 
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
@@ -116,6 +160,9 @@
     - ["hard", "soft"]
     - ["nproc", "nofile"]
     - ["{{ nproc_and_nofile_limit }}"]
+  tags:
+    - "linux"
+    - "setup"
 
 - name: Set pam limits (memlock)
   community.general.pam_limits:
@@ -128,6 +175,9 @@
     - ["hard", "soft"]
     - ["memlock"]
     - ["{{ memlock_limit }}"]
+  tags:
+    - "linux"
+    - "setup"
 
 # Other tuning settings
 
@@ -145,3 +195,6 @@
     - { "name": "net.ipv4.tcp_keepalive_intvl", "value": "30" }
     - { "name": "net.ipv4.tcp_keepalive_time", "value": "120" }
     - { "name": "net.ipv4.tcp_max_syn_backlog ", "value": "4096" }
+  tags:
+    - "linux"
+    - "setup"

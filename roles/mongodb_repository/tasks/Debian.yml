@@ -7,6 +7,10 @@
   register: _apt
   until: _apt is succeeded
   retries: 5
+  tags:
+    - "pkg"
+    - "setup"
+    - "debian"
 
 - name: Add apt key for MongoDB repository
   apt_key:
@@ -15,6 +19,11 @@
   register: _apt
   until: _apt is succeeded
   retries: 5
+  tags:
+    - "pkg"
+    - "setup"
+    - "mongodb"
+    - "debian"
 
 - name: Ensure MongoDB apt repository exists
   apt_repository:
@@ -24,3 +33,8 @@
   register: _apt
   until: _apt is succeeded
   retries: 5
+  tags:
+    - "pkg"
+    - "setup"
+    - "mongodb"
+    - "debian"
