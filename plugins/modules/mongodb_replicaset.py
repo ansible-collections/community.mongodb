@@ -308,6 +308,7 @@ def modify_members(module, config, members):
         # TODO: https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.members-n-._id
         # Maybe we can add a new member id parameter value, stick with the incrementing for now
         # Perhaps even save this in the mongodb instance?
+        members_to_add = []
         for current_member in config["members"]:
             for m in members:
                 m_matched = False # if the module provided member has been matched
