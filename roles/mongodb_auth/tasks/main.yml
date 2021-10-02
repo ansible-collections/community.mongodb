@@ -13,6 +13,8 @@
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
+  tags:
+    - "vars"
 
 - name: Ensure mongod and pyyaml packages are installed
   package:
@@ -23,11 +25,15 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "pkg"
 
 - name: Warn about default credentials
   when: mongodb_admin_pwd == mongodb_default_admin_pwd
   debug:
     msg: "[WARNING] Using default admin credentials for mongodb admin account! Please change them!"
+  tags:
+    - "debug"
 
 - name: Add mongo admin user with localhost exception
   community.mongodb.mongodb_user:
@@ -46,6 +52,10 @@
     create_for_localhost_exception: /root/mongodb_admin.success
   module_defaults:
     community.mongodb.mongodb_user: {}
+  tags:
+    - "mongodb"
+    - "setup"
+    - "admin_user"
 
 - name: Enable security section in mongod.conf
   lineinfile:
@@ -59,6 +69,9 @@
       if "security" not in yaml.safe_load(io.open("%s")):
           exit(1)
       '
+  tags:
+    - "mongodb"
+    - "setup"
 
 - name: Enable authentication in mongod.conf
   lineinfile:
@@ -75,6 +88,9 @@
           exit(1)
       '
   register: _enable_mongo_auth
+  tags:
+    - "mongodb"
+    - "setup"
 
 # This is a task instead of a handler so we can add users right away
 - name: Restart mongodb to enable auth before adding additional users
@@ -83,6 +99,10 @@
   service:
     name: mongod
     state: restarted
+  tags:
+    - "mongodb"
+    - "service"
+    - "setup"
 
 - name: Add additional mongo users
   include_tasks: mongodb_auth_user.yml
@@ -92,3 +112,6 @@
   # using loop_control: label does not obscure the password in output for verbosity > 1
   # So, loop over an include where the task name will include the username + db, but the loop var won't print out.
   no_log: yes
+  tags:
+    - "mongodb"
+    - "app_user"

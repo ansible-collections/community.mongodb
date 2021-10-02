@@ -74,6 +74,33 @@ These modules are only useful for sharded MongoDB clusters:
 - `community.mongodb.mongodb_shard_zone`: Manage Shard Zones.
 
 
+## community.mongodb Role Tags
+
+### General role tags
+
+These tags are applicable across all roles.
+
+||tags||comment||
+|mongodb|Tasks specific to MongoDB.|
+|debian|Tasks specific to Debian Family Operating Systems.|
+|redhat|Tasks specific to RedHat Family Operating Systems.|
+|pip|Tasks working with pip.|
+|vars|Tasks that load variables.|
+|pkg|Tasks that install packages.|
+|debug|Tasks that output debugging info.|
+|service|Tasks dealing with system services.|
+|setup|Tasks that are mainly executed during initial deployment.|
+|ci|Tasks that are specific to the community.mongodb CI code.|
+|linux|Tasks affecting Linux OS settings.|
+
+### Role Specific Tags
+
+These tags apply to the specific roles as indicated.
+
+||role||tag||comment||
+|mongodb_auth|admin_user|Tasks that work with the MOngoDB Administrator user.|
+|mongodb_auth|app_user|Tasks that work with MongoDB app users.|
+
 ## Running the integration and unit tests
 
 * Requirements

@@ -27,3 +27,6 @@
   # module_defaults:
   #   community.mongodb.mongodb_user:
   #      auth_mechanism: ...
+  tags:
+    - "mongodb"
+    - "app_user"

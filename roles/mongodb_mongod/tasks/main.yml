@@ -13,6 +13,8 @@
         - "{{ ansible_facts.distribution }}.yml"
         - "{{ ansible_facts.os_family }}.yml"
         - default.yml
+  tags:
+    - "vars"
 
 - name: Ensure mongod package is installed
   package:
@@ -20,6 +22,10 @@
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  tags:
+    - "mongodb"
+    - "pkg"
+    - "setup"
 
 - name: Ensure db_path dir exists
   file:
@@ -27,6 +33,9 @@
     state: directory
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_group }}"
+  tags:
+    - "mongodb"
+    - "setup"
 
 - name: Copy config file
   template:
@@ -36,6 +45,9 @@
     group: "{{ mongodb_group }}"
   notify:
     - Restart mongod service
+  tags:
+    - "mongodb"
+    - "setup"
 
 - name: Copy keyfile to host
   copy:
@@ -48,13 +60,22 @@
   when: authorization == "enabled"
   notify:
     - Restart mongod service
+  tags:
+    - "mongodb"
+    - "setup"
 
 - name: Check for github override
   set_fact:
     x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"
+  tags:
+    - "ci"
 
 - name: Start mongod service
   service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
+  tags:
+    - "mongodb"
+    - "setup"
+    - "service"
