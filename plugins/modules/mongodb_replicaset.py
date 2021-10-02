@@ -318,6 +318,7 @@ def modify_members(module, config, members):
                         max_id = current_member["_id"]
                     new_member_config.append(m)
                     member_matched = True
+                    break
                 if not member_matched:  # We've checked all the member so this must be a new one
                     if ':' in m["host"]:
                         members_to_add.append(m["host"])
