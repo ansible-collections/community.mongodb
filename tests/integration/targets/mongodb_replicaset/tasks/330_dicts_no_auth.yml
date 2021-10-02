@@ -21,11 +21,11 @@
       mongod_auth: false
 
   - set_fact:
-      current_replicaset: "test_member_add_remove"
+      current_replicaset: "test_member_add_remove_dicts"
 
   - include_tasks: mongod_replicaset.yml
 
-  - name: Create replicaset with module
+  - name: Create replicaset with module - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -67,7 +67,7 @@
       - '''localhost:3002'' in mongo_output.stdout'
       - '''localhost:3003'' in mongo_output.stdout'
 
-  - name: Remove a member from the replicaset - check mode
+  - name: Remove a member from the replicaset - check mode - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -82,7 +82,7 @@
       that:
         - rs.changed == True
 
-  - name: Remove a member from the replicaset
+  - name: Remove a member from the replicaset - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -128,7 +128,7 @@
 
   - include_tasks: mongod_replicaset.yml
 
-  - name: Add a member to the replicaset - check mode hidden, no vote
+  - name: Add a member to the replicaset - check mode hidden, no vote - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -146,7 +146,7 @@
       that:
         - rs.changed == True
 
-  - name: Add a member to the replicaset - hidden, no vote
+  - name: Add a member to the replicaset - hidden, no vote - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -184,7 +184,7 @@
       - '''localhost:3002'' in mongo_output.stdout'
       - '''localhost:3004'' in mongo_output.stdout'
 
-  - name: Reconfigure the replicaset - check mode, unhidden votes = 1
+  - name: Reconfigure the replicaset - check mode, unhidden votes = 1 - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -202,7 +202,7 @@
       that:
         - rs.changed == True
 
-  - name: Reconfigure the replicaset - unhidden votes = 1
+  - name: Reconfigure the replicaset - unhidden votes = 1 - with dicts
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
@@ -219,6 +219,6 @@
       that:
         - rs.changed == True
 
-  # to config config is correct
+  # TODO config config is correct
 
   - include_tasks: mongod_teardown.yml

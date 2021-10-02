@@ -326,7 +326,8 @@ def modify_members(module, config, members):
         for new_member in members_to_add:  # add new members
             for m in members:
                 if new_member in [m["host"], m["host"] + ":27017"]:
-                    m["_id"] = max_id + 1
+                    max_id = max_id + 1
+                    m["_id"] = max_id
                     new_member_config.append(m)
         config["members"] = new_member_config
     else:
@@ -528,7 +529,10 @@ def main():
                         config = get_replicaset_config(client)
                         modified_config = modify_members(module, config, members)
                         if not module.check_mode:
-                            replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                            try:
+                                replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                            except Exception as excep:
+                                module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
                         result['changed'] = True
                     else:
                         result['changed'] = False
