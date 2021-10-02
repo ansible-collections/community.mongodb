@@ -535,7 +535,7 @@ def main():
                                 module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
                         result['changed'] = True
                         # TODO REMove this debug
-                        result['new_config'] = modified_config
+                        result['new_member_config'] = modified_config['members']
                     else:
                         result['changed'] = False
                 else:
