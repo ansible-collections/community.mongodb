@@ -313,6 +313,16 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             assert 'Authentication failed' in str(excep)
             assert "MongoClient" in str(client)
 
+    member_config_defaults = {
+        "arbiterOnly": False,
+        "buildIndexes": True,
+        "hidden": False,
+        "priority": { "nonarbiter": 1.0, "arbiter": 0 },
+        "tags": {},
+        "secondardDelaySecs": 0,
+        "votes": 1
+    }
+
     def test_member_dicts_different_1(self):
         # mongodb replicaset config document format
         conf = {
@@ -322,6 +332,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 {"_id": 3, "host": "localhost:3003"}
             ]
         }
+        for member in conf["members"]:
+            member.update(member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
@@ -336,6 +348,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 {"_id": 2, "host": "localhost:3002"}
             ]
         }
+        for member in conf["members"]:
+            member.update(member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
@@ -351,6 +365,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 {"_id": 3, "host": "localhost:3003"}
             ]
         }
+        for member in conf["members"]:
+            member.update(member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"}]
@@ -364,6 +380,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 {"_id": 2, "host": "localhost:3002"}
             ]
         }
+        for member in conf["members"]:
+            member.update(member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
@@ -371,7 +389,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         # 3004 using non-default values
         self.assertTrue(mongodb_common.member_dicts_different(conf, members))
 
-    def test_member_dicts_different_4(self):
+    def test_member_dicts_different_5(self):
         # mongodb replicaset config document format
         conf = {
             "members": [
@@ -380,6 +398,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 {"_id": 2, "host": "localhost:3004"}
             ]
         }
+        for member in conf["members"]:
+            member.update(member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
