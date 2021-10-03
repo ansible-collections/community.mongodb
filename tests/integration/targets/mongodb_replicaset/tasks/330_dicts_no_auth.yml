@@ -81,6 +81,7 @@
   - assert:
       that:
         - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
 
   - name: Remove a member from the replicaset - with dicts
     community.mongodb.mongodb_replicaset:
@@ -95,6 +96,7 @@
   - assert:
       that:
         - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
 
   - name: Wait for the replicaset to stabilise after member removal
     community.mongodb.mongodb_status:
@@ -139,12 +141,14 @@
          - host: localhost:3004
            hidden: true
            votes: 0
+           priority: 0
     check_mode: yes
     register: rs
 
   - assert:
       that:
         - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
 
   - name: Add a member to the replicaset - hidden, no vote - with dicts
     community.mongodb.mongodb_replicaset:
@@ -157,11 +161,13 @@
          - host: localhost:3004
            hidden: true
            votes: 0
+           priority: 0
     register: rs
 
   - assert:
       that:
         - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
 
   - name: Wait for the replicaset to stabilise after member addition
     community.mongodb.mongodb_status:
@@ -195,12 +201,14 @@
          - host: localhost:3004
            hidden: false
            votes: 1
+           priority: 1
     check_mode: yes
     register: rs
 
   - assert:
       that:
         - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
 
   - name: Reconfigure the replicaset - unhidden votes = 1 - with dicts
     community.mongodb.mongodb_replicaset:
@@ -213,12 +221,38 @@
          - host: localhost:3004
            hidden: false
            votes: 1
+           priority: 1
     register: rs
+
+  - name: Wait for the replicaset to stabilise after member vote reconfig - default validation
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      poll: 5
+      interval: 30
 
   - assert:
       that:
         - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
 
-  # TODO config config is correct
+  - name: Reconfigure the replicaset - unhidden votes = 1 - with dicts - again, should not change
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3004
+           hidden: false
+           votes: 1
+           priority: 1
+      debug: yes
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == False
 
   - include_tasks: mongod_teardown.yml
