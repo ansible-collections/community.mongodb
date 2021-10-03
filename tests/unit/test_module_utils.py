@@ -41,6 +41,16 @@ class FakeAnsibleModule:
 
 class TestMongoDBCommonMethods(unittest.TestCase):
 
+    member_config_defaults = {
+        "arbiterOnly": False,
+        "buildIndexes": True,
+        "hidden": False,
+        "priority": { "nonarbiter": 1.0, "arbiter": 0 },
+        "tags": {},
+        "secondardDelaySecs": 0,
+        "votes": 1
+    }
+
     def test_check_compatibility_old_pymongo_version(self):
         # (mongo version, pymongo version, msg)
         versions = [
@@ -312,16 +322,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         except Exception as excep:
             assert 'Authentication failed' in str(excep)
             assert "MongoClient" in str(client)
-
-    member_config_defaults = {
-        "arbiterOnly": False,
-        "buildIndexes": True,
-        "hidden": False,
-        "priority": { "nonarbiter": 1.0, "arbiter": 0 },
-        "tags": {},
-        "secondardDelaySecs": 0,
-        "votes": 1
-    }
 
     def test_member_dicts_different_1(self):
         # mongodb replicaset config document format
