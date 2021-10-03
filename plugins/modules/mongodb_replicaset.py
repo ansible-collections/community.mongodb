@@ -308,7 +308,7 @@ def modify_members(module, config, members):
         # TODO: https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.members-n-._id
         # Maybe we can add a new member id parameter value, stick with the incrementing for now
         # Perhaps even save this in the mongodb instance?
-        members_to_add = []
+        unmatched_members = []
         for current_member in config["members"]:
             for m in members:
                 member_matched = False
@@ -316,19 +316,21 @@ def modify_members(module, config, members):
                     m["_id"] = current_member["_id"]
                     if max_id < current_member["_id"]:
                         max_id = current_member["_id"]
+                    m['matched_exisiting'] = True
                     new_member_config.append(m)
                     member_matched = True
                     break
             if not member_matched:  # We've checked all the member so this must be a new one
                 if ':' in m["host"]:
-                    members_to_add.append(m["host"])
+                    unmatched_members.append(m["host"])
                 else:
                     members_to_add.append(m["host"] + ":27017")
-        for new_member in members_to_add:  # add new members
+        for new_member in unmatched_members:  # add new members if matched
             for m in members:
                 if new_member in [m["host"], m["host"] + ":27017"]:
                     max_id = max_id + 1
                     m["_id"] = max_id
+                    m['matched_exisiting'] = False
                     new_member_config.append(m)
                     break
         config["members"] = new_member_config
