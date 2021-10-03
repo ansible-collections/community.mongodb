@@ -313,6 +313,79 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             assert 'Authentication failed' in str(excep)
             assert "MongoClient" in str(client)
 
+    def test_member_dicts_different_1(self):
+        # mongodb replicaset config document format
+        conf = {
+            "members": [
+                {"_id": 1, "host": "localhost:3001"},
+                {"_id": 2, "host": "localhost:3002"},
+                {"_id": 3, "host": "localhost:3003"}
+            ]
+        }
+        # list of dicts
+        members =[{"host": "localhost:3001"},
+                  {"host": "localhost:3002"},
+                  {"host": "localhost:3003"}]
+        self.assertFalse(mongodb_common.member_dicts_different(conf, members))
+
+    def test_member_dicts_different_2(self):
+        # mongodb replicaset config document format
+        conf = {
+            "members": [
+                {"_id": 1, "host": "localhost:3001"},
+                {"_id": 2, "host": "localhost:3002"}
+            ]
+        }
+        # list of dicts
+        members =[{"host": "localhost:3001"},
+                  {"host": "localhost:3002"},
+                  {"host": "localhost:3004"}]
+        self.assertTrue(mongodb_common.member_dicts_different(conf, members))
+
+    def test_member_dicts_different_3(self):
+        # mongodb replicaset config document format
+        conf = {
+            "members": [
+                {"_id": 1, "host": "localhost:3001"},
+                {"_id": 2, "host": "localhost:3002"},
+                {"_id": 3, "host": "localhost:3003"}
+            ]
+        }
+        # list of dicts
+        members =[{"host": "localhost:3001"},
+                  {"host": "localhost:3002"}]
+        self.assertTrue(mongodb_common.member_dicts_different(conf, members))
+
+    def test_member_dicts_different_4(self):
+        # mongodb replicaset config document format
+        conf = {
+            "members": [
+                {"_id": 1, "host": "localhost:3001"},
+                {"_id": 2, "host": "localhost:3002"}
+            ]
+        }
+        # list of dicts
+        members =[{"host": "localhost:3001"},
+                  {"host": "localhost:3002"},
+                  {"host": "localhost:3004", "votes": 0, "priority": 0, "hidden": True}]
+        # 3004 using non-default values
+        self.assertTrue(mongodb_common.member_dicts_different(conf, members))
+
+    def test_member_dicts_different_4(self):
+        # mongodb replicaset config document format
+        conf = {
+            "members": [
+                {"_id": 1, "host": "localhost:3001"},
+                {"_id": 2, "host": "localhost:3002"},
+                {"_id": 2, "host": "localhost:3004"}
+            ]
+        }
+        # list of dicts
+        members =[{"host": "localhost:3001"},
+                  {"host": "localhost:3002"},
+                  {"host": "localhost:3004", "votes": 1, "priority": 1, "hidden":False}]
+        # Should return false as the additonal dict keys are default values
+        self.assertFalse(mongodb_common.member_dicts_different(conf, members))
 
 if __name__ == '__main__':
     unittest.main()
