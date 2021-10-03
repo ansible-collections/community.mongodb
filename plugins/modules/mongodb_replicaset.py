@@ -330,6 +330,7 @@ def modify_members(module, config, members):
                     max_id = max_id + 1
                     m["_id"] = max_id
                     new_member_config.append(m)
+                    break
         config["members"] = new_member_config
     else:
         raise Exception("All items in members must be either of type dict of str")
