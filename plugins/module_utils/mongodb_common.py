@@ -286,7 +286,7 @@ def member_dicts_different(conf, member_config):
         "arbiterOnly": False,
         "buildIndexes": True,
         "hidden": False,
-        "priority": { "nonarbiter": 1.0, "arbiter": 0 },
+        "priority": {"nonarbiter": 1.0, "arbiter": 0},
         "tags": {},
         "secondardDelaySecs": 0,
         "votes": 1
@@ -311,7 +311,8 @@ def member_dicts_different(conf, member_config):
             new_member_index = next((index for (index, d) in enumerate(member_config) if d["host"] == host), None)
             for config_item in member_config_defaults:
                 if config_item != "priority":
-                    if current_member_config[member_index].get(config_item, member_config_defaults[config_item]) != member_config[new_member_index].get(config_item, member_config_defaults[config_item]):
+                    if current_member_config[member_index].get(config_item, member_config_defaults[config_item]) != \
+                            member_config[new_member_index].get(config_item, member_config_defaults[config_item]):
                         different = True
                         msg = "var different {0} {1} {2}".format(config_item,
                                                                  current_member_config[member_index].get(config_item, member_config_defaults[config_item]),
@@ -321,8 +322,9 @@ def member_dicts_different(conf, member_config):
                     role = "nonarbiter"
                     if current_member_config[member_index]["arbiterOnly"]:
                         role = "arbiter"
-                        if current_member_config[member_index][config_item] != member_config[new_member_index].get(config_item, member_config_defaults[config_item][role]):
+                        if current_member_config[member_index][config_item] != \
+                                member_config[new_member_index].get(config_item, member_config_defaults[config_item][role]):
                             different = True
                             msg = "var different {0}".format(config_item)
                             break
-    return different#, msg
+    return different  #, msg

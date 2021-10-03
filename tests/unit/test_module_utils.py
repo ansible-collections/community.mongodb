@@ -45,7 +45,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         "arbiterOnly": False,
         "buildIndexes": True,
         "hidden": False,
-        "priority": { "nonarbiter": 1.0, "arbiter": 0 },
+        "priority": {"nonarbiter": 1.0, "arbiter": 0},
         "tags": {},
         "secondardDelaySecs": 0,
         "votes": 1
@@ -335,9 +335,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         for member in conf["members"]:
             member.update(self.member_config_defaults)
         # list of dicts
-        members =[{"host": "localhost:3001"},
-                  {"host": "localhost:3002"},
-                  {"host": "localhost:3003"}]
+        members = [{"host": "localhost:3001"},
+                   {"host": "localhost:3002"},
+                   {"host": "localhost:3003"}]
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
 
     def test_member_dicts_different_2(self):
@@ -351,19 +351,17 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         for member in conf["members"]:
             member.update(self.member_config_defaults)
         # list of dicts
-        members =[{"host": "localhost:3001"},
-                  {"host": "localhost:3002"},
-                  {"host": "localhost:3004"}]
+        members = [{"host": "localhost:3001"},
+                   {"host": "localhost:3002"},
+                   {"host": "localhost:3004"}]
         self.assertTrue(mongodb_common.member_dicts_different(conf, members))
 
     def test_member_dicts_different_3(self):
         # mongodb replicaset config document format
         conf = {
-            "members": [
-                {"_id": 1, "host": "localhost:3001"},
-                {"_id": 2, "host": "localhost:3002"},
-                {"_id": 3, "host": "localhost:3003"}
-            ]
+            "members": [{"_id": 1, "host": "localhost:3001"},
+                        {"_id": 2, "host": "localhost:3002"},
+                        {"_id": 3, "host": "localhost:3003"}]
         }
         for member in conf["members"]:
             member.update(self.member_config_defaults)
@@ -383,9 +381,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         for member in conf["members"]:
             member.update(self.member_config_defaults)
         # list of dicts
-        members =[{"host": "localhost:3001"},
-                  {"host": "localhost:3002"},
-                  {"host": "localhost:3004", "votes": 0, "priority": 0, "hidden": True}]
+        members = [{"host": "localhost:3001"},
+                   {"host": "localhost:3002"},
+                   {"host": "localhost:3004", "votes": 0, "priority": 0, "hidden": True}]
         # 3004 using non-default values
         self.assertTrue(mongodb_common.member_dicts_different(conf, members))
 
@@ -401,11 +399,12 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         for member in conf["members"]:
             member.update(self.member_config_defaults)
         # list of dicts
-        members =[{"host": "localhost:3001"},
-                  {"host": "localhost:3002"},
-                  {"host": "localhost:3004", "votes": 1, "priority": 1, "hidden":False}]
+        members = [{"host": "localhost:3001"},
+                   {"host": "localhost:3002"},
+                   {"host": "localhost:3004", "votes": 1, "priority": 1, "hidden": False}]
         # Should return false as the additonal dict keys are default values
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -502,8 +502,7 @@ def main():
                         result['changed'] = False
                 elif isinstance(members[0], dict):
                     config = get_replicaset_config(client)
-                    diff, mymsg = member_dicts_different(config, members)
-                    result['mymsg'] = mymsg
+                    diff = member_dicts_different(config, members)
                     if diff:
                         modified_config = modify_members(module, config, members)
                         if debug:
