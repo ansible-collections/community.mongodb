@@ -333,7 +333,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ]
         }
         for member in conf["members"]:
-            member.update(member_config_defaults)
+            member.update(self.member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
@@ -349,7 +349,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ]
         }
         for member in conf["members"]:
-            member.update(member_config_defaults)
+            member.update(self.member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
@@ -366,7 +366,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ]
         }
         for member in conf["members"]:
-            member.update(member_config_defaults)
+            member.update(self.member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"}]
@@ -381,7 +381,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ]
         }
         for member in conf["members"]:
-            member.update(member_config_defaults)
+            member.update(self.member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
@@ -399,7 +399,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             ]
         }
         for member in conf["members"]:
-            member.update(member_config_defaults)
+            member.update(self.member_config_defaults)
         # list of dicts
         members =[{"host": "localhost:3001"},
                   {"host": "localhost:3002"},
