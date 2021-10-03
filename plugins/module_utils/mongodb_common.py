@@ -327,4 +327,4 @@ def member_dicts_different(conf, member_config):
                             different = True
                             msg = "var different {0}".format(config_item)
                             break
-    return different  #, msg
+    return different  # , msg

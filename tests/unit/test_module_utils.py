@@ -366,8 +366,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         for member in conf["members"]:
             member.update(self.member_config_defaults)
         # list of dicts
-        members =[{"host": "localhost:3001"},
-                  {"host": "localhost:3002"}]
+        members = [{"host": "localhost:3001"},
+                   {"host": "localhost:3002"}]
         self.assertTrue(mongodb_common.member_dicts_different(conf, members))
 
     def test_member_dicts_different_4(self):
