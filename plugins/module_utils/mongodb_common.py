@@ -273,3 +273,58 @@ def mongo_auth(module, client):
                 module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
             # else: this has to be the first admin user added
     return client
+
+
+def member_dicts_different(conf, member_config):
+    '''
+    Returns if there is a difference in the replicaset configuration that we care about
+    @con - The current MongoDB Replicaset configure document
+    @member_config - The member dict config provided by the module. List of dicts
+    '''
+    current_member_config = conf['members']
+    member_config_defaults = {
+        "arbiterOnly": False,
+        "buildIndexes": True,
+        "hidden": False,
+        "priority": {"nonarbiter": 1.0, "arbiter": 0},
+        "tags": {},
+        "secondardDelaySecs": 0,
+        "votes": 1
+    }
+    different = False
+    msg = "None"
+    current_member_hosts = []
+    for member in current_member_config:
+        current_member_hosts.append(member['host'])
+    member_config_hosts = []
+    for member in member_config:
+        if ':' not in member['host']:  # no port supplied
+            member_config_hosts.append(member['host'] + ":27017")
+        else:
+            member_config_hosts.append(member['host'])
+    if sorted(current_member_hosts) != sorted(member_config_hosts):  # compare if members are the same
+        different = True
+        msg = "hosts different"
+    else:  # Compare dict key to see if votes, tags etc have changed. We also default value if key is not specified
+        for host in current_member_hosts:
+            member_index = next((index for (index, d) in enumerate(current_member_config) if d["host"] == host), None)
+            new_member_index = next((index for (index, d) in enumerate(member_config) if d["host"] == host), None)
+            for config_item in member_config_defaults:
+                if config_item != "priority":
+                    if current_member_config[member_index].get(config_item, member_config_defaults[config_item]) != \
+                            member_config[new_member_index].get(config_item, member_config_defaults[config_item]):
+                        different = True
+                        msg = "var different {0} {1} {2}".format(config_item,
+                                                                 current_member_config[member_index].get(config_item, member_config_defaults[config_item]),
+                                                                 member_config[new_member_index].get(config_item, member_config_defaults[config_item]))
+                        break
+                else:  # priority a special case
+                    role = "nonarbiter"
+                    if current_member_config[member_index]["arbiterOnly"]:
+                        role = "arbiter"
+                        if current_member_config[member_index][config_item] != \
+                                member_config[new_member_index].get(config_item, member_config_defaults[config_item][role]):
+                            different = True
+                            msg = "var different {0}".format(config_item)
+                            break
+    return different  # , msg

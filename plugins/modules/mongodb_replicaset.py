@@ -72,6 +72,10 @@ options:
     default: 1
   reconfigure:
     description:
+      - This feature is currently experimental. Please test your scenario thoroughly.
+      - Consult the integration test file for supported scenarios - \
+        [Integration tests](https://github.com/ansible-collections/community.mongodb/tree/master/tests/integration/targets/mongodb_replicaset/tasks). \
+        See files prefixed with 330.
       - Whether to perform replicaset reconfiguration actions.
       - Only relevant when the replicaset already exists.
       - Only one member can be removed or added per invocation.
@@ -90,6 +94,11 @@ options:
       - Specifies a cumulative time limit in milliseconds for processing the replicaset reconfiguration.
     type: int
     default: null
+  debug:
+    description:
+      - Add additonal info for debug.
+    type: bool
+    default: false
 notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
@@ -203,7 +212,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     load_mongocnf,
     mongodb_common_argument_spec,
     ssl_connection_options,
-    mongo_auth
+    mongo_auth,
+    member_dicts_different
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PyMongoVersion, PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
@@ -233,6 +243,9 @@ def lists_are_same(list1, list2):
 def modify_members(module, config, members):
     """
     Modifies the members section of the config document as appropriate.
+    @module - Ansible module object
+    @config - Replicaset config document from MongoDB
+    @members - Members config from module
     """
     try:  # refactor repeated code
         from collections import OrderedDict
@@ -261,9 +274,34 @@ def modify_members(module, config, members):
                 max_id += 1
         config["members"] = new_member_config
     elif all(isinstance(member, dict) for member in members):
-        raise NotImplementedError("reconfig through dicts not yet implemented")
+        # We need to put the _id values in into the matching document and generate them for new hosts
+        # TODO: https://docs.mongodb.com/manual/reference/replica-configuration/#mongodb-rsconf-rsconf.members-n-._id
+        # Maybe we can add a new member id parameter value, stick with the incrementing for now
+        # Perhaps even save this in the mongodb instance?
+
+        # first get all the existing members of the replicaset
+        new_member_config = []
+        existing_members = {}
+        matched_members = []  # members that have been supplied by the moduel and matched with existing members
+        max_id = 0
+        for member in config["members"]:
+            existing_members[member["host"]] = member["_id"]
+            if member["_id"] > max_id:
+                max_id = member["_id"]
+        # append existing members with the appropriate _id
+        for member in members:
+            if member["host"] in existing_members:
+                member["_id"] = existing_members[member["host"]]
+                matched_members.append(member["host"])
+                new_member_config.append(member)
+        for member in members:
+            if member["host"] not in matched_members:  # new member , append and increment id
+                max_id = max_id + 1
+                member["_id"] = max_id
+                new_member_config.append(member)
+        config["members"] = new_member_config
     else:
-        raise Exception("All items in members must be either of type dict of str")
+        module.fail_json(msg="All items in members must be either of type dict of str")
     return config
 
 
@@ -380,6 +418,7 @@ def main():
         reconfigure=dict(type='bool', default=False),
         force=dict(type='bool', default=False),
         max_time_ms=dict(type='int', default=None),
+        debug=dict(type='bool', default=False),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -405,6 +444,7 @@ def main():
     reconfigure = module.params['reconfigure']
     force = module.params['force']
     max_time_ms = module.params['max_time_ms']
+    debug = module.params['debug']
 
     if validate and reconfigure is False:
         if len(members) <= 2 or len(members) % 2 == 0:
@@ -442,22 +482,45 @@ def main():
         if replica_set == rs:
             if reconfigure:
                 mongo_auth(module, client)
+                # This if/else structure can probably be refactored into a single function
                 if isinstance(members[0], str):  # If members are str it's just a simple add or remove action
                     if not lists_are_same(members, get_member_names(client)):
                         config = get_replicaset_config(client)
                         modified_config = modify_members(module, config, members)
+                        if debug:
+                            result['config'] = config
+                            result['modified_config'] = modified_config
                         if not module.check_mode:
                             # Causes error Value of unknown type: <class 'bson.timestamp.Timestamp'>
                             # result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
-                            replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                            try:
+                                replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                            except Exception as excep:
+                                module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
                         # else:
                         #    result = { "dummy": 1 }
                         result['changed'] = True
+                        result['msg'] = "replicaset reconfigured"
                         # result['tmp'] = str(result)
                     else:
                         result['changed'] = False
                 elif isinstance(members[0], dict):
-                    module.fail_json(msg="reconfig through dicts not yet implemented")
+                    config = get_replicaset_config(client)
+                    diff = member_dicts_different(config, members)
+                    if diff:
+                        modified_config = modify_members(module, config, members)
+                        if debug:
+                            result['config'] = str(config)
+                            result['modified_config'] = str(modified_config)
+                        if not module.check_mode:
+                            try:
+                                replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+                            except Exception as excep:
+                                module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
+                        result['changed'] = True
+                        result['msg'] = "replicaset reconfigured"
+                    else:
+                        result['changed'] = False
                 else:
                     module.fail_json(msg="members must be either str or dict")
             else:

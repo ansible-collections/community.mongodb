@@ -1,0 +1,284 @@
+##############################################################################
+# This test is for Issue 330. We test here if we can remove a member, before #
+# adding a new one, hidden with 0 votes, before updating the config to       #
+# unhidden and 1 votes. All with dictionaries                                #
+##############################################################################
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_database: admin
+
+  block:
+
+  - set_fact:
+      mongodb_nodes:
+        - 3001
+        - 3002
+        - 3003
+
+  - set_fact:
+      mongod_auth: false
+
+  - set_fact:
+      current_replicaset: "test_member_add_remove_dicts"
+
+  - include_tasks: mongod_replicaset.yml
+
+  - name: Create replicaset with module - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3003
+
+  - name: Copy script to host
+    template:
+      src: files/bash/ensure_primary.sh.j2
+      dest: /root/ensure_primary.sh
+
+  - name: Execute script for 3001
+    script: /root/ensure_primary.sh 3001 0
+
+  - name: Ensure is_primary script exists on host
+    copy:
+      src: js/is_primary.js
+      dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+
+  - name: Wait for the replicaset to stabilise
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      poll: 5
+      interval: 10
+
+  - name: Get replicaset info
+    command: mongo admin --eval "rs.status()" --port 3001
+    register: mongo_output
+
+  - name: Assert replicaset name is in mongo_output
+    assert:
+      that:
+      - mongo_output.changed == true
+      - '''{{ current_replicaset }}'' in mongo_output.stdout'
+      - '''localhost:3001'' in mongo_output.stdout'
+      - '''localhost:3002'' in mongo_output.stdout'
+      - '''localhost:3003'' in mongo_output.stdout'
+
+  - name: Remove a member from the replicaset - check mode - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+    check_mode: yes
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
+
+  - name: Remove a member from the replicaset - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
+
+  - name: Wait for the replicaset to stabilise after member removal
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      validate: minimal
+      poll: 5
+      interval: 10
+
+  - name: Get replicaset info
+    command: mongo admin --eval "rs.status()" --port 3001
+    register: mongo_output
+
+  - name: Assert that member is no longer in replicaset
+    assert:
+      that:
+      - mongo_output.changed == true
+      - '''{{ current_replicaset }}'' in mongo_output.stdout'
+      - '''localhost:3001'' in mongo_output.stdout'
+      - '''localhost:3002'' in mongo_output.stdout'
+      - '''name\" : \"localhost:3003'' not in mongo_output.stdout'
+
+  - name: Set variable to create a single new member
+    set_fact:
+      mongodb_nodes:
+        - 3004
+
+  - name: Ensure auth is not activated
+    set_fact:
+      mongod_auth: false
+
+  - include_tasks: mongod_replicaset.yml
+
+  - name: Add a member to the replicaset - check mode hidden, no vote - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3004
+           hidden: true
+           votes: 0
+           priority: 0
+    check_mode: yes
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
+
+  - name: Add a member to the replicaset - hidden, no vote - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3004
+           hidden: true
+           votes: 0
+           priority: 0
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
+
+  - name: Wait for the replicaset to stabilise after member addition
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      validate: minimal
+      poll: 5
+      interval: 30
+
+  - name: Get replicaset info
+    command: mongo admin --eval "rs.status()" --port 3001
+    register: mongo_output
+
+  - name: Assert that member 3004 is in replicaset
+    assert:
+      that:
+      - mongo_output.changed == true
+      - '''{{ current_replicaset }}'' in mongo_output.stdout'
+      - '''localhost:3001'' in mongo_output.stdout'
+      - '''localhost:3002'' in mongo_output.stdout'
+      - '''localhost:3004'' in mongo_output.stdout'
+
+  - name: Reconfigure the replicaset - check mode, unhidden votes = 1 - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3004
+           hidden: false
+           votes: 1
+           priority: 1
+    check_mode: yes
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
+
+  - name: Reconfigure the replicaset - unhidden votes = 1 - with dicts
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3004
+           hidden: false
+           votes: 1
+           priority: 1
+    register: rs
+
+  - name: Wait for the replicaset to stabilise after member vote reconfig - default validation
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      poll: 5
+      interval: 30
+
+  - assert:
+      that:
+        - rs.changed == True
+        - "rs.msg == 'replicaset reconfigured'"
+
+  - name: Reconfigure the replicaset - unhidden votes = 1 - with dicts - again, should not change
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+         - host: localhost:3002
+         - host: localhost:3004
+           hidden: false
+           votes: 1
+           priority: 1
+      debug: yes
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == False
+
+  - name: Reconfigure the replicaset -remove and add nodes, should fail
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+           hidden: false
+           votes: 1
+           priority: 1
+         - host: localhost:3008
+           hidden: false
+           votes: 1
+           priority: 1
+         - host: localhost:3009
+           hidden: false
+           votes: 1
+           priority: 1
+      debug: yes
+    register: rs
+    ignore_errors: yes
+
+  - assert:
+      that:
+        - rs.failed == True
+
+  - include_tasks: mongod_teardown.yml
