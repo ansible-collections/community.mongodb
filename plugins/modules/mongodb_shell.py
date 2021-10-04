@@ -180,10 +180,8 @@ rc:
   type: int
 '''
 
-from ansible.module_utils.basic import AnsibleModule, load_platform_subclass
-import socket
+from ansible.module_utils.basic import AnsibleModule
 import re
-import time
 import json
 import os
 import shlex
