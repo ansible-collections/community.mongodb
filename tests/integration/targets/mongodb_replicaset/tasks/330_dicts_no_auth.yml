@@ -255,4 +255,22 @@
       that:
         - rs.changed == False
 
+  - name: Reconfigure the replicaset - too many nodes removed, should fail
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      reconfigure: yes
+      members:
+         - host: localhost:3001
+           hidden: false
+           votes: 1
+           priority: 1
+      debug: yes
+    register: rs
+    ignore_errors: yes
+
+  - assert:
+      that:
+        - rs.failed == True
+
   - include_tasks: mongod_teardown.yml

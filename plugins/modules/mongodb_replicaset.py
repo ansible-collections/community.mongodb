@@ -72,6 +72,10 @@ options:
     default: 1
   reconfigure:
     description:
+      - This feature is currently experimental. Please test your scenario thoroughly.
+      - Consult the integration test file for supported scenarios - \
+        [Integration tests](https://github.com/ansible-collections/community.mongodb/tree/master/tests/integration/targets/mongodb_replicaset/tasks). \
+        See files prefixed with 330.
       - Whether to perform replicaset reconfiguration actions.
       - Only relevant when the replicaset already exists.
       - Only one member can be removed or added per invocation.
