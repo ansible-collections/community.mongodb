@@ -76,20 +76,14 @@ url:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import binary_type, text_type
-from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    check_compatibility,
     missing_required_lib,
-    load_mongocnf,
     mongodb_common_argument_spec,
     ssl_connection_options,
-    PyMongoVersion,
     PYMONGO_IMP_ERR,
     pymongo_found,
     MongoClient,
-    LooseVersion,
     mongo_auth
 )
 

@@ -72,29 +72,22 @@ after:
     type: str
 '''
 
-import os
-from distutils.version import LooseVersion
 import traceback
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
-from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    check_compatibility,
     missing_required_lib,
-    load_mongocnf,
     mongodb_common_argument_spec,
     ssl_connection_options,
     mongo_auth
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    PyMongoVersion,
     PYMONGO_IMP_ERR,
     pymongo_found,
     MongoClient
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    ConnectionFailure,
     OperationFailure
 )
 
