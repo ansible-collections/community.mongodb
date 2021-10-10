@@ -78,8 +78,9 @@ options:
         See files prefixed with 330.
       - Whether to perform replicaset reconfiguration actions.
       - Only relevant when the replicaset already exists.
-      - Only one member can be removed or added per invocation.
+      - Only one member should be removed or added per invocation.
       - Members should be specific as either all strings or all dicts when reconfiguring.
+      - Currently no support for replicaset settings document changes.
     type: bool
     default: false
   force:
@@ -182,6 +183,74 @@ EXAMPLES = r'''
       tags:
         dc: "west"
         usage: "reporting"
+
+- name: Add a new member to a replicaset - Safe for pre-5.0 consult documentation - https://docs.mongodb.com/manual/tutorial/expand-replica-set/
+  block:
+    - name: Create replicaset with module - with dicts
+      community.mongodb.mongodb_replicaset:
+        replica_set: "rs0"
+        members:
+           - host: localhost:3001
+           - host: localhost:3002
+           - host: localhost:3003
+
+    - name: Wait for the replicaset to stabilise
+      community.mongodb.mongodb_status:
+        replica_set: "rs0"
+        poll: 5
+        interval: 10
+
+    - name: Remove a member from the replicaset
+      community.mongodb.mongodb_replicaset:
+        replica_set: "rs0"
+        reconfigure: yes
+        members:
+           - host: localhost:3001
+           - host: localhost:3002
+
+    - name: Wait for the replicaset to stabilise after member removal
+      community.mongodb.mongodb_status:
+        replica_set: "rs0"
+        validate: minimal
+        poll: 5
+        interval: 10
+
+    - name: Add a member to the replicaset
+      community.mongodb.mongodb_replicaset:
+        replica_set: "rs0"
+        reconfigure: yes
+        members:
+           - host: localhost:3001
+           - host: localhost:3002
+           - host: localhost:3004
+             hidden: true
+             votes: 0
+             priority: 0
+
+    - name: Wait for the replicaset to stabilise after member addition
+      community.mongodb.mongodb_status:
+        replica_set: "rs0"
+        validate: minimal
+        poll: 5
+        interval: 30
+
+    - name: Reconfigure the replicaset - Make member 3004 a normal voting member
+      community.mongodb.mongodb_replicaset:
+        replica_set: "rs0"
+        reconfigure: yes
+        members:
+           - host: localhost:3001
+           - host: localhost:3002
+           - host: localhost:3004
+             hidden: false
+             votes: 1
+             priority: 1
+
+    - name: Wait for the replicaset to stabilise
+      community.mongodb.mongodb_status:
+        replica_set: "rs0"
+        poll: 5
+        interval: 30
 '''
 
 RETURN = r'''
@@ -204,7 +273,8 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     ssl_connection_options,
     mongo_auth,
-    member_dicts_different
+    member_dicts_different,
+    lists_are_different
 )
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
@@ -220,15 +290,6 @@ def get_member_names(client):
     for member in conf['members']:
         members.append(member['host'])
     return members
-
-
-def lists_are_same(list1, list2):
-    same = False
-    list1.sort()
-    list2.sort()
-    if list1 == list2:
-        same = True
-    return same
 
 
 def modify_members(module, config, members):
@@ -390,6 +451,41 @@ def replicaset_remove(module, client, replica_set):
     raise NotImplementedError
 
 
+def modify_members_flow(module, client, members, result):
+    debug = module.params['debug']
+    force = module.params['force']
+    max_time_ms = module.params['max_time_ms']
+    diff = False
+    modified_config = None
+    config = None
+
+    try:
+        config = get_replicaset_config(client)
+    except Exception as excep:
+        module.fail_json(msg="Unable to get replicaset configuration {0}".format(excep))
+
+    if isinstance(members[0], str):
+        diff = lists_are_different(members, get_member_names(client))
+    elif isinstance(members[0], dict):
+        diff = member_dicts_different(config, members)
+    else:
+        module.fail_json(msg="members must be either str or dict")
+    if diff:
+        if not module.check_mode:
+            try:
+                modified_config = modify_members(module, config, members)
+                if debug:
+                    result['config'] = str(config)
+                    result['modified_config'] = str(modified_config)
+                replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
+            except Exception as excep:
+                module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
+        result['changed'] = True
+        result['msg'] = "replicaset reconfigured"
+    else:
+        result['changed'] = False
+    return result
+
 # =========================================
 # Module execution.
 #
@@ -473,47 +569,7 @@ def main():
         if replica_set == rs:
             if reconfigure:
                 mongo_auth(module, client)
-                # This if/else structure can probably be refactored into a single function
-                if isinstance(members[0], str):  # If members are str it's just a simple add or remove action
-                    if not lists_are_same(members, get_member_names(client)):
-                        config = get_replicaset_config(client)
-                        modified_config = modify_members(module, config, members)
-                        if debug:
-                            result['config'] = config
-                            result['modified_config'] = modified_config
-                        if not module.check_mode:
-                            # Causes error Value of unknown type: <class 'bson.timestamp.Timestamp'>
-                            # result = replicaset_reconfigure(client, modified_config, force, max_time_ms)
-                            try:
-                                replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
-                            except Exception as excep:
-                                module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
-                        # else:
-                        #    result = { "dummy": 1 }
-                        result['changed'] = True
-                        result['msg'] = "replicaset reconfigured"
-                        # result['tmp'] = str(result)
-                    else:
-                        result['changed'] = False
-                elif isinstance(members[0], dict):
-                    config = get_replicaset_config(client)
-                    diff = member_dicts_different(config, members)
-                    if diff:
-                        modified_config = modify_members(module, config, members)
-                        if debug:
-                            result['config'] = str(config)
-                            result['modified_config'] = str(modified_config)
-                        if not module.check_mode:
-                            try:
-                                replicaset_reconfigure(module, client, modified_config, force, max_time_ms)
-                            except Exception as excep:
-                                module.fail_json(msg="Failed reconfiguring replicaset {0}, config doc {1}".format(excep, modified_config))
-                        result['changed'] = True
-                        result['msg'] = "replicaset reconfigured"
-                    else:
-                        result['changed'] = False
-                else:
-                    module.fail_json(msg="members must be either str or dict")
+                result = modify_members_flow(module, client, members, result)
             else:
                 result['changed'] = False
             result['replica_set'] = rs
