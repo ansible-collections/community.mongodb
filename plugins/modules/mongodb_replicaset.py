@@ -467,8 +467,8 @@ def modify_members_flow(module, client, members, result):
         modified_config = modify_members(module, config, members)
         diff = lists_are_different(members, get_member_names(client))
         if debug:
-            result['config'] = config
-            result['modified_config'] = modified_config
+            result['config'] = str(config)
+            result['modified_config'] = str(modified_config)
     elif isinstance(members[0], dict):
         config = get_replicaset_config(client)
         diff = member_dicts_different(config, members)
