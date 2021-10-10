@@ -462,19 +462,24 @@ def modify_members_flow(module, client, members, result):
     debug = module.params['debug']
     force = module.params['force']
     max_time_ms = module.params['max_time_ms']
+    diff = False
+
     if isinstance(members[0], str):
+        diff = lists_are_different(members, get_member_names(client))
         config = get_replicaset_config(client)
         modified_config = modify_members(module, config, members)
-        diff = lists_are_different(members, get_member_names(client))
+
         if debug:
             result['config'] = str(config)
             result['modified_config'] = str(modified_config)
+            result['diff'] = diff
     elif isinstance(members[0], dict):
         config = get_replicaset_config(client)
         diff = member_dicts_different(config, members)
         if debug:
             result['config'] = str(config)
             result['modified_config'] = str(modified_config)
+            result['diff'] = diff
     else:
         module.fail_json(msg="members must be either str or dict")
     if diff:
