@@ -328,3 +328,10 @@ def member_dicts_different(conf, member_config):
                             msg = "var different {0}".format(config_item)
                             break
     return different  # , msg
+
+
+def lists_are_different(list1, list2):
+    diff = False
+    if sorted(list1) != sorted(list2):
+        diff = True
+    return diff

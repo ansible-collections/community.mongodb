@@ -406,5 +406,43 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
 
 
+    def test_lists_arte_different1(self):
+        l1 = [
+            "localhost:3001",
+            "localhost:3002",
+            "localhost:3003"
+        ]
+        l2 = [
+            "localhost:3001",
+            "localhost:3002",
+            "localhost:3003"
+        ]
+        self.assertTrue(mongodb_common.lists_are_different(l1, l2))
+
+
+    def test_lists_arte_different2(self):
+        l1 = [
+            "localhost:3001",
+            "localhost:3002"
+        ]
+        l2 = [
+            "localhost:3001",
+            "localhost:3002",
+            "localhost:3003"
+        ]
+        self.assertFalse(mongodb_common.lists_are_different(l1, l2))
+
+    def test_lists_arte_different1(self):
+        l1 = [
+            "localhost:3001",
+            "localhost:3002",
+            "localhost:3003"
+        ]
+        l2 = [
+            "localhost:3002",
+            "localhost:3003"
+        ]
+        self.assertFalse(mongodb_common.lists_are_different(l1, l2))
+
 if __name__ == '__main__':
     unittest.main()
