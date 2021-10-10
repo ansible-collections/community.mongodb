@@ -304,7 +304,7 @@ def lists_are_different(list1, list2):
     list2.sort()
     if list1 == list2:
         diff = True
-    return same
+    return diff
 
 
 def modify_members(module, config, members):
@@ -466,7 +466,10 @@ def replicaset_remove(module, client, replica_set):
     raise NotImplementedError
 
 
-def modify_members_flow(module, client, config, members):
+def modify_members_flow(module, client, members, result):
+    debug = module.params['debug']
+    force = module.params['force']
+    max_time_ms = module.params['max_time_ms']  # TODO
     if isinstance(members[0], str):
         config = get_replicaset_config(client)
         modified_config = modify_members(module, config, members)
@@ -576,7 +579,7 @@ def main():
         if replica_set == rs:
             if reconfigure:
                 mongo_auth(module, client)
-                modify_members_flow(module, client, config, members)
+                modify_members_flow(module, client, members, result)
             else:
                 result['changed'] = False
             result['replica_set'] = rs
