@@ -487,6 +487,7 @@ def modify_members_flow(module, client, members, result):
         result['msg'] = "replicaset reconfigured"
     else:
         result['changed'] = False
+    return result
 
 # =========================================
 # Module execution.
@@ -571,7 +572,7 @@ def main():
         if replica_set == rs:
             if reconfigure:
                 mongo_auth(module, client)
-                modify_members_flow(module, client, members, result)
+                result = modify_members_flow(module, client, members, result)
             else:
                 result['changed'] = False
             result['replica_set'] = rs
