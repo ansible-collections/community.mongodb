@@ -461,7 +461,7 @@ def replicaset_remove(module, client, replica_set):
 def modify_members_flow(module, client, members, result):
     debug = module.params['debug']
     force = module.params['force']
-    max_time_ms = module.params['max_time_ms']  # TODO
+    max_time_ms = module.params['max_time_ms']
     if isinstance(members[0], str):
         config = get_replicaset_config(client)
         modified_config = modify_members(module, config, members)
