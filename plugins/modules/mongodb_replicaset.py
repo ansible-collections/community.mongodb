@@ -462,7 +462,7 @@ def modify_members_flow(module, client, members, result):
     try:
         config = get_replicaset_config(client)
     except Exception as excep:
-        module.fail_json(msg="Unable to get replicaset configuration {0}}".format(excep))
+        module.fail_json(msg="Unable to get replicaset configuration {0}".format(excep))
 
     if isinstance(members[0], str):
         diff = lists_are_different(members, get_member_names(client))
