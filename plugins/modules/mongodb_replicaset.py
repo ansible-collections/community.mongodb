@@ -187,7 +187,6 @@ EXAMPLES = r'''
   block:
     - name: Create replicaset with module - with dicts
       community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
         replica_set: "rs0"
         members:
            - host: localhost:3001
@@ -196,14 +195,12 @@ EXAMPLES = r'''
 
     - name: Wait for the replicaset to stabilise
       community.mongodb.mongodb_status:
-        <<: *mongo_parameters
         replica_set: "rs0"
         poll: 5
         interval: 10
 
     - name: Remove a member from the replicaset
       community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
         replica_set: "rs0"
         reconfigure: yes
         members:
@@ -212,7 +209,6 @@ EXAMPLES = r'''
 
     - name: Wait for the replicaset to stabilise after member removal
       community.mongodb.mongodb_status:
-        <<: *mongo_parameters
         replica_set: "rs0"
         validate: minimal
         poll: 5
@@ -220,7 +216,6 @@ EXAMPLES = r'''
 
     - name: Add a member to the replicaset
       community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
         replica_set: "rs0"
         reconfigure: yes
         members:
@@ -233,7 +228,6 @@ EXAMPLES = r'''
 
     - name: Wait for the replicaset to stabilise after member addition
       community.mongodb.mongodb_status:
-        <<: *mongo_parameters
         replica_set: "rs0"
         validate: minimal
         poll: 5
@@ -241,7 +235,6 @@ EXAMPLES = r'''
 
     - name: Reconfigure the replicaset - Make member 3004 a normal voting member
       community.mongodb.mongodb_replicaset:
-        <<: *mongo_parameters
         replica_set: "rs0"
         reconfigure: yes
         members:
@@ -254,7 +247,6 @@ EXAMPLES = r'''
 
     - name: Wait for the replicaset to stabilise
       community.mongodb.mongodb_status:
-        <<: *mongo_parameters
         replica_set: "rs0"
         poll: 5
         interval: 30
