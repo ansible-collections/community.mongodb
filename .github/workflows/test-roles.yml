@@ -91,13 +91,13 @@ jobs:
         if: ${{ matrix.mongodb_role == 'mongodb_install' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_install
 
-      - name: Run molecule tests for a few extra mongodb_mongod
+      - name: Run molecule tests for an extra mongodb_mongod scenario
         run: |
           molecule test --scenario-name custom_db_path
         if: ${{ matrix.mongodb_role == 'mongodb_mongod' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_mongod
 
-      - name: Run molecule tests for a few extra mongodb_config
+      - name: Run molecule tests for an extra mongodb_config scenario
         run: |
           molecule test --scenario-name custom_db_path
         if: ${{ matrix.mongodb_role == 'mongodb_config' }}
