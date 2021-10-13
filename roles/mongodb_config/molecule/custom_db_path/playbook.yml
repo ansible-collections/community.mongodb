@@ -1,0 +1,40 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: mongodb_repository
+      tags: molecule-idempotence-notest
+    - role: mongodb_config
+      vars:
+        db_path: "/data/db"
+
+  tasks:
+
+    - name: Install python stuff
+      package:
+        name: ["python-setuptools", "python-pip"]
+      when: ansible_hostname == "ubuntu_16"
+
+    - name: Install pymongo
+      pip:
+        name: pymongo
+      when: ansible_hostname == "ubuntu_16"
+
+    - name: Install MongoDB Shell
+      package:
+        name: mongodb-org-shell
+
+    - name: Init config server replicaset
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 27019
+        replica_set: cfg
+        validate: no
+        members:
+          - centos_7:27019
+          - centos_8:27019
+          - ubuntu_16:27019
+          - ubuntu_18:27019
+          #- debian_stretch:27019  # need odd number, so drop stretch
+          - debian_buster:27019
+      when: ansible_hostname == "ubuntu_16"

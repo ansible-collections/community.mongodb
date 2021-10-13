@@ -1,0 +1,74 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+  options:
+    config-data:
+      line-length: disable
+platforms:
+  - name: centos_7
+    hostname: centos_7
+    image: centos:7
+    command: /sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: "mymongo"
+    network_mode: "mymongo"
+  - name: centos_8
+    hostname: centos_8
+    image: centos:8
+    command: /sbin/init
+    privileged: True
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: "mymongo"
+    network_mode: "mymongo"
+  - name: ubuntu_16
+    hostname: ubuntu_16
+    image: ubuntu:16.04
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: "mymongo"
+    network_mode: "mymongo"
+  - name: ubuntu_18
+    hostname: ubuntu_18
+    image: ubuntu:18.04
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: "mymongo"
+    network_mode: "mymongo"
+  - name: debian_buster
+    hostname: debian_buster
+    image: debian:buster
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: "mymongo"
+    network_mode: "mymongo"
+  - name: debian_stretch
+    hostname: debian_stretch
+    image: debian:stretch
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: "mymongo"
+    network_mode: "mymongo"
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+    enabled: false
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
+    options:
+      ignore: 'E501'

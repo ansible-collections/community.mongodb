@@ -90,3 +90,15 @@ jobs:
           molecule test --scenario-name mongodb_nohold_packages
         if: ${{ matrix.mongodb_role == 'mongodb_install' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_install
+
+      - name: Run molecule tests for a few extra mongodb_mongod
+        run: |
+          molecule test --scenario-name custom_db_path
+        if: ${{ matrix.mongodb_role == 'mongodb_mongod' }}
+        working-directory: ansible_collections/community/mongodb/roles/mongodb_mongod
+
+      - name: Run molecule tests for a few extra mongodb_config
+        run: |
+          molecule test --scenario-name custom_db_path
+        if: ${{ matrix.mongodb_role == 'mongodb_config' }}
+        working-directory: ansible_collections/community/mongodb/roles/mongodb_config
