@@ -42,27 +42,23 @@ def test_mongod_service(host):
 
 
 def test_mongod_port(host):
-    try:
-        port = include_vars(host)['ansible_facts']['mongod_port']
-    except KeyError:
-        port = 27017
+    port = include_vars(host)['ansible_facts']['config_port']
     s = host.socket("tcp://0.0.0.0:{0}".format(port))
+
     assert s.is_listening
 
 
 def test_mongod_replicaset(host):
     '''
-    Ensure that the MongoDB replicaset has been created successfully
+    Ensure that the MongoDB config replicaset has been created successfully
     '''
-    try:
-        port = include_vars(host)['ansible_facts']['mongod_port']
-    except KeyError:
-        port = 27017
+    port = include_vars(host)['ansible_facts']['config_port']
     cmd = "mongo --port {0} --eval 'rs.status()'".format(port)
     # We only want to run this once
     if host.ansible.get_variables()['inventory_hostname'] == "ubuntu_16":
         r = host.run(cmd)
-        assert "rs0" in r.stdout
+
+        assert "cfg" in r.stdout
         assert "centos_7:{0}".format(port) in r.stdout
         assert "centos_8:{0}".format(port) in r.stdout
         assert "ubuntu_16:{0}".format(port) in r.stdout
@@ -71,21 +67,16 @@ def test_mongod_replicaset(host):
         # assert "debian_stretch:{0}".format(port) in r.stdout
 
 
-def test_mongod_default_path(host):
+def test_mongod_config_custom_path(host):
     '''
-    Ensure that the default paths for RedHat and Debian based OSes are respected
+    Ensure that the custom path is respected
     '''
-    hostname = host.ansible.get_variables()['inventory_hostname']
-    default_path = "/var/lib/mongo"
-    if hostname.startswith('centos'):
-        default_path = "/var/lib/mongo"
-    elif hostname.startswith('ubuntu') or hostname.startswith('debian'):
-        default_path = "/var/lib/mongodb"
+    default_path = "/data/db"
 
     # assert path exists
     f = host.file(default_path)
     assert f.exists
     assert f.is_directory
-    # asset mongodb.cnf contains path
+    # assert mongodb.conf contains path
     conf = host.file('/etc/mongod.conf').content_string
     assert "dbPath: {0}".format(default_path) in conf
