@@ -343,7 +343,6 @@ def main():
             elif isinstance(value, str) or isinstance(value, int):
                 args.append(" --{0} {1}".format(key, value))
     if module.params['file']:
-        args.pop(1)
         args.append(module.params['file'])
 
     rc = None
