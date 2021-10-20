@@ -184,6 +184,18 @@ EXAMPLES = r'''
         dc: "west"
         usage: "reporting"
 
+- name: Replicaset with one arbiter node (mongodb3 - index is zero-based)
+  community.mongodb.mongodb_replicaset:
+    login_user: admin
+    login_password: admin
+    replica_set: rs0
+    members:
+      - mongodb1:27017
+      - mongodb2:27017
+      - mongodb3:27017
+    arbiter_at_index: 2
+  when: groups.mongod.index(inventory_hostname) == 0
+
 - name: Add a new member to a replicaset - Safe for pre-5.0 consult documentation - https://docs.mongodb.com/manual/tutorial/expand-replica-set/
   block:
     - name: Create replicaset with module - with dicts
