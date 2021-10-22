@@ -670,14 +670,14 @@
   when: mongodb_version[0] | int >= 5
 
 - set_fact:
-    mongocmd: mongo
+    mongo_cmd: mongo
   when: mongodb_version[0] | int < 5
 
 - include_tasks: 408.yml
   when: mongodb_version[0] | int < 5
 
 - set_fact:
-    mongocmd: mongosh
+    mongo_cmd: mongosh
   when: mongodb_version[0] | int >= 5
 
 - include_tasks: 408.yml
