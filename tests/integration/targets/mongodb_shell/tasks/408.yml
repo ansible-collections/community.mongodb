@@ -24,7 +24,7 @@
 - name: Check that tux is in the output
   assert:
     that:
-      - "'tux' in mongo.stdout"
+      - "'tux' in mongo.transformed_output | string"
 
 - name: Get the collections from tux
   community.mongodb.mongodb_shell:
@@ -38,5 +38,5 @@
 - name: Check that the two collection exist in tux
   assert:
     that:
-      - "'tux0' in mongo.stdout"
-      - "'tux1' in mongo.stdout"
+      - "'tux0' in mongo.transformed_output | string"
+      - "'tux1' in mongo.transformed_output | string"
