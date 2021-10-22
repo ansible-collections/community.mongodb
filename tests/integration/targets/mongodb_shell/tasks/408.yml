@@ -1,5 +1,5 @@
 ---
-- name: Coipy tux.js script to host
+- name: Copy tux.js script to host
   copy:
     src: files/js/tux.js
     dest: /root
@@ -12,6 +12,7 @@
     login_port: 3001
     file: /root/tux.js
     idempotent: no
+    mongo_cmd: "{{ mongo_cmd }}"
 
 - name: Ensure that tux db exists
   community.mongodb.mongodb_shell:
@@ -20,6 +21,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "{{ mongo_cmd }}"
   register: mongo
 
 - name: Check that tux is in the output
@@ -35,6 +37,7 @@
     login_port: 3001
     eval: "db.runCommand('listCollections')"
     debug: yes
+    mongo_cmd: "{{ mongo_cmd }}"
   register: mongo
 
 - name: Check that the two collections exist in tux

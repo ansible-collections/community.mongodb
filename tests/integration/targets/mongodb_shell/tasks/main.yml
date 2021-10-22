@@ -669,6 +669,18 @@
 
   when: mongodb_version[0] | int >= 5
 
+- set_fact:
+    mongocmd: mongo
+  when: mongodb_version[0] | int < 5
+
 - include_tasks: 408.yml
+  when: mongodb_version[0] | int < 5
+
+- set_fact:
+    mongocmd: mongosh
+  when: mongodb_version[0] | int >= 5
+
+- include_tasks: 408.yml
+  when: mongodb_version[0] | int >= 5
 
 - include_tasks: mongod_teardown.yml
