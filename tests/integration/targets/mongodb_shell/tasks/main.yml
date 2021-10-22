@@ -669,4 +669,6 @@
 
   when: mongodb_version[0] | int >= 5
 
+- include_tasks: 408.yml
+
 - include_tasks: mongod_teardown.yml

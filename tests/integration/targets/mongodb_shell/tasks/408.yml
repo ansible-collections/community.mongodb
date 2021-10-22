@@ -1,0 +1,42 @@
+---
+- name: Coipy tux.js script to host
+  copy:
+    src: files/js/tux.js
+    dest: /root
+
+- name: Run 'tux' script
+  community.mongodb.mongodb_shell:
+    db: tux
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    file: /root/tux.js
+    idempotent: no
+
+- name: Ensure that tux db exists
+  community.mongodb.mongodb_shell:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.adminCommand('listDatabases')"
+  register: mongo
+
+- name: Check that tux is in the output
+  assert:
+    that:
+      - "'tux' in mongo.stdout"
+
+- name: Get the collections from tux
+  community.mongodb.mongodb_shell:
+    db: tux
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_port: 3001
+    eval: "db.adminCommand('listCollections')"
+  register: mongo
+
+- name: Check that the two collection exist in tux
+  assert:
+    that:
+      - "'tux0' in mongo.stdout"
+      - "'tux1' in mongo.stdout"
