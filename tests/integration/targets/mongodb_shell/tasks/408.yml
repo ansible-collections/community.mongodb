@@ -33,11 +33,11 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
-    eval: "db.adminCommand('listCollections')"
+    eval: "db.runCommand('listCollections')"
     debug: yes
   register: mongo
 
-- name: Check that the two collection exist in tux
+- name: Check that the two collections exist in tux
   assert:
     that:
       - "'tux0' in mongo.transformed_output | string"
