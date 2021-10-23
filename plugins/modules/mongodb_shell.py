@@ -185,11 +185,27 @@ import re
 import json
 import os
 import shlex
+import pipes
 __metaclass__ = type
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     mongodb_common_argument_spec
 )
+
+
+def escape_param(param):
+    '''
+    Escapes the given parameter
+    @param - The parameter to escape
+    '''
+    escaped = None
+    if hasattr(shlex, 'quote'):
+        escaped = shlex.quote(param)
+    elif hasattr(pipes, 'quote'):
+        escaped = pipes.quote(param)
+    else:
+        escaped = "'" + param.replace("'", "'\\''") + "'"
+    return escaped
 
 
 def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
@@ -202,7 +218,7 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
     if is_bool is False and param_value is not None:
         cmd_list.append(param_name)
         if param_name == "--eval":
-            cmd_list.append("{0}".format(shlex.quote(param_value)))
+            cmd_list.append("{0}".format(escape_param(param_value)))
         else:
             cmd_list.append(param_value)
     elif is_bool is True:
