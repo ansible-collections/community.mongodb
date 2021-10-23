@@ -185,11 +185,27 @@ import re
 import json
 import os
 import shlex
+import pipes
 __metaclass__ = type
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     mongodb_common_argument_spec
 )
+
+def escape_param(param):
+    '''
+    Escapes the given parameter
+    @param - The parameter to escape
+    '''
+    escaped = None
+    if hassattr(shlex, 'quote'):
+        escaped = shlex.quote(param)
+    elif hassattr(pipes, 'quote'):
+        escaped = pipes.quote(param)
+    else:
+        escaped = "'" + param.replace("'", "'\\''") + "'"
+    return escaped
+
 
 
 def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
