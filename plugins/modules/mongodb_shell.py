@@ -192,6 +192,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec
 )
 
+
 def escape_param(param):
     '''
     Escapes the given parameter
@@ -207,7 +208,6 @@ def escape_param(param):
     return escaped
 
 
-
 def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
     """
     @cmd_list - List of cmd args.
@@ -218,7 +218,7 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
     if is_bool is False and param_value is not None:
         cmd_list.append(param_name)
         if param_name == "--eval":
-            cmd_list.append("{0}".format(shlex.quote(param_value)))
+            cmd_list.append("{0}".format(escape_param(param_value)))
         else:
             cmd_list.append(param_value)
     elif is_bool is True:
