@@ -199,9 +199,9 @@ def escape_param(param):
     @param - The parameter to escape
     '''
     escaped = None
-    if hassattr(shlex, 'quote'):
+    if hasattr(shlex, 'quote'):
         escaped = shlex.quote(param)
-    elif hassattr(pipes, 'quote'):
+    elif hasattr(pipes, 'quote'):
         escaped = pipes.quote(param)
     else:
         escaped = "'" + param.replace("'", "'\\''") + "'"
