@@ -100,7 +100,7 @@ These tags apply to the specific roles as indicated.
 
 |role|tag|comment|
 |----|---|-------|
-|mongodb_auth|admin_user|Tasks that work with the MOngoDB Administrator user.|
+|mongodb_auth|admin_user|Tasks that work with the MongoDB Administrator user.|
 |mongodb_auth|app_user|Tasks that work with MongoDB app users.|
 
 ## Running the integration and unit tests
