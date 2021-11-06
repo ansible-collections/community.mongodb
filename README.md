@@ -80,7 +80,8 @@ These modules are only useful for sharded MongoDB clusters:
 
 These tags are applicable across all roles.
 
-||tags||comment||
+|tags|comment|
+|----|-------|
 |mongodb|Tasks specific to MongoDB.|
 |debian|Tasks specific to Debian Family Operating Systems.|
 |redhat|Tasks specific to RedHat Family Operating Systems.|
@@ -97,7 +98,8 @@ These tags are applicable across all roles.
 
 These tags apply to the specific roles as indicated.
 
-||role||tag||comment||
+|role|tag|comment|
+|----|---|-------|
 |mongodb_auth|admin_user|Tasks that work with the MOngoDB Administrator user.|
 |mongodb_auth|app_user|Tasks that work with MongoDB app users.|
 
