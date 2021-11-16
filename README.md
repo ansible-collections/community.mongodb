@@ -183,7 +183,7 @@ ansible-test units --docker default -v --color --python 3.6
 
 ## Release Notes
 
-Needs improvement put the general process for issuing a new release to Ansibel Galaxy is as follows...
+Needs improvement but the general process for issuing a new release to Ansibel Galaxy is as follows...
 
 - View commits since last release and copy text for release notes
 
@@ -204,7 +204,7 @@ git tag <release>
 git push --tags
 ```
 
-Automation will bundle the release abd push to Galaxy. Should take around 10-15 minutes.
+Automation will bundle the release and push to Galaxy. Should take around 10-15 minutes.
 
 ## GitHub workflow
 
