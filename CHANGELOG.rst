@@ -4,6 +4,31 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.3.2
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+---------------
+
+- 413 - mongodb_shell - Adds escape_param function that will work better across various python versions.
+- 414-416 - Minor documentation improvements.
+- 411 - mongodb_shell - FIx missing db parameter when fiel parmeter is used.
+- 403 - Make db path configurable in roles.
+- 401 - mongodb_replicaset - Add further examples.
+- 399 - Removes unused imports from modules.
+- 396 - Add tags to roles.
+- 387 - Fix doucmentation for mongod cache plugin.
+
+Major Changes
+---------------
+
+- 397 & 376 - mongodb_replicaset - Add reconfigure abilities to module. Add and removes members from replicasets.
+
 v1.3.1
 ======
 
