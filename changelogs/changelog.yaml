@@ -177,3 +177,9 @@ releases:
         before the lock is initially applied.
     deprecated_features:
       - mongodb_shell - Support for the mongo shell is deprecated and will be removed in a future version.
+  1.3.2:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 413 - mongodb_shell - Adds escape_param function that will work better across various python versions.
+      - 414-416 - Minor documentation improvements.

@@ -4,6 +4,20 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.3.2
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+---------------
+
+- 413 - mongodb_shell - Adds escape_param function that will work better across various python versions.
+- 414-416 - Minor documentation improvements.
+
 v1.3.1
 ======
 
