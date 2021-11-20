@@ -191,4 +191,3 @@ releases:
       - 387 - Fix doucmentation for mongod cache plugin.
     major_changes:
       - 397 & 376 - mongodb_replicaset - Add reconfigure abilities to module. Add and removes members from replicasets.
-
