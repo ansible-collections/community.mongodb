@@ -91,7 +91,7 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install pymongo
+          command: pip install pymongo==3.12.2
 
       - name: Run ansible to generate the mongodb cache
         run: ansible localhost -m setup
