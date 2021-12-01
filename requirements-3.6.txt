@@ -6,3 +6,4 @@ molecule>=2.22,<3.0
 pytest==5.3.4
 python-vagrant==0.5.15
 sh==1.13.1
+pymongo==3.12.2
