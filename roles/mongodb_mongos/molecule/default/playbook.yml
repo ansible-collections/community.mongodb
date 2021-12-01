@@ -28,7 +28,7 @@
 
     - name: Install pymongo
       pip:
-        name: pymongo
+        name: pymongo==3.12.2
       when: ansible_hostname == "config1"
 
     - name: Install MongoDB Shell
