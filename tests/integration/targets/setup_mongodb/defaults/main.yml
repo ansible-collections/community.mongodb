@@ -18,4 +18,4 @@ yum:
   fedoraurl: https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/{{mongodb_version}}/x86_64/
 pip_packages:
 - psutil
-- pymongo
+- pymongo==3.12.2
