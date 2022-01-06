@@ -4,6 +4,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
@@ -145,13 +146,11 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
     mongo_auth
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
+    MongoClient.
+    get_mongodb_client,
 )
 
 has_ordereddict = False
@@ -325,7 +324,6 @@ def main():
     autosplit = module.params['autosplit']
     chunksize = module.params['chunksize']
     mongos_process = module.params['mongos_process']
-    ssl = module.params['ssl']
     window = module.params['window']
 
     # Validate window
@@ -335,16 +333,8 @@ def main():
         changed=False,
     )
 
-    connection_params = dict(
-        host=login_host,
-        port=int(login_port),
-    )
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 

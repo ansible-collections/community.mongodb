@@ -6,7 +6,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from plugins.module_utils.mongodb_common import get_mongodb_client
 __metaclass__ = type
 
 
@@ -264,11 +263,11 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    get_mongodb_client,
     index_exists,
     create_index,
     drop_index,
-    mongo_auth
+    mongo_auth,
+    get_mongodb_client,
 )
 
 
