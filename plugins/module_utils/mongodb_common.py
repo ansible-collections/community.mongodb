@@ -237,8 +237,11 @@ def get_mongodb_client(module):
 
     if module.params['ssl']:
         connection_params = ssl_connection_options(connection_params, module)
-
-    if 'replica_set' in module.params:
+    # param exists only in some modules
+    if 'replica_set' in module.params and 'reconfigure' not in module.params:
+        connection_params["replicaset"] = module.params['replica_set']
+    elif 'replica_set' in module.params and 'reconfigure' in module.params \
+            and module.params['reconfigure']:
         connection_params["replicaset"] = module.params['replica_set']
     client = MongoClient(**connection_params)
     return client

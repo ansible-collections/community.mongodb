@@ -80,11 +80,10 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient,
-    mongo_auth
+    mongo_auth,
+    get_mongodb_client,
 )
 
 has_ordereddict = False
@@ -158,24 +157,11 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    ssl = module.params['ssl']
     state = module.params['state']
     return_url = module.params['return_url']
 
-    connection_params = dict(
-        host=login_host,
-        port=int(login_port),
-    )
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
