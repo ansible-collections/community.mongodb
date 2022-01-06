@@ -233,7 +233,7 @@ def main():
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
- 
+
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     shard = module.params['shard']

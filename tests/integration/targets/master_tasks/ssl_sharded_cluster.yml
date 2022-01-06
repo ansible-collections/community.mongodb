@@ -110,15 +110,16 @@
 - name: Verify replicasets with ssl enabled
   community.mongodb.mongodb_status:
     login_host: localhost
-    login_port: "{{ item }}"
+    login_port: "{{ item.port }}"
+    replica_set: "{{ item.rs }}"
     ssl: yes
     ssl_cert_reqs: CERT_OPTIONAL
     ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
     ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
   with_items:
-    - 3001
-    - 3004
-    - 4000
+    - { "port": 3001, "rs": "ssl0" }
+    - { "port": 3004, "rs": "ssl1" }
+    - { "port": 4000, "rs": "sslcfg" }
 
 - name: Add mongodb admin user to each shard inc config rs
   community.mongodb.mongodb_user:
@@ -278,14 +279,15 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_host: localhost
-    login_port: "{{ item }}"
+    login_port: "{{ item.port }}"
+    replica_set: "{{ item.rs }}"
     ssl: yes
     ssl_cert_reqs: CERT_OPTIONAL
     ssl_ca_certs: "{{ remote_tmp_dir }}/ca-chain.pem"
     ssl_certfile: "{{ remote_tmp_dir }}/mongo-client-chain.pem"
   with_items:
-    - 3001
-    - 3004
+    - { "port": 3001, "rs": "ssl0" }
+    - { "port": 3004, "rs": "ssl1" }
 
 - name: Run shutdown with ssl
   mongodb_shutdown:
