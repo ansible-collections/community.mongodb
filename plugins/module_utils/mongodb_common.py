@@ -226,6 +226,24 @@ def check_driver_compatibility(module, client, srv_version):
         module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
 
 
+def get_mongodb_client(module):
+    """
+    Build the connection params dict and returns a MongoDB Client object
+    """
+    connection_params = {
+        'host': module.params['login_host'],
+        'port': module.params['login_port'],
+    }
+
+    if module.params['ssl']:
+        connection_params = ssl_connection_options(connection_params, module)
+
+    if 'replica_set' in module.params:
+        connection_params["replicaset"] = module.params['replica_set']
+    client = MongoClient(**connection_params)
+    return client
+
+
 def mongo_auth(module, client):
     """
     TODO: This function was extracted from code form the mongodb_replicaset module.
@@ -236,6 +254,9 @@ def mongo_auth(module, client):
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     login_database = module.params['login_database']
+
+    driver_version = LooseVersion(PyMongoVersion)
+
     # If we have auth details use then otherwise attempt without
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()

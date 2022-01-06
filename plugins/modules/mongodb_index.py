@@ -5,6 +5,8 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
+from plugins.module_utils.mongodb_common import get_mongodb_client
 __metaclass__ = type
 
 
@@ -260,14 +262,9 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    get_mongodb_client,
     index_exists,
     create_index,
     drop_index,
@@ -337,27 +334,9 @@ def main():
 
     validate_module(module)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    ssl = module.params['ssl']
     indexes = module.params['indexes']
-    replica_set = module.params['replica_set']
 
-    connection_params = {
-        'host': login_host,
-        'port': login_port,
-    }
-
-    if replica_set:
-        connection_params["replicaset"] = replica_set
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
-    client = MongoClient(**connection_params)
+    client = get_mongodb_client(module)
     mongo_auth(module, client)
 
     # Pre flight checks done
