@@ -102,7 +102,6 @@ def main():
         changed=False,
     )
 
-
     try:
         client = get_mongodb_client(module)
     except Exception as excep:

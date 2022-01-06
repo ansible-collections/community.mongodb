@@ -297,7 +297,6 @@ def main():
     if filter_:
         filter_ = [f.strip() for f in filter_]
 
-
     try:
         client = get_mongodb_client(module)
     except Exception as excep:

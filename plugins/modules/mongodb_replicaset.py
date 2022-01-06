@@ -291,6 +291,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     get_mongodb_client,
 )
 
+
 def get_replicaset_config(client):
     conf = client.admin.command({'replSetGetConfig': 1})
     return conf['config']
@@ -553,10 +554,6 @@ def main():
         changed=False,
         replica_set=replica_set,
     )
-
-    # This might have to be a special case
-    #if reconfigure and replica_set:
-    #    connection_params["replicaset"] = replica_set
 
     try:
         client = get_mongodb_client(module)
