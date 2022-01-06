@@ -149,7 +149,6 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient.
     get_mongodb_client,
 )
 
