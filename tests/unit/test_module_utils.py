@@ -446,11 +446,22 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         ]
         self.assertTrue(mongodb_common.lists_are_different(l1, l2))
 
-    def test_get_mongodb_client(self):
+    def test_get_mongodb_client_1(self):
         fake_module = FakeAnsibleModule()
         client = mongodb_common.get_mongodb_client(fake_module)
         assert "MongoClient" in str(client)        
 
+    def test_get_mongodb_client_2(self):
+        fake_module = FakeAnsibleModule()
+        fake_module.params['ssl'] = True
+        client = mongodb_common.get_mongodb_client(fake_module)
+        assert "MongoClient" in str(client)        
+
+    def test_get_mongodb_client_3(self):
+        fake_module = FakeAnsibleModule()
+        del fake_module.params['reconfigure']
+        client = mongodb_common.get_mongodb_client(fake_module)
+        assert "MongoClient" in str(client)        
 
 if __name__ == '__main__':
     unittest.main()
