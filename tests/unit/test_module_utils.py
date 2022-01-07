@@ -463,5 +463,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         client = mongodb_common.get_mongodb_client(fake_module)
         assert "MongoClient" in str(client)
 
+
 if __name__ == '__main__':
     unittest.main()
