@@ -226,7 +226,7 @@ def check_driver_compatibility(module, client, srv_version):
         module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
 
 
-def get_mongodb_client(module):
+def get_mongodb_client(module, auth=False):
     """
     Build the connection params dict and returns a MongoDB Client object
     """
@@ -243,6 +243,10 @@ def get_mongodb_client(module):
     elif 'replica_set' in module.params and 'reconfigure' in module.params \
             and module.params['reconfigure']:
         connection_params["replicaset"] = module.params['replica_set']
+    if auth:
+        connection_params['username'] = module.params['login_user']
+        connection_params['password'] = module.params['login_password']
+        connection_params['authSource'] = module.params['login_database']
     client = MongoClient(**connection_params)
     return client
 
@@ -276,7 +280,10 @@ def mongo_auth(module, client):
             except Exception as excep:
                 if hasattr(excep, 'code') and (excep.code == 13 or excep.code == 18):
                     if login_user is not None and login_password is not None:
-                        client.admin.authenticate(login_user, login_password, source=login_database)
+                        if excep.code == 13:  # pymongo < 4
+                            client.admin.authenticate(login_user, login_password, source=login_database)
+                        else:  # pymongo >= 4
+                            client = get_mongodb_client(module, True)  # There's no authenticate method in pymongo 4.0. Recreate the connection object
                     else:
                         module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
                 else:
