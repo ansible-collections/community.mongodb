@@ -293,7 +293,10 @@ def mongo_auth(module, client):
         check_driver_compatibility(module, client, srv_version)
     else:  # this is the mongodb_user module
         if login_user is not None and login_password is not None:
-            client.admin.authenticate(login_user, login_password, source=login_database)
+            if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                client.admin.authenticate(login_user, login_password, source=login_database)
+            else:  # pymongo >= 4
+                client = get_mongodb_client(module, login_user, login_password, login_database)
             # Get server version:
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)
