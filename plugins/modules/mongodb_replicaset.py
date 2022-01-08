@@ -557,6 +557,7 @@ def main():
 
     try:
         client = get_mongodb_client(module)
+        #client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
@@ -568,7 +569,7 @@ def main():
     if isinstance(rs, str):
         if replica_set == rs:
             if reconfigure:
-                mongo_auth(module, client)
+                client = mongo_auth(module, client)
                 result = modify_members_flow(module, client, members, result)
             else:
                 result['changed'] = False

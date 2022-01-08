@@ -336,7 +336,7 @@ def main():
     indexes = module.params['indexes']
 
     client = get_mongodb_client(module)
-    mongo_auth(module, client)
+    client = mongo_auth(module, client)
 
     # Pre flight checks done
     indexes_created = []

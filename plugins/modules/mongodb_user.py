@@ -349,9 +349,9 @@ def main():
 
     try:
         client = get_mongodb_client(module)  # TODO Perhaps move this exception handling from all modules and put in the shared code?
+        client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
-    mongo_auth(module, client)
 
     if state == 'present':
         if password is None and update_password == 'always':

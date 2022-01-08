@@ -283,9 +283,9 @@ def main():
 
     try:
         client = get_mongodb_client(module)
+        client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
-    mongo_auth(module, client)
 
     result = dict(
         changed=False,
