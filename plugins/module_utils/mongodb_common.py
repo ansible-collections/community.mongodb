@@ -262,8 +262,6 @@ def mongo_auth(module, client):
     login_password = module.params['login_password']
     login_database = module.params['login_database']
 
-    driver_version = LooseVersion(PyMongoVersion)
-
     # If we have auth details use then otherwise attempt without
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
@@ -280,7 +278,7 @@ def mongo_auth(module, client):
             except Exception as excep:
                 if hasattr(excep, 'code') and excep.code == 13:   # or excep.code == 18):
                     if login_user is not None and login_password is not None:
-                        if driver_version < 4:  # pymongo < 4
+                        if int(PyMongoVersion[0]) < 4:  # pymongo < 4
                             client.admin.authenticate(login_user, login_password, source=login_database)
                         else:  # pymongo >= 4
                             client = get_mongodb_client(module, login_user, login_password, login_database)  # There's no authenticate method in pymongo 4.0. Recreate the connection object
