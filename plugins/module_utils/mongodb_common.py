@@ -226,7 +226,7 @@ def check_driver_compatibility(module, client, srv_version):
         module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
 
 
-def get_mongodb_client(module, login_user=None, login_password=None, login_database=None):
+def get_mongodb_client(module, login_user=None, login_password=None, login_database=None, directConnection=False):
     """
     Build the connection params dict and returns a MongoDB Client object
     """
@@ -235,6 +235,8 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
         'port': module.params['login_port'],
     }
 
+    if directConnection:
+        connection_params['directConnection'] = True
     if module.params['ssl']:
         connection_params = ssl_connection_options(connection_params, module)
     # param exists only in some modules
@@ -253,8 +255,8 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
 
 def mongo_auth(module, client):
     """
-    TODO: This function was extracted from code form the mongodb_replicaset module.
-    We should refactor other modules to use this where appropriate.
+    TODO: This function was extracted from code from the mongodb_replicaset module.
+    We should refactor other modules to use this where appropriate. - DONE?
     @module - The calling Ansible module
     @client - The MongoDB connection object
     """

@@ -534,13 +534,12 @@ def main():
     members = module.params['members']
     arbiter_at_index = module.params['arbiter_at_index']
     validate = module.params['validate']
-    ssl = module.params['ssl']
     protocol_version = module.params['protocol_version']
     chaining_allowed = module.params['chaining_allowed']
     heartbeat_timeout_secs = module.params['heartbeat_timeout_secs']
     election_timeout_millis = module.params['election_timeout_millis']
     reconfigure = module.params['reconfigure']
-    force = module.params['force']
+    force = module.params['force']  # TODO tidy this stuff up
     max_time_ms = module.params['max_time_ms']
     debug = module.params['debug']
 
@@ -556,14 +555,14 @@ def main():
     )
 
     try:
-        client = get_mongodb_client(module)
+        client = get_mongodb_client(module, directConnection=True)
         #client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     try:
-        module.fail_json(msg="{0}".format(str(client)))
-        rs = replicaset_find(client, module)  # does not require auth
+        #module.fail_json(msg="{0}".format(str(client)))
+        rs = replicaset_find(client)  # does not require auth
     except Exception as e:
         module.fail_json(msg='Unable to connect to query replicaset: %s' % to_native(e))
 
