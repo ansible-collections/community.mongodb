@@ -392,7 +392,7 @@ def replicaset_reconfigure(module, client, config, force, max_time_ms):
     # return result
 
 
-def replicaset_find(client):
+def replicaset_find(client, module):
     """Check if a replicaset exists.
 
     Args:
@@ -402,6 +402,7 @@ def replicaset_find(client):
         dict: when user exists, False otherwise.
     """
     doc = client['admin'].command('isMaster')
+    module.fail_json(msg="{0} | {0}".format(doc, str(client)))
     if 'setName' in doc.keys():
         return str(doc['setName'])
     return False
@@ -562,7 +563,7 @@ def main():
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     try:
-        rs = replicaset_find(client)  # does not require auth
+        rs = replicaset_find(client, module)  # does not require auth
     except Exception as e:
         module.fail_json(msg='Unable to connect to query replicaset: %s' % to_native(e))
 
