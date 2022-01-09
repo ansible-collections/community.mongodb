@@ -556,12 +556,10 @@ def main():
 
     try:
         client = get_mongodb_client(module, directConnection=True)
-        #client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     try:
-        #module.fail_json(msg="{0}".format(str(client)))
         rs = replicaset_find(client)  # does not require auth
     except Exception as e:
         module.fail_json(msg='Unable to connect to query replicaset: %s' % to_native(e))
