@@ -173,7 +173,7 @@ def mongodb_common_argument_spec(ssl_options=True):
     # for pymongo 4 and above
     tls_options_dict = dict(
         tls=dict(type='bool', required=False, default=False, aliases=['ssl']),
-        tlsAllowInvalidCertificates=dict(type='bool', default=False, aliases=['ssl_cert_reqs']), # todo mapping between types? string to bool??
+        tlsAllowInvalidCertificates=dict(type='bool', default=False, aliases=['ssl_cert_reqs']),  # todo mapping between types? string to bool??
         tlsCAFile=dict(type='str', aliases=['ssl_ca_certs']),
         ssl_crlfile=dict(type='str', default=None),
         tlsCertificateKeyFile=dict(type='str', aliases=['ssl_certfile', 'ssl_keyfile'], no_log=True),
@@ -191,7 +191,7 @@ def mongodb_common_argument_spec(ssl_options=True):
                                 default=None),
     )
     if ssl_options:
-        if int(PyMongoVersion[0]) <= 4:
+        if 'PyMongoVersion' in globals() or int(PyMongoVersion[0]) < 4 :
             options.update(ssl_options_dict)
         else:
             options.update(tls_options_dict)
