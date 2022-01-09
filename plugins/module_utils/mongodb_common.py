@@ -253,7 +253,7 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
     return client
 
 
-def mongo_auth(module, client):
+def mongo_auth(module, client, directConnection=False):
     """
     TODO: This function was extracted from code from the mongodb_replicaset module.
     We should refactor other modules to use this where appropriate. - DONE?
@@ -283,7 +283,7 @@ def mongo_auth(module, client):
                         if int(PyMongoVersion[0]) < 4:  # pymongo < 4
                             client.admin.authenticate(login_user, login_password, source=login_database)
                         else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
-                            client = get_mongodb_client(module, login_user, login_password, login_database)
+                            client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
                     else:
                         module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
                 else:
@@ -298,7 +298,7 @@ def mongo_auth(module, client):
             if int(PyMongoVersion[0]) < 4:  # pymongo < 4
                 client.admin.authenticate(login_user, login_password, source=login_database)
             else:  # pymongo >= 4
-                client = get_mongodb_client(module, login_user, login_password, login_database)
+                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
             # Get server version:
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)

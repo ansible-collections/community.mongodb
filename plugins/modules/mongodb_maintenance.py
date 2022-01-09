@@ -104,7 +104,7 @@ def main():
 
     try:
         client = get_mongodb_client(module, directConnection=True)
-        client = mongo_auth(module, client)
+        client = mongo_auth(module, client, directConnection=True)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
