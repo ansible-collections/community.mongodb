@@ -144,6 +144,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
     )
+    # for pymongo version less than 4
     ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False),
         ssl_cert_reqs=dict(type='str',
@@ -169,8 +170,31 @@ def mongodb_common_argument_spec(ssl_options=True):
                                 elements='raw',
                                 default=None)
     )
+    # for pymongo 4 and above
+    tls_options_dict = dict(
+        tls=dict(type='bool', required=False, default=False, aliases=['ssl'],
+        tlsAllowInvalidCertificates=dict(type='bool', default=False), alias=['ssl_cert_reqs']), # todo mapping between types?
+        tlsCAFile=dict(type='str', aliases=['ssl_ca_certs']),
+        ssl_crlfile=dict(type='str', default=None),
+        tlsCertificateKeyFile=dict(type='str', aliases=['ssl_certfile', 'ssl_keyfile'], no_log=True),
+        tlsCertificateKeyFilePassword=dict(type='str', aliases=['ssl_pem_passphrase'], no_log=True),
+        auth_mechanism=dict(type='str',
+                            required=False,
+                            default=None,
+                            choices=['SCRAM-SHA-256',
+                                     'SCRAM-SHA-1',
+                                     'MONGODB-X509',
+                                     'GSSAPI',
+                                     'PLAIN']),
+        connection_options=dict(type='list',
+                                elements='raw',
+                                default=None),
+    )
     if ssl_options:
-        options.update(ssl_options_dict)
+        if int(PyMongoVersion[0]) <= 4:
+            options.update(ssl_options_dict)
+        else:
+            options.update(tls_options_dict)
     return options
 
 

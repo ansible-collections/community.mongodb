@@ -242,8 +242,8 @@ def get_chunksize(client):
 
 def set_chunksize(client, chunksize):
     client["config"].settings.update_one({"_id": "chunksize"},
-                                          {"$set": {"value": chunksize}},
-                                          upsert=True)
+                                         {"$set": {"value": chunksize}},
+                                         upsert=True)
 
 
 def set_balancing_window(client, start, stop):
