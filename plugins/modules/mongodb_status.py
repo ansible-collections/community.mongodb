@@ -333,7 +333,7 @@ def main():
         client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
-  
+
     if len(replica_set) == 0:
         module.fail_json(msg="Parameter 'replica_set' must not be an empty string")
 

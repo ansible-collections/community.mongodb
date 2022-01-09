@@ -283,7 +283,7 @@ def mongo_auth(module, client):
                         if int(PyMongoVersion[0]) < 4:  # pymongo < 4
                             client.admin.authenticate(login_user, login_password, source=login_database)
                         else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
-                            client = get_mongodb_client(module, login_user, login_password, login_database)  
+                            client = get_mongodb_client(module, login_user, login_password, login_database)
                     else:
                         module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
                 else:

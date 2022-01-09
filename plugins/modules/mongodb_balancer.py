@@ -210,15 +210,13 @@ def start_balancer(client):
 def enable_autosplit(client):
     client["config"].settings.update_one({"_id": "autosplit"},
                                          {"$set": {"enabled": True}},
-                                         upsert=True,
-                                         w="majority")
+                                         upsert=True)
 
 
 def disable_autosplit(client):
     client["config"].settings.update_one({"_id": "autosplit"},
                                          {"$set": {"enabled": False}},
-                                         upsert=True,
-                                         w="majority")
+                                         upsert=True)
 
 
 def get_autosplit(client):
