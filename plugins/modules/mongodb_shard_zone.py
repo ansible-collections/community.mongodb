@@ -218,7 +218,7 @@ def zone_range_count(client, tag):
     '''
     Returns the count of records that exists for the given tag in config.tags
     '''
-    return client['config'].tags.count({"tag": tag})
+    return client['config'].tags.count_documents({"tag": tag})
 
 
 def main():
