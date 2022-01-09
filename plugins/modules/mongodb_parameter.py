@@ -121,8 +121,8 @@ def main():
         module.fail_json(msg="value '%s' is not %s" % (value, param_type))
 
     try:
-        client = get_mongodb_client(module)
-        client = mongo_auth(module, client)
+        client = get_mongodb_client(module, directConnection=True)
+        client = mongo_auth(module, client, directConnection=True)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
