@@ -306,6 +306,83 @@ def check_if_roles_changed(uinfo, roles, db_name):
         return False
     return True
 
+def user_present(module, client, fail):
+    password = module.params['password']
+    update_password = module.params['update_password']
+    login_user = module.params['login_user']
+    create_for_localhost_exception = module.params['create_for_localhost_exception']
+    b_create_for_localhost_exception = (
+        to_bytes(create_for_localhost_exception, errors='surrogate_or_strict')
+        if create_for_localhost_exception is not None else None
+    )
+    user = module.params['name']
+    db_name = module.params['database']
+    roles = module.params['roles'] or []
+
+    if password is None and update_password == 'always':
+        module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
+
+    if login_user is None and create_for_localhost_exception is not None:
+        if os.path.exists(b_create_for_localhost_exception):
+            try:
+                client.close()
+            except Exception:
+                pass
+            module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
+
+    try:
+        if update_password != 'always':
+            uinfo = user_find(client, user, db_name)
+            if uinfo:
+                password = None
+                if not check_if_roles_changed(uinfo, roles, db_name):
+                    module.exit_json(changed=False, user=user)
+
+        if module.check_mode:
+            module.exit_json(changed=True, user=user)
+
+        user_add(module, client, db_name, user, password, roles)
+    except Exception as e:
+        if fail:
+            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())
+    finally:
+        if fail:
+            try:
+                client.close()
+            except Exception:
+                pass
+        # Here we can  check password change if mongo provide a query for that : https://jira.mongodb.org/browse/SERVER-22848
+        # newuinfo = user_find(client, user, db_name)
+        # if uinfo['role'] == newuinfo['role'] and CheckPasswordHere:
+        #    module.exit_json(changed=False, user=user)
+
+    if login_user is None and create_for_localhost_exception is not None:
+        # localhost exception applied.
+        try:
+            # touch the file
+            open(b_create_for_localhost_exception, 'wb').close()
+        except Exception as e:
+            if fail:
+                module.fail_json(
+                    changed=True,
+                    msg='Added user but unable to touch create_for_localhost_exception file %s: %s' % (create_for_localhost_exception, to_native(e)),
+                    exception=traceback.format_exc()
+                )
+
+def user_absent(module, client, fail):
+    user = module.params['name']
+    db_name = module.params['database']
+    try:
+        user_remove(module, client, db_name, user)
+    except Exception as e:
+        if fail:
+            module.fail_json(msg='Unable to remove user: %s' % to_native(e), exception=traceback.format_exc())
+    finally:
+        if fail:
+            try:
+                client.close()
+            except Exception:
+                pass
 
 # =========================================
 # Module execution.
@@ -332,25 +409,19 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
+    
     login_password = module.params['login_password']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
     login_database = module.params['login_database']
-    create_for_localhost_exception = module.params['create_for_localhost_exception']
-    b_create_for_localhost_exception = (
-        to_bytes(create_for_localhost_exception, errors='surrogate_or_strict')
-        if create_for_localhost_exception is not None else None
-    )
 
     replica_set = module.params['replica_set']
-    db_name = module.params['database']
-    user = module.params['name']
-    password = module.params['password']
+    
+    
+    
     ssl = module.params['ssl']
-    roles = module.params['roles'] or []
     state = module.params['state']
-    update_password = module.params['update_password']
+    
 
     connection_params = {
         "host": login_host,
@@ -368,66 +439,29 @@ def main():
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
-    mongo_auth(module, client)
+    executed = False
+    try: 
+        if state == 'present':
+            user_present(module, client, fail=False)
+        elif state == 'absent':
+            user_absent(module, client, fail=False)
+        executed = True
+    except Exception as e:
+        pass
 
-    if state == 'present':
-        if password is None and update_password == 'always':
-            module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
+    if not executed:
+        mongo_auth(module, client)
 
-        if login_user is None and create_for_localhost_exception is not None:
-            if os.path.exists(b_create_for_localhost_exception):
-                try:
-                    client.close()
-                except Exception:
-                    pass
-                module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
-
-        try:
-            if update_password != 'always':
-                uinfo = user_find(client, user, db_name)
-                if uinfo:
-                    password = None
-                    if not check_if_roles_changed(uinfo, roles, db_name):
-                        module.exit_json(changed=False, user=user)
-
-            if module.check_mode:
-                module.exit_json(changed=True, user=user)
-
-            user_add(module, client, db_name, user, password, roles)
+        try: 
+            if state == 'present':
+                user_present(module, client, fail=True)
+            elif state == 'absent':
+                user_absent(module, client, fail=True)
+            executed = True
         except Exception as e:
-            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())
-        finally:
-            try:
-                client.close()
-            except Exception:
-                pass
-            # Here we can  check password change if mongo provide a query for that : https://jira.mongodb.org/browse/SERVER-22848
-            # newuinfo = user_find(client, user, db_name)
-            # if uinfo['role'] == newuinfo['role'] and CheckPasswordHere:
-            #    module.exit_json(changed=False, user=user)
+            pass
 
-        if login_user is None and create_for_localhost_exception is not None:
-            # localhost exception applied.
-            try:
-                # touch the file
-                open(b_create_for_localhost_exception, 'wb').close()
-            except Exception as e:
-                module.fail_json(
-                    changed=True,
-                    msg='Added user but unable to touch create_for_localhost_exception file %s: %s' % (create_for_localhost_exception, to_native(e)),
-                    exception=traceback.format_exc()
-                )
-
-    elif state == 'absent':
-        try:
-            user_remove(module, client, db_name, user)
-        except Exception as e:
-            module.fail_json(msg='Unable to remove user: %s' % to_native(e), exception=traceback.format_exc())
-        finally:
-            try:
-                client.close()
-            except Exception:
-                pass
+    user = module.params['name']
     module.exit_json(changed=True, user=user)
 
 

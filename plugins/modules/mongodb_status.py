@@ -304,7 +304,6 @@ def replicaset_status_poll(client, module):
 # Module execution.
 #
 
-
 def main():
     argument_spec = mongodb_common_argument_spec()
     argument_spec.update(
@@ -350,17 +349,28 @@ def main():
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
-    mongo_auth(module, client)
-
     if len(replica_set) == 0:
         module.fail_json(msg="Parameter 'replica_set' must not be an empty string")
 
+    executed = False
     try:
         status, msg, return_doc = replicaset_status_poll(client, module)  # Sort out the return doc
         replicaset = return_doc['replicaset']
         iterations = return_doc['iterations']
+        executed = True
     except Exception as e:
-        module.fail_json(msg='Unable to query replica_set info: {0}: {1}'.format(str(e), msg))
+        pass
+
+    if not executed:
+        mongo_auth(module, client)
+
+        try:
+            status, msg, return_doc = replicaset_status_poll(client, module)  # Sort out the return doc
+            replicaset = return_doc['replicaset']
+            iterations = return_doc['iterations']
+            executed = True
+        except Exception as e:
+            module.fail_json(msg='Unable to query replica_set info: {0}: {1}'.format(str(e), msg))
 
     if status is False:
         module.fail_json(msg=msg, replicaset=replicaset, iterations=iterations)

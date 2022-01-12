@@ -252,14 +252,25 @@ def main():
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
-    mongo_auth(module, client)
-
+    executed = False
     try:
         status, msg, return_doc = member_stepdown(client, module)
         iterations = return_doc['iterations']
         changed = return_doc['changed']
+        executed = True
     except Exception as e:
-        module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
+        pass
+
+    if not executed:
+        mongo_auth(module, client)
+
+        try:
+            status, msg, return_doc = member_stepdown(client, module)
+            iterations = return_doc['iterations']
+            changed = return_doc['changed']
+            executed = True
+        except Exception as e:
+            module.fail_json(msg='Unable to query replica_set info: %s' % str(e))
 
     if status is False:
         module.fail_json(msg=msg, iterations=iterations, changed=changed)
