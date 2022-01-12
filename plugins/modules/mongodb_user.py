@@ -409,19 +409,12 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    
     login_password = module.params['login_password']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
-    login_database = module.params['login_database']
-
     replica_set = module.params['replica_set']
-    
-    
-    
     ssl = module.params['ssl']
     state = module.params['state']
-    
 
     connection_params = {
         "host": login_host,
@@ -463,7 +456,6 @@ def main():
 
     user = module.params['name']
     module.exit_json(changed=True, user=user)
-
 
 if __name__ == '__main__':
     main()
