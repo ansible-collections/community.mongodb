@@ -1,0 +1,12 @@
+---
+  - name: Test mongoshell connection
+    community.mongodb.mongodb_shell:
+      login_host: 'localhost:3001,localhost:3002,localhost:3003'
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: admin
+      eval: "db.getRoles({showBuiltinRoles: true})"
+      mongo_cmd: "{{ mongo_cmd }}"
+      debug: yes
+      omit:
+        - "port"
