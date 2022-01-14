@@ -112,7 +112,7 @@ options:
       - This should match the parameter name that the MongoDB shell accepts not the module name.
     type: list
     elements: str
-    default. []
+    default: []
 '''
 
 EXAMPLES = '''
@@ -224,14 +224,14 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False, omit=None):
     @omit - List of parameter to omit from the command line.
     """
     if param_name.replace('-', '') not in omit:
-      if is_bool is False and param_value is not None:
-          cmd_list.append(param_name)
-          if param_name == "--eval":
-              cmd_list.append("{0}".format(escape_param(param_value)))
-          else:
-              cmd_list.append(param_value)
-      elif is_bool is True:
-          cmd_list.append(param_name)
+        if is_bool is False and param_value is not None:
+            cmd_list.append(param_name)
+            if param_name == "--eval":
+                cmd_list.append("{0}".format(escape_param(param_value)))
+            else:
+                cmd_list.append(param_value)
+        elif is_bool is True:
+            cmd_list.append(param_name)
     return cmd_list
 
 
