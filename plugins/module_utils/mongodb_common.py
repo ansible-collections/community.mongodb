@@ -144,20 +144,20 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
     )
-    # for pymongo version less than 4
     ssl_options_dict = dict(
-        ssl=dict(type='bool', required=False, default=False),
+        ssl=dict(type='bool', required=False, default=False, aliases=['tls']),
         ssl_cert_reqs=dict(type='str',
                            required=False,
                            default='CERT_REQUIRED',
                            choices=['CERT_NONE',
                                     'CERT_OPTIONAL',
-                                    'CERT_REQUIRED']),
-        ssl_ca_certs=dict(type='str', default=None),
+                                    'CERT_REQUIRED'],
+                            aliases=['tlsAllowInvalidCertificates']), # todo mapping between types? string to bool??
+        ssl_ca_certs=dict(type='str', default=None, alises=['tlsCAFile']),
         ssl_crlfile=dict(type='str', default=None),
-        ssl_certfile=dict(type='str', default=None),
+        ssl_certfile=dict(type='str', default=None, aliases=['tlsCertificateKeyFile']),
         ssl_keyfile=dict(type='str', default=None, no_log=True),
-        ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
+        ssl_pem_passphrase=dict(type='str', default=None, no_log=True, aliases=['tlsCertificateKeyFilePassword']),
         auth_mechanism=dict(type='str',
                             required=False,
                             default=None,
@@ -170,35 +170,34 @@ def mongodb_common_argument_spec(ssl_options=True):
                                 elements='raw',
                                 default=None)
     )
-    # for pymongo 4 and above
-    tls_options_dict = dict(
-        tls=dict(type='bool', required=False, default=False, aliases=['ssl']),
-        tlsAllowInvalidCertificates=dict(type='bool', default=False, aliases=['ssl_cert_reqs']),  # todo mapping between types? string to bool??
-        tlsCAFile=dict(type='str', aliases=['ssl_ca_certs']),
-        ssl_crlfile=dict(type='str', default=None),
-        tlsCertificateKeyFile=dict(type='str', aliases=['ssl_certfile', 'ssl_keyfile'], no_log=True),
-        tlsCertificateKeyFilePassword=dict(type='str', aliases=['ssl_pem_passphrase'], no_log=True),
-        auth_mechanism=dict(type='str',
-                            required=False,
-                            default=None,
-                            choices=['SCRAM-SHA-256',
-                                     'SCRAM-SHA-1',
-                                     'MONGODB-X509',
-                                     'GSSAPI',
-                                     'PLAIN']),
-        connection_options=dict(type='list',
-                                elements='raw',
-                                default=None),
-    )
-    if ssl_options:
-        # The Variable check is only there for the sanity test. Can be removed when we support pymongo4 only
-        if int(PyMongoVersion[0]) >= 4:
-            options.update(tls_options_dict)
-        elif 'PyMongoVersion' in globals() or int(PyMongoVersion[0]) < 4:
-            options.update(ssl_options_dict)
-        else:
-            options.update(tls_options_dict)
     return options
+
+
+def rename_ssl_option_for_pymongo4(connection_options):
+    """
+    This function renames the old ssl parameter, and sorts the data out,
+    when the driver use is >= PyMongo 4
+    """
+    if int(PyMongoVersion[0]) >= 4:
+        if connection_options['ssl_cert_reqs'] == 'CERT_NONE':
+            connection_options['tlsAllowInvalidCertificates'] = False
+        elif connection_options['ssl_cert_reqs'] == 'CERT_REQUIRED':
+            connection_options['tlsAllowInvalidCertificates'] = False
+        del connection_options['ssl_cert_reqs']
+        if connection_options['ssl_ca_certs'] is not None:
+            connection_options['tlsCAFile'] = connection_options['ssl_ca_certs']
+        del connection_options['ssl_ca_certs']
+        del connection_options['ssl_crlfile']
+        if connection_options['ssl_certfile'] is not None
+            connection_options['tlsCertificateKeyFile'] = connection_options['ssl_certfile']
+        elif connection_options['ssl_keyfile'] is not None:
+            connection_options['tlsCertificateKeyFile'] = connection_options['ssl_keyfile']
+        del connection_options['ssl_certfile']
+        del connection_options['ssl_keyfile']
+        if connection_options['ssl_pem_passphrase'] is not None:
+            connection_options['tlsCertificateKeyFilePassword'] = connection_options['ssl_pem_passphrase'] 
+        del connection_options['ssl_pem_passphrase']
+    return connection_options
 
 
 def add_option_if_not_none(param_name, module, connection_params):
@@ -266,6 +265,7 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
         connection_params['directConnection'] = True
     if module.params['ssl']:
         connection_params = ssl_connection_options(connection_params, module)
+        connection_params = rename_ssl_option_for_pymongo4(connection_params)
     # param exists only in some modules
     if 'replica_set' in module.params and 'reconfigure' not in module.params:
         connection_params["replicaset"] = module.params['replica_set']
