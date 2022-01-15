@@ -192,7 +192,9 @@ def mongodb_common_argument_spec(ssl_options=True):
     )
     if ssl_options:
         # The Variable check is only there for the sanity test. Can be removed when we support pymongo4 only
-        if 'PyMongoVersion' in globals() or int(PyMongoVersion[0]) < 4:
+        if int(PyMongoVersion[0]) >= 4:
+            options.update(tls_options_dict)
+        elif 'PyMongoVersion' in globals() or int(PyMongoVersion[0]) < 4:
             options.update(ssl_options_dict)
         else:
             options.update(tls_options_dict)
