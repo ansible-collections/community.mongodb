@@ -153,7 +153,7 @@ def mongodb_common_argument_spec(ssl_options=True):
                                     'CERT_OPTIONAL',
                                     'CERT_REQUIRED'],
                            aliases=['tlsAllowInvalidCertificates']),
-        ssl_ca_certs=dict(type='str', default=None, alises=['tlsCAFile']),
+        ssl_ca_certs=dict(type='str', default=None, aliases=['tlsCAFile']),
         ssl_crlfile=dict(type='str', default=None),
         ssl_certfile=dict(type='str', default=None, aliases=['tlsCertificateKeyFile']),
         ssl_keyfile=dict(type='str', default=None, no_log=True),
@@ -181,24 +181,24 @@ def rename_ssl_option_for_pymongo4(connection_options):
     when the driver use is >= PyMongo 4
     """
     if int(PyMongoVersion[0]) >= 4:
-        if connection_options['ssl_cert_reqs'] == 'CERT_NONE':
+        if connection_options.get('ssl_cert_reqs', None) == 'CERT_NONE':
             connection_options['tlsAllowInvalidCertificates'] = False
-        elif connection_options['ssl_cert_reqs'] == 'CERT_REQUIRED':
+        elif connection_options.get('ssl_cert_reqs', None) == 'CERT_REQUIRED':
             connection_options['tlsAllowInvalidCertificates'] = False
-        del connection_options['ssl_cert_reqs']
-        if connection_options['ssl_ca_certs'] is not None:
+        connection_options.pop('ssl_cert_reqs', None)
+        if connection_options.get('ssl_ca_certs', None) is not None:
             connection_options['tlsCAFile'] = connection_options['ssl_ca_certs']
-        del connection_options['ssl_ca_certs']
-        del connection_options['ssl_crlfile']
-        if connection_options['ssl_certfile'] is not None:
+        connection_options.pop('ssl_ca_certs', None)
+        connection_options('ssl_crlfile', None)
+        if connection_options.get('ssl_certfile', None) is not None:
             connection_options['tlsCertificateKeyFile'] = connection_options['ssl_certfile']
-        elif connection_options['ssl_keyfile'] is not None:
+        elif connection_options.get('ssl_keyfile', None) is not None:
             connection_options['tlsCertificateKeyFile'] = connection_options['ssl_keyfile']
-        del connection_options['ssl_certfile']
-        del connection_options['ssl_keyfile']
-        if connection_options['ssl_pem_passphrase'] is not None:
+        connection_options.pop('ssl_certfile', None)
+        connection_options.pop('ssl_keyfile', None)
+        if connection_options.get('ssl_pem_passphrase', None) is not None:
             connection_options['tlsCertificateKeyFilePassword'] = connection_options['ssl_pem_passphrase']
-        del connection_options['ssl_pem_passphrase']
+         connection_options.pop('ssl_pem_passphrase', None)
     return connection_options
 
 
