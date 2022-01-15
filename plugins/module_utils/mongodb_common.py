@@ -188,7 +188,7 @@ def rename_ssl_option_for_pymongo4(connection_options):
             connection_options['tlsCAFile'] = connection_options['ssl_ca_certs']
         del connection_options['ssl_ca_certs']
         del connection_options['ssl_crlfile']
-        if connection_options['ssl_certfile'] is not None
+        if connection_options['ssl_certfile'] is not None:
             connection_options['tlsCertificateKeyFile'] = connection_options['ssl_certfile']
         elif connection_options['ssl_keyfile'] is not None:
             connection_options['tlsCertificateKeyFile'] = connection_options['ssl_keyfile']
