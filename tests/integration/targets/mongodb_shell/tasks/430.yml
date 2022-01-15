@@ -33,3 +33,4 @@
       that:
         - "exclude_port.changed"
         - "'--port' not in exclude_port.cmd"
+        - "'dbAdmin' in exclude_port.transformed_output | string"
