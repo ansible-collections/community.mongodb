@@ -198,7 +198,7 @@ def rename_ssl_option_for_pymongo4(connection_options):
         connection_options.pop('ssl_keyfile', None)
         if connection_options.get('ssl_pem_passphrase', None) is not None:
             connection_options['tlsCertificateKeyFilePassword'] = connection_options['ssl_pem_passphrase']
-         connection_options.pop('ssl_pem_passphrase', None)
+        connection_options.pop('ssl_pem_passphrase', None)
     return connection_options
 
 
