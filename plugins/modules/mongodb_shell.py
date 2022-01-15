@@ -106,6 +106,13 @@ options:
       - The module will not rerun the command if this file exists and idempotent is set to true.
     type: bool
     default: false
+  omit:
+    description:
+      - Parameter to omit from the command line.
+      - This should match the parameter name that the MongoDB shell accepts not the module name.
+    type: list
+    elements: str
+    default: []
 '''
 
 EXAMPLES = '''
@@ -208,21 +215,23 @@ def escape_param(param):
     return escaped
 
 
-def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False):
+def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False, omit=None):
     """
     @cmd_list - List of cmd args.
     @param_name - Param name / flag.
-    @param_value - Value of the parameter
+    @param_value - Value of the parameter.
     @is_bool - Flag is a boolean and has no value.
+    @omit - List of parameter to omit from the command line.
     """
-    if is_bool is False and param_value is not None:
-        cmd_list.append(param_name)
-        if param_name == "--eval":
-            cmd_list.append("{0}".format(escape_param(param_value)))
-        else:
-            cmd_list.append(param_value)
-    elif is_bool is True:
-        cmd_list.append(param_name)
+    if param_name.replace('-', '') not in omit:
+        if is_bool is False and param_value is not None:
+            cmd_list.append(param_name)
+            if param_name == "--eval":
+                cmd_list.append("{0}".format(escape_param(param_value)))
+            else:
+                cmd_list.append(param_value)
+        elif is_bool is True:
+            cmd_list.append(param_name)
     return cmd_list
 
 
@@ -302,7 +311,8 @@ def main():
         split_char=dict(type='str', default=" "),
         stringify=dict(type='bool', default=None),
         additional_args=dict(type='raw'),
-        idempotent=dict(type='bool', default=False)
+        idempotent=dict(type='bool', default=False),
+        omit=dict(type='list', elements='str', default=[]),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -341,15 +351,17 @@ def main():
             else:
                 module.params['eval'] = "EJSON.stringify({0})".format(module.params['eval'])
 
-    args = add_arg_to_cmd(args, "--host", module.params['login_host'])
-    args = add_arg_to_cmd(args, "--port", module.params['login_port'])
-    args = add_arg_to_cmd(args, "--username", module.params['login_user'])
-    args = add_arg_to_cmd(args, "--password", module.params['login_password'])
-    args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'])
-    args = add_arg_to_cmd(args, "--eval", module.params['eval'])
-    args = add_arg_to_cmd(args, "--nodb", None, module.params['nodb'])
-    args = add_arg_to_cmd(args, "--norc", None, module.params['norc'])
-    args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'])
+    omit = module.params['omit']
+
+    args = add_arg_to_cmd(args, "--host", module.params['login_host'], omit=omit)
+    args = add_arg_to_cmd(args, "--port", module.params['login_port'], omit=omit)
+    args = add_arg_to_cmd(args, "--username", module.params['login_user'], omit=omit)
+    args = add_arg_to_cmd(args, "--password", module.params['login_password'], omit=omit)
+    args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'], omit=omit)
+    args = add_arg_to_cmd(args, "--eval", module.params['eval'], omit=omit)
+    args = add_arg_to_cmd(args, "--nodb", None, module.params['nodb'], omit=omit)
+    args = add_arg_to_cmd(args, "--norc", None, module.params['norc'], omit=omit)
+    args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'], omit=omit)
 
     additional_args = module.params['additional_args']
     if additional_args is not None:

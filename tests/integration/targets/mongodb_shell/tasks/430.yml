@@ -1,0 +1,36 @@
+---
+  - name: Test mongoshell connection with multiple hosts - without port exclusion
+    community.mongodb.mongodb_shell:
+      login_host: 'localhost:3001,localhost:3002,localhost:3003'
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: admin
+      eval: "db.getRoles({showBuiltinRoles: true})"
+      mongo_cmd: "{{ mongo_cmd }}"
+      debug: yes
+    ignore_errors: yes
+    register: port_error
+
+  - assert:
+      that:
+        - "port_error.failed"
+        - "port_error.msg == 'connection string bears different port than provided by --port' or port_error.msg == 'MongoshInvalidInputError: [COMMON-10001] The host list contains different ports than provided by --port'"
+
+  - name: Test mongoshell connection with multiple hosts - with port exclusion
+    community.mongodb.mongodb_shell:
+      login_host: 'localhost:3001,localhost:3002,localhost:3003'
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: admin
+      eval: "db.getRoles({showBuiltinRoles: true})"
+      mongo_cmd: "{{ mongo_cmd }}"
+      debug: yes
+      omit:
+        - "port"
+    register: exclude_port
+
+  - assert:
+      that:
+        - "exclude_port.changed"
+        - "'--port' not in exclude_port.cmd"
+        - "'dbAdmin' in exclude_port.transformed_output | string"
