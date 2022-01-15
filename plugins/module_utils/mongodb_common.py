@@ -152,7 +152,7 @@ def mongodb_common_argument_spec(ssl_options=True):
                            choices=['CERT_NONE',
                                     'CERT_OPTIONAL',
                                     'CERT_REQUIRED'],
-                            aliases=['tlsAllowInvalidCertificates']), # todo mapping between types? string to bool??
+                           aliases=['tlsAllowInvalidCertificates']),
         ssl_ca_certs=dict(type='str', default=None, alises=['tlsCAFile']),
         ssl_crlfile=dict(type='str', default=None),
         ssl_certfile=dict(type='str', default=None, aliases=['tlsCertificateKeyFile']),
@@ -170,6 +170,8 @@ def mongodb_common_argument_spec(ssl_options=True):
                                 elements='raw',
                                 default=None)
     )
+    if ssl_options:
+        options.update(ssl_options_dict)
     return options
 
 
@@ -195,7 +197,7 @@ def rename_ssl_option_for_pymongo4(connection_options):
         del connection_options['ssl_certfile']
         del connection_options['ssl_keyfile']
         if connection_options['ssl_pem_passphrase'] is not None:
-            connection_options['tlsCertificateKeyFilePassword'] = connection_options['ssl_pem_passphrase'] 
+            connection_options['tlsCertificateKeyFilePassword'] = connection_options['ssl_pem_passphrase']
         del connection_options['ssl_pem_passphrase']
     return connection_options
 
