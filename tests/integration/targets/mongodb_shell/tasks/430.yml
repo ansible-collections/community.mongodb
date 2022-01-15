@@ -8,6 +8,13 @@
       eval: "db.getRoles({showBuiltinRoles: true})"
       mongo_cmd: "{{ mongo_cmd }}"
       debug: yes
+    ignore_errors: yes
+    register: port_error
+
+  - assert:
+      that:
+        - "port_error.failed"
+        - "port_error.msg == 'connection string bears different port than provided by --port'"
 
   - name: Test mongoshell connection with multiple hosts - with port exclusion
     community.mongodb.mongodb_shell:
@@ -20,3 +27,9 @@
       debug: yes
       omit:
         - "port"
+    register: exclude_port
+
+  - assert:
+      that:
+        - "exclude_port.changed"
+        - "'--port' not in exclude_port.cmd"
