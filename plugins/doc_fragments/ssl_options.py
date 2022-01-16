@@ -12,6 +12,8 @@ options:
     required: no
     type: bool
     default: no
+    aliases:
+      - tls
   ssl_cert_reqs:
     description:
     - Specifies whether a certificate is required from the other side of the connection,
@@ -23,16 +25,22 @@ options:
       - 'CERT_NONE'
       - 'CERT_OPTIONAL'
       - 'CERT_REQUIRED'
+    aliases:
+      - tlsAllowInvalidCertificates
   ssl_ca_certs:
     description:
       - The ssl_ca_certs option takes a path to a CA file.
     required: no
     type: str
+    aliases:
+      - tlsCAFile
   ssl_crlfile:
     description:
       - The ssl_crlfile option takes a path to a CRL file.
     required: no
     type: str
+    aliases:
+      - tlsCertificateKeyFile
   ssl_certfile:
     description:
       - Present a client certificate using the ssl_certfile option.
@@ -48,6 +56,8 @@ options:
       - Passphrase to decrypt encrypted private keys.
     required: no
     type: str
+    aliases:
+      - tlsCertificateKeyFilePassword
   auth_mechanism:
     description:
       - Authentication type.

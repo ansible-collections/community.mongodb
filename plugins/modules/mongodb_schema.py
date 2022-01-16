@@ -156,16 +156,14 @@ module_config:
 '''
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
-    mongo_auth
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
+    get_mongodb_client,
 )
 import json
 
@@ -274,13 +272,6 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    replica_set = module.params['replica_set']
-    ssl = module.params['ssl']
     db = module.params['db']
     collection = module.params['collection']
     required = module.params['required']
@@ -290,20 +281,11 @@ def main():
     state = module.params['state']
     debug = module.params['debug']
 
-    connection_params = {
-        'host': login_host,
-        'port': login_port,
-    }
-
-    if replica_set:
-        connection_params["replicaset"] = replica_set
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
-    client = MongoClient(**connection_params)
-
-    mongo_auth(module, client)
+    try:
+        client = get_mongodb_client(module)
+        client = mongo_auth(module, client)
+    except Exception as e:
+        module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     result = dict(
         changed=False,

@@ -126,12 +126,10 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     mongodb_common_argument_spec,
     ssl_connection_options,
-    mongo_auth
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
+    get_mongodb_client,
 )
 
 
@@ -236,31 +234,18 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
     login_host = module.params['login_host']
     login_port = module.params['login_port']
-    ssl = module.params['ssl']
     shard = module.params['shard']
     state = module.params['state']
     sharded_databases = module.params['sharded_databases']
     mongos_process = module.params['mongos_process']
 
-    connection_params = {
-        "host": login_host,
-        "port": int(login_port)
-    }
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module)
+        client = mongo_auth(module, client)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
-
-    mongo_auth(module, client)
 
     try:
         if client["admin"].command("serverStatus")["process"] != mongos_process:

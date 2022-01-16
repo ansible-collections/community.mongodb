@@ -196,13 +196,10 @@ from ansible.module_utils._text import to_native, to_bytes
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
-    mongo_auth
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
+    get_mongodb_client,
 )
 
 
@@ -343,32 +340,18 @@ def main():
         if create_for_localhost_exception is not None else None
     )
 
-    replica_set = module.params['replica_set']
     db_name = module.params['database']
     user = module.params['name']
     password = module.params['password']
-    ssl = module.params['ssl']
     roles = module.params['roles'] or []
     state = module.params['state']
     update_password = module.params['update_password']
 
-    connection_params = {
-        "host": login_host,
-        "port": int(login_port),
-    }
-
-    if replica_set:
-        connection_params["replicaset"] = replica_set
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module)  # TODO Perhaps move this exception handling from all modules and put in the shared code?
+        client = mongo_auth(module, client)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
-
-    mongo_auth(module, client)
 
     if state == 'present':
         if password is None and update_password == 'always':

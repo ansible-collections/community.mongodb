@@ -90,14 +90,11 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     missing_required_lib,
     mongodb_common_argument_spec,
     member_state,
-    ssl_connection_options,
     mongo_auth,
-    check_srv_version
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    check_srv_version,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
+    get_mongodb_client,
 )
 
 has_ordereddict = False
@@ -148,11 +145,6 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
     oplog_size_mb = float(module.params['oplog_size_mb'])  # MongoDB 4.4 inists on a real
     compact = module.params['compact']
     ver = module.params['ver']
@@ -162,20 +154,11 @@ def main():
         changed=False,
     )
 
-    connection_params = dict(
-        host=login_host,
-        port=int(login_port),
-    )
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module, directConnection=True)
+        client = mongo_auth(module, client, directConnection=True)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
-
-    mongo_auth(module, client)
 
     srv_version = check_srv_version(module, client)
     if srv_version < LooseVersion(ver):

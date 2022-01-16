@@ -91,7 +91,7 @@
       - "maint.changed == False"
       - "maint.msg == 'no action taken as member state was PRIMARY'"
 
-- name: Try to put SECONARY into maintenance (check mode)
+- name: Try to put SECONDARY into maintenance (check mode)
   community.mongodb.mongodb_maintenance:
     login_port: 3002
     login_user: '{{ mongodb_admin_user }}'

@@ -14,6 +14,10 @@ from pymongo import MongoClient
 class FakeAnsibleModule:
 
     params = {
+        "login_host": "localhost",
+        "login_port": 27017,
+        "replica_set": "rs0",
+        "reconfigure": True,
         "ssl": False,
         "ssl_cert_reqs": "CERT_REQUIRED",
         "ssl_ca_certs": "/tmp/ca.crt",
@@ -441,6 +445,23 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             "localhost:3003"
         ]
         self.assertTrue(mongodb_common.lists_are_different(l1, l2))
+
+    def test_get_mongodb_client_1(self):
+        fake_module = FakeAnsibleModule()
+        client = mongodb_common.get_mongodb_client(fake_module)
+        assert "MongoClient" in str(client)
+
+    # def test_get_mongodb_client_2(self):
+    #     fake_module = FakeAnsibleModule()
+    #     fake_module.params['ssl'] = True
+    #     client = mongodb_common.get_mongodb_client(fake_module)
+    #     assert "MongoClient" in str(client)
+
+    def test_get_mongodb_client_3(self):
+        fake_module = FakeAnsibleModule()
+        del fake_module.params['reconfigure']
+        client = mongodb_common.get_mongodb_client(fake_module)
+        assert "MongoClient" in str(client)
 
 
 if __name__ == '__main__':

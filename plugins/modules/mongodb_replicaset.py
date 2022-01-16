@@ -283,12 +283,13 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
     mongo_auth,
     member_dicts_different,
-    lists_are_different
+    lists_are_different,
+    PYMONGO_IMP_ERR,
+    pymongo_found,
+    get_mongodb_client,
 )
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import PYMONGO_IMP_ERR, pymongo_found, MongoClient
 
 
 def get_replicaset_config(client):
@@ -529,19 +530,16 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
     replica_set = module.params['replica_set']
     members = module.params['members']
     arbiter_at_index = module.params['arbiter_at_index']
     validate = module.params['validate']
-    ssl = module.params['ssl']
     protocol_version = module.params['protocol_version']
     chaining_allowed = module.params['chaining_allowed']
     heartbeat_timeout_secs = module.params['heartbeat_timeout_secs']
     election_timeout_millis = module.params['election_timeout_millis']
     reconfigure = module.params['reconfigure']
-    force = module.params['force']
+    force = module.params['force']  # TODO tidy this stuff up
     max_time_ms = module.params['max_time_ms']
     debug = module.params['debug']
 
@@ -556,19 +554,8 @@ def main():
         replica_set=replica_set,
     )
 
-    connection_params = dict(
-        host=login_host,
-        port=int(login_port),
-    )
-
-    if reconfigure and replica_set:
-        connection_params["replicaset"] = replica_set
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module, directConnection=True)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
@@ -580,7 +567,7 @@ def main():
     if isinstance(rs, str):
         if replica_set == rs:
             if reconfigure:
-                mongo_auth(module, client)
+                client = mongo_auth(module, client)
                 result = modify_members_flow(module, client, members, result)
             else:
                 result['changed'] = False

@@ -145,18 +145,19 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_port=dict(type='int', required=False, default=27017),
     )
     ssl_options_dict = dict(
-        ssl=dict(type='bool', required=False, default=False),
+        ssl=dict(type='bool', required=False, default=False, aliases=['tls']),
         ssl_cert_reqs=dict(type='str',
                            required=False,
                            default='CERT_REQUIRED',
                            choices=['CERT_NONE',
                                     'CERT_OPTIONAL',
-                                    'CERT_REQUIRED']),
-        ssl_ca_certs=dict(type='str', default=None),
+                                    'CERT_REQUIRED'],
+                           aliases=['tlsAllowInvalidCertificates']),
+        ssl_ca_certs=dict(type='str', default=None, aliases=['tlsCAFile']),
         ssl_crlfile=dict(type='str', default=None),
-        ssl_certfile=dict(type='str', default=None),
+        ssl_certfile=dict(type='str', default=None, aliases=['tlsCertificateKeyFile']),
         ssl_keyfile=dict(type='str', default=None, no_log=True),
-        ssl_pem_passphrase=dict(type='str', default=None, no_log=True),
+        ssl_pem_passphrase=dict(type='str', default=None, no_log=True, aliases=['tlsCertificateKeyFilePassword']),
         auth_mechanism=dict(type='str',
                             required=False,
                             default=None,
@@ -172,6 +173,33 @@ def mongodb_common_argument_spec(ssl_options=True):
     if ssl_options:
         options.update(ssl_options_dict)
     return options
+
+
+def rename_ssl_option_for_pymongo4(connection_options):
+    """
+    This function renames the old ssl parameter, and sorts the data out,
+    when the driver use is >= PyMongo 4
+    """
+    if int(PyMongoVersion[0]) >= 4:
+        if connection_options.get('ssl_cert_reqs', None) == 'CERT_NONE':
+            connection_options['tlsAllowInvalidCertificates'] = False
+        elif connection_options.get('ssl_cert_reqs', None) == 'CERT_REQUIRED':
+            connection_options['tlsAllowInvalidCertificates'] = False
+        connection_options.pop('ssl_cert_reqs', None)
+        if connection_options.get('ssl_ca_certs', None) is not None:
+            connection_options['tlsCAFile'] = connection_options['ssl_ca_certs']
+        connection_options.pop('ssl_ca_certs', None)
+        connection_options.pop('ssl_crlfile', None)
+        if connection_options.get('ssl_certfile', None) is not None:
+            connection_options['tlsCertificateKeyFile'] = connection_options['ssl_certfile']
+        elif connection_options.get('ssl_keyfile', None) is not None:
+            connection_options['tlsCertificateKeyFile'] = connection_options['ssl_keyfile']
+        connection_options.pop('ssl_certfile', None)
+        connection_options.pop('ssl_keyfile', None)
+        if connection_options.get('ssl_pem_passphrase', None) is not None:
+            connection_options['tlsCertificateKeyFilePassword'] = connection_options['ssl_pem_passphrase']
+        connection_options.pop('ssl_pem_passphrase', None)
+    return connection_options
 
 
 def add_option_if_not_none(param_name, module, connection_params):
@@ -226,16 +254,45 @@ def check_driver_compatibility(module, client, srv_version):
         module.fail_json(msg='Unable to check driver compatibility: %s' % to_native(excep))
 
 
-def mongo_auth(module, client):
+def get_mongodb_client(module, login_user=None, login_password=None, login_database=None, directConnection=False):
     """
-    TODO: This function was extracted from code form the mongodb_replicaset module.
-    We should refactor other modules to use this where appropriate.
+    Build the connection params dict and returns a MongoDB Client object
+    """
+    connection_params = {
+        'host': module.params['login_host'],
+        'port': module.params['login_port'],
+    }
+
+    if directConnection:
+        connection_params['directConnection'] = True
+    if module.params['ssl']:
+        connection_params = ssl_connection_options(connection_params, module)
+        connection_params = rename_ssl_option_for_pymongo4(connection_params)
+    # param exists only in some modules
+    if 'replica_set' in module.params and 'reconfigure' not in module.params:
+        connection_params["replicaset"] = module.params['replica_set']
+    elif 'replica_set' in module.params and 'reconfigure' in module.params \
+            and module.params['reconfigure']:
+        connection_params["replicaset"] = module.params['replica_set']
+    if login_user:
+        connection_params['username'] = login_user
+        connection_params['password'] = login_password
+        connection_params['authSource'] = login_database
+    client = MongoClient(**connection_params)
+    return client
+
+
+def mongo_auth(module, client, directConnection=False):
+    """
+    TODO: This function was extracted from code from the mongodb_replicaset module.
+    We should refactor other modules to use this where appropriate. - DONE?
     @module - The calling Ansible module
     @client - The MongoDB connection object
     """
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     login_database = module.params['login_database']
+
     # If we have auth details use then otherwise attempt without
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
@@ -250,9 +307,12 @@ def mongo_auth(module, client):
             try:
                 client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
             except Exception as excep:
-                if hasattr(excep, 'code') and excep.code == 13:
+                if hasattr(excep, 'code') and excep.code == 13:   # or excep.code == 18):
                     if login_user is not None and login_password is not None:
-                        client.admin.authenticate(login_user, login_password, source=login_database)
+                        if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                            client.admin.authenticate(login_user, login_password, source=login_database)
+                        else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
+                            client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
                     else:
                         module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
                 else:
@@ -264,7 +324,10 @@ def mongo_auth(module, client):
         check_driver_compatibility(module, client, srv_version)
     else:  # this is the mongodb_user module
         if login_user is not None and login_password is not None:
-            client.admin.authenticate(login_user, login_password, source=login_database)
+            if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                client.admin.authenticate(login_user, login_password, source=login_database)
+            else:  # pymongo >= 4
+                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
             # Get server version:
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)

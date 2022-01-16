@@ -79,16 +79,11 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
-    mongo_auth
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    OperationFailure
+    OperationFailure,
+    get_mongodb_client,
 )
 
 # =========================================
@@ -114,26 +109,9 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    login_database = module.params['login_database']
-
-    replica_set = module.params['replica_set']
-    ssl = module.params['ssl']
-
     param = module.params['param']
     param_type = module.params['param_type']
     value = module.params['value']
-
-    connection_params = dict(
-        host=login_host,
-        port=int(login_port),
-    )
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
 
     # Verify parameter is coherent with specified type
     try:
@@ -142,15 +120,11 @@ def main():
     except ValueError:
         module.fail_json(msg="value '%s' is not %s" % (value, param_type))
 
-    if replica_set:
-        connection_params["replicaset"] = replica_set
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module, directConnection=True)
+        client = mongo_auth(module, client, directConnection=True)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
-
-    mongo_auth(module, client)
 
     db = client.admin
 

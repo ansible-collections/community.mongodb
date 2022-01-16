@@ -149,7 +149,7 @@
   assert:
     that:
     - mongodb_stepdown_bad_pw.changed == False
-    - '''unable to connect to database'' in mongodb_stepdown_bad_pw.msg'
+    - '''Authentication failed'' in mongodb_stepdown_bad_pw.msg'
 
 - name: Copy script to host
   template:

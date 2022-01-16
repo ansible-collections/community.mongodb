@@ -90,13 +90,10 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
-    mongo_auth
-)
-from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
+    mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    MongoClient
+    get_mongodb_client,
 )
 
 has_ordereddict = False
@@ -176,35 +173,19 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_database = module.params['login_database']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
     state = module.params['state']
     tag = module.params['name']
     shard = module.params['shard']
-    mongos_process = module.params['mongos_process']
-    ssl = module.params['ssl']
 
     result = dict(
         changed=False,
     )
 
-    connection_params = dict(
-        host=login_host,
-        port=int(login_port),
-    )
-
-    if ssl:
-        connection_params = ssl_connection_options(connection_params, module)
-
     try:
-        client = MongoClient(**connection_params)
+        client = get_mongodb_client(module)
+        client = mongo_auth(module, client)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
-
-    mongo_auth(module, client)
 
     try:
         if tag_exists(client, shard, tag):
