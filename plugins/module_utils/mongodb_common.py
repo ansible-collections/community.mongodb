@@ -295,7 +295,7 @@ def is_auth_enabled(module):
     if int(PyMongoVersion[0]) >= 4:  # we need to connect directly to the instance
         connection_params['directConnection'] = True
     else:
-        if module.params['replica_set'] is not None:
+        if 'replica_set' in module.params and module.params['replica_set'] is not None:
             connection_params['replicaset'] = module.params['replica_set']
     try:
         client = MongoClient(**connection_params)
@@ -304,8 +304,8 @@ def is_auth_enabled(module):
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 13:
             auth_is_enabled = True
-    if auth_is_enabled is None:
-        module.fail_json(msg='Unable to determine if auth is enabled')
+        if auth_is_enabled is None:  # if this is still none we have a problem
+            module.fail_json(msg='Unable to determine if auth is enabled: {0}'.format(excep))
     return auth_is_enabled
 
 

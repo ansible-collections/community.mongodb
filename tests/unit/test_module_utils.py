@@ -279,6 +279,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_database"] = "test"
         mongodb_common.mongo_auth(fake_module, client)
         msg = fake_module.get_msg()
+        print(msg)
         assert "When supplying login arguments" in msg
 
         fake_module.params["login_password"] = "password"
