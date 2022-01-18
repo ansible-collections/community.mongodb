@@ -298,14 +298,15 @@ def is_auth_enabled(module):
         if 'replica_set' in module.params and module.params['replica_set'] is not None:
             connection_params['replicaset'] = module.params['replica_set']
     try:
-        client = MongoClient(**connection_params)
-        client['admin'].command('listDatabases', 1.0)
+        myclient = MongoClient(**connection_params)
+        myclient['admin'].command('listDatabases', 1.0)
         auth_is_enabled = False
+        myclient.close() 
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 13:
             auth_is_enabled = True
         if auth_is_enabled is None:  # if this is still none we have a problem
-            module.fail_json(msg='Unable to determine if auth is enabled: {0}'.format(excep))
+            module.fail_json(msg='Unable to determine if auth is enabled: {0}'.format(traceback.format_exc()))
     return auth_is_enabled
 
 
