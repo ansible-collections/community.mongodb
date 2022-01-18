@@ -297,6 +297,9 @@ def is_auth_enabled(module):
     else:
         if 'replica_set' in module.params and module.params['replica_set'] is not None:
             connection_params['replicaset'] = module.params['replica_set']
+    if module.params['ssl']:
+        connection_params = ssl_connection_options(connection_params, module)
+        connection_params = rename_ssl_option_for_pymongo4(connection_params)
     try:
         myclient = MongoClient(**connection_params)
         myclient['admin'].command('listDatabases', 1.0)
