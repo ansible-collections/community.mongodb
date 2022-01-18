@@ -282,6 +282,33 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
     return client
 
 
+def is_auth_enabled(module):
+    """
+    Returns True if auth is enable on the mongo instance
+    For PyMongo 4+ we have to connect directly to the instance
+    rather than the replicaset
+    """
+    auth_is_enabled = None
+    connection_params = {}
+    connection_params['host'] = module.params['login_host']
+    connection_params['port'] = module.params['login_port']
+    if int(PyMongoVersion[0]) >= 4:  # we need to connect directly to the instance
+        connection_params['directConnection'] = True
+    else:
+        if module.params['replica_set'] is not None:
+            connection_params['replicaset'] = module.params['replica_set']
+    try:
+        client = MongoClient(**connection_params)
+        client['admin'].command('listDatabases', 1.0)
+        auth_is_enabled = False
+    except Exception as excep:
+        if hasattr(excep, 'code') and excep.code == 13:
+            auth_is_enabled = True
+    if auth_is_enabled is None:
+        module.fail_json(msg='Unable to determine if auth is enabled')
+    return auth_is_enabled
+
+
 def mongo_auth(module, client, directConnection=False):
     """
     TODO: This function was extracted from code from the mongodb_replicaset module.
@@ -304,19 +331,14 @@ def mongo_auth(module, client, directConnection=False):
 
     if 'create_for_localhost_exception' not in module.params:
         try:
-            try:
-                client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-            except Exception as excep:
-                if hasattr(excep, 'code') and excep.code == 13:   # or excep.code == 18):
-                    if login_user is not None and login_password is not None:
-                        if int(PyMongoVersion[0]) < 4:  # pymongo < 4
-                            client.admin.authenticate(login_user, login_password, source=login_database)
-                        else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
-                            client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
-                    else:
-                        module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+            if is_auth_enabled(module):
+                if login_user is not None and login_password is not None:
+                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                        client.admin.authenticate(login_user, login_password, source=login_database)
+                    else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
+                        client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
                 else:
-                    module.fail_json(msg='Unknown error: %s' % to_native(excep))
+                    module.fail_json(msg='No credentials to authenticate')
         except Exception as excep:
             module.fail_json(msg='unable to connect to database: %s' % to_native(excep))
         # Get server version:
