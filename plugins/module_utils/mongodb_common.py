@@ -304,7 +304,7 @@ def is_auth_enabled(module):
         myclient = MongoClient(**connection_params)
         myclient['admin'].command('listDatabases', 1.0)
         auth_is_enabled = False
-        myclient.close() 
+        myclient.close()
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 13:
             auth_is_enabled = True
