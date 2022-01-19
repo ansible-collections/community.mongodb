@@ -272,7 +272,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         client = MongoClient(host=['localhost:27017'],
                              username='user',
                              password='password',
-                             replicaSet=None)
+                             directConnection=True)
         fake_module = FakeAnsibleModule()
         fake_module.params["login_user"] = "dummy"
         fake_module.params["login_password"] = None
