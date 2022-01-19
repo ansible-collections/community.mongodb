@@ -333,7 +333,7 @@ def mongo_auth(module, client, directConnection=False):
         if mongocnf_creds is not False:
             login_user = mongocnf_creds['user']
             login_password = mongocnf_creds['password']
-    if login_user is None or login_password is None:
+    if None in (login_user, login_password):
         module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
 
     test3 = login_password is None
