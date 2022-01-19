@@ -325,13 +325,12 @@ def mongo_auth(module, client, directConnection=False):
     login_password = module.params['login_password']
     login_database = module.params['login_database']
 
-    # If we have auth details use then otherwise attempt without
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
         if mongocnf_creds is not False:
             login_user = mongocnf_creds['user']
             login_password = mongocnf_creds['password']
-    elif login_password is None or login_user is None:
+    if login_password is None or login_user is None:
         module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
 
     if 'create_for_localhost_exception' not in module.params:
