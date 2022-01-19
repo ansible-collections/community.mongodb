@@ -304,12 +304,13 @@ def is_auth_enabled(module):
         myclient = MongoClient(**connection_params)
         myclient['admin'].command('listDatabases', 1.0)
         auth_is_enabled = False
-        myclient.close()
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 13:
             auth_is_enabled = True
         if auth_is_enabled is None:  # if this is still none we have a problem
             module.fail_json(msg='Unable to determine if auth is enabled: {0}'.format(traceback.format_exc()))
+    finally:
+        myclient.close()
     return auth_is_enabled
 
 
@@ -342,7 +343,7 @@ def mongo_auth(module, client, directConnection=False):
                     else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
                         client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
                 else:
-                    module.fail_json(msg='No credentials to authenticate')
+                    module.fail_json(msg='No credentials to authenticate {0} {1}'.format(login_user, login_password))
         except Exception as excep:
             module.fail_json(msg='unable to connect to database: %s' % to_native(excep))
         # Get server version:
