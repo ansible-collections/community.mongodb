@@ -36,9 +36,6 @@ class FakeAnsibleModule:
     def __init__(self):
         self.msg = ""
 
-    def get_msg(self):
-        return self.msg
-
     def fail_json(self, msg):
         self.msg = msg
         return self.msg
@@ -280,8 +277,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_database"] = "test"
         fake_module.params["replica_set"] = None
         msg = mongodb_common.mongo_auth(fake_module, client)
-        print(msg)
-        print(fake_module.params)
         assert "When supplying login arguments" in msg
 
         fake_module.params["login_password"] = "password"
