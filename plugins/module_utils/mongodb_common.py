@@ -348,9 +348,9 @@ def mongo_auth(module, client, directConnection=False):
         except Exception as excep:
             fail_msg = 'unable to connect to database: %s' % to_native(excep)
         # Get server version:
-        if fail_msg is None
-        srv_version = check_srv_version(module, client)
-        check_driver_compatibility(module, client, srv_version)
+        if fail_msg is None:
+            srv_version = check_srv_version(module, client)
+            check_driver_compatibility(module, client, srv_version)
     elif fail_msg is None:  # this is the mongodb_user module
         if login_user is not None and login_password is not None:
             if int(PyMongoVersion[0]) < 4:  # pymongo < 4
