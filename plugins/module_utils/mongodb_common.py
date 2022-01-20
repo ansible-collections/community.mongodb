@@ -332,7 +332,7 @@ def mongo_auth(module, client, directConnection=False):
         if mongocnf_creds is not False:
             login_user = mongocnf_creds['user']
             login_password = mongocnf_creds['password']
-    if not all([login_user, login_password]):
+    elif not all([login_user, login_password]):
         fail_msg = "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
 
     if 'create_for_localhost_exception' not in module.params and fail_msg is None:
