@@ -23,6 +23,21 @@
     - localhost:3002
     - localhost:3003
 
+- name: Should still work when auth is not enabled
+  community.mongodb.mongodb_replicaset:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}" 
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    heartbeat_timeout_secs: 1
+    election_timeout_millis: 1000
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+
 - name: Ensure is_primary script exists on host
   copy:
     src: js/is_primary.js
