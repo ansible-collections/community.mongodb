@@ -361,7 +361,7 @@ def mongo_auth(module, client, directConnection=False):
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
-            if module.params['database'] != "admin":
+            if module.params['database'] not in  ["admin", "$external"]:
                 fail_msg = 'The localhost login exception only allows the first admin account to be created'
             # else: this has to be the first admin user added
     if fail_msg:

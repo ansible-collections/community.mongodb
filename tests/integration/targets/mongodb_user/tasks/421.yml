@@ -1,0 +1,72 @@
+---
+# Copyright 2022, Rhys Campbell <rhyscampbell@bluewin.ch>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Generate certs
+  shell: |
+    # Fix error: Can not load /root/.rnd into RNG\n140040
+    cd /root
+    openssl rand -writerand .rnd
+
+    mkdir -p /tmp/certs
+    cd /tmp/certs
+    echo -n '00' > ca.srl   # RC added
+    prefix="/C=US/ST=YourState/L=YourCity/O=YourCompany"
+    #-----------------------------------------------------------
+    # Generate self signed root CA cert
+    #-----------------------------------------------------------
+    openssl req -days 3650 -nodes -x509 -newkey rsa:2048 -keyout ca.key -out ca.crt -subj "${prefix}/CN=ROOTCA"
+    username="super"
+    #-----------------------------------------------------------
+    # Generate client cert to be signed
+    #-----------------------------------------------------------
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=127.0.0.1"
+
+    #-----------------------------------------------------------
+    # Sign the client cert
+    #-----------------------------------------------------------
+    openssl x509 -req -days 3650 -in ${username}.csr -CA ca.crt -CAkey ca.key -CAserial ca.srl -out ${username}.crt
+
+    #-----------------------------------------------------------
+    # Create client PEM file
+    #-----------------------------------------------------------
+    cat ${username}.key ${username}.crt > ${username}.pem
+
+- name: Set additional options in the mognodb launch for this test
+  set_fact:
+    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }} --tls \
+      --tlsAllowInvalidHostnames \
+      --tlsCAFile /tmp/certs/ca.crt \
+      --tlsCertificateKeyFile /tmp/certs/ca.key \
+      --authenticationMechanism MONGODB-X509 \
+      --clusterAuthMode x509
+      --authenticationDatabase '$external' "
+
+- name: Wait for the mongo instance to begin listening
+  wait_for:
+    port: 3001  #“{{ mongodb_nodes[0] }}"
+    delay: 10
+
+- name: Adding superuser
+  mongodb_user:
+    login_host: 127.0.0.1
+    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_database: "$external"
+    database: "$external"
+    create_for_localhost_exception: /tmp/super.success
+    update_password: on_create
+    name: "CN=127.0.0.1,OU=super,O=<name>,L=<name>,ST=<name>,C=US"
+    roles:
+      - db: admin
+        role: userAdminAnyDatabase
+    ssl: true
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    state: present
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
