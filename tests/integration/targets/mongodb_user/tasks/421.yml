@@ -39,12 +39,20 @@
 - name: Set additional options in the mognodb launch for this test
   set_fact:
     mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }} --tls \
+      --tls \
       --tlsAllowInvalidHostnames \
       --tlsCAFile /tmp/certs/ca.crt \
       --tlsCertificateKeyFile /tmp/certs/ca.key \
       --authenticationMechanism MONGODB-X509 \
       --clusterAuthMode x509
       --authenticationDatabase '$external' "
+
+
+                    --tls \
+                    --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
+                    --tlsCertificateKeyFile /tmp/mongodb-sample.default/tls.key \
+                    --authenticationMechanism MONGODB-X509 \
+                    --authenticationDatabase '$external' \
 
 - name: Wait for the mongo instance to begin listening
   wait_for:
