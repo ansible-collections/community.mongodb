@@ -4,8 +4,6 @@
 - set_fact:
     mongod_auth: true
 
-- include_tasks: mongod_singlenode.yml
-
 - name: Generate certs
   shell: |
     # Fix error: Can not load /root/.rnd into RNG\n140040
@@ -36,28 +34,18 @@
     #-----------------------------------------------------------
     cat ${username}.key ${username}.crt > ${username}.pem
 
-- name: Set additional options in the mognodb launch for this test
+- name: Change owner on certs dir
+  shell: |
+    chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
+    chmod 0400 -R /tmp/certs;
+
+- name: Set additional options for the mongod
   set_fact:
-    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }} --tls \
-      --tls \
-      --tlsAllowInvalidHostnames \
-      --tlsCAFile /tmp/certs/ca.crt \
-      --tlsCertificateKeyFile /tmp/certs/ca.key \
-      --authenticationMechanism MONGODB-X509 \
-      --clusterAuthMode x509
-      --authenticationDatabase '$external' "
+    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  --tlsMode requireTLS \
+      --tlsCAFile /tmp/certs/ca.crt
+      --tlsCertificateKeyFile /tmp/certs/super.pem"
 
-
-                    --tls \
-                    --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
-                    --tlsCertificateKeyFile /tmp/mongodb-sample.default/tls.key \
-                    --authenticationMechanism MONGODB-X509 \
-                    --authenticationDatabase '$external' \
-
-- name: Wait for the mongo instance to begin listening
-  wait_for:
-    port: 3001  #“{{ mongodb_nodes[0] }}"
-    delay: 10
+- include_tasks: mongod_singlenode.yml
 
 - name: Adding superuser
   mongodb_user:
