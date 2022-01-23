@@ -49,6 +49,14 @@
   check_mode: yes
   ignore_errors: yes
 
+- name: Auth is not enabled but this should still work
+  community.mongodb.mongodb_stepdown:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: 3001
+  check_mode: yes
+
 - name: This node should be primary - Run stepdown check_mode
   community.mongodb.mongodb_stepdown:
     login_host: localhost

@@ -282,6 +282,38 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
     return client
 
 
+def is_auth_enabled(module):
+    """
+    Returns True if auth is enable on the mongo instance
+    For PyMongo 4+ we have to connect directly to the instance
+    rather than the replicaset
+    """
+    auth_is_enabled = None
+    connection_params = {}
+    connection_params['host'] = module.params['login_host']
+    connection_params['port'] = module.params['login_port']
+    if int(PyMongoVersion[0]) >= 4:  # we need to connect directly to the instance
+        connection_params['directConnection'] = True
+    else:
+        if 'replica_set' in module.params and module.params['replica_set'] is not None:
+            connection_params['replicaset'] = module.params['replica_set']
+    if module.params['ssl']:
+        connection_params = ssl_connection_options(connection_params, module)
+        connection_params = rename_ssl_option_for_pymongo4(connection_params)
+    try:
+        myclient = MongoClient(**connection_params)
+        myclient['admin'].command('listDatabases', 1.0)
+        auth_is_enabled = False
+    except Exception as excep:
+        if hasattr(excep, 'code') and excep.code == 13:
+            auth_is_enabled = True
+        if auth_is_enabled is None:  # if this is still none we have a problem
+            module.fail_json(msg='Unable to determine if auth is enabled: {0}'.format(traceback.format_exc()))
+    finally:
+        myclient.close()
+    return auth_is_enabled
+
+
 def mongo_auth(module, client, directConnection=False):
     """
     TODO: This function was extracted from code from the mongodb_replicaset module.
@@ -293,36 +325,33 @@ def mongo_auth(module, client, directConnection=False):
     login_password = module.params['login_password']
     login_database = module.params['login_database']
 
-    # If we have auth details use then otherwise attempt without
+    fail_msg = None  # Out test code had issues with multiple exist points wiht fail_json
+
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
         if mongocnf_creds is not False:
             login_user = mongocnf_creds['user']
             login_password = mongocnf_creds['password']
-    elif login_password is None or login_user is None:
-        module.fail_json(msg="When supplying login arguments, both 'login_user' and 'login_password' must be provided")
+    elif not all([login_user, login_password]):
+        fail_msg = "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
 
-    if 'create_for_localhost_exception' not in module.params:
+    if 'create_for_localhost_exception' not in module.params and fail_msg is None:
         try:
-            try:
-                client['admin'].command('listDatabases', 1.0)  # if this throws an error we need to authenticate
-            except Exception as excep:
-                if hasattr(excep, 'code') and excep.code == 13:   # or excep.code == 18):
-                    if login_user is not None and login_password is not None:
-                        if int(PyMongoVersion[0]) < 4:  # pymongo < 4
-                            client.admin.authenticate(login_user, login_password, source=login_database)
-                        else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
-                            client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
-                    else:
-                        module.fail_json(msg='No credentials to authenticate: %s' % to_native(excep))
+            if is_auth_enabled(module):
+                if login_user is not None and login_password is not None:
+                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                        client.admin.authenticate(login_user, login_password, source=login_database)
+                    else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
+                        client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
                 else:
-                    module.fail_json(msg='Unknown error: %s' % to_native(excep))
+                    fail_msg = 'No credentials to authenticate'
         except Exception as excep:
-            module.fail_json(msg='unable to connect to database: %s' % to_native(excep))
+            fail_msg = 'unable to connect to database: %s' % to_native(excep)
         # Get server version:
-        srv_version = check_srv_version(module, client)
-        check_driver_compatibility(module, client, srv_version)
-    else:  # this is the mongodb_user module
+        if fail_msg is None:
+            srv_version = check_srv_version(module, client)
+            check_driver_compatibility(module, client, srv_version)
+    elif fail_msg is None:  # this is the mongodb_user module
         if login_user is not None and login_password is not None:
             if int(PyMongoVersion[0]) < 4:  # pymongo < 4
                 client.admin.authenticate(login_user, login_password, source=login_database)
@@ -333,8 +362,10 @@ def mongo_auth(module, client, directConnection=False):
             check_driver_compatibility(module, client, srv_version)
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
             if module.params['database'] != "admin":
-                module.fail_json(msg='The localhost login exception only allows the first admin account to be created')
+                fail_msg = 'The localhost login exception only allows the first admin account to be created'
             # else: this has to be the first admin user added
+    if fail_msg:
+        module.fail_json(msg=fail_msg)
     return client
 
 

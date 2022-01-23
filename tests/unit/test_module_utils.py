@@ -36,11 +36,11 @@ class FakeAnsibleModule:
     def __init__(self):
         self.msg = ""
 
-    def get_msg(self):
-        return self.msg
-
     def fail_json(self, msg):
         self.msg = msg
+
+    def get_msg(self):
+        return self.msg
 
 
 class TestMongoDBCommonMethods(unittest.TestCase):
@@ -272,11 +272,12 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         client = MongoClient(host=['localhost:27017'],
                              username='user',
                              password='password',
-                             replicaSet='replset')
+                             directConnection=True)
         fake_module = FakeAnsibleModule()
         fake_module.params["login_user"] = "dummy"
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
+        fake_module.params["replica_set"] = None
         mongodb_common.mongo_auth(fake_module, client)
         msg = fake_module.get_msg()
         assert "When supplying login arguments" in msg
@@ -296,7 +297,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_password"] = None
         client = mongodb_common.mongo_auth(fake_module, client)
         fail_msg = fake_module.get_msg()
-        self.assertTrue('When supplying login arguments' in fail_msg, msg='{0}'.format(fail_msg))
+        self.assertTrue('No credentials to authenticate' in fail_msg, msg='{0}'.format(fail_msg))
 
         fake_module.params['create_for_localhost_exception'] = None
         fake_module.params["login_user"] = None
@@ -305,6 +306,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["database"] = "test"
         client = mongodb_common.mongo_auth(fake_module, client)
         fail_msg = fake_module.get_msg()
+        print(fail_msg)
         self.assertTrue('The localhost login exception only allows the first admin account to be created' in fail_msg)
 
         fake_module.params['create_for_localhost_exception'] = None
