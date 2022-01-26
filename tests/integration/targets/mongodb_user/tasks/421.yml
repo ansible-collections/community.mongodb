@@ -12,6 +12,7 @@
 
     mkdir -p /tmp/certs
     cd /tmp/certs
+
     echo -n '00' > ca.srl   # RC added
     prefix="/C=US/ST=YourState/L=YourCity/O=YourCompany"
     #-----------------------------------------------------------
@@ -19,6 +20,13 @@
     #-----------------------------------------------------------
     openssl req -days 3650 -nodes -x509 -newkey rsa:2048 -keyout ca.key -out ca.crt -subj "${prefix}/CN=ROOTCA"
     username="super"
+
+    # Generate server certs
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN=127.0.0.1"
+    openssl x509 -days 3650 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+    cat server.key server.crt > server.pem
+    ############ EOF 
+
     #-----------------------------------------------------------
     # Generate client cert to be signed
     #-----------------------------------------------------------
@@ -34,6 +42,8 @@
     #-----------------------------------------------------------
     cat ${username}.key ${username}.crt > ${username}.pem
 
+- shell: cat /tmp/certs/server.pem
+
 - name: Change owner on certs dir
   shell: |
     chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
@@ -41,9 +51,12 @@
 
 - name: Set additional options for the mongod
   set_fact:
-    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  --tlsMode requireTLS \
+    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
+      --clusterAuthMode x509 \
+      --tlsMode requireTLS \
       --tlsCAFile /tmp/certs/ca.crt
-      --tlsCertificateKeyFile /tmp/certs/super.pem"
+      --tlsCertificateKeyFile /tmp/certs/server.pem \
+      --fork"
 
 - include_tasks: mongod_singlenode.yml
 
@@ -59,7 +72,7 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
-    ssl: true
+    ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
