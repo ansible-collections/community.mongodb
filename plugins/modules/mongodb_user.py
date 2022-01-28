@@ -214,15 +214,19 @@ def user_find(client, user, db_name):
     Returns:
         dict: when user exists, False otherwise.
     """
-    for mongo_user in client[db_name].command('usersInfo')['users']:
-        if mongo_user['user'] == user:
-            # NOTE: there is no 'db' field in mongo 2.4.
-            if 'db' not in mongo_user:
-                return mongo_user
-
-            if mongo_user["db"] in [db_name, "admin"]:  # Workaround to make the condition works with AWS DocumentDB, since all users are in the admin database.
-
-                return mongo_user
+    try:
+        for mongo_user in client[db_name].command('usersInfo')['users']:
+            if mongo_user['user'] == user:
+                # NOTE: there is no 'db' field in mongo 2.4.
+                if 'db' not in mongo_user:
+                    return mongo_user
+                if mongo_user["db"] in [db_name, "admin"]:  # Workaround to make the condition works with AWS DocumentDB, since all users are in the admin database.
+                    return mongo_user
+    except Exception as excep:
+        if hasattr(excep, 'code') and excep.code == 11:  # 11=UserNotFound
+                pass  # Allow return False
+        else:
+            raise
     return False
 
 
@@ -254,6 +258,9 @@ def user_add(module, client, db_name, user, password, roles):
         user_dict["pwd"] = password
     if roles is not None:
         user_dict["roles"] = roles
+
+    #if db_name == '$external':
+    #    module.exit_json(user_add_db_command=user_add_db_command, user=user, user_dict=user_dict, client=str(client))
 
     db.command(user_add_db_command, user, **user_dict)
 
@@ -323,17 +330,23 @@ def main():
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        required_together=[['login_user', 'login_password']],
     )
+    login_user = module.params['login_user']
+    login_password = module.params['login_password']
+
+    #if not login_user.contains('CN='), 'OU=']):
+    #    if (login_user is not None and login_password is None) or \
+    #            (login_password is not None and login_user is None):
+    #        module.fail_json(msg="parameters are required together: login_user, login_password")
+
+    if login_user == []:
+        login_user = None
+
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    login_database = module.params['login_database']
+    
     create_for_localhost_exception = module.params['create_for_localhost_exception']
     b_create_for_localhost_exception = (
         to_bytes(create_for_localhost_exception, errors='surrogate_or_strict')
@@ -366,8 +379,10 @@ def main():
                 module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
 
         try:
+            extra = "1"
             if update_password != 'always':
                 uinfo = user_find(client, user, db_name)
+                extra += "2"
                 if uinfo:
                     password = None
                     if not check_if_roles_changed(uinfo, roles, db_name):
@@ -375,10 +390,11 @@ def main():
 
             if module.check_mode:
                 module.exit_json(changed=True, user=user)
-
+            extra += "3"
             user_add(module, client, db_name, user, password, roles)
+            extra += "4"
         except Exception as e:
-            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())
+            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc(), extra=extra)
         finally:
             try:
                 client.close()
