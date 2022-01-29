@@ -63,7 +63,7 @@
 - name: Adding superuser
   mongodb_user:
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     create_for_localhost_exception: /tmp/super.success
@@ -110,7 +110,7 @@
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "admin"
     update_password: on_create
@@ -162,7 +162,7 @@
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     update_password: on_create
@@ -188,7 +188,7 @@
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     update_password: on_create
@@ -212,11 +212,11 @@
       - another_user.changed
       - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
-- name: Morify cert user - no change
+- name: Modify cert user - no change
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     update_password: on_create
@@ -243,7 +243,7 @@
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
@@ -265,7 +265,7 @@
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
@@ -286,7 +286,7 @@
   mongodb_user:
     login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
-    login_port: 3001  #“{{ mongodb_nodes[0] }}"
+    login_port: 3001
     login_database: "$external"
     database: "$external"
     name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
