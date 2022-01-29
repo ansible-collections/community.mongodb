@@ -220,9 +220,9 @@ def user_find(client, user, db_name):
                 # NOTE: there is no 'db' field in mongo 2.4.
                 if 'db' not in mongo_user:
                     return mongo_user
-                # Workaround to make the condition works with AWS DocumentDB, 
+                # Workaround to make the condition works with AWS DocumentDB,
                 # since all users are in the admin database.
-                if mongo_user["db"] in [db_name, "admin"]:  
+                if mongo_user["db"] in [db_name, "admin"]:
                     return mongo_user
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 11:  # 11=UserNotFound
@@ -339,7 +339,6 @@ def main():
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
-
 
     create_for_localhost_exception = module.params['create_for_localhost_exception']
     b_create_for_localhost_exception = (
