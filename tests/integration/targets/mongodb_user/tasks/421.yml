@@ -55,8 +55,7 @@
       --clusterAuthMode x509 \
       --tlsMode requireTLS \
       --tlsCAFile /tmp/certs/ca.crt
-      --tlsCertificateKeyFile /tmp/certs/server.pem \
-      --fork"
+      --tlsCertificateKeyFile /tmp/certs/server.pem"
 
 - include_tasks: mongod_singlenode.yml
 
