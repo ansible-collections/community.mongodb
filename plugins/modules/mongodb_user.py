@@ -220,11 +220,13 @@ def user_find(client, user, db_name):
                 # NOTE: there is no 'db' field in mongo 2.4.
                 if 'db' not in mongo_user:
                     return mongo_user
-                if mongo_user["db"] in [db_name, "admin"]:  # Workaround to make the condition works with AWS DocumentDB, since all users are in the admin database.
+                # Workaround to make the condition works with AWS DocumentDB, 
+                # since all users are in the admin database.
+                if mongo_user["db"] in [db_name, "admin"]:  
                     return mongo_user
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 11:  # 11=UserNotFound
-                pass  # Allow return False
+            pass  # Allow return False
         else:
             raise
     return False
@@ -258,9 +260,6 @@ def user_add(module, client, db_name, user, password, roles):
         user_dict["pwd"] = password
     if roles is not None:
         user_dict["roles"] = roles
-
-    #if db_name == '$external':
-    #    module.exit_json(user_add_db_command=user_add_db_command, user=user, user_dict=user_dict, client=str(client))
 
     db.command(user_add_db_command, user, **user_dict)
 
@@ -334,11 +333,6 @@ def main():
     login_user = module.params['login_user']
     login_password = module.params['login_password']
 
-    #if not login_user.contains('CN='), 'OU=']):
-    #    if (login_user is not None and login_password is None) or \
-    #            (login_password is not None and login_user is None):
-    #        module.fail_json(msg="parameters are required together: login_user, login_password")
-
     if login_user == []:
         login_user = None
 
@@ -346,7 +340,7 @@ def main():
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    
+
     create_for_localhost_exception = module.params['create_for_localhost_exception']
     b_create_for_localhost_exception = (
         to_bytes(create_for_localhost_exception, errors='surrogate_or_strict')
