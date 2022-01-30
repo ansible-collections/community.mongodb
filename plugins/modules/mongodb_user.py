@@ -361,7 +361,7 @@ def main():
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     if state == 'present':
-        if password is None and update_password == 'always' and user.startswith('CN=') is False:
+        if password is None and update_password == 'always': #and user.startswith('CN=') is False:
             module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
 
         if login_user is None and create_for_localhost_exception is not None:
