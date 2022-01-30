@@ -87,7 +87,7 @@
 - name: Make js script with auth
   copy:
     content: |
-      db = db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
+      db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
       printjson(db.runCommand({"usersInfo": 1}));
     dest: /tmp/auth.js
 
