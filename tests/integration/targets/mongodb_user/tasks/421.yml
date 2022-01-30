@@ -70,7 +70,6 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
-    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/server.pem
@@ -89,7 +88,7 @@
   copy:
     content: |
       db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
-      printjson(db.runCommand({"usersInfo": 1}));
+      db.system.users.find({db: "$external"})
     dest: /tmp/auth.js
 
 - name: Run userInfo command
@@ -117,7 +116,6 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
-    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
@@ -168,7 +166,6 @@
     roles:
       - db: admin
         role: readAnyDatabase
-    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
@@ -196,7 +193,6 @@
         role: readAnyDatabase
       - db: test
         role: readWrite
-    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
@@ -224,7 +220,6 @@
         role: readAnyDatabase
       - db: test
         role: readWrite
-    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem

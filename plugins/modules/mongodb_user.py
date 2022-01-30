@@ -67,6 +67,8 @@ options:
       - C(always) will always update passwords and cause the module to return changed.
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
+      - This option is effectively ignored when using x.509 certs. It is defaulted to 'on_create' to maintain a \
+          a specific module behaviour when the username starts with 'CN='.
     type: str
   create_for_localhost_exception:
     type: path
@@ -333,8 +335,8 @@ def main():
     login_user = module.params['login_user']
     login_password = module.params['login_password']
 
-    if login_user == []:
-        login_user = None
+    if login_user.startswith('CN='):  # Certs don't have a password but we want this module behaviour
+        module.params['update_password'] = 'always'
 
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
