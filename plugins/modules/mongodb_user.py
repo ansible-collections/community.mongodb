@@ -67,7 +67,7 @@ options:
       - C(always) will always update passwords and cause the module to return changed.
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
-      . THis parameter is ignored when a x.509 certifcate user is created in the $external db. i.e. When the username starts with CN=
+      - This parameter is ignored when a x.509 certifcate user is created, i.e. When the username starts with CN=
     type: str
   create_for_localhost_exception:
     type: path

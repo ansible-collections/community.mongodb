@@ -88,7 +88,7 @@
   copy:
     content: |
       db = db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
-      printjson(db.getUsers());
+      printjson(db.runCommand({"usersInfo": 1}));
     dest: /tmp/auth.js
 
 - name: Run userInfo command
