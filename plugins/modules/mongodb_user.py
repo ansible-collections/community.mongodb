@@ -333,9 +333,9 @@ def main():
         supports_check_mode=True,
     )
     login_user = module.params['login_user']
-    login_password = module.params['login_password']
 
-    if login_user.startswith('CN='):  # Certs don't have a password but we want this module behaviour
+    # Certs don't have a password but we want this module behaviour
+    if login_user is not None and login_user.startswith('CN='):
         module.params['update_password'] = 'always'
 
     if not pymongo_found:
