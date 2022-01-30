@@ -67,6 +67,7 @@ options:
       - C(always) will always update passwords and cause the module to return changed.
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
+      . THis parameter is ignored when a x.509 certifcate user is created in the $external db. i.e. When the username starts with CN=
     type: str
   create_for_localhost_exception:
     type: path
@@ -360,7 +361,7 @@ def main():
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     if state == 'present':
-        if password is None and update_password == 'always':
+        if password is None and update_password == 'always' and user.startswith('CN=') is False:
             module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
 
         if login_user is None and create_for_localhost_exception is not None:
@@ -372,10 +373,8 @@ def main():
                 module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
 
         try:
-            extra = "1"
             if update_password != 'always':
                 uinfo = user_find(client, user, db_name)
-                extra += "2"
                 if uinfo:
                     password = None
                     if not check_if_roles_changed(uinfo, roles, db_name):
@@ -383,11 +382,9 @@ def main():
 
             if module.check_mode:
                 module.exit_json(changed=True, user=user)
-            extra += "3"
             user_add(module, client, db_name, user, password, roles)
-            extra += "4"
         except Exception as e:
-            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc(), extra=extra)
+            module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())
         finally:
             try:
                 client.close()

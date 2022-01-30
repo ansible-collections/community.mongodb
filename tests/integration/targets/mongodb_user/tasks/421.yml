@@ -66,7 +66,6 @@
     login_database: "$external"
     database: "$external"
     create_for_localhost_exception: /tmp/super.success
-    update_password: on_create
     name: "CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
@@ -88,7 +87,7 @@
 - name: Make js script with auth
   copy:
     content: |
-      db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
+      db = db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
       printjson(db.getUsers());
     dest: /tmp/auth.js
 
@@ -112,7 +111,6 @@
     login_port: 3001
     login_database: "$external"
     database: "admin"
-    update_password: on_create
     name: "admin"
     password: "secret"
     roles:
@@ -164,7 +162,6 @@
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    update_password: on_create
     name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
@@ -190,7 +187,6 @@
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    update_password: on_create
     name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
@@ -218,7 +214,6 @@
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    update_password: on_create
     name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
