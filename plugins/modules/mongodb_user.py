@@ -335,7 +335,7 @@ def main():
     login_user = module.params['login_user']
 
     # Certs don't have a password but we want this module behaviour
-    if login_user is not None and login_user.startswith('CN='):
+    if module.params['login_database'] == '$external':
         module.params['update_password'] = 'on_create'
 
     if not pymongo_found:
