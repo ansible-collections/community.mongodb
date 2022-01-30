@@ -70,6 +70,7 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
+    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/server.pem
@@ -116,6 +117,7 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
+    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
@@ -166,6 +168,7 @@
     roles:
       - db: admin
         role: readAnyDatabase
+    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
@@ -193,6 +196,7 @@
         role: readAnyDatabase
       - db: test
         role: readWrite
+    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
@@ -220,6 +224,7 @@
         role: readAnyDatabase
       - db: test
         role: readWrite
+    update_password: on_create
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem

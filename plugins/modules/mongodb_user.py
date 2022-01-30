@@ -67,7 +67,6 @@ options:
       - C(always) will always update passwords and cause the module to return changed.
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
-      - This parameter is ignored when a x.509 certifcate user is created, i.e. When the username starts with CN=
     type: str
   create_for_localhost_exception:
     type: path
@@ -361,7 +360,7 @@ def main():
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     if state == 'present':
-        if password is None and update_password == 'always': #and user.startswith('CN=') is False:
+        if password is None and update_password == 'always':  # and user.startswith('CN=') is False:
             module.fail_json(msg='password parameter required when adding a user unless update_password is set to on_create')
 
         if login_user is None and create_for_localhost_exception is not None:
