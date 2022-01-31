@@ -281,6 +281,9 @@ jobs:
       - name: Set pymongo driver version to 3.12.3
         run: sed -i 's/  - pymongo*/  - pymongo==3.12.3/g' tests/integration/targets/setup_mongodb/defaults/main.yml
 
+      - name: Install psutils 5.4.4 for this python version
+        run: sed -i 's/  - psutils*/  - psutils==5.4.4/g' tests/integration/targets/setup_mongodb/defaults/main.yml
+
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
 
