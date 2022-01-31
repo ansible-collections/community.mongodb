@@ -68,7 +68,7 @@ options:
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
       - This option is effectively ignored when using x.509 certs. It is defaulted to 'on_create' to maintain a \
-          a specific module behaviour when the username starts with 'CN='.
+          a specific module behaviour when the login_database is '$external'.
     type: str
   create_for_localhost_exception:
     type: path
