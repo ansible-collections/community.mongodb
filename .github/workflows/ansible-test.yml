@@ -275,6 +275,9 @@ jobs:
       - name: Upgrade pip to the max for python 2.7
         run: pip install pip==20.3.* --upgrade
 
+      - name: Upgrade setuptools
+        run: pip install --upgrade setuptools<45
+
       - name: Set pymongo driver version to 3.12.3
         run: sed -i 's/  - pymongo*/  - pymongo==3.12.3/g' tests/integration/targets/setup_mongodb/defaults/main.yml
 
