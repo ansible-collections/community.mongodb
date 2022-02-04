@@ -13,8 +13,6 @@ lint:
 platforms:
   - name: centos-7
     box: centos/7
-  - name: centos-8
-    box: generic/centos8
   - name: ubuntu-16
     box: ubuntu/xenial64
   - name: ubuntu-18
