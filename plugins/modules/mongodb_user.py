@@ -67,6 +67,8 @@ options:
       - C(always) will always update passwords and cause the module to return changed.
       - C(on_create) will only set the password for newly created users.
       - This must be C(always) to use the localhost exception when adding the first admin user.
+      - This option is effectively ignored when using x.509 certs. It is defaulted to 'on_create' to maintain a \
+          a specific module behaviour when the login_database is '$external'.
     type: str
   create_for_localhost_exception:
     type: path
@@ -214,15 +216,21 @@ def user_find(client, user, db_name):
     Returns:
         dict: when user exists, False otherwise.
     """
-    for mongo_user in client[db_name].command('usersInfo')['users']:
-        if mongo_user['user'] == user:
-            # NOTE: there is no 'db' field in mongo 2.4.
-            if 'db' not in mongo_user:
-                return mongo_user
-
-            if mongo_user["db"] in [db_name, "admin"]:  # Workaround to make the condition works with AWS DocumentDB, since all users are in the admin database.
-
-                return mongo_user
+    try:
+        for mongo_user in client[db_name].command('usersInfo')['users']:
+            if mongo_user['user'] == user:
+                # NOTE: there is no 'db' field in mongo 2.4.
+                if 'db' not in mongo_user:
+                    return mongo_user
+                # Workaround to make the condition works with AWS DocumentDB,
+                # since all users are in the admin database.
+                if mongo_user["db"] in [db_name, "admin"]:
+                    return mongo_user
+    except Exception as excep:
+        if hasattr(excep, 'code') and excep.code == 11:  # 11=UserNotFound
+            pass  # Allow return False
+        else:
+            raise
     return False
 
 
@@ -323,17 +331,17 @@ def main():
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        required_together=[['login_user', 'login_password']],
     )
+    login_user = module.params['login_user']
+
+    # Certs don't have a password but we want this module behaviour
+    if module.params['login_database'] == '$external':
+        module.params['update_password'] = 'on_create'
+
     if not pymongo_found:
         module.fail_json(msg=missing_required_lib('pymongo'),
                          exception=PYMONGO_IMP_ERR)
 
-    login_user = module.params['login_user']
-    login_password = module.params['login_password']
-    login_host = module.params['login_host']
-    login_port = module.params['login_port']
-    login_database = module.params['login_database']
     create_for_localhost_exception = module.params['create_for_localhost_exception']
     b_create_for_localhost_exception = (
         to_bytes(create_for_localhost_exception, errors='surrogate_or_strict')
@@ -375,7 +383,6 @@ def main():
 
             if module.check_mode:
                 module.exit_json(changed=True, user=user)
-
             user_add(module, client, db_name, user, password, roles)
         except Exception as e:
             module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())

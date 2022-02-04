@@ -327,12 +327,16 @@ def mongo_auth(module, client, directConnection=False):
 
     fail_msg = None  # Out test code had issues with multiple exist points wiht fail_json
 
+    crypt_flag = 'ssl'
+    if 'tls' in module.params:
+        crypt_flag = 'tls'
+
     if login_user is None and login_password is None:
         mongocnf_creds = load_mongocnf()
         if mongocnf_creds is not False:
             login_user = mongocnf_creds['user']
             login_password = mongocnf_creds['password']
-    elif not all([login_user, login_password]):
+    elif not all([login_user, login_password]) and module.params[crypt_flag] is False:
         fail_msg = "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
 
     if 'create_for_localhost_exception' not in module.params and fail_msg is None:
@@ -361,7 +365,7 @@ def mongo_auth(module, client, directConnection=False):
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)
         elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
-            if module.params['database'] != "admin":
+            if module.params['database'] not in ["admin", "$external"]:
                 fail_msg = 'The localhost login exception only allows the first admin account to be created'
             # else: this has to be the first admin user added
     if fail_msg:

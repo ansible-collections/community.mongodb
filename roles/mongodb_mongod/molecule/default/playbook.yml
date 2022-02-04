@@ -29,9 +29,8 @@
         validate: yes
         members:
           - centos_7:27017
-          - centos_8:27017
           - ubuntu_16:27017
           - ubuntu_18:27017
-          #- debian_stretch:27017  # need odd number, so drop stretch
+          - debian_stretch:27017
           - debian_buster:27017
       when: ansible_hostname == "ubuntu_16"

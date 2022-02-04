@@ -19,16 +19,6 @@ platforms:
     networks:
       - name: "mymongo"
     network_mode: "mymongo"
-  - name: centos_8
-    hostname: centos_8
-    image: centos:8
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: "mymongo"
-    network_mode: "mymongo"
   - name: ubuntu_16
     hostname: ubuntu_16
     image: ubuntu:16.04

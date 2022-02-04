@@ -1,0 +1,298 @@
+---
+# Copyright 2022, Rhys Campbell <rhyscampbell@bluewin.ch>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+- set_fact:
+    mongod_auth: true
+
+- name: Generate certs
+  shell: |
+    # Fix error: Can not load /root/.rnd into RNG\n140040
+    cd /root
+    openssl rand -writerand .rnd
+
+    mkdir -p /tmp/certs
+    cd /tmp/certs
+
+    echo -n '00' > ca.srl   # RC added
+    prefix="/C=US/ST=YourState/L=YourCity/O=YourCompany"
+    #-----------------------------------------------------------
+    # Generate self signed root CA cert
+    #-----------------------------------------------------------
+    openssl req -days 3650 -nodes -x509 -newkey rsa:2048 -keyout ca.key -out ca.crt -subj "${prefix}/CN=ROOTCA"
+    username="super"
+
+    # Generate server certs
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN=127.0.0.1"
+    openssl x509 -days 3650 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+    cat server.key server.crt > server.pem
+    ############ EOF 
+
+    #-----------------------------------------------------------
+    # Generate client cert to be signed
+    #-----------------------------------------------------------
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=127.0.0.1"
+
+    #-----------------------------------------------------------
+    # Sign the client cert
+    #-----------------------------------------------------------
+    openssl x509 -req -days 3650 -in ${username}.csr -CA ca.crt -CAkey ca.key -CAserial ca.srl -out ${username}.crt
+
+    #-----------------------------------------------------------
+    # Create client PEM file
+    #-----------------------------------------------------------
+    cat ${username}.key ${username}.crt > ${username}.pem
+
+- shell: cat /tmp/certs/server.pem
+
+- name: Change owner on certs dir
+  shell: |
+    chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
+    chmod 0400 -R /tmp/certs;
+
+- name: Set additional options for the mongod
+  set_fact:
+    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
+      --clusterAuthMode x509 \
+      --tlsMode requireTLS \
+      --tlsCAFile /tmp/certs/ca.crt
+      --tlsCertificateKeyFile /tmp/certs/server.pem"
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Adding superuser
+  mongodb_user:
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    create_for_localhost_exception: /tmp/super.success
+    name: "CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    roles:
+      - db: admin
+        role: userAdminAnyDatabase
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/server.pem
+    auth_mechanism: 'MONGODB-X509'
+    state: present
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: certificate_user
+
+- assert:
+    that:
+      - certificate_user.changed
+      - certificate_user.user == 'CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US'
+
+- name: Make js script with auth
+  copy:
+    content: |
+      db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
+      db.system.users.find({db: "$external"})
+    dest: /tmp/auth.js
+
+- name: Run userInfo command
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_host: "127.0.0.1"
+    file: /tmp/auth.js
+    debug: yes
+    mongo_cmd: mongo
+    additional_args:
+      tls: ""
+      tlsCertificateKeyFile: /tmp/certs/super.pem
+      tlsCAFile: /tmp/certs/ca.crt
+  register: mongo_output
+
+- name: Create a standard user using super cert
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "admin"
+    name: "admin"
+    password: "secret"
+    roles:
+      - db: admin
+        role: userAdminAnyDatabase
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    state: present
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: standard_user
+
+- assert:
+    that:
+      - standard_user.changed
+      - standard_user.user == "admin"
+
+- name: Generate cert for another user
+  shell: |
+    cd /tmp/certs
+    prefix="/C=US/ST=YourState/L=YourCity/O=YourCompany"
+    username=readonly
+    #-----------------------------------------------------------
+    # Generate client cert to be signed
+    #-----------------------------------------------------------
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=127.0.0.1"
+
+    #-----------------------------------------------------------
+    # Sign the client cert
+    #-----------------------------------------------------------
+    openssl x509 -req -days 3650 -in ${username}.csr -CA ca.crt -CAkey ca.key -CAserial ca.srl -out ${username}.crt
+
+    #-----------------------------------------------------------
+    # Create client PEM file
+    #-----------------------------------------------------------
+    cat ${username}.key ${username}.crt > ${username}.pem
+
+- name: Change owner on certs dir
+  shell: |
+    chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
+    chmod 0400 -R /tmp/certs;
+
+- name: Create another cert user
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    roles:
+      - db: admin
+        role: readAnyDatabase
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    state: present
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: another_user
+
+- assert:
+    that:
+      - another_user.changed
+      - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+
+- name: Modify cert user - adds a role
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    roles:
+      - db: admin
+        role: readAnyDatabase
+      - db: test
+        role: readWrite
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    state: present
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: another_user
+
+- assert:
+    that:
+      - another_user.changed
+      - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+
+- name: Modify cert user - no change
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    roles:
+      - db: admin
+        role: readAnyDatabase
+      - db: test
+        role: readWrite
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    state: present
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: another_user
+
+- assert:
+    that:
+      - another_user.changed == False
+
+- name: Delete cert user - check mode
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    state: absent
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  check_mode: yes
+  register: another_user
+
+- assert:
+    that:
+      - another_user.changed
+
+- name: Delete cert user
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    state: absent
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: another_user
+
+- assert:
+    that:
+      - another_user.changed
+
+- name: Delete cert user - does not exist
+  mongodb_user:
+    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_host: 127.0.0.1
+    login_port: 3001
+    login_database: "$external"
+    database: "$external"
+    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    state: absent
+    ssl: true 
+    ssl_ca_certs: /tmp/certs/ca.crt
+    ssl_certfile: /tmp/certs/super.pem
+    auth_mechanism: 'MONGODB-X509'
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
+  register: another_user
+
+- assert:
+    that:
+      - another_user.changed == False

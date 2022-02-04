@@ -60,11 +60,10 @@ def test_mongod_replicaset(host):
 
         assert "cfg" in r.stdout
         assert "centos_7:{0}".format(port) in r.stdout
-        assert "centos_8:{0}".format(port) in r.stdout
         assert "ubuntu_16:{0}".format(port) in r.stdout
         assert "ubuntu_18:{0}".format(port) in r.stdout
         assert "debian_buster:{0}".format(port) in r.stdout
-        # assert "debian_stretch:{0}".format(port) in r.stdout
+        assert "debian_stretch:{0}".format(port) in r.stdout
 
 
 def test_mongod_config_default_path(host):

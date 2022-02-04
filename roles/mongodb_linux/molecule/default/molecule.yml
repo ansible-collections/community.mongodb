@@ -18,15 +18,6 @@ platforms:
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
-  - name: centos_8
-    image: centos:8
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: "mongodb_linux"
-    network_mode: "mongodb_linux"
   - name: ubuntu_16
     image: ubuntu:16.04
     command: /sbin/init
