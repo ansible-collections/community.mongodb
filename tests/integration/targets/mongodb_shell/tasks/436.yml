@@ -9,6 +9,7 @@
     debug: yes
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
+    mongo_cmd: "{{ mongo_cmd }}"
   register: first_insert
 
 - assert:
@@ -23,6 +24,7 @@
     debug: yes
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
+    mongo_cmd: "{{ mongo_cmd }}"
   register: first_insert_duplicate
 
 - assert:
