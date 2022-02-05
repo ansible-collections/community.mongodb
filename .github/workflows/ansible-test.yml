@@ -32,13 +32,6 @@ jobs:
           max_attempts: 3
           command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
-      - name: Install pymongo
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 3
-          max_attempts: 3
-          command: pip install pymongo 
-
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/*
 

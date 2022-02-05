@@ -249,7 +249,7 @@ def extract_json_document(output):
       })
     """
     output = output.strip()
-    if re.match(r"^[a-zA-Z].*\(", output) and output.endswith('}'):
+    if re.match(r"^[a-zA-Z].*\(", output) and output.endswith(')'):
         first_bracket = output.find('{')
         last_bracket = output.rfind('}')
         if first_bracket > 0 and last_bracket > 0:
