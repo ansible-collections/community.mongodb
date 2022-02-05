@@ -193,7 +193,6 @@ import json
 import os
 import shlex
 import pipes
-from bson import json_util
 __metaclass__ = type
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
