@@ -250,18 +250,13 @@ def extract_json_document(output):
       })
     """
     output = output.strip()
-    if re.match(r"^[a-zA-Z].*\(", output):
+    if re.match(r"^[a-zA-Z].*\(", output) and output.endswith('}'):
         first_bracket = output.find('{')
         last_bracket = output.rfind('}')
         if first_bracket > 0 and last_bracket > 0:
             tmp = output[first_bracket:last_bracket - 1]
-            # try to parse this as json
-            try:
-                tmp = json_util.dumps(tmp)
-                if tmp is not None:
-                    output = tmp
-            except json.JSONDecodeError as json_error:
-                pass
+            if tmp is not None:
+                output = tmp
     return output
 
 
