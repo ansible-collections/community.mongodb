@@ -193,6 +193,7 @@ import json
 import os
 import shlex
 import pipes
+from bson import json_util
 __metaclass__ = type
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
@@ -234,8 +235,37 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False, omit=None):
             cmd_list.append(param_name)
     return cmd_list
 
+def extract_json_document(output):
+    """
+    This is for specific type of mongo shell return data in the format SomeText()
+    https://github.com/ansible-collections/community.mongodb/issues/436
+    i.e.
+    WriteResult({
+              "nInserted" : 0,
+              "writeError" : {
+                      "code" : 11000,
+                      "errmsg" : "E11000 duplicate key error collection: state.hosts index: _id_ dup key: { _id: \"r1\" }"
+              }
+      })
+    """
+    output = output.strip()
+    if re.match(r"^[a-zA-Z].*\(", output):
+        first_bracket = output.find('{')
+        last_bracket = output.rfind('}')
+        if first_bracket > 0 and last_bracket > 0:
+            tmp = output[first_bracket:last_bracket -1]
+            # try to parse this as json
+            try:
+                tmp = json_util.dumps(tmp)
+                if tmp is not None:
+                    output = tmp
+            except json.JSONDecodeError as json_error:
+                pass
+    return output
+
 
 def transform_output(output, transform_type, split_char):
+    output = extract_json_document(output)
     if transform_type == "auto":  # determine what transform_type to perform
         if output.strip().startswith("{") or output.strip().startswith("["):
             transform_type = "json"
