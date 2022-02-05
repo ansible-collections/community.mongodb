@@ -7,13 +7,13 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     debug: yes
-    quiet: no
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
   register: first_insert
 
 - assert:
-    that: first_insert.changed
+    that: 
+      - first_insert.changed
 
 - name: Insert a duplicate record into a collection - shell does not throw an error so neither do we
   community.mongodb.mongodb_shell:
@@ -21,13 +21,14 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     debug: yes
-    quiet: no
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
   register: first_insert_duplicate
 
 - assert:
-    that: first_insert_duplicate.changed
+    that: 
+      - first_insert_duplicate.changed
+
 
 - debug:
     var: first_insert_duplicate
