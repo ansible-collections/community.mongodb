@@ -15,6 +15,8 @@
 - assert:
     that: 
       - first_insert.changed
+      - "first_insert.out == 'WriteResult({ \"nInserted\" : 1 })\n'"
+      - "first_insert.transformed_output == {\"nInserted\": 1}"
 
 - name: Insert a duplicate record into a collection - mongo shell does not throw an error so neither do we (mongosh does throw an error)
   community.mongodb.mongodb_shell:
@@ -31,7 +33,9 @@
 - assert:
     that: 
       - first_insert_duplicate.changed
-
-
-- debug:
-    var: first_insert_duplicate
+      
+- assert:
+    that: 
+      - first_insert_duplicate.out.startswith('WriteResult({')
+      - 'first_insert_duplicate.transformed_output == {"nInserted": 0, "writeError": {"code": 11000, "errmsg": "E11000 duplicate key error collection: test.hosts index: _id_ dup key: { _id: \"first_record\" }"}'
+  when: mongodb_version < 5
