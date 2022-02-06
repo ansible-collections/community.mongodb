@@ -16,7 +16,7 @@
     that: 
       - first_insert.changed
 
-- name: Insert a duplicate record into a collection - shell does not throw an error so neither do we
+- name: Insert a duplicate record into a collection - mongo shell does not throw an error so neither do we (mongosh does throw an error)
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
@@ -25,6 +25,7 @@
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
     mongo_cmd: "{{ mongo_cmd }}"
+    ignore_errors: "{{ 'yes' if mongodb_version.startswith('5') else 'no' }}"
   register: first_insert_duplicate
 
 - assert:

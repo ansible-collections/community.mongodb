@@ -254,6 +254,10 @@ def extract_json_document(output):
         last_bracket = output.rfind('}')
         if first_bracket > 0 and last_bracket > 0:
             tmp = output[first_bracket:last_bracket - 1]
+            tmp = tmp.replace('\n', '')
+            tmp = tmp.replace('\t', '')
+            tmp = tmp.replace("\"", "'")
+            #tmp = re.sub("\s+"," ", output)
             if tmp is not None:
                 output = tmp
     return output
