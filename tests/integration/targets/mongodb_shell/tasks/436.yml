@@ -25,7 +25,7 @@
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
     mongo_cmd: "{{ mongo_cmd }}"
-    ignore_errors: "{{ 'yes' if mongodb_version.startswith('5') else 'no' }}"
+  ignore_errors: "{{ 'yes' if mongodb_version.startswith('5') else 'no' }}"
   register: first_insert_duplicate
 
 - assert:
