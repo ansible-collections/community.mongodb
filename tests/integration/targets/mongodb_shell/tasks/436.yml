@@ -38,4 +38,3 @@
     that: 
       - first_insert_duplicate.out.startswith('WriteResult({')
       - "first_insert_duplicate.transformed_output == {\"nInserted\": 0, \"writeError\": {\"code\": 11000, \"errmsg\": \"E11000 duplicate key error collection: test.hosts index: _id_ dup key: { _id: \\\"first_record\\\" }\"}}"
-  when:  mongodb_version[0] | int < 5
