@@ -259,6 +259,12 @@ def extract_json_document(output):
             tmp = tmp.replace('\t', '')
             if tmp is not None:
                 output = tmp
+    elif re.match(r"^[a-zA-Z].*", output):
+        first_bracket = output.find('{')
+        last_bracket = output.rfind('}')
+        tmp = output[first_bracket:last_bracket + 1]
+        if tmp is not None:
+            output = tmp        
     return output
 
 
