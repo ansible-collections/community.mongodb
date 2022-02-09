@@ -39,13 +39,13 @@ options:
       - The ssl_crlfile option takes a path to a CRL file.
     required: no
     type: str
-    aliases:
-      - tlsCertificateKeyFile
   ssl_certfile:
     description:
       - Present a client certificate using the ssl_certfile option.
     required: no
     type: str
+    aliases:
+      - tlsCertificateKeyFile
   ssl_keyfile:
     description:
       - Private key for the client certificate.
