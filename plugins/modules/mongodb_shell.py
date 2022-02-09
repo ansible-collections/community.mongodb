@@ -235,7 +235,41 @@ def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False, omit=None):
     return cmd_list
 
 
+def extract_json_document(output):
+    """
+    This is for specific type of mongo shell return data in the format SomeText()
+    https://github.com/ansible-collections/community.mongodb/issues/436
+    i.e.
+    WriteResult({
+              "nInserted" : 0,
+              "writeError" : {
+                      "code" : 11000,
+                      "errmsg" : "E11000 duplicate key error collection: state.hosts index: _id_ dup key: { _id: \"r1\" }"
+              }
+      })
+    """
+    output = output.strip()
+    if re.match(r"^[a-zA-Z].*\(", output) and output.endswith(')'):
+        first_bracket = output.find('{')
+        last_bracket = output.rfind('}')
+        if first_bracket > 0 and last_bracket > 0:
+            tmp = output[first_bracket:last_bracket + 1]
+            # tmp = tmp.replace("\"", '\\\"')
+            tmp = tmp.replace('\n', '')
+            tmp = tmp.replace('\t', '')
+            if tmp is not None:
+                output = tmp
+    #  elif re.match(r"^[a-zA-Z].*", output):
+        # first_bracket = output.find('{')
+        # last_bracket = output.rfind('}')
+        # tmp = output[first_bracket:last_bracket + 1]
+        # if tmp is not None:
+            # output = tmp
+    return output
+
+
 def transform_output(output, transform_type, split_char):
+    output = extract_json_document(output)
     if transform_type == "auto":  # determine what transform_type to perform
         if output.strip().startswith("{") or output.strip().startswith("["):
             transform_type = "json"
@@ -255,7 +289,7 @@ def transform_output(output, transform_type, split_char):
             transform_type = "split"
             split_char = "\t"
         else:
-            tranform_type = "raw"
+            transform_type = "raw"
     if transform_type == "json":
         try:
             output = json.loads(output)
