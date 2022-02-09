@@ -14,6 +14,12 @@ net:
   compression:
     compressors: {{ net_compressors }}
 {% endif %}
+{% if mongodb_use_tls %}
+  tls:
+    mode: requireTLS
+    certificateKeyFile: {{ mongodb_certificate_key_file }}
+    CAFile: {{ mongodb_certificate_ca_file }}
+{% endif %}
 sharding:
   configDB: "{{ config_repl_set_name }}/{{ config_servers }}"
 processManagement:

@@ -29,3 +29,4 @@ openssl_keyfile_content: |
 net_compressors: null
 mongos_config_template: "mongos.conf.j2"
 skip_restart: true
+mongodb_use_tls: false
