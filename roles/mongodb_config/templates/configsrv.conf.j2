@@ -36,6 +36,12 @@ net:
   compression:
     compressors: {{ net_compressors }}
 {% endif %}
+{% if mongodb_use_tls %}
+  tls:
+    mode: requireTLS
+    certificateKeyFile: {{ mongodb_certificate_key_file }}
+    CAFile: {{ mongodb_certificate_ca_file }}
+{% endif %}
 
 {% if authorization == "enabled" %}
 security:

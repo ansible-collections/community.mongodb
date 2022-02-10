@@ -23,6 +23,9 @@ replicaset: When enabled add a replication section to the configuration. Default
 * `mongod_config_template`: If defined allows to override path to mongod config template with custom configuration. Default "mongod.conf.j2"
 * `skip_restart`: If set to `true` will skip restarting mongod service when config file or the keyfile content changes. Default `true`.
 * `db_path`: Path to database data location. Default `/var/lib/mongodb` on Debian based distributions, `/var/lib/mongo` for others.
+* `mongodb_use_tls`: Wether to use tls. Default false.
+* `mongodb_certificate_key_file`: Path to the PEM-file containing the certficate and private key.
+* `mongodb_certificate_ca_file`:  Path to the CA-file.
 
 Dependencies
 ------------
