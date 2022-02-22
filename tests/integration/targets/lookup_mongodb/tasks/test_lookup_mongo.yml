@@ -17,7 +17,7 @@
 
 - name: install pymongo
   pip:
-    name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:2] | float < 3.6 else 'pymongo' }}"
+    name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
 
 - name: "assert we complain properly if we can't connect to mongo"
   debug: msg="{{ lookup('community.mongodb.mongodb', mongodb_parameters ) }}"
