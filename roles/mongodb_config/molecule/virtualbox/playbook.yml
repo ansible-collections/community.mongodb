@@ -17,7 +17,7 @@
 
     - name: Install pymongo
       pip:
-        name: pymongo
+        name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
       when: ansible_hostname == "ubuntu-16"
 
     - name: Install MongoDB Shell
