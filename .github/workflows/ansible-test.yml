@@ -69,6 +69,13 @@ jobs:
           max_attempts: 3
           command: sudo apt-get install -y mongodb-org
 
+      - name: Install dateutil
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install python-dateutil
+
       - name: Install python libs
         uses: nick-invision/retry@v2
         with:
