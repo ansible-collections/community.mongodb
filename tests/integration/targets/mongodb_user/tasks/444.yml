@@ -16,8 +16,7 @@
 
 - name: Set additional options for the mongod
   set_fact:
-    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
-      --clusterAuthMode x509 \
+    mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
       --tlsMode requireTLS \
       --tlsCertificateKeyFile /tmp/certs44/mongodb.pem"
 
