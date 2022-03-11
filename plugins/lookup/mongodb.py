@@ -21,7 +21,8 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = '''
-    author: 'Marcos Diez <marcos (at) unitron.com.br>'
+    author: 
+      - 'Marcos Diez <marcos (at) unitron.com.br>'
     name: mongodb
     version_added: "1.0.0"
     short_description: lookup info from MongoDB
