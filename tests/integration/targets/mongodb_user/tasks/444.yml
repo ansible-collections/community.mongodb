@@ -32,3 +32,5 @@
     state: present
     ssl: true
     ssl_ca_certs: /tmp/certs44/mongodb.pem
+    connection_options:
+      - "tlsAllowInvalidHostnames=true"
