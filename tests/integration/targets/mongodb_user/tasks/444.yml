@@ -1,0 +1,38 @@
+---
+# Copyright 2022, Rhys Campbell <rhyscampbell@bluewin.ch>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+
+- name: Ensure cert dir exists
+  file:
+    path: /tmp/certs44
+    state: directory
+    owner: "{{ mongodb_user }}"
+    group: "{{ mongodb_user }}"
+
+- name: Generate certs
+  shell: |
+    cd /tmp/certs44
+    openssl req -newkey rsa:2048 -new -x509 -days 365 -nodes -out mongodb-cert.crt -keyout mongodb-cert.key
+    cat mongodb-cert.key mongodb-cert.crt > mongodb.pem
+
+- name: Set additional options for the mongod
+  set_fact:
+    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
+      --clusterAuthMode x509 \
+      --tlsMode requireTLS \
+      --tlsCertificateKeyFile /tmp/certs44/mongodb.pem"
+
+- include_tasks: mongod_singlenode.yml
+
+- name: Create admin user with module
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    ssl: true
+    ssl_ca_certs: /tmp/certs44/mongodb.pem
