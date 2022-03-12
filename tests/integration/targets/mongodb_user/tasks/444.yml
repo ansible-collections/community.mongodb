@@ -34,3 +34,13 @@
     ssl_ca_certs: /tmp/certs44/mongodb.pem
     connection_options:
       - "tlsAllowInvalidHostnames=true"
+
+- name: Get admin
+  shell: mongo admin --host "localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('admin'))"
+  register: admin_myuser
+
+- name: Assert that user setup is as expected
+  assert:
+    that:
+    - '''admin'' in admin_myuser.stdout'
+    - '''root'' in admin_myuser.stdout'
