@@ -35,12 +35,22 @@
     connection_options:
       - "tlsAllowInvalidHostnames=true"
 
-- name: Get admin
+- name: Ensure mongo is install
+  package:
+    name: mongodb-org-shell
+  when: mongodb_version.startswith('4')
+
+- name: Get admin user
   shell: mongo admin --host localhost --port 3001 --ssl --sslCAFile /tmp/certs44/mongodb.pem --sslAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
   when: mongodb_version.startswith('4')
 
-- name: Get admin
+- name: Ensure mongo is install
+  package:
+    name: mongodb-mongosh
+  when: not mongodb_version.startswith('4')
+
+- name: Get admin user
   shell: mongosh admin --host localhost --port 3001 --tls --tlsCAFile /tmp/certs44/mongodb.pem --tlsAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
   when: not mongodb_version.startswith('4')
