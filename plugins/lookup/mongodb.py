@@ -21,6 +21,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = '''
+---
 author:
     - Marcos Diez <marcos (at) unitron.com.br>
 name: mongodb
