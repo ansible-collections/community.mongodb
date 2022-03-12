@@ -19,14 +19,14 @@
     mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
       --sslMode requireSSL \
       --sslPEMKeyFile /tmp/certs44/mongodb.pem"
-  when: mongodb_version.startswith('4')
+  when: mongodb_version == '4.0'
 
 - name: Set additional options for the mongod (5+)
   set_fact:
     mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
       --tlsMode requireTLS \
       --tlsCertificateKeyFile /tmp/certs44/mongodb.pem"
-  when: not mongodb_version.startswith('4')
+  when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - include_tasks: mongod_singlenode.yml
 
@@ -46,22 +46,22 @@
 - name: Ensure mongo is install
   package:
     name: mongodb-org-shell
-  when: mongodb_version.startswith('4')
+  when: mongodb_version == '4.0'
 
 - name: Get admin user
   shell: mongo admin --host localhost --port 3001 --ssl --sslCAFile /tmp/certs44/mongodb.pem --sslAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
-  when: mongodb_version.startswith('4')
+  when: mongodb_version == '4.0'
 
 - name: Ensure mongo is install
   package:
     name: mongodb-mongosh
-  when: not mongodb_version.startswith('4')
+  when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - name: Get admin user
   shell: mongosh admin --host localhost --port 3001 --tls --tlsCAFile /tmp/certs44/mongodb.pem --tlsAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
-  when: not mongodb_version.startswith('4')
+  when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - name: Assert that user setup is as expected
   assert:
