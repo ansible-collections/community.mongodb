@@ -36,7 +36,7 @@
       - "tlsAllowInvalidHostnames=true"
 
 - name: Get admin
-  shell: mongo admin --host "localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('admin'))"
+  shell: mongo admin --host localhost --port 3001 --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
 
 - name: Assert that user setup is as expected
