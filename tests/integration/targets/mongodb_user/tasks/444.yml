@@ -14,11 +14,19 @@
     openssl req -newkey rsa:2048 -new -x509 -days 365 -nodes -out mongodb-cert.crt -keyout mongodb-cert.key -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
     cat mongodb-cert.key mongodb-cert.crt > mongodb.pem
 
-- name: Set additional options for the mongod
+- name: Set additional options for the mongod (4)
+  set_fact:
+    mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
+      --sslMode requireSSL \
+      --sslPEMKeyFile /tmp/certs44/mongodb.pem"
+  when: mongodb_version.startswith('4')
+
+- name: Set additional options for the mongod (5+)
   set_fact:
     mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
       --tlsMode requireTLS \
       --tlsCertificateKeyFile /tmp/certs44/mongodb.pem"
+  when: not mongodb_version.startswith('4')
 
 - include_tasks: mongod_singlenode.yml
 
