@@ -36,12 +36,12 @@
       - "tlsAllowInvalidHostnames=true"
 
 - name: Get admin
-  shell: mongo admin --host localhost --port 3001 --ssl --sslCAFile /tmp/certs44/mongodb.pem  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
+  shell: mongo admin --host localhost --port 3001 --ssl --sslCAFile /tmp/certs44/mongodb.pem --sslAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
   when: mongodb_version.startswith('4')
 
 - name: Get admin
-  shell: mongosh admin --host localhost --port 3001 --tls --tlsCAFile /tmp/certs44/mongodb.pem  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
+  shell: mongosh admin --host localhost --port 3001 --tls --tlsCAFile /tmp/certs44/mongodb.pem --tlsAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
   when: not mongodb_version.startswith('4')
 
