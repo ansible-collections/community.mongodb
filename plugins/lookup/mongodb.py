@@ -21,65 +21,64 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = '''
----
-author:
-    - Marcos Diez <marcos (at) unitron.com.br>
-name: mongodb
-version_added: "1.0.0"
-short_description: lookup info from MongoDB
-description:
-    - 'The ``MongoDB`` lookup runs the *find()* command on a given *collection* on a given *MongoDB* server.'
-    - 'The result is a list of jsons, so slightly different from what PyMongo returns. In particular, *timestamps* are converted to epoch integers.'
-options:
-    connect_string:
-        description:
-            - Can be any valid MongoDB connection string, supporting authentication, replica sets, etc.
-            - "More info at U(https://docs.mongodb.org/manual/reference/connection-string/)"
-        default: "mongodb://localhost/"
-    database:
-        description:
-            - Name of the database which the query will be made
-        required: True
-    collection:
-        description:
-            - Name of the collection which the query will be made
-        required: True
-    filter:
-        description:
-            - Criteria of the output
-        type: 'dict'
-        default: '{}'
-    projection:
-        description:
-            - Fields you want returned
-        type: dict
-        default: "{}"
-    skip:
-        description:
-            - How many results should be skipped
-        type: integer
-    limit:
-        description:
-            - How many results should be shown
-        type: integer
-    sort:
-        description:
-            - Sorting rules.
-            - Please use the strings C(ASCENDING) and C(DESCENDING) to set the order.
-            - Check the example for more information.
-        type: list
-        default: "[]"
-    extra_connection_parameters:
-        description:
-            - Extra connection parameters that to be sent to pymongo.MongoClient
-            - Check the example to see how to connect to mongo using an SSL certificate.
-            - "All possible parameters are here: U(https://api.mongodb.com/python/current/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient)"
-        type: dict
-        default: "{}"
-notes:
-    - "Please check https://api.mongodb.org/python/current/api/pymongo/collection.html?highlight=find#pymongo.collection.Collection.find for more details."
-requirements:
-    - pymongo >= 2.4 (python library)
+    author:
+        - Marcos Diez <marcos (at) unitron.com.br>
+    name: mongodb
+    version_added: "1.0.0"
+    short_description: lookup info from MongoDB
+    description:
+        - 'The ``MongoDB`` lookup runs the *find()* command on a given *collection* on a given *MongoDB* server.'
+        - 'The result is a list of jsons, so slightly different from what PyMongo returns. In particular, *timestamps* are converted to epoch integers.'
+    options:
+        connect_string:
+            description:
+                - Can be any valid MongoDB connection string, supporting authentication, replica sets, etc.
+                - "More info at U(https://docs.mongodb.org/manual/reference/connection-string/)"
+            default: "mongodb://localhost/"
+        database:
+            description:
+                - Name of the database which the query will be made
+            required: True
+        collection:
+            description:
+                - Name of the collection which the query will be made
+            required: True
+        filter:
+            description:
+                - Criteria of the output
+            type: 'dict'
+            default: '{}'
+        projection:
+            description:
+                - Fields you want returned
+            type: dict
+            default: "{}"
+        skip:
+            description:
+                - How many results should be skipped
+            type: integer
+        limit:
+            description:
+                - How many results should be shown
+            type: integer
+        sort:
+            description:
+                - Sorting rules.
+                - Please use the strings C(ASCENDING) and C(DESCENDING) to set the order.
+                - Check the example for more information.
+            type: list
+            default: "[]"
+        extra_connection_parameters:
+            description:
+                - Extra connection parameters that to be sent to pymongo.MongoClient
+                - Check the example to see how to connect to mongo using an SSL certificate.
+                - "All possible parameters are here: U(https://api.mongodb.com/python/current/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient)"
+            type: dict
+            default: "{}"
+    notes:
+        - "Please check https://api.mongodb.org/python/current/api/pymongo/collection.html?highlight=find#pymongo.collection.Collection.find for more details."
+    requirements:
+        - pymongo >= 2.4 (python library)
 '''
 
 EXAMPLES = '''
