@@ -8,9 +8,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'supported_by': 'community'}
 
 DOCUMENTATION = '''
-    name: mongodb
     author:
-        - Matt Martz
+      - Matt Martz
+    name: mongodb
     version_added: "1.0.0"
     short_description: Use MongoDB for caching
     description:
@@ -18,30 +18,30 @@ DOCUMENTATION = '''
     requirements:
         - pymongo>=3
     options:
-        _uri:
+      _uri:
         description:
-            - MongoDB Connection String URI
+          - MongoDB Connection String URI
         required: False
         env:
-            - name: ANSIBLE_CACHE_PLUGIN_CONNECTION
+          - name: ANSIBLE_CACHE_PLUGIN_CONNECTION
         ini:
-            - key: fact_caching_connection
+          - key: fact_caching_connection
             section: defaults
-        _prefix:
+      _prefix:
         description: User defined prefix to use when creating the DB entries
         default: ansible_facts
         env:
-            - name: ANSIBLE_CACHE_PLUGIN_PREFIX
+          - name: ANSIBLE_CACHE_PLUGIN_PREFIX
         ini:
-            - key: fact_caching_prefix
+          - key: fact_caching_prefix
             section: defaults
-        _timeout:
+      _timeout:
         default: 86400
         description: Expiration timeout in seconds for the cache plugin data. Set to 0 to never expire
         env:
-            - name: ANSIBLE_CACHE_PLUGIN_TIMEOUT
+          - name: ANSIBLE_CACHE_PLUGIN_TIMEOUT
         ini:
-            - key: fact_caching_timeout
+          - key: fact_caching_timeout
             section: defaults
         type: integer
 '''
