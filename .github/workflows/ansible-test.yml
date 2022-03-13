@@ -135,7 +135,7 @@ jobs:
     strategy:
       matrix:
         mongodb_version:
-          - "4.0"
+          - "4.4"
           - "5.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
@@ -201,7 +201,7 @@ jobs:
       - name: Upload Coverage data
         run: tests/coverage.sh
 
-  integration_3123:  # RUn tests with pymongo 3.12.3 driver
+  integration_3123:  # Run tests with pymongo 3.12.3 driver
     needs: integration_matrix
     runs-on: ubuntu-20.04
     defaults:
@@ -210,7 +210,7 @@ jobs:
     strategy:
       matrix:
         mongodb_version:
-          - "4.0"
+          - "4.4"
           - "5.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
