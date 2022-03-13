@@ -68,7 +68,7 @@
       --clusterAuthMode x509 \
       --sslMode requireSSL \
       --sslCAFile /tmp/certs/ca.crt \
-      --sslPEMKeyFile /tmp/certs44/mongodb.pem"
+      --sslPEMKeyFile /tmp/certs/mongodb.pem"
   when: mongodb_version == '4.0'
 
 - include_tasks: mongod_singlenode.yml
