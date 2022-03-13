@@ -8,8 +8,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'supported_by': 'community'}
 
 DOCUMENTATION = '''
-    author:
-      - Matt Martz
     name: mongodb
     version_added: "1.0.0"
     short_description: Use MongoDB for caching
