@@ -69,6 +69,13 @@ jobs:
           max_attempts: 3
           command: sudo apt-get install -y mongodb-org
 
+      - name: Install dateutil
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          command: pip install python-dateutil
+
       - name: Install python libs
         uses: nick-invision/retry@v2
         with:
@@ -194,7 +201,7 @@ jobs:
       - name: Upload Coverage data
         run: tests/coverage.sh
 
-  integration_3123:  # RUn tests with pymongo 3.12.3 driver
+  integration_3123:  # Run tests with pymongo 3.12.3 driver
     needs: integration_matrix
     runs-on: ubuntu-20.04
     defaults:

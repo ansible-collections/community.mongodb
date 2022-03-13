@@ -1,3 +1,7 @@
+- name: Tests not compatiable with 4.0
+  meta: 'end_play'
+  when: mongodb_version == '4.0'
+
 - name: Ensure tests home exists
   file:
     path: '{{ remote_tmp_dir }}/tests'

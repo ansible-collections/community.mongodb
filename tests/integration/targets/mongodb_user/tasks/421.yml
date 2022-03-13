@@ -49,13 +49,27 @@
     chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
     chmod 0400 -R /tmp/certs;
 
-- name: Set additional options for the mongod
+- name: Save mongod_storage_engine_opts to a variable so we can reset it later
+  set_fact:
+    old_mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}"
+
+- name: Set additional options for the mongod (4.4+)
   set_fact:
     mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
       --clusterAuthMode x509 \
       --tlsMode requireTLS \
       --tlsCAFile /tmp/certs/ca.crt
       --tlsCertificateKeyFile /tmp/certs/server.pem"
+  when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
+
+- name: Set additional options for the mongod (4.0)
+  set_fact:
+    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
+      --clusterAuthMode x509 \
+      --sslMode requireSSL \
+      --sslCAFile /tmp/certs/ca.crt \
+      --sslPEMKeyFile /tmp/certs/mongodb.pem"
+  when: mongodb_version == '4.0'
 
 - include_tasks: mongod_singlenode.yml
 

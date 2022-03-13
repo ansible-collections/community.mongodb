@@ -357,3 +357,7 @@
 - include_tasks: mongod_teardown.yml
 
 - include_tasks: 421.yml
+
+- include_tasks: mongod_teardown.yml
+
+- include_tasks: 444.yml
