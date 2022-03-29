@@ -9,5 +9,6 @@
 - name: Wait for port to become active
   listen: Restart mongod service
   wait_for:
+    host: "{{ bind_ip }}"
     port: "{{ config_port }}"
   when: not skip_restart
