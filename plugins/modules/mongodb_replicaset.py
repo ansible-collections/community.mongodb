@@ -401,8 +401,8 @@ def replicaset_find(client):
     Returns:
         dict: when user exists, False otherwise.
     """
-    doc = client['admin'].command('isMaster')
-    if 'setName' in doc.keys():
+    doc = client['admin'].command('hello')
+    if 'setName' in doc:
         return str(doc['setName'])
     return False
 
