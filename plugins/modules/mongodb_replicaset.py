@@ -100,6 +100,14 @@ options:
       - Add additonal info for debug.
     type: bool
     default: false
+  cluster_cmd:
+    description:
+      - Command the module should use to obtain information about the MongoDB node we are connecting to. 
+    type: str
+    choices:
+      - isMaster
+      - hello
+    default: hello
 notes:
 - Requires the pymongo Python package on the remote host, version 2.4.2+. This
   can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
@@ -392,16 +400,17 @@ def replicaset_reconfigure(module, client, config, force, max_time_ms):
     # return result
 
 
-def replicaset_find(client):
+def replicaset_find(client, cluster_cmd):
     """Check if a replicaset exists.
 
     Args:
         client (cursor): Mongodb cursor on admin database.
+        cluster_cmd (str): Either isMaster or hello
 
     Returns:
-        dict: when user exists, False otherwise.
+        str: when the node is a member of a replicaset , False otherwise.
     """
-    doc = client['admin'].command('hello')
+    doc = client['admin'].command(cluster_cmd)
     if 'setName' in doc:
         return str(doc['setName'])
     return False
@@ -519,6 +528,7 @@ def main():
         force=dict(type='bool', default=False),
         max_time_ms=dict(type='int', default=None),
         debug=dict(type='bool', default=False),
+        cluster_cmd=dict(type='str', choices=['isMaster', 'hello'], default='hello')
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -542,6 +552,7 @@ def main():
     force = module.params['force']  # TODO tidy this stuff up
     max_time_ms = module.params['max_time_ms']
     debug = module.params['debug']
+    cluster_cmd = module.params['0cluster_cmd']
 
     if validate and reconfigure is False:
         if len(members) <= 2 or len(members) % 2 == 0:
@@ -560,7 +571,7 @@ def main():
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
 
     try:
-        rs = replicaset_find(client)  # does not require auth
+        rs = replicaset_find(client, cluster_cmd)  # does not require auth
     except Exception as e:
         module.fail_json(msg='Unable to connect to query replicaset: %s' % to_native(e))
 
