@@ -102,7 +102,7 @@ options:
     default: false
   cluster_cmd:
     description:
-      - Command the module should use to obtain information about the MongoDB node we are connecting to. 
+      - Command the module should use to obtain information about the MongoDB node we are connecting to.
     type: str
     choices:
       - isMaster
