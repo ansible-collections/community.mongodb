@@ -552,7 +552,7 @@ def main():
     force = module.params['force']  # TODO tidy this stuff up
     max_time_ms = module.params['max_time_ms']
     debug = module.params['debug']
-    cluster_cmd = module.params['0cluster_cmd']
+    cluster_cmd = module.params['cluster_cmd']
 
     if validate and reconfigure is False:
         if len(members) <= 2 or len(members) % 2 == 0:
