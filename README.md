@@ -183,7 +183,7 @@ ansible-test units --docker default -v --color --python 3.6
 
 ## Release Notes
 
-Needs improvement but the general process for issuing a new release to Ansibel Galaxy is as follows...
+Needs improvement but the general process for issuing a new release to Ansible Galaxy is as follows...
 
 - View commits since last release and copy text for release notes
 
@@ -192,6 +192,7 @@ git log 1.3.0..HEAD
 git log 1.3.0..HEAD --oneline
 ```
 
+- Create a new branch
 - Update galaxy.yml with version and any other appropriate info
 - Update changelogs/changelog.yaml
 - Update CHANGELOG.rst
