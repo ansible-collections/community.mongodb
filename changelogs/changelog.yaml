@@ -191,3 +191,14 @@ releases:
       - 387 - Fix doucmentation for mongod cache plugin.
     major_changes:
       - 397 & 376 - mongodb_replicaset - Add reconfigure abilities to module. Add and removes members from replicasets.
+  1.3.3:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 448 - Fix issue in roles where mongod does not restart when a custom bind_ip is set.
+      - 440 - Fix incorrect alias ssl_crlfile.
+      - 450 - Fix issues with mongodb_replicaset connecting with the pymongo 4.0.X driver.
+    minor_changes:
+      - 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello. 
+        Hello is the default. isMaster is useful for older versions of MongoDB. 
+        See [db.hello()](https://www.mongodb.com/docs/manual/reference/method/db.hello/) for more.

@@ -4,6 +4,28 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.3.3
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Bug Fixes
+---------
+
+- 448 - Fix issue in roles where mongod does not restart when a custom bind_ip is set.
+- 440 - Fix incorrect alias ssl_crlfile.
+- 450 - Fix issues with mongodb_replicaset connecting with the pymongo 4.0.X driver.
+
+Minor Changes
+---------------
+
+- 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello. 
+  Hello is the default. isMaster is useful for older versions of MongoDB. 
+  See [db.hello()](https://www.mongodb.com/docs/manual/reference/method/db.hello/) for more.
+
 v1.3.2
 =======
 
