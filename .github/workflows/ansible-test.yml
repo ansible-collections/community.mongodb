@@ -33,7 +33,7 @@ jobs:
           command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
-        run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/*
+        run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/* --exclude tests/ansible-operator/
 
   units:
     runs-on: ubuntu-20.04
@@ -81,7 +81,7 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install mtools pymongo==3.12.2 psutil coverage==4.5.4 pytest-xdist
+          command: pip install mtools==1.6.4 pymongo==3.12.2 psutil coverage==4.5.4 pytest-xdist
 
       - name: Start a replicaset with mtools (3 nodes, starting from port 27017)
         run: mlaunch --replicaset --auth

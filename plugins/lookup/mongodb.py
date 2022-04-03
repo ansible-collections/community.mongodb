@@ -45,12 +45,12 @@ DOCUMENTATION = '''
             description:
                 - Criteria of the output
             type: 'dict'
-            default: '{}'
+            default: {}
         projection:
             description:
                 - Fields you want returned
             type: dict
-            default: "{}"
+            default: {}
         skip:
             description:
                 - How many results should be skipped
@@ -65,14 +65,15 @@ DOCUMENTATION = '''
                 - Please use the strings C(ASCENDING) and C(DESCENDING) to set the order.
                 - Check the example for more information.
             type: list
-            default: "[]"
+            elements: list
+            default: []
         extra_connection_parameters:
             description:
                 - Extra connection parameters that to be sent to pymongo.MongoClient
                 - Check the example to see how to connect to mongo using an SSL certificate.
                 - "All possible parameters are here: U(https://api.mongodb.com/python/current/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient)"
             type: dict
-            default: "{}"
+            default: {}
     notes:
         - "Please check https://api.mongodb.org/python/current/api/pymongo/collection.html?highlight=find#pymongo.collection.Collection.find for more details."
     requirements:
