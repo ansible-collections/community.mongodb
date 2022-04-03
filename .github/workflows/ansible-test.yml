@@ -30,10 +30,10 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install https://github.com/ansible/ansible/archive/stable-2.12.tar.gz --disable-pip-version-check
+          command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
-        run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/* --exclude tests/ansible-operator/
+        run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/* --exclude tests/ansible-operator/ --skip-test invalid-documentation
 
   units:
     runs-on: ubuntu-20.04
