@@ -22,7 +22,7 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 name: mongodb
-author: 
+author:
   - Marcos Diez
 version_added: "1.0.0"
 short_description: lookup info from MongoDB
