@@ -1,0 +1,2 @@
+tests/ansible-operator/config/manager/manager.yaml yamllint:unparsable-with-libyaml
+tests/ansible-operator/roles/create-certificates/templates/certificate.yaml yamllint:unparsable-with-libyaml
