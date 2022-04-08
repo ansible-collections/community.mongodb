@@ -218,6 +218,10 @@ Any contribution is welcome and we only ask contributors to:
 * Provide *at least* integration tests for any contribution.
 * Create an issue for any significant contribution that would change a large portion of the codebase.
 
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/ansible-collections/community.mongodb.svg)](https://starchart.cc/ansible-collections/community.mongodb)
+
 ## License
 
 GNU General Public License v3.0 or later
