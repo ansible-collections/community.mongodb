@@ -467,6 +467,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
     def test_is_auth_enabled(self):
         fake_module = FakeAnsibleModule()
+        fake_module.params['replica_set'] = 'replset'
         result =  mongodb_common.is_auth_enabled(fake_module)
         print("result = {0}".format(result))
         assert result
