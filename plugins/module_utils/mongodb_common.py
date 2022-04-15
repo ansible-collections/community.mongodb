@@ -305,6 +305,7 @@ def is_auth_enabled(module):
         myclient['admin'].command('listDatabases', 1.0)
         auth_is_enabled = False
     except Exception as excep:
+        print(excep)
         if hasattr(excep, 'code') and excep.code in [13, 18]:
             auth_is_enabled = True
         if auth_is_enabled is None:  # if this is still none we have a problem
