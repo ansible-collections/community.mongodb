@@ -411,7 +411,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         # Should return false as the additonal dict keys are default values
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
 
-    def test_lists_art_different1(self):
+    def test_lists_are_different1(self):
         l1 = [
             "localhost:3001",
             "localhost:3002",
@@ -424,7 +424,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         ]
         self.assertFalse(mongodb_common.lists_are_different(l1, l2))
 
-    def test_lists_art_different2(self):
+    def test_lists_are_different2(self):
         l1 = [
             "localhost:3001",
             "localhost:3002"
@@ -436,7 +436,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         ]
         self.assertTrue(mongodb_common.lists_are_different(l1, l2))
 
-    def test_lists_art_different1(self):
+    def test_lists_are_different1(self):
         l1 = [
             "localhost:3001",
             "localhost:3002",
@@ -467,7 +467,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
     def test_is_auth_enabled(self):
         fake_module = FakeAnsibleModule()
-        assert mongodb_common.is_auth_enabled(fake_module)
+        result =  mongodb_common.is_auth_enabled(fake_module)
+        print("result = {0}".format(result))
+        assert result
 
 
 if __name__ == '__main__':

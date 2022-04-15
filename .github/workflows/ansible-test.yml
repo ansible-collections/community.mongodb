@@ -83,7 +83,7 @@ jobs:
           max_attempts: 3
           command: pip install mtools==1.6.4 pymongo==3.12.2 psutil coverage==4.5.4 pytest-xdist
 
-      - name: Start a replicaset with mtools (3 nodes, starting from port 27017, auth enable)
+      - name: Start a replicaset with mtools (3 nodes, starting from port 27017, auth enabled)
         run: mlaunch --replicaset --auth
         working-directory: /home/runner/work/
 
