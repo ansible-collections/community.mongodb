@@ -465,6 +465,10 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         client = mongodb_common.get_mongodb_client(fake_module)
         assert "MongoClient" in str(client)
 
+    def test_is_auth_enabled(self):
+        fake_module = FakeAnsibleModule()
+        assert mongodb_common.is_auth_enabled(fake_module)
+
 
 if __name__ == '__main__':
     unittest.main()
