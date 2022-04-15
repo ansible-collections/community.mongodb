@@ -87,6 +87,9 @@ jobs:
         run: mlaunch --replicaset --auth
         working-directory: /home/runner/work/
 
+      - name: Launch a single instance (no auth)
+        run: mlaunch --single --port 27999
+
       - name: Run unit tests
         run: ansible-test units -v --color --python 3.8 --coverage
 

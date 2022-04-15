@@ -472,6 +472,13 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         print("result = {0}".format(result))
         assert result
 
+    def test_is_auth_enabled_no_auth(self):
+        fake_module = FakeAnsibleModule()
+        fake_module.params['login_port'] = 27999
+        result =  mongodb_common.is_auth_enabled(fake_module)
+        print("result = {0}".format(result))
+        assert result    
+
 
 if __name__ == '__main__':
     unittest.main()
