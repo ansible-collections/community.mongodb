@@ -284,7 +284,7 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
 
 def is_auth_enabled(module):
     """
-    Returns True if auth is enable on the mongo instance
+    Returns True if auth is enabled on the mongo instance
     For PyMongo 4+ we have to connect directly to the instance
     rather than the replicaset
     """
