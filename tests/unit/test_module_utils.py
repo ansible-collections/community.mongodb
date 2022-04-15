@@ -477,8 +477,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params['login_port'] = 27999
         fake_module.params['replica_set'] = None
         result =  mongodb_common.is_auth_enabled(fake_module)
-        print("result = {0}".format(result))
-        assert result    
+        assert result is False    
 
 
 if __name__ == '__main__':
