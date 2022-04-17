@@ -411,7 +411,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         # Should return false as the additonal dict keys are default values
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
 
-    def test_lists_art_different1(self):
+    def test_lists_are_different1(self):
         l1 = [
             "localhost:3001",
             "localhost:3002",
@@ -424,7 +424,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         ]
         self.assertFalse(mongodb_common.lists_are_different(l1, l2))
 
-    def test_lists_art_different2(self):
+    def test_lists_are_different2(self):
         l1 = [
             "localhost:3001",
             "localhost:3002"
@@ -436,7 +436,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         ]
         self.assertTrue(mongodb_common.lists_are_different(l1, l2))
 
-    def test_lists_art_different1(self):
+    def test_lists_are_different1(self):
         l1 = [
             "localhost:3001",
             "localhost:3002",
@@ -464,6 +464,20 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         del fake_module.params['reconfigure']
         client = mongodb_common.get_mongodb_client(fake_module)
         assert "MongoClient" in str(client)
+
+    def test_is_auth_enabled(self):
+        fake_module = FakeAnsibleModule()
+        fake_module.params['replica_set'] = 'replset'
+        result = mongodb_common.is_auth_enabled(fake_module)
+        print("result = {0}".format(result))
+        assert result
+
+    def test_is_auth_enabled_no_auth(self):
+        fake_module = FakeAnsibleModule()
+        fake_module.params['login_port'] = 27999
+        fake_module.params['replica_set'] = None
+        result = mongodb_common.is_auth_enabled(fake_module)
+        assert result is False
 
 
 if __name__ == '__main__':

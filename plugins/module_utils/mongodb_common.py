@@ -284,7 +284,7 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
 
 def is_auth_enabled(module):
     """
-    Returns True if auth is enable on the mongo instance
+    Returns True if auth is enabled on the mongo instance
     For PyMongo 4+ we have to connect directly to the instance
     rather than the replicaset
     """
@@ -305,7 +305,7 @@ def is_auth_enabled(module):
         myclient['admin'].command('listDatabases', 1.0)
         auth_is_enabled = False
     except Exception as excep:
-        if hasattr(excep, 'code') and excep.code == 13:
+        if hasattr(excep, 'code') and excep.code in [13]:
             auth_is_enabled = True
         if auth_is_enabled is None:  # if this is still none we have a problem
             module.fail_json(msg='Unable to determine if auth is enabled: {0}'.format(traceback.format_exc()))
