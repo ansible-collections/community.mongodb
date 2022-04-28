@@ -292,6 +292,7 @@ def is_auth_enabled(module):
     connection_params = {}
     connection_params['host'] = module.params['login_host']
     connection_params['port'] = module.params['login_port']
+    connection_params['directConnection'] = True  # Need to do this for 3.12.* as well
     if int(PyMongoVersion[0]) >= 4:  # we need to connect directly to the instance
         connection_params['directConnection'] = True
     else:
