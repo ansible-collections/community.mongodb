@@ -359,7 +359,7 @@ def main():
         directConnection = False
         if module.params['replica_set'] is None:
             directConnection = True
-        client = get_mongodb_client(module)
+        client = get_mongodb_client(module, directConnection=directConnection)
         client = mongo_auth(module, client, directConnection=directConnection)
     except Exception as e:
         module.fail_json(msg='Unable to connect to database: %s' % to_native(e))
