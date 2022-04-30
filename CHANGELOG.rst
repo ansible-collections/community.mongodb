@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.3.4
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Bug Fixes
+---------
+
+- 466 & 467 - Fixes localhost exception bug due to directConnection parameter in newer pymongo versions.
+
 v1.3.3
 =======
 

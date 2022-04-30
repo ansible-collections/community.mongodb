@@ -202,3 +202,8 @@ releases:
       - 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello. 
         hello is the default. isMaster is useful for older versions of MongoDB. 
         See [db.hello()](https://www.mongodb.com/docs/manual/reference/method/db.hello/) for more.
+  1.3.4:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 466 & 467 - Fixes localhost exception bug due to directConnection parameter in newer pymongo versions.
