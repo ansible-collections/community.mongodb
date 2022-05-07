@@ -146,7 +146,6 @@ def main():
         client = mongo_auth(module, client, directConnection=True)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
-  
 
     try:
         current_oplog_size = get_olplog_size(client)
