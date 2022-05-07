@@ -27,7 +27,7 @@ except ImportError:
 
 def check_compatibility(module, srv_version, driver_version):
     if driver_version.startswith('3.12') or driver_version.startswith('4'):
-        if int(srv_version[0]) > 4:
+        if int(srv_version[0]) < 4:
             if module.params['strict_compatibility']:
                 module.fail_json("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
             else:
