@@ -81,9 +81,6 @@ failed:
   type: bool
 '''
 
-from distutils.version import LooseVersion
-
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
@@ -161,7 +158,7 @@ def main():
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
 
     srv_version = check_srv_version(module, client)
-    if srv_version < LooseVersion(ver):
+    if srv_version < float(ver):
         module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
 
     try:

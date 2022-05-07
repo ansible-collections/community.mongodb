@@ -3,7 +3,6 @@ __metaclass__ = type
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from pkg_resources import parse_version as LooseVersion
 import traceback
 import os
 import ssl as ssl_lib
@@ -27,6 +26,19 @@ except ImportError:
 
 
 def check_compatibility(module, srv_version, driver_version):
+    if driver_version.startswith('3.12') or driver_version.startswith('4'):
+        if int(srv_version[0]) > 4:
+            if module.params['strict_compatibility']:
+                module.fail_json("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
+            else:
+                module.warn("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
+    else:
+        if module.params['strict_compatibility']:
+            module.fail_json("You must use pymongo 3.12+ or 4+.")
+        else:
+            module.warn("You should use pymongo 3.12+ or 4+ but {0} was found.".format(driver_version))
+
+def _check_compatibility(module, srv_version, driver_version):
     """Check the compatibility between the driver and the database.
 
     See: https://docs.mongodb.com/ecosystem/drivers/driver-compatibility-reference/#python-driver-compatibility
@@ -143,6 +155,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_database=dict(type='str', required=False, default='admin'),
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
+        strict_compatibility=dict(type='bool', default=True),
     )
     ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False, aliases=['tls']),
@@ -365,7 +378,8 @@ def mongo_auth(module, client, directConnection=False):
             # Get server version:
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)
-        elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
+        elif (PyMongoVersion.startswith('3.12') or int(PyMongoVersion[0]) > 4) \
+                or module.params['strict_compatibility'] is False:
             if module.params['database'] not in ["admin", "$external"]:
                 fail_msg = 'The localhost login exception only allows the first admin account to be created'
             # else: this has to be the first admin user added

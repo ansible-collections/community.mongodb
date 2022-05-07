@@ -36,4 +36,9 @@ options:
     required: no
     type: int
     default: 27017
+  strict_compatibility:
+    description:
+      - Enforce strict requirements for pymongo and MongoDB software versions
+    type: bool
+    default: True
 '''
