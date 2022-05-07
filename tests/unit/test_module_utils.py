@@ -34,12 +34,19 @@ class FakeAnsibleModule:
 
     def __init__(self):
         self.msg = ""
+        self.warning = ""
 
     def fail_json(self, msg):
         self.msg = msg
 
+    def warn(self, warning):
+        self.warning = warning
+
     def get_msg(self):
         return self.msg
+
+    def get_warn(self):
+        return self.warning
 
 
 class TestMongoDBCommonMethods(unittest.TestCase):
@@ -89,8 +96,12 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             fake_module = FakeAnsibleModule()
             fake_module.params['strict_compatibility'] = False
             mongodb_common.check_compatibility(fake_module, t[0], t[1])
-            msg = fake_module.get_msg()
-            assert msg == ""  # All msg should be empty when strict_compatibility is False
+            warn = fake_module.get_warn()
+            if t[2]:
+                assert warn == ""
+            else:
+                assert 'You should use pymongo 3.12+ or 4+ but' in warn \
+                    or 'This version of MongoDB is pretty old' in warn
 
     def test_load_mongocnf(self):
         with open(os.path.expanduser("~/.mongodb.cnf"), "w+") as w:
