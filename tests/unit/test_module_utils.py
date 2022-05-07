@@ -54,45 +54,43 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         "votes": 1
     }
 
-    # def test_check_compatibility_old_pymongo_version(self):
-    #     # (mongo version, pymongo version, msg)
-    #     versions = [
-    #         ('2.6', '2.0', 'you must use pymongo 2.7+ with MongoDB 2.6'),
-    #         ('3.0', '2.7', 'you must use pymongo 2.8+ with MongoDB 3.0'),
-    #         ('3.2', '3.0', 'you must use pymongo 3.2+ with MongoDB >= 3.2'),
-    #         ('3.4', '3.3', 'you must use pymongo 3.4+ with MongoDB >= 3.4'),
-    #         ('3.6', '3.5', 'you must use pymongo 3.6+ with MongoDB >= 3.6'),
-    #         ('4.0', '3.6', 'you must use pymongo 3.7+ with MongoDB >= 4.0'),
-    #         ('4.2', '3.8', 'you must use pymongo 3.9+ with MongoDB >= 4.2'),
-    #         ('4.4', '3.10', 'you must use pymongo 3.11+ with MongoDB >= 4.4'),
-    #         ('5.0', '3.11', 'you must use pymongo 3.12+ with MongoDB >= 5.0')
-    #     ]
+    def test_check_compatibility_strict_compatibility_True(self):
+        tests = [
+            ('4.4.4', '3.12.1', True),
+            ('5.0.1', '3.12.1', True),
+            ('4.4.4', '4.0.1', True),
+            ('5.0.1', '4.0.1', True),
+            ('2.4.1', '3.12.1', False),
+            ('2.4.1', '4.0.1', False),
+            ('2.4.1', '2.3.4', False),
+        ]
+        for t in tests:
+            fake_module = FakeAnsibleModule()
+            fake_module.params['strict_compatibility'] = True
+            mongodb_common.check_compatibility(fake_module, t[0], t[1])
+            msg = fake_module.get_msg()
+            if t[2]:
+                assert msg == ""
+            else:
+                assert "This version of MongoDB is pretty old" in msg \
+                    or msg == "You must use pymongo 3.12+ or 4+."
 
-    #     for tuple in versions:
-    #         fake_module = FakeAnsibleModule()
-    #         mongodb_common.check_compatibility(fake_module, LooseVersion(tuple[0]), LooseVersion(tuple[1]))
-    #         msg = fake_module.get_msg()
-    #         assert tuple[2] in msg
-
-    # def test_check_compatibility_correct_pymongo_version(self):
-    #     # (mongo version, pymongo version)
-    #     versions = [
-    #         ('2.6', '2.8'),
-    #         ('3.0', '2.9'),
-    #         ('3.2', '3.2'),
-    #         ('3.4', '3.4'),
-    #         ('3.6', '3.6'),
-    #         ('4.0', '3.7'),
-    #         ('4.2', '3.9'),
-    #         ('4.4', '3.11'),
-    #         ('5.0', '3.12')
-    #     ]
-
-    #     for tuple in versions:
-    #         fake_module = FakeAnsibleModule()
-    #         mongodb_common.check_compatibility(fake_module, LooseVersion(tuple[0]), LooseVersion(tuple[1]))
-    #         msg = fake_module.get_msg()
-    #         assert msg == ""  # Up-to-date pymongo versions get no message
+    def test_check_compatibility_strict_compatibility_False(self):
+        tests = [
+            ('4.4.4', '3.12.1', True),
+            ('5.0.1', '3.12.1', True),
+            ('4.4.4', '4.0.1', True),
+            ('5.0.1', '4.0.1', True),
+            ('2.4.1', '3.12.1', False),
+            ('2.4.1', '4.0.1', False),
+            ('2.4.1', '2.3.4', False),
+        ]
+        for t in tests:
+            fake_module = FakeAnsibleModule()
+            fake_module.params['strict_compatibility'] = False
+            mongodb_common.check_compatibility(fake_module, t[0], t[1])
+            msg = fake_module.get_msg()
+            assert msg == ""  # All msg should be empty when strict_compatibility is False
 
     def test_load_mongocnf(self):
         with open(os.path.expanduser("~/.mongodb.cnf"), "w+") as w:
