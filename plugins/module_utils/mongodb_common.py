@@ -3,7 +3,7 @@ __metaclass__ = type
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from distutils.version import LooseVersion
+from packaging.version import parse as LooseVersion
 import traceback
 import os
 import ssl as ssl_lib
