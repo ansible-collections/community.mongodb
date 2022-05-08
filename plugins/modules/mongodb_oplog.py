@@ -37,13 +37,6 @@ options:
     type: bool
     default: false
     required: false
-  ver:
-    description:
-      - Version of MongoDB this module is supported from.
-      - You probably don't want to modifiy this.
-      - Included here for internal testing.
-    type: str
-    default: "3.6"
 notes:
   - Requires the pymongo Python package on the remote host, version 2.4.2+. This
     can be installed using pip or the OS package manager. @see U(http://api.mongodb.org/python/current/installation.html)
@@ -80,9 +73,6 @@ failed:
   returned: failed
   type: bool
 '''
-
-from distutils.version import LooseVersion
-
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
@@ -130,7 +120,6 @@ def main():
     argument_spec.update(
         compact=dict(type='bool', default=False),
         oplog_size_mb=dict(type='int', required=True),
-        ver=dict(type='str', default='3.6')
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -147,8 +136,6 @@ def main():
 
     oplog_size_mb = float(module.params['oplog_size_mb'])  # MongoDB 4.4 inists on a real
     compact = module.params['compact']
-    ver = module.params['ver']
-    ssl = module.params['ssl']
 
     result = dict(
         changed=False,
@@ -159,10 +146,6 @@ def main():
         client = mongo_auth(module, client, directConnection=True)
     except Exception as excep:
         module.fail_json(msg='Unable to connect to MongoDB: %s' % to_native(excep))
-
-    srv_version = check_srv_version(module, client)
-    if srv_version < LooseVersion(ver):
-        module.fail_json(msg="This module does not support MongoDB {0}".format(srv_version))
 
     try:
         current_oplog_size = get_olplog_size(client)

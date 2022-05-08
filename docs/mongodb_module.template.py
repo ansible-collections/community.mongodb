@@ -118,12 +118,12 @@ def main():
         except Exception as excep:
             module.fail_json(msg='Unable to authenticate with MongoDB: %s' % to_native(excep))
     try:
-        srv_version = LooseVersion(client.server_info()['version'])
+        srv_version = client.server_info()['version']
     except Exception as e:
         module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(e))
 
     # Get driver version::
-    driver_version = LooseVersion(PyMongoVersion)
+    driver_version = PyMongoVersion
 
     # Check driver and server version compatibility:
     try:

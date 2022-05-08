@@ -13,6 +13,11 @@ jobs:
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
+    strategy:
+      matrix:
+        ansible_version:
+          - devel
+          - stable-2.13
     steps:
 
       - name: Check out code
@@ -25,12 +30,12 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install ansible-base (devel)
+      - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
+          command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
         run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/* --exclude tests/ansible-operator/
@@ -156,6 +161,9 @@ jobs:
             docker_image: "ubuntu1804"
           - python_version: "3.8"
             ansible_version: "stable-2.12"
+            docker_image: "default"
+          - python_version: "3.8"
+            ansible_version: "stable-2.13"
             docker_image: "default"
           # Fedora 33 should be possible after this is fixed
           # https://jira.mongodb.org/browse/MONGOSH-941

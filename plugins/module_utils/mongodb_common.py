@@ -3,7 +3,6 @@ __metaclass__ = type
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
-from distutils.version import LooseVersion
 import traceback
 import os
 import ssl as ssl_lib
@@ -27,44 +26,17 @@ except ImportError:
 
 
 def check_compatibility(module, srv_version, driver_version):
-    """Check the compatibility between the driver and the database.
-
-    See: https://docs.mongodb.com/ecosystem/drivers/driver-compatibility-reference/#python-driver-compatibility
-
-    Args:
-        module: Ansible module.
-        srv_version (LooseVersion): MongoDB server version.
-        driver_version (LooseVersion): Pymongo version.
-    """
-    msg = 'pymongo driver version and MongoDB version are incompatible: '
-
-    if srv_version >= LooseVersion('5.0') and driver_version < LooseVersion('3.12'):
-        msg += 'you must use pymongo 3.12+ with MongoDB >= 5.0'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('4.4') and driver_version < LooseVersion('3.11'):
-        msg += 'you must use pymongo 3.11+ with MongoDB >= 4.4'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('4.2') and driver_version < LooseVersion('3.9'):
-        msg += 'you must use pymongo 3.9+ with MongoDB >= 4.2'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('4.0') and driver_version < LooseVersion('3.7'):
-        msg += 'you must use pymongo 3.7+ with MongoDB >= 4.0'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('3.6') and driver_version < LooseVersion('3.6'):
-        msg += 'you must use pymongo 3.6+ with MongoDB >= 3.6'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('3.4') and driver_version < LooseVersion('3.4'):
-        msg += 'you must use pymongo 3.4+ with MongoDB >= 3.4'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('3.2') and driver_version < LooseVersion('3.2'):
-        msg += 'you must use pymongo 3.2+ with MongoDB >= 3.2'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('3.0') and driver_version <= LooseVersion('2.8'):
-        msg += 'you must use pymongo 2.8+ with MongoDB 3.0'
-        module.fail_json(msg=msg)
-    elif srv_version >= LooseVersion('2.6') and driver_version <= LooseVersion('2.7'):
-        msg += 'you must use pymongo 2.7+ with MongoDB 2.6'
-        module.fail_json(msg=msg)
+    if driver_version.startswith('3.12') or driver_version.startswith('4'):
+        if int(srv_version[0]) < 4:
+            if module.params['strict_compatibility']:
+                module.fail_json("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
+            else:
+                module.warn("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
+    else:
+        if module.params['strict_compatibility']:
+            module.fail_json("You must use pymongo 3.12+ or 4+.")
+        else:
+            module.warn("You should use pymongo 3.12+ or 4+ but {0} was found.".format(driver_version))
 
 
 def load_mongocnf():
@@ -143,6 +115,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_database=dict(type='str', required=False, default='admin'),
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
+        strict_compatibility=dict(type='bool', default=True),
     )
     ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False, aliases=['tls']),
@@ -238,7 +211,7 @@ def ssl_connection_options(connection_params, module):
 
 def check_srv_version(module, client):
     try:
-        srv_version = LooseVersion(client.server_info()['version'])
+        srv_version = client.server_info()['version']
     except Exception as excep:
         module.fail_json(msg='Unable to get MongoDB server version: %s' % to_native(excep))
     return srv_version
@@ -247,7 +220,7 @@ def check_srv_version(module, client):
 def check_driver_compatibility(module, client, srv_version):
     try:
         # Get driver version::
-        driver_version = LooseVersion(PyMongoVersion)
+        driver_version = PyMongoVersion
         # Check driver and server version compatibility:
         check_compatibility(module, srv_version, driver_version)
     except Exception as excep:
@@ -326,7 +299,7 @@ def mongo_auth(module, client, directConnection=False):
     login_password = module.params['login_password']
     login_database = module.params['login_database']
 
-    fail_msg = None  # Out test code had issues with multiple exist points wiht fail_json
+    fail_msg = None  # Our test code had issues with multiple exit points with fail_json
 
     crypt_flag = 'ssl'
     if 'tls' in module.params:
@@ -365,7 +338,8 @@ def mongo_auth(module, client, directConnection=False):
             # Get server version:
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)
-        elif LooseVersion(PyMongoVersion) >= LooseVersion('3.0'):
+        elif (PyMongoVersion.startswith('3.12') or int(PyMongoVersion[0]) > 4) \
+                or module.params['strict_compatibility'] is False:
             if module.params['database'] not in ["admin", "$external"]:
                 fail_msg = 'The localhost login exception only allows the first admin account to be created'
             # else: this has to be the first admin user added
