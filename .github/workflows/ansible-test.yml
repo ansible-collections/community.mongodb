@@ -49,6 +49,7 @@ jobs:
       matrix:
         ansible_version:
           - devel
+          - stable-2.13
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -239,6 +240,9 @@ jobs:
             docker_image: "ubuntu1804"
           - python_version: "3.8"
             ansible_version: "stable-2.12"
+            docker_image: "default"
+          - python_version: "3.8"
+            ansible_version: "stable-2.13"
             docker_image: "default"
           # Fedora 33 should be possible after this is fixed
           # https://jira.mongodb.org/browse/MONGOSH-941
