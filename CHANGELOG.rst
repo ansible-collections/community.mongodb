@@ -4,6 +4,23 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.4.0:
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+Pymongo versions 3.12.* or 4.* are now required.
+MongoDB version 4+ are also required but can be overriden if desired.
+
+Major Changes
+---------------
+
+- 470 - Removes depreciated distutils package and require Pymongo 3.12+ and MongoDB 4+
+  Adds a new parameter strict_compatibility (default true). 
+  Set to false to disable Pymongo and MongoDB requirements.
+
 v1.3.4
 =======
 

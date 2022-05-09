@@ -207,3 +207,10 @@ releases:
       This release is a maintenance release.
     bugfixes:
       - 466 & 467 - Fixes localhost exception bug due to directConnection parameter in newer pymongo versions.
+  1.4.0:
+    release_summary: |
+      This release is a maintenance release. Pymongo versions 3.12.* or 4.* are now required. MongoDB version 4+ are also required but can be overriden if desired.
+    major_changes:
+      - 470 - Removes depreciated distutils package and require Pymongo 3.12+ and MongoDB 4+
+        Adds a new parameter strict_compatibility (default true). 
+        Set to false to disable Pymongo and MongoDB requirements.
