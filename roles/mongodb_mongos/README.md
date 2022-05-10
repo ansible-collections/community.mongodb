@@ -20,6 +20,7 @@ Role Variables
 * `pid_file`: The pid file for mongos. Default /run/mongodb/mongos.pid.
 * `bind_ip`: The IP address mongos will bind to. Default 0.0.0.0.
 * `bind_ip_all`: Have mongos bind to all IP addresses instead of specifying `bind_ip`. Default false.
+* `log_path`: Path of the log file. Default: /var/log/mongodb/mongos.log.
 * `mypy`: Python interpretor. Default python
 * `mongos_package`: The name of the mongos installation package. Default mongodb-org-mongos.
 * `config_repl_set_name`: The name of the config server replicaset. Default cfg.

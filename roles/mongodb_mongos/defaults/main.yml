@@ -3,6 +3,7 @@
 pid_file: /run/mongodb/mongos.pid
 bind_ip: 0.0.0.0
 bind_ip_all: false
+log_path: "/var/log/mongodb/mongos.log"
 # mongos_port in vars to facilitate molecule tests
 mypy: python
 mongos_package: "mongodb-org-mongos"

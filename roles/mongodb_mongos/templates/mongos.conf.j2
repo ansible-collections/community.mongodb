@@ -1,6 +1,6 @@
 systemLog:
   destination: file
-  path: /var/log/mongodb/mongos.log
+  path: {{ log_path }}
   logAppend: true
   logRotate: reopen
 net:

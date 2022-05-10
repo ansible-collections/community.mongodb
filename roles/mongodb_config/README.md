@@ -11,6 +11,7 @@ Role Variables
 * `mongodb_user`: The Linux OS user for MongoDB. Default mongod.
 * `mongodb_group`: The Linux OS user group for MongoDB. Default mongod.
 * `pid_file`: The pid file for mongos. Default /run/mongodb/mongos.pid.
+* `log_path`: Path of the log file. Default /var/log/mongodb/mongod.log.
 * `bind_ip`: The IP address mongod will bind to. Default 0.0.0.0.
 * `bind_ip_all`: Have mongod bind to all IP addresses instead of specifying `bind_ip`. Default false.
 * `config_repl_set_name`: The replicaset name for the config servers. Default cfg.
