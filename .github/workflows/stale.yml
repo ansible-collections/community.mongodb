@@ -1,0 +1,15 @@
+name: 'Close stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Close Stale Issues
+        uses: actions/stale@v5.0.0
+        with:
+          exempt-issue-labels: 'nostale,bug,help-wanted,feature'
+          exempt-pr-labels: 'nostale,bug,help-wanted,feature'
