@@ -10,5 +10,5 @@ jobs:
 
       - name: Close Stale Issues
         uses: actions/stale@v5.0.0
-          exempt-issue-labels: nostale,bug,help-wanted,feature
-          exempt-pr-labels: nostale,bug,help-wanted,feature
+          exempt-issue-labels: 'nostale,bug,help-wanted,feature'
+          exempt-pr-labels: 'nostale,bug,help-wanted,feature'
