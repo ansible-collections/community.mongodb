@@ -19,7 +19,7 @@ tags:
   - nosql
 dependencies:
   # pam_limits module in mongodb_linux role; role tests use pids module
-  community.general: '>=1.0.0'
+  community.general: '>=1.0.0,<5.0.0'
   # sysctl module in mongodb_linux role
   ansible.posix: '>=1.0.0'
   # role tests use openssl_ modules
