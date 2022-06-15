@@ -214,3 +214,10 @@ releases:
       - 470 - Removes depreciated distutils package and require Pymongo 3.12+ and MongoDB 4+
         Adds a new parameter strict_compatibility (default true). 
         Set to false to disable Pymongo and MongoDB requirements.
+  1.4.1:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 474 - Adds log_path parameter to mongodb_mongod, mongodb_mongos and mongodb_config roles.
+    bugfixes:
+      - 479 - mongodb_shell - Correct supports_check_mode value. Used to be true, which is wrong, now false.

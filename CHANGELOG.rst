@@ -4,7 +4,25 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
-v1.4.0:
+v1.4.1
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 474 - Adds log_path parameter to mongodb_mongod, mongodb_mongos and mongodb_config roles.
+
+Bugfixes
+--------
+
+- 479 - mongodb_shell - Correct supports_check_mode value. Used to be true, which is wrong, now false.
+
+v1.4.0
 =======
 
 Release Summary
