@@ -30,7 +30,7 @@ If you like this collection please give us a rating on [Ansible Galaxy](https://
 
 ### Roles
 
-These roles prepare servers with Debian-based and RHEL-based distributions to run MongoDB:
+These roles prepare servers with Debian-based and RHEL-based distributions to run MongoDB. These roles should not be used to manage MongoDB instances that have been previously installed or configured through other means.
 
 - `community.mongodb.mongodb_linux`: A simple role to configure Linux Operating System settings, as advised in the [MongoDB Production Notes](https://docs.mongodb.com/manual/administration/production-notes/).
 - `community.mongodb.mongodb_selinux`: Configure SELinux for MongoDB.
