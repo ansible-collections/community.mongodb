@@ -150,7 +150,7 @@
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
 - name: Set pam limits (nproc and nofile)
-  community.general.pam_limits:
+  community.general.system.pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
     limit_item: "{{ item[2] }}"
@@ -165,7 +165,7 @@
     - "setup"
 
 - name: Set pam limits (memlock)
-  community.general.pam_limits:
+  community.general.system.pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
     limit_item: "{{ item[2] }}"
