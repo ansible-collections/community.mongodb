@@ -150,6 +150,7 @@
 # Tasks based on: https://docs.mongodb.com/manual/reference/ulimit/
 
 - name: Set pam limits (nproc and nofile)
+  # TODO: replace with `community.general.pam_limits` once support for Ansible 2.9 is dropped
   community.general.system.pam_limits:
     domain: "{{ item[0] }}"
     limit_type: "{{ item[1] }}"
