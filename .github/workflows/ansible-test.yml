@@ -25,10 +25,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -38,7 +38,7 @@ jobs:
           command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
-        run: ansible-test sanity --docker -v --color --python 3.8 --exclude docs/* --exclude tests/ansible-operator/
+        run: ansible-test sanity --docker -v --color --python 3.9 --exclude docs/* --exclude tests/ansible-operator/
 
   units:
     runs-on: ubuntu-20.04
@@ -56,10 +56,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -97,7 +97,7 @@ jobs:
         run: mlaunch --single --port 27999
 
       - name: Run unit tests
-        run: ansible-test units -v --color --python 3.8 --coverage
+        run: ansible-test units -v --color --python 3.9 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
