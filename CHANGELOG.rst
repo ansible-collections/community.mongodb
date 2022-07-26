@@ -4,6 +4,20 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.4.2
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 483 - Removes previous upper bound restriction for communiry.general collection,
+- 483 - Use extended FQCN for pam_limits (community.general.system.pam_limits instead of community.general.pam_limits).
+
 v1.4.1
 =======
 
