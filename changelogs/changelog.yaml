@@ -221,3 +221,9 @@ releases:
       - 474 - Adds log_path parameter to mongodb_mongod, mongodb_mongos and mongodb_config roles.
     bugfixes:
       - 479 - mongodb_shell - Correct supports_check_mode value. Used to be true, which is wrong, now false.
+  1.4.2:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 483 - Removes previous upper bound restriction for communiry.general collection,
+      - 483 - Use extended FQCN for pam_limits (community.general.system.pam_limits instead of community.general.pam_limits).
