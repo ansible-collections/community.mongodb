@@ -32,7 +32,10 @@ except ImportError:
     PYMONGO_IMP_ERR = traceback.format_exc()
     pymongo_found = False
 
-TYPES_NEED_TO_CONVERT = (Decimal, timedelta, Timestamp)
+try:
+    TYPES_NEED_TO_CONVERT = (Decimal, timedelta, Timestamp)
+except NameError:
+    pass  # sanity tests
 
 
 def check_compatibility(module, srv_version, driver_version):
