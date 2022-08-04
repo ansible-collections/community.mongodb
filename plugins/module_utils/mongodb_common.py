@@ -7,6 +7,10 @@ import traceback
 import os
 import ssl as ssl_lib
 
+from datetime import timedelta
+from decimal import Decimal
+from bson.timestamp import Timestamp
+
 MongoClient = None
 PYMONGO_IMP_ERR = None
 pymongo_found = None
@@ -24,6 +28,7 @@ except ImportError:
     PYMONGO_IMP_ERR = traceback.format_exc()
     pymongo_found = False
 
+TYPES_NEED_TO_CONVERT = (Decimal, timedelta, Timestamp)
 
 def check_compatibility(module, srv_version, driver_version):
     if driver_version.startswith('3.12') or driver_version.startswith('4'):
@@ -408,3 +413,21 @@ def lists_are_different(list1, list2):
     if sorted(list1) != sorted(list2):
         diff = True
     return diff
+
+# Taken from https://github.com/ansible-collections/community.postgresql/blob/main/plugins/module_utils/postgres.py#L420
+def convert_to_supported(val):
+    """Convert unsupported type to appropriate.
+    Args:
+        val (any) -- Any value fetched from database.
+    Returns value of appropriate type.
+    """
+    if isinstance(val, Decimal):
+        return float(val)
+
+    elif isinstance(val, timedelta):
+        return str(val)
+
+    elif isinstance(val, Timestamp):
+        return str(val)
+
+    return val  # By default returns the same value
