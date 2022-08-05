@@ -489,7 +489,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert result is False
 
     def test_convert_to_supported(self):
-        dt = bson.timestamp.Timestamp(datetime.datetime.now(), 0)
+        dt = Timestamp(datetime.datetime.now(), 0)
+        assert isinstance(dt, Timestamp)
         dt = mongodb_common.convert_to_supported(dt)
         assert isinstance(dt, str)
 
