@@ -197,7 +197,7 @@ class MongoDbInfo():
             # Gather info about roles for each database:
             self.info['roles'].update(self.get_roles_info(dbname))
 
-        #self.info = self.convert_json_values_recur(self.info)
+        self.info = self.convert_json_values_recur(self.info)
 
     def get_roles_info(self, dbname):
         """Gather information about roles.

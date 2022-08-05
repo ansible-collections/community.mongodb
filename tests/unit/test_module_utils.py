@@ -11,6 +11,7 @@ from pymongo import MongoClient
 from bson.timestamp import Timestamp
 import datetime
 
+
 class FakeAnsibleModule:
 
     params = {
