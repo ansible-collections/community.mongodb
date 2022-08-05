@@ -21,6 +21,7 @@ pymongo_found = None
 PyMongoVersion = None
 ConnectionFailure = None
 OperationFailure = None
+TYPES_NEED_TO_CONVERT = None
 
 try:
     from pymongo.errors import ConnectionFailure
