@@ -8,7 +8,8 @@ path = "{0}/../../plugins/module_utils".format(path)
 sys.path.append(path)
 import mongodb_common
 from pymongo import MongoClient
-
+from bson.timestamp import Timestamp
+import datetime
 
 class FakeAnsibleModule:
 
@@ -486,6 +487,11 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params['replica_set'] = None
         result = mongodb_common.is_auth_enabled(fake_module)
         assert result is False
+
+    def test_convert_to_supported(self):
+        dt = bson.timestamp.Timestamp(datetime.datetime.now(), 0)
+        dt = mongodb_common.convert_to_supported(dt)
+        assert isinstance(dt, str)
 
 
 if __name__ == '__main__':
