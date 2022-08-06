@@ -515,5 +515,29 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert isinstance(s, str)
 
 
+    def test_convert_json_values_recur(self):
+        d = {
+            "id": ObjectId(),
+            "dt": Timestamp(datetime.datetime.now(), 1),
+            "nested": {
+                "id": ObjectId(),
+                "dt": Timestamp(datetime.datetime.now(), 1),
+                "i": 1,
+                "s": "hello world!"
+            },
+            "i": 1,
+            "s": "hello world!"
+        }
+        d = mongodb_commmon.convert_json_values_recur(d)
+        assert isinstance(d["id"], str)
+        assert isinstance(d["dt"], str)
+        assert isinstance(d["nested"]["id"], str)
+        assert isinstance(d["nested"]["dt"], str)
+        assert isinstance(d["nested"]["i"], int)
+        assert isinstance(d["nested"]["s"], str)
+        assert isinstance(d["i"], int)
+        assert isinstance(d["s"], str)
+
+
 if __name__ == '__main__':
     unittest.main()

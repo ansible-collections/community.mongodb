@@ -438,3 +438,17 @@ def convert_to_supported(val):
         return str(val)
 
     return val  # By default returns the same value
+
+def convert_json_values_recur(self, mydict):
+    """
+    Converts values that Ansible doesn't like
+    # https://github.com/ansible-collections/community.mongodb/issues/462
+    """
+    if isinstance(mydict, dict):
+        for key, value in mydict.items():
+            if isinstance(mydict, dict):
+                mydict[key] = self.convert_json_values_recur(value)
+            else:
+                if isinstance(value, TYPES_NEED_TO_CONVERT):
+                    mydict[key] = convert_to_supported(value)
+    return mydict

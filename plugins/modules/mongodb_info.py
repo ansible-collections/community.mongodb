@@ -107,14 +107,13 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    convert_to_supported,
+    convert_json_values_recur,
     get_mongodb_client,
     missing_required_lib,
     mongodb_common_argument_spec,
     mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
-    TYPES_NEED_TO_CONVERT,
 )
 
 
@@ -275,19 +274,6 @@ class MongoDbInfo():
         Returns a dictionary with parameters.
         """
         return self.admin_db.command({'getParameter': '*'})
-
-    def convert_json_values_recur(self, mydict):
-        """
-        # https://github.com/ansible-collections/community.mongodb/issues/462
-        """
-        if isinstance(mydict, dict):
-            for key, value in mydict.items():
-                if isinstance(mydict, dict):
-                    mydict[key] = self.convert_json_values_recur(value)
-                else:
-                    if isinstance(value, TYPES_NEED_TO_CONVERT):
-                        mydict[key] = convert_to_supported(value)
-        return mydict
 
 
 # ================
