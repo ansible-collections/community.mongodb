@@ -7,12 +7,22 @@ import traceback
 import os
 import ssl as ssl_lib
 
+from datetime import timedelta
+from decimal import Decimal
+
+try:
+    from bson.timestamp import Timestamp
+    from bson import ObjectId
+except ImportError:
+    pass  # TODO Should we do something here or are we covered by pymongo?
+
 MongoClient = None
 PYMONGO_IMP_ERR = None
 pymongo_found = None
 PyMongoVersion = None
 ConnectionFailure = None
 OperationFailure = None
+TYPES_NEED_TO_CONVERT = None
 
 try:
     from pymongo.errors import ConnectionFailure
@@ -23,6 +33,11 @@ try:
 except ImportError:
     PYMONGO_IMP_ERR = traceback.format_exc()
     pymongo_found = False
+
+try:
+    TYPES_NEED_TO_CONVERT = (Timestamp, ObjectId)
+except NameError:
+    pass  # sanity tests
 
 
 def check_compatibility(module, srv_version, driver_version):
@@ -408,3 +423,35 @@ def lists_are_different(list1, list2):
     if sorted(list1) != sorted(list2):
         diff = True
     return diff
+
+
+# Taken from https://github.com/ansible-collections/community.postgresql/blob/main/plugins/module_utils/postgres.py#L420
+def convert_to_supported(val):
+    """Convert unsupported type to appropriate.
+    Args:
+        val (any) -- Any value fetched from database.
+    Returns value of appropriate type.
+    """
+    if isinstance(val, Timestamp):
+        return str(val)
+    elif isinstance(val, ObjectId):
+        return str(val)
+
+    return val  # By default returns the same value
+
+
+def convert_bson_values_recur(mydict):
+    """
+    Converts values that Ansible doesn't like
+    # https://github.com/ansible-collections/community.mongodb/issues/462
+    """
+    if isinstance(mydict, dict):
+        for key, value in mydict.items():
+            if isinstance(value, dict):
+                mydict[key] = convert_bson_values_recur(value)
+            else:
+                if isinstance(value, TYPES_NEED_TO_CONVERT):
+                    mydict[key] = convert_to_supported(value)
+                else:
+                    mydict[key] = value
+    return mydict
