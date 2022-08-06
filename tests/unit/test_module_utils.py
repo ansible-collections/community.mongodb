@@ -514,7 +514,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         s = mongodb_common.convert_to_supported(s)
         assert isinstance(s, str)
 
-
     def test_convert_json_values_recur(self):
         d = {
             "id": ObjectId(),
