@@ -285,7 +285,8 @@ class MongoDbInfo():
                 if isinstance(mydict, dict):
                     mydict[key] = self.convert_json_values_recur(value)
                 else:
-                    mydict[key] = convert_to_supported(value)
+                    if isinstance(value, TYPES_NEED_TO_CONVERT):
+                        mydict[key] = convert_to_supported(value)
         return mydict
 
 

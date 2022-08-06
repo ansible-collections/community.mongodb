@@ -10,6 +10,7 @@ import mongodb_common
 from pymongo import MongoClient
 from bson.timestamp import Timestamp
 import datetime
+from bson import ObjectId
 
 
 class FakeAnsibleModule:
@@ -489,11 +490,29 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         result = mongodb_common.is_auth_enabled(fake_module)
         assert result is False
 
-    def test_convert_to_supported(self):
+    def test_convert_to_supported_timestamp(self):
         dt = Timestamp(datetime.datetime.now(), 0)
         assert isinstance(dt, Timestamp)
         dt = mongodb_common.convert_to_supported(dt)
         assert isinstance(dt, str)
+
+    def test_convert_to_supported_objectid(self):
+        o = ObjectId()
+        assert isinstance(o, ObjectId)
+        o = mongodb_common.convert_to_supported(o)
+        assert isinstance(o, str)
+
+    def test_convert_to_supported_int(self):
+        i = 1
+        assert isinstance(i, int)
+        i = mongodb_common.convert_to_supported(i)
+        assert isinstance(i, int)
+
+    def test_convert_to_supported_str(self):
+        s = "hello world!"
+        assert isinstance(s, str)
+        s = mongodb_common.convert_to_supported(s)
+        assert isinstance(s, str)
 
 
 if __name__ == '__main__':

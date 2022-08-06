@@ -12,6 +12,7 @@ from decimal import Decimal
 
 try:
     from bson.timestamp import Timestamp
+    from bson import ObjectId
 except ImportError:
     pass  # TODO Should we do something here or are we covered by pymongo?
 
@@ -34,7 +35,7 @@ except ImportError:
     pymongo_found = False
 
 try:
-    TYPES_NEED_TO_CONVERT = (Decimal, timedelta, Timestamp)
+    TYPES_NEED_TO_CONVERT = (Timestamp, ObjectId)
 except NameError:
     pass  # sanity tests
 
@@ -431,13 +432,9 @@ def convert_to_supported(val):
         val (any) -- Any value fetched from database.
     Returns value of appropriate type.
     """
-    if isinstance(val, Decimal):
-        return float(val)
-
-    elif isinstance(val, timedelta):
+    if isinstance(val, Timestamp):
         return str(val)
-
-    elif isinstance(val, Timestamp):
+    elif isinstance(val, ObjectId):
         return str(val)
 
     return val  # By default returns the same value
