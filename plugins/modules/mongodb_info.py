@@ -107,7 +107,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
 from ansible.module_utils.six import iteritems
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    convert_json_values_recur,
+    convert_bson_values_recur,
     get_mongodb_client,
     missing_required_lib,
     mongodb_common_argument_spec,
@@ -196,7 +196,7 @@ class MongoDbInfo():
             # Gather info about roles for each database:
             self.info['roles'].update(self.get_roles_info(dbname))
 
-        self.info = self.convert_json_values_recur(self.info)
+        self.info = convert_bson_values_recur(self.info)
 
     def get_roles_info(self, dbname):
         """Gather information about roles.
