@@ -447,9 +447,11 @@ def convert_json_values_recur(mydict):
     """
     if isinstance(mydict, dict):
         for key, value in mydict.items():
-            if isinstance(mydict, dict):
+            if isinstance(value, dict):
                 mydict[key] = convert_json_values_recur(value)
             else:
                 if isinstance(value, TYPES_NEED_TO_CONVERT):
                     mydict[key] = convert_to_supported(value)
+                else:
+                    mydict[key] = value
     return mydict
