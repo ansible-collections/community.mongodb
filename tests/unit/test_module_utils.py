@@ -528,7 +528,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             "i": 1,
             "s": "hello world!"
         }
-        d = mongodb_commmon.convert_json_values_recur(d)
+        d = mongodb_common.convert_json_values_recur(d)
         assert isinstance(d["id"], str)
         assert isinstance(d["dt"], str)
         assert isinstance(d["nested"]["id"], str)
