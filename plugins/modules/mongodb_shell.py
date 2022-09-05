@@ -28,6 +28,7 @@ options:
   mongo_cmd:
     description:
       - The MongoDB shell command.
+      - auto - Automatically detect which MongoDB shell command used. Use "mongosh" if available, else use "mongo" command.
     type: str
     default: "mongo"
   db:
@@ -330,6 +331,15 @@ def touch(fname, times=None):
         os.utime(fname, times)
 
 
+def detect_if_cmd_exist(cmd="mongosh"):
+    path = os.getenv('PATH')
+    for folder in path.split(os.path.pathsep):
+        mongoCmd = os.path.join(folder, cmd)
+        if os.path.exists(mongoCmd) and os.access(mongoCmd, os.X_OK):
+            return True
+    return False
+
+
 def main():
     argument_spec = mongodb_common_argument_spec(ssl_options=False)
     argument_spec.update(
@@ -354,6 +364,9 @@ def main():
         required_together=[['login_user', 'login_password']],
         mutually_exclusive=[["eval", "file"]]
     )
+
+    if module.params['mongo_cmd'] == "auto":
+        module.params['mongo_cmd'] = "mongosh" if detect_if_cmd_exist() else "mongo"
 
     if module.params['mongo_cmd'] == "mongo" and module.params['stringify'] is None:
         module.params['stringify'] = False
