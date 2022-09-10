@@ -112,7 +112,13 @@
   with_items: '{{ mongodb_user_list }}'
 
 - name: Test login for all users
-  shell: mongo "{{ item.database }}" --host "{{ current_replicaset }}/localhost:3001" --username "{{ item.name }}" --password "{{ item.password }}" --eval "printjson(db.getCollectionNames())"
+  #shell: mongo "{{ item.database }}" --host "{{ current_replicaset }}/localhost:3001" --username "{{ item.name }}" --password "{{ item.password }}" --eval "printjson(db.getCollectionNames())"
+  mongodb_shell:
+    login_user: "{{ item.name }}"
+    login_password: "{{ item.password }}"
+    login_database: "{{ item.database }}"
+    login_port: 3001
+    eval: "printjson(db.getCollectionNames())"  
   with_items: '{{ mongodb_user_list }}'
   register: login_test
 
@@ -123,6 +129,12 @@
 
 - name: Get admin db users
   shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  mongodb_shell:
+    login_port: 3001
+    login_username: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    eval: printjson(db.getUsers())
   register: admin_db_users
 
 - name: Assert that roles exist in admin db output
@@ -135,7 +147,13 @@
     - '''dbAdminAnyDatabase'' in admin_db_users.stdout'
 
 - name: Get test db users
-  shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  mongodb_shell:
+    login_port: 3001
+    login_username: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: test
+    eval: "printjson(db.getUsers())"
   register: test_db_users
 
 - name: Assert that roles exist in test db output
@@ -160,7 +178,13 @@
   when: item.database == "test"
 
 - name: Get test db users
-  shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  mongodb_shell:
+    login_port: 3001
+    login_username: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: test
+    eval: "printjson(db.getUsers())"  
   register: test_db_users
 
 - name: Assert that roles do not exist in test db output
@@ -185,7 +209,13 @@
     state: present
 
 - name: Get test db users
-  shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  mongodb_shell:
+    login_port: 3001
+    login_username: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: test
+    eval: "printjson(db.getUsers())"  
   register: test_db_users
 
 - debug:
@@ -327,7 +357,13 @@
     update_password: on_create
 
 - name: Get myuser db users
-  shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('myuser'))"
+  #shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('myuser'))"
+  mongodb_shell:
+    login_port: 3001
+    login_username: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    eval: "printjson(db.getUsers('myuser'))"  
   register: admin_myuser
 
 - name: Assert that user setup is as expected

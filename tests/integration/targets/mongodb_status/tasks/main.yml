@@ -215,7 +215,13 @@
     - '''localhost:3003'' in mongo_output.stdout'
 
 - name: Kill one instance to make the replicaset status bad
-  shell: mongo admin --port 3003 --eval 'db.shutdownServer()'
+  #shell: mongo admin --port 3003 --eval 'db.shutdownServer()'
+  mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3003
+    eval: "db.shutdownServer()"
+
 
 - pause:
     seconds: 5
@@ -337,6 +343,11 @@
 
 - name: Kill one instance to make the replicaset status bad - replicaset3 with auth
   shell: mongo admin --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --port 3002 --eval 'db.shutdownServer()'
+  mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3002
+    eval: "db.shutdownServer()"
 
 - pause:
     seconds: 5
