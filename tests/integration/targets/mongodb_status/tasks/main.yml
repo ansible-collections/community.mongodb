@@ -220,6 +220,7 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3003
+    db: admin
     eval: "db.shutdownServer()"
 
 

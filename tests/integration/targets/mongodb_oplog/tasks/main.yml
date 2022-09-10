@@ -56,12 +56,14 @@
       - root
     state: present
 
-- name: Run role file via the cmd line
+- name: Run role file
   #shell: mongo admin --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }} mongodb_role.js
   mongodb_shell:
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3001
+    login_database: "admin"
+    db: admin
     file: mongodb_role.js
 
 - name: Add compactLocal role to user
