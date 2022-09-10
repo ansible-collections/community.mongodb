@@ -343,7 +343,7 @@
       - "good_status.failed == False"
 
 - name: Kill one instance to make the replicaset status bad - replicaset3 with auth
-  shell: mongo admin --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --port 3002 --eval 'db.shutdownServer()'
+  #shell: mongo admin --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --port 3002 --eval 'db.shutdownServer()'
   mongodb_shell:
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
