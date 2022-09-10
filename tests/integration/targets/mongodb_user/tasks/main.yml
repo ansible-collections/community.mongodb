@@ -129,7 +129,7 @@
   with_items: '{{ login_test.results }}'
 
 - name: Get admin db users
-  shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
+  #shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   mongodb_shell:
     login_port: 3001
     login_username: "{{ mongodb_admin_user }}"
