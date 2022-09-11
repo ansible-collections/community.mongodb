@@ -126,7 +126,7 @@
 
 - name: Assert all logins successful
   assert:
-    that: '{{ item.rc == 0 }}'
+    that: '{{ item.changed }}'
   with_items: '{{ login_test.results }}'
 
 - name: Get admin db users
