@@ -55,10 +55,10 @@
       sslAllowInvalidHostnames: ""
     eval: "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   register: admin_myuser
-  when: mongodb_version == '4.0'
+  #when: mongodb_version == '4.0'
 
 - name: Assert that user setup is as expected
   assert:
     that:
-    - '''admin'' in admin_myuser.stdout'
-    - '''root'' in admin_myuser.stdout'
+    - admin_myuser.transformed_output.user == 'test_root'
+    - admin_myuser.transformed_output.roles.0.role == 'root'
