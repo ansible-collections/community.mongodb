@@ -134,7 +134,7 @@
   mongodb_shell:
     login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
-    login_username: "{{ mongodb_admin_user }}"
+    login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     eval: printjson(db.getUsers())
@@ -154,7 +154,7 @@
   mongodb_shell:
     login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
-    login_username: "{{ mongodb_admin_user }}"
+    login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: test
     eval: "printjson(db.getUsers())"
@@ -186,7 +186,7 @@
   mongodb_shell:
     login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
-    login_username: "{{ mongodb_admin_user }}"
+    login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: test
     eval: "printjson(db.getUsers())"  
@@ -218,7 +218,7 @@
   mongodb_shell:
     login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
-    login_username: "{{ mongodb_admin_user }}"
+    login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: test
     eval: "printjson(db.getUsers())"  
@@ -367,7 +367,7 @@
   mongodb_shell:
     login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
-    login_username: "{{ mongodb_admin_user }}"
+    login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     db: admin
