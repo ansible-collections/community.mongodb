@@ -375,7 +375,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     db: admin
-    eval: "printjson(db.getUsers('myuser'))"  
+    eval: "printjson(db.getUser('myuser'))"  
   register: admin_myuser
 
 - name: Assert that user setup is as expected
