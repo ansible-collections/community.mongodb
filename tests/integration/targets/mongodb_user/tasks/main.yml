@@ -382,7 +382,7 @@
   assert:
     that:
     - admin_myuser.transformed_output.user == 'myuser'
-    - admin_myuser.transformed_output.roles.0.role == "'userAdmin"
+    - admin_myuser.transformed_output.roles.0.role == 'userAdmin'
     - '''dbAdmin'' not in admin_myuser.transformed_output | string'
 
 - name: Add replicaset connectivity test
