@@ -137,17 +137,18 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
+    db: "admin"
     eval: printjson(db.getUsers())
   register: admin_db_users
 
 - name: Assert that roles exist in admin db output
   assert:
     that:
-    - '''clusterAdmin'' in admin_db_users.stdout'
-    - '''readAnyDatabase'' in admin_db_users.stdout'
-    - '''readWriteAnyDatabase'' in admin_db_users.stdout'
-    - '''userAdminAnyDatabase'' in admin_db_users.stdout'
-    - '''dbAdminAnyDatabase'' in admin_db_users.stdout'
+    - '''clusterAdmin'' in admin_db_users.transformed_output | string'
+    - '''readAnyDatabase'' in admin_db_users.transformed_output | string'
+    - '''readWriteAnyDatabase'' in admin_db_users.transformed_output | string'
+    - '''userAdminAnyDatabase'' in admin_db_users.transformed_output | string'
+    - '''dbAdminAnyDatabase'' in admin_db_users.transformed_output | string'
 
 - name: Get test db users
   #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
@@ -163,10 +164,10 @@
 - name: Assert that roles exist in test db output
   assert:
     that:
-    - '''"read"'' in test_db_users.stdout'
-    - '''readWrite'' in test_db_users.stdout'
-    - '''dbAdmin'' in test_db_users.stdout'
-    - '''userAdmin'' in test_db_users.stdout'
+    - '''"read"'' in test_db_users.transformed_output | string'
+    - '''readWrite'' in test_db_users.transformed_output | string'
+    - '''dbAdmin'' in test_db_users.transformed_output | string'
+    - '''userAdmin'' in test_db_users.transformed_output | string'
 
 - name: Drop users in test db
   community.mongodb.mongodb_user:
@@ -195,10 +196,10 @@
 - name: Assert that roles do not exist in test db output
   assert:
     that:
-    - '''user1'' not in test_db_users.stdout'
-    - '''user2'' not in test_db_users.stdout'
-    - '''user3'' not in test_db_users.stdout'
-    - '''user4'' not in test_db_users.stdout'
+    - '''user1'' not in test_db_users.transformed_output | string'
+    - '''user2'' not in test_db_users.transformed_output | string'
+    - '''user3'' not in test_db_users.transformed_output | string'
+    - '''user4'' not in test_db_users.transformed_output | string'
 
 - name: Create user with multiple roles in test db
   community.mongodb.mongodb_user:
