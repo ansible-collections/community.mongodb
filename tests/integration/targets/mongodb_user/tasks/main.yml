@@ -165,10 +165,10 @@
 - name: Assert that roles exist in test db output
   assert:
     that:
-    - '''"read"'' in test_db_users.transformed_output | string'
-    - '''readWrite'' in test_db_users.transformed_output | string'
-    - '''dbAdmin'' in test_db_users.transformed_output | string'
-    - '''userAdmin'' in test_db_users.transformed_output | string'
+    - test_db_users.transformed_output.0.roles.0.role == 'read'
+    - test_db_users.transformed_output.1.roles.1.role == 'readWrite'
+    - test_db_users.transformed_output.2.roles.2.role == 'dbAdmin'
+    - test_db_users.transformed_output.3.roles.3.role == 'userAdmin'
 
 - name: Drop users in test db
   community.mongodb.mongodb_user:
