@@ -117,6 +117,7 @@
     login_user: "{{ item.name }}"
     login_password: "{{ item.password }}"
     login_database: "{{ item.database }}"
+    login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     db: "{{ item.database }}"
     eval: "printjson(db.getCollectionNames())"  
@@ -131,6 +132,7 @@
 - name: Get admin db users
   #shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     login_username: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
@@ -150,6 +152,7 @@
 - name: Get test db users
   #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     login_username: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
@@ -181,6 +184,7 @@
 - name: Get test db users
   #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     login_username: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
@@ -212,6 +216,7 @@
 - name: Get test db users
   #shell: mongo test --authenticationDatabase admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUsers())"
   mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     login_username: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
@@ -360,6 +365,7 @@
 - name: Get myuser db users
   #shell: mongo admin --host "{{ current_replicaset }}/localhost:3001" --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('myuser'))"
   mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     login_username: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
