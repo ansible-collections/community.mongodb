@@ -166,9 +166,9 @@
   assert:
     that:
     - test_db_users.transformed_output.0.roles.0.role == 'read'
-    - test_db_users.transformed_output.0.roles.1.role == 'readWrite'
-    - test_db_users.transformed_output.0.roles.2.role == 'dbAdmin'
-    - test_db_users.transformed_output.0.roles.3.role == 'userAdmin'
+    - test_db_users.transformed_output.1.roles.0.role == 'readWrite'
+    - test_db_users.transformed_output.2.roles.0.role == 'dbAdmin'
+    - test_db_users.transformed_output.3.roles.0.role == 'userAdmin'
 
 - name: Drop users in test db
   community.mongodb.mongodb_user:
