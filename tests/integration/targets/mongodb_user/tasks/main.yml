@@ -157,7 +157,8 @@
     login_port: 3001
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
-    login_database: test
+    login_database: "admin"
+    db: "test"
     eval: "printjson(db.getUsers())"
   register: test_db_users
 
@@ -221,7 +222,8 @@
     login_port: 3001
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
-    login_database: test
+    login_database: "admin"
+    db: "test"
     eval: "printjson(db.getUsers())"  
   register: test_db_users
 
