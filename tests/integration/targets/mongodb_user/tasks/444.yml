@@ -54,11 +54,12 @@
       sslCAFile: "/tmp/certs44/mongodb.pem"
       sslAllowInvalidHostnames: ""
     eval: "printjson(db.getUser('{{ mongodb_admin_user }}'))"
+    transform: "raw"
   register: admin_myuser
   #when: mongodb_version == '4.0'
 
 - name: Assert that user setup is as expected
   assert:
     that:
-    - admin_myuser.transformed_output.user == 'test_root'
-    - admin_myuser.transformed_output.roles.0.role == 'root'
+    - "'test_root' in admin_myuser.transformed_output | string"
+    - "'root' in admin_myuser.transformed_output | string"
