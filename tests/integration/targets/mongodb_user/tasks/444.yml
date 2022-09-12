@@ -50,9 +50,9 @@
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3001
     additional_args:
-      ssl: ""
-      sslCAFile: "/tmp/certs44/mongodb.pem"
-      sslAllowInvalidHostnames: ""
+      tls: ""
+      tlsCAFile: "/tmp/certs44/mongodb.pem"
+      tlsAllowInvalidHostnames: ""
     eval: "printjson(db.getUser('{{ mongodb_admin_user }}'))"
     transform: "raw"
   register: admin_myuser
