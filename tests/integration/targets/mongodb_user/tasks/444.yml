@@ -53,6 +53,7 @@
       tls: ""
       tlsCAFile: "/tmp/certs44/mongodb.pem"
       tlsAllowInvalidHostnames: ""
+      tlsAllowInvalidCertificates: ""
     eval: "printjson(db.getUser('{{ mongodb_admin_user }}'))"
     transform: "raw"
   register: admin_myuser
