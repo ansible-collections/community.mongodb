@@ -56,6 +56,7 @@
       tlsAllowInvalidCertificates: ""
     eval: "printjson(db.getUser('{{ mongodb_admin_user }}'))"
     transform: "raw"
+    debug: yes
   register: admin_myuser
   #when: mongodb_version == '4.0'
 
