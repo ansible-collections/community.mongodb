@@ -50,8 +50,6 @@
     login_host: localhost
     login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
     create_for_localhost_exception: /root/mongodb_admin.success
-  module_defaults:
-    community.mongodb.mongodb_user: {}
   tags:
     - "mongodb"
     - "setup"
