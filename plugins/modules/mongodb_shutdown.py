@@ -44,7 +44,7 @@ EXAMPLES = r'''
   community.mongodb.mongodb_shutdown:
 
 - name: Force shutdown with a timeout of 60 seconds
-  mongodb_maintenance:
+  community.mongodb.mongodb_shutdown:
     force: true
     timeout: 60
 '''
