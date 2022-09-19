@@ -63,7 +63,7 @@
 
 - assert:
     that:
-      - '"myindex" in output.transformed_output'
+      - '"myindex" in output.transformed_output | string'
 
 - name: Drop the index we just created (check mode)
   community.mongodb.mongodb_index:
@@ -120,7 +120,7 @@
 
 - assert:
     that:
-      - '"myindex" not in output.transformed_output'
+      - '"myindex" not in output.transformed_output | string'
 # EOF Simple index
 
 # Check adding 2 indexes
@@ -165,8 +165,8 @@
 
 - assert:
     that:
-      - '"myuniqueindex" in output.transformed_output'
-      - '"unique\" : true" in output.transformed_output'
+      - '"myuniqueindex" in output.transformed_output | string'
+      - '"unique\" : true" in output.transformed_output | string'
 
 - name: Drop the unique index we just created
   community.mongodb.mongodb_index:
@@ -203,7 +203,7 @@
 
 - assert:
     that:
-      - '"myuniqueindex" not in output.transformed_output'
+      - '"myuniqueindex" not in output.transformed_output | string'
 # EOF UNIQUE
 
 # TTL
@@ -245,8 +245,8 @@
 
 - assert:
     that:
-      - '"myttlindex" in output.transformed_output'
-      - '"expireAfterSeconds\" : 3600" in output.transformed_output'
+      - '"myttlindex" in output.transformed_output | string'
+      - '"expireAfterSeconds\" : 3600" in output.transformed_output | string'
 
 - name: Drop the ttl index we just created
   community.mongodb.mongodb_index:
@@ -283,7 +283,7 @@
 
 - assert:
     that:
-      - '"myttlindex" not in output.transformed_output'
+      - '"myttlindex" not in output.transformed_output | string'
 # EOF TTL
 
 # SPARSE
@@ -325,8 +325,8 @@
 
 - assert:
     that:
-      - '"mysparseindex" in output.transformed_output'
-      - '"sparse\" : true" in output.transformed_output'
+      - '"mysparseindex" in output.transformed_output | string'
+      - '"sparse\" : true" in output.transformed_output | string'
 
 - name: Drop the sparse index we just created
   community.mongodb.mongodb_index:
@@ -363,7 +363,7 @@
 
 - assert:
     that:
-      - '"mysparseindex" not in output.transformed_output'
+      - '"mysparseindex" not in output.transformed_output | string'
 # EOF SPARSE
 
 # PARTIAL
@@ -407,9 +407,9 @@
 
 - assert:
     that:
-      - '"mypartialindex" in output.transformed_output'
-      - '"partialFilterExpression" in output.transformed_output'
-      - '"rating\" :" in output.transformed_output'
+      - '"mypartialindex" in output.transformed_output | string'
+      - '"partialFilterExpression" in output.transformed_output | string'
+      - '"rating\" :" in output.transformed_output | string'
 
 - name: Drop the partial index we just created
   community.mongodb.mongodb_index:
@@ -446,7 +446,7 @@
 
 - assert:
     that:
-      - '"mypartialindex" not in output.transformed_output'
+      - '"mypartialindex" not in output.transformed_output | string'
 # EOF PARTIAL
 
 # Background. Option ignored from 4.2
@@ -488,7 +488,7 @@
 
 - assert:
     that:
-      - '"idxbackground" in output.transformed_output'
+      - '"idxbackground" in output.transformed_output | string'
 
 - name: Drop the background index we just created
   community.mongodb.mongodb_index:
@@ -525,7 +525,7 @@
 
 - assert:
     that:
-      - '"idxbackground" not in output.transformed_output'
+      - '"idxbackground" not in output.transformed_output | string'
 
 # Module validation tests
 - name: Missing database key
