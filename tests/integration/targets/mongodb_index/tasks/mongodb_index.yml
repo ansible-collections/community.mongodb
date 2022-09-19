@@ -55,7 +55,8 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
+    debug: yes
   register: output
 
 - debug:
@@ -166,7 +167,7 @@
 - assert:
     that:
       - '"myuniqueindex" in output.transformed_output | string'
-      - '"unique\" : true" in output.transformed_output | string'
+      - output.transformed_output.1.unique
 
 - name: Drop the unique index we just created
   community.mongodb.mongodb_index:
@@ -246,7 +247,7 @@
 - assert:
     that:
       - '"myttlindex" in output.transformed_output | string'
-      - '"expireAfterSeconds\" : 3600" in output.transformed_output | string'
+      - output.transformed_output.1.expireAfterSeconds == 3600
 
 - name: Drop the ttl index we just created
   community.mongodb.mongodb_index:
@@ -326,7 +327,7 @@
 - assert:
     that:
       - '"mysparseindex" in output.transformed_output | string'
-      - '"sparse\" : true" in output.transformed_output | string'
+      - output.transformed_output.1.sparse
 
 - name: Drop the sparse index we just created
   community.mongodb.mongodb_index:
@@ -409,7 +410,7 @@
     that:
       - '"mypartialindex" in output.transformed_output | string'
       - '"partialFilterExpression" in output.transformed_output | string'
-      - '"rating\" :" in output.transformed_output | string'
+      - '"rating" in output.transformed_output | string'
 
 - name: Drop the partial index we just created
   community.mongodb.mongodb_index:
