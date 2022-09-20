@@ -65,14 +65,17 @@
     - localhost:4000
 
 - name: Get config server replset mongo_output
-  command: mongo admin --port 4000 --eval "rs.status();"
+  #command: mongo admin --port 4000 --eval "rs.status();"
+  community.mongodb.mongodb_shell:
+    login_port: 4000
+    eval: "rs.status()"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
   assert:
     that:
-    - '''"configsvr" : true'' in cfg_replset_output.stdout'
-    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.stdout'
+    - '''"configsvr" : true'' in cfg_replset_output.transformed_output | string'
+    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
@@ -95,10 +98,18 @@
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 3001
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Attempt to add shard with incorrect mongos process name set
   community.mongodb.mongodb_shard:
@@ -131,6 +142,10 @@
 
 - name: Get replicaset info
   command: mongo admin --eval "sh.status()" --port 27017
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "admin"
+    eval: "sh.status()"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -138,10 +153,10 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
     - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Remove shard 2
   community.mongodb.mongodb_shard:
@@ -154,7 +169,11 @@
     seconds: 3
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
+  #command: mongo admin --eval "sh.status()" --port 27017
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "admin"
+    eval: "sh.status()"
   register: mongo_output
 
 - name: Assert shard 2 is draining
@@ -162,9 +181,9 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''"draining" : true'' in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
+    - '''"draining" : true'' in mongo_output.transformed_output | string'
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Run remove command again to finalize shard removal
   community.mongodb.mongodb_shard:
@@ -177,7 +196,11 @@
     seconds: 10
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
+  #command: mongo admin --eval "sh.status()" --port 27017
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "admin"
+    eval: "sh.status()"
   register: mongo_output
 
 - name: Assert shard 2 is not present
@@ -185,9 +208,9 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.stdout  or ''draining\" : true'' in mongo_output.stdout'  # sometimes draining is very slow
-    - '''balancer'' in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
+    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.transformed_output | string  or ''draining\" : true'' in mongo_output.transformed_output | string'  # sometimes draining is very slow
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -237,8 +260,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork
 
 - name: Create config srv replicaset with module
   community.mongodb.mongodb_replicaset:
@@ -333,12 +355,24 @@
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
-    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    login_port: 3001
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
-    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
@@ -471,7 +505,13 @@
     - "'Authentication failed' in mongodb_shard_bad_pw.msg"
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"
+  #command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    login_port: 27017
+    eval: "sh.status()"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -479,10 +519,10 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
     - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Remove shard 2
   community.mongodb.mongodb_shard:
@@ -492,18 +532,22 @@
     state: absent
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
-    }}" -p "{{ mongodb_admin_password }}"
+  #command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    login_port: 27017
+    eval: "sh.status()"  
   register: mongo_output
 
 - name: Assert shard 2 is draining
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
-    - '''"draining" : true'' in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003'' in mongo_output.transformed_output | string'
+    - '''"draining" : true'' in mongo_output.transformed_output | string'
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Run remove command again to finalize shard removal
   community.mongodb.mongodb_shard:
@@ -516,17 +560,22 @@
     seconds: 10
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user
-    }}" -p "{{ mongodb_admin_password }}"
+  #command: mongo admin --eval "sh.status()" --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    login_port: 27017
+    eval: "sh.status()"  
   register: mongo_output
 
 - name: Assert shard 2 is not present
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003'' in mongo_output.stdout'
-    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.stdout or ''draining\" : true'' in mongo_output.stdout'  # sometimes draining is very slow
-    - '''balancer'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003'' in mongo_output.transformed_output | string'
+    - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006'' not in mongo_output.transformed_output | string or ''draining\" : true'' in mongo_output.transformed_output | string'  # sometimes draining is very slow
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
