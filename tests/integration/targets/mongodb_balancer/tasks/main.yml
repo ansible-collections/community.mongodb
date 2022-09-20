@@ -275,6 +275,7 @@
 - name: Ensure host reaches primary before proceeding 4000
   #command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "{{ configsrv_replicaset }}"
     login_port: 4000
     interval: 5
     poll: 10

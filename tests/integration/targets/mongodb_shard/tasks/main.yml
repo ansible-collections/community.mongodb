@@ -280,14 +280,28 @@
   script: /root/ensure_primary.sh 3004 0
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset1 }}"
+    login_port: 3001
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset2 }}"
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 4000
-  command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
-
+  #command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    replica_set: "{{ configsrv_replicaset }}"
+    login_port: 4000
+    interval: 5
+    poll: 10
 - name: Add mongodb admin user to each shard inc config rs
   community.mongodb.mongodb_user:
     login_host: localhost
