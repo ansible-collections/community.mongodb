@@ -70,7 +70,7 @@
     login_port: 4000
     login_database: "admin"
     eval: "rs.status()"
-    transform_type: "raw"
+    transform: "raw"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
