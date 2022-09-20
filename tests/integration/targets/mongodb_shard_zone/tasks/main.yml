@@ -464,23 +464,23 @@
     members:
     - localhost:4000
 
-- name: Ensure rs0 is stable
+- name: Ensure rs is stable
   community.mongodb.mongodb_status:
-    replica_set: "rs0"
+    replica_set: "{{ mongodb_replicaset1 }}"
     login_port: 3001
     interval: 5
     poll: 10
 
 - name: Ensure rs1 is stable
   community.mongodb.mongodb_status:
-    replica_set: "rs1"
+    replica_set: "{{ mongodb_replicaset2 }}"
     login_port: 3004
     interval: 5
     poll: 10
 
 - name: Ensure config is stable
   community.mongodb.mongodb_status:
-    replica_set: "cfg"
+    replica_set: "{{ configsrv_replicaset }}"
     login_port: 4000
     interval: 5
     poll: 10
@@ -554,7 +554,7 @@
 
 - name: Ensure rs0 is stable
   community.mongodb.mongodb_status:
-    replica_set: "rs0"
+    replica_set: "{{ mongodb_replicaset1 }}"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3001
@@ -563,7 +563,7 @@
 
 - name: Ensure rs1 is stable
   community.mongodb.mongodb_status:
-    replica_set: "rs0"
+    replica_set: "{{ mongodb_replicaset2 }}"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3004
@@ -572,8 +572,7 @@
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
-    "{{ remote_tmp_dir }}/mongos.log" --port 27017 --fork --keyFile {{ remote_tmp_dir
-    }}/my.key
+    "{{ remote_tmp_dir }}/mongos.log" --port 27017 --fork --keyFile {{ remote_tmp_dir }}/my.key
 
 - name: Wait for mongos to become active
   wait_for:
