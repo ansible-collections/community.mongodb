@@ -207,7 +207,7 @@
       - "zone.msg == 'Added zone ranges for NYC'"
 
 - name: debug info
-  command: mongo config --port 27017 -eval "db.tags.find()"
+  #command: mongo config --port 27017 -eval "db.tags.find()"
   community.mongodb.mongodb_shell:
     login_port: 27017
     login_database: "config"

@@ -290,6 +290,7 @@
     login_port: 4000
     interval: 5
     poll: 10
+
 - name:  admin user to each shard inc config rs
   community.mongodb.mongodb_user:
     login_host: localhost
