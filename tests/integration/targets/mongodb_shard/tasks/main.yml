@@ -184,7 +184,7 @@
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
       in mongo_output.transformed_output | string'
-    - '''"draining" : true'' in mongo_output.transformed_output | string'
+    - '"draining" in mongo_output.transformed_output | string'
     - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Run remove command again to finalize shard removal
@@ -564,7 +564,7 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003'' in mongo_output.transformed_output | string'
-    - '''"draining" : true'' in mongo_output.transformed_output | string'
+    - '"draining" in mongo_output.transformed_output | string'
     - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Run remove command again to finalize shard removal
