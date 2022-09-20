@@ -29,8 +29,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork
 
 - name: Create replicaset1 with module
   community.mongodb.mongodb_replicaset:
@@ -93,14 +92,16 @@
 - name: Execute script for 3004
   script: /root/ensure_primary.sh 3004 0
 
-- name: Ensure rs0 is stable
+- name: Ensure rs is stable #1
   community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset1 }}"
     login_port: 3001
     interval: 5
     poll: 10
 
-- name: Ensure rs1 is stable
+- name: Ensure rs is stable #2
   community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset2 }}"
     login_port: 3004
     interval: 5
     poll: 10
@@ -238,8 +239,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork
 
 - name: Create config srv replicaset with module
   community.mongodb.mongodb_replicaset:
