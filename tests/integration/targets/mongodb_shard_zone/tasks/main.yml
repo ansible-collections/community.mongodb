@@ -61,7 +61,7 @@
     replica_set: '{{ configsrv_replicaset }}'
     validate: false
     members:
-    - locahost:4000
+    - localhost:4000
 
 - name: Get config server replset mongo_output
   #command: mongo admin --port 4000 --eval "rs.status();"
