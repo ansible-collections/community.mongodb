@@ -100,6 +100,7 @@
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "rs0"
     login_port: 3001
     interval: 5
     poll: 10
@@ -107,6 +108,7 @@
 - name: Ensure host reaches primary before proceeding 3004
   #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "rs1"
     login_port: 3004
     interval: 5
     poll: 10
@@ -357,6 +359,7 @@
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "rs0"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
@@ -367,6 +370,7 @@
 - name: Ensure host reaches primary before proceeding 3004
   #command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "rs1"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"

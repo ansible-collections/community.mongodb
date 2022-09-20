@@ -29,8 +29,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork
 
 - name: Create replicaset1 with module
   community.mongodb.mongodb_replicaset:
@@ -102,6 +101,7 @@
 - name: Ensure replicaset is stable #1
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "rs0"
     login_port: 3001
     interval: 5
     poll: 10
@@ -109,6 +109,7 @@
 - name: Ensure replicaset is stable #2
   #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "rs1"
     login_port: 3004
     interval: 5
     poll: 10
@@ -452,8 +453,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork
 
 - name: Create config srv replicaset with module
   community.mongodb.mongodb_replicaset:
@@ -466,18 +466,21 @@
 
 - name: Ensure rs0 is stable
   community.mongodb.mongodb_status:
+    replica_set: "rs0"
     login_port: 3001
     interval: 5
     poll: 10
 
 - name: Ensure rs1 is stable
   community.mongodb.mongodb_status:
+    replica_set: "rs1"
     login_port: 3004
     interval: 5
     poll: 10
 
 - name: Ensure config is stable
   community.mongodb.mongodb_status:
+    replica_set: "cfg"
     login_port: 4000
     interval: 5
     poll: 10
@@ -547,11 +550,11 @@
 
 - name: Launch cfg server with auth
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
 - name: Ensure rs0 is stable
   community.mongodb.mongodb_status:
+    replica_set: "rs0"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3001
@@ -560,6 +563,7 @@
 
 - name: Ensure rs1 is stable
   community.mongodb.mongodb_status:
+    replica_set: "rs0"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3004
