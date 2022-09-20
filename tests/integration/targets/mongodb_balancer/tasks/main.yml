@@ -259,6 +259,7 @@
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset1 }}"
     login_port: 3001
     interval: 5
     poll: 10
@@ -266,6 +267,7 @@
 - name: Ensure host reaches primary before proceeding 3004
   #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset2 }}"
     login_port: 3004
     interval: 5
     poll: 10
@@ -342,13 +344,13 @@
 
 - name: Launch cfg server with auth
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
   #  }} "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset1 }}"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3001
@@ -359,6 +361,7 @@
   #command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
   #  }} "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset2 }}"
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3004
