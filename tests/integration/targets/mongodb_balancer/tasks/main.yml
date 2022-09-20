@@ -92,16 +92,17 @@
 - name: Execute script for 3004
   script: /root/ensure_primary.sh 3004 0
 
-- name: Ensure is_primary script exists on host
-  copy:
-    src: js/is_primary.js
-    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+- name: Ensure rs0 is stable
+  community.mongodb.mongodb_status:
+    login_port: 3001
+    interval: 5
+    poll: 10
 
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-
-- name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+- name: Ensure rs1 is stable
+  community.mongodb.mongodb_status:
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Add shard 1
   community.mongodb.mongodb_shard:
@@ -118,7 +119,11 @@
     state: present
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
+  #command: mongo admin --eval "sh.status()" --port 27017
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "admin"
+    eval: "sh.status()"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -126,10 +131,10 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
     - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Ensure balancer is started before begining and autosplit is enabled
   community.mongodb.mongodb_balancer:
@@ -251,13 +256,25 @@
   script: /root/ensure_primary.sh 3004 0
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 3001
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 4000
-  command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 4000
+    interval: 5
+    poll: 10
 
 - name:  admin user to each shard inc config rs
   community.mongodb.mongodb_user:
@@ -328,12 +345,24 @@
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
-    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
+  #  }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3001
+    interval: 5
+    poll: 10
 
 - name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
-    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
+  #  }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
@@ -439,13 +468,18 @@
       - "autosplit.new_autosplit == False"
 
 - name: Get balancer state
-  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    eval: "sh.getBalancerState()"
   register: balancer_state
 
 - name: Is the balancer really on?
   assert:
     that:
-      - "'true' in balancer_state.stdout"
+      - "'true' in balancer_state.transformed_output | string"
 
 - name: balancer check mode stopped
   community.mongodb.mongodb_balancer:
@@ -462,13 +496,18 @@
       - myshard.new_balancer_state == "stopped"
 
 - name: Get balancer state - Should still be on
-  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    eval: "sh.getBalancerState()"  
   register: balancer_state
 
 - name: Is the balancer still on?
   assert:
     that:
-      - "'true' in balancer_state.stdout"
+      - "'true' in balancer_state.transformed_output | string"
 
 - name: balancer stopped without check mode
   community.mongodb.mongodb_balancer:
@@ -484,13 +523,18 @@
       - myshard.new_balancer_state == "stopped"
 
 - name: Get balancer state - Should now be off
-  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    eval: "sh.getBalancerState()"  
   register: balancer_state
 
 - name: Is the balancer now off?
   assert:
     that:
-      - "'false' in balancer_state.stdout"
+      - "'false' in balancer_state.transformed_output | string"
 
 - name: balancer started with check mode
   community.mongodb.mongodb_balancer:
@@ -501,13 +545,18 @@
   check_mode: yes
 
 - name: Get balancer state
-  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    eval: "sh.getBalancerState()"  
   register: balancer_state
 
 - name: Is the balancer still off?
   assert:
     that:
-      - "'false' in balancer_state.stdout"
+      - "'false' in balancer_state.transformed_output | string"
 
 - assert:
     that:
@@ -529,13 +578,18 @@
       - myshard.new_balancer_state == "started"
 
 - name: Get balancer state - Should now be on again
-  command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    eval: "sh.getBalancerState()"  
   register: balancer_state
 
 - name: Is the balancer now off?
   assert:
     that:
-      - "'true' in balancer_state.stdout"
+      - "'true' in balancer_state.transformed_output | string"
 
 - name: Run module with incorrect mongos name
   community.mongodb.mongodb_balancer:

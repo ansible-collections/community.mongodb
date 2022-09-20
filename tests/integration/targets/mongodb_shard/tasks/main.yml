@@ -29,8 +29,7 @@
 
 - name: Launch cfg server
   command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
-    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
-    }}" --fork
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork
 
 - name: Create replicaset1 with module
   community.mongodb.mongodb_replicaset:
@@ -141,7 +140,7 @@
     state: present
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
+  #command: mongo admin --eval "sh.status()" --port 27017
   community.mongodb.mongodb_shell:
     login_port: 27017
     login_database: "admin"

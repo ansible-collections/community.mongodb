@@ -65,14 +65,18 @@
     - localhost:4000
 
 - name: Get config server replset mongo_output
-  command: mongo admin --port 4000 --eval "rs.status();"
+  #command: mongo admin --port 4000 --eval "rs.status();"
+  community.mongodb.mongodb_shell:
+    login_port: 4000
+    login_database: "admin"
+    eval: "rs.status()"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
   assert:
     that:
-    - '''"configsvr" : true'' in cfg_replset_output.stdout'
-    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.stdout'
+    - '''"configsvr" : true'' in cfg_replset_output.transformed_output | string'
+    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
@@ -94,11 +98,19 @@
     src: js/is_primary.js
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+- name: Ensure replicaset is stable #1
+  #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 3001
+    interval: 5
+    poll: 10
 
-- name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+- name: Ensure replicaset is stable #2
+  #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Add shard 1
   community.mongodb.mongodb_shard:
@@ -115,7 +127,11 @@
     state: present
 
 - name: Get replicaset info
-  command: mongo admin --eval "sh.status()" --port 27017
+  #command: mongo admin --eval "sh.status()" --port 27017
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "admin"
+    eval: "sh.status()"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -123,10 +139,10 @@
     that:
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset1 }}/localhost:3001,localhost:3002,localhost:3003''
-      in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
     - '''{{ mongodb_replicaset2 }}/localhost:3004,localhost:3005,localhost:3006''
-      in mongo_output.stdout'
-    - '''balancer'' in mongo_output.stdout'
+      in mongo_output.transformed_output | string'
+    - '''balancer'' in mongo_output.transformed_output | string'
 
 - name: Try to add zone ranges when a tag does not exist
   community.mongodb.mongodb_shard_zone:
@@ -190,6 +206,10 @@
 
 - name: debug info
   command: mongo config --port 27017 -eval "db.tags.find()"
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "config"
+    eval: "db.tags.find()"
 
 - name: Try to add zone ranges to NYC again - no change
   community.mongodb.mongodb_shard_zone:
@@ -287,13 +307,17 @@
       - "zone.msg == 'Added zone ranges for LAX'"
 
 - name: Get shard info
-  command: mongo admin --port 27017 -eval "sh.status()"
+  #command: mongo admin --port 27017 -eval "sh.status()"
+  community.mongodb.mongodb_shell:
+    login_port: 27017
+    login_database: "admin"
+    eval: "sh.status()"
   register: shard_info
 
 - assert:
     that:
-      - "'NYC' in shard_info.stdout"
-      - "'LAX' in shard_info.stdout"
+      - "'NYC' in shard_info.transformed_output | string"
+      - "'LAX' in shard_info.transformed_output | string"
 
 - name: Remove the LAX zone ranges - check mode
   community.mongodb.mongodb_shard_zone:
@@ -439,20 +463,23 @@
     members:
     - localhost:4000
 
-- name: Execute script for 3001
-  script: /root/ensure_primary.sh 3001 0
+- name: Ensure rs0 is stable
+  community.mongodb.mongodb_status:
+    login_port: 3001
+    interval: 5
+    poll: 10
 
-- name: Execute script for 3004
-  script: /root/ensure_primary.sh 3004 0
+- name: Ensure rs1 is stable
+  community.mongodb.mongodb_status:
+    login_port: 3004
+    interval: 5
+    poll: 10
 
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
-
-- name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
-
-- name: Ensure host reaches primary before proceeding 4000
-  command: mongo admin --port 4000 "{{ remote_tmp_dir }}/tests/is_primary.js"
+- name: Ensure config is stable
+  community.mongodb.mongodb_status:
+    login_port: 4000
+    interval: 5
+    poll: 10
 
 - name:  admin user to each shard inc config rs
   community.mongodb.mongodb_user:
@@ -522,13 +549,21 @@
     {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset
     }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
 
-- name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
-    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+- name: Ensure rs0 is stable
+  community.mongodb.mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3001
+    interval: 5
+    poll: 10
 
-- name: Ensure host reaches primary before proceeding 3004
-  command: mongo admin --port 3004 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password
-    }} "{{ remote_tmp_dir }}/tests/is_primary.js"
+- name: Ensure rs1 is stable
+  community.mongodb.mongodb_status:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3004
+    interval: 5
+    poll: 10
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath

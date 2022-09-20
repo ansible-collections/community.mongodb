@@ -65,7 +65,11 @@
     - localhost:4000
 
 - name: Get config server replset mongo_output
-  command: mongo admin --port 4000 --eval "rs.status();"
+  #command: mongo admin --port 4000 --eval "rs.status();"
+  community.mongodb.mongodb_shell:
+    login_port: 4000
+    login_database: "admin"
+    eval: "rs.status()"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
