@@ -451,6 +451,8 @@
 - name: Get shard info
   #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.status()"
   community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"  
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
@@ -494,6 +496,8 @@
 - name: Get shard info
   #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.status()"
   community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"  
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
