@@ -101,7 +101,7 @@
 - name: Ensure replicaset is stable #1
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
-    replica_set: "rs0"
+    replica_set: "{{ mongodb_replicaset1 }}"
     login_port: 3001
     interval: 5
     poll: 10
@@ -109,7 +109,7 @@
 - name: Ensure replicaset is stable #2
   #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
-    replica_set: "rs1"
+    replica_set: "{{ mongodb_replicaset2 }}"
     login_port: 3004
     interval: 5
     poll: 10
