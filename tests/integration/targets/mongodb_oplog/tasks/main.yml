@@ -62,6 +62,7 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_port: 3001
+    login_host: "{{ mongodb_replicaset1 }}/localhost"
     login_database: "admin"
     db: admin
     file: mongodb_role.js
