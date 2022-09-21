@@ -76,7 +76,8 @@
   assert:
     that:
     - '"configsvr" in cfg_replset_output.transformed_output | string'
-    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
+    - '''\"set\":\"{{ configsrv_replicaset }}\"'' in cfg_replset_output.transformed_output | string'
+    #- '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath

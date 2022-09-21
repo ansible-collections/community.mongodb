@@ -76,8 +76,9 @@
 - name: Assert that replset is a config server
   assert:
     that:
-    - '"configsvr" in cfg_replset_output.transformed_output | string'
-    - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
+    - '''"configsvr" : true'' in cfg_replset_output.transformed_output | string'
+    - '''\"set\":\"{{ configsrv_replicaset }}\"'' in cfg_replset_output.transformed_output | string'
+    #- '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
 
 - name: Launch mongos
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
@@ -507,7 +508,7 @@
     login_database: "admin"
     eval: "sh.status()"
     transform: "raw"
-    mongo_cmd: "auto"
+    
   register: shard_info
 
 - assert:
