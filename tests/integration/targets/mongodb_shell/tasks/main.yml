@@ -195,7 +195,6 @@
     login_port: 3001
     eval: "db.getRoles({showBuiltinRoles: true})"
     debug: yes
-    mongo_cmd: "auto"
   register: bad_mongo
   ignore_errors: yes
 
