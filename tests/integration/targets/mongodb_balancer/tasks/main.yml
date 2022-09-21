@@ -69,6 +69,7 @@
     login_port: 4000
     eval: "rs.status()"
     transform: "raw"
+    mongo_cmd: "auto"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
@@ -126,6 +127,7 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -479,6 +481,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     eval: "sh.getBalancerState()"
+    mongo_cmd: "auto"
   register: balancer_state
 
 - name: Is the balancer really on?
@@ -506,7 +509,8 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
-    eval: "sh.getBalancerState()"  
+    eval: "sh.getBalancerState()"
+    mongo_cmd: "auto"
   register: balancer_state
 
 - name: Is the balancer still on?
@@ -533,7 +537,8 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
-    eval: "sh.getBalancerState()"  
+    eval: "sh.getBalancerState()"
+    mongo_cmd: "auto"
   register: balancer_state
 
 - name: Is the balancer now off?
@@ -555,7 +560,8 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
-    eval: "sh.getBalancerState()"  
+    eval: "sh.getBalancerState()"
+    mongo_cmd: "auto"  
   register: balancer_state
 
 - name: Is the balancer still off?
@@ -588,7 +594,8 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
-    eval: "sh.getBalancerState()"  
+    eval: "sh.getBalancerState()"
+    mongo_cmd: "auto" 
   register: balancer_state
 
 - name: Is the balancer now off?

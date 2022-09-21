@@ -9,7 +9,7 @@
     debug: yes
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
-    mongo_cmd: "{{ mongo_cmd }}"
+    mongo_cmd: "auto"
   register: first_insert
 
 - assert:
@@ -36,7 +36,7 @@
     debug: yes
     db: "test"
     eval: 'db.hosts.insert({"_id": "first_record"})'
-    mongo_cmd: "{{ mongo_cmd }}"
+    mongo_cmd: "auto"
   ignore_errors: "{{ 'yes' if mongodb_version.startswith('5') else 'no' }}"
   register: first_insert_duplicate
 

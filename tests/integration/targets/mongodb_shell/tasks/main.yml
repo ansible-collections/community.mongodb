@@ -50,6 +50,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
   register: listDatabases
 
 - assert:
@@ -65,6 +66,7 @@
     eval: "db.adminCommand('listCollections')"
     debug: yes
     stringify: yes
+    mongo_cmd: "auto"
   register: listCollections
 
 - assert:
@@ -78,6 +80,7 @@
     login_port: 3001
     eval: "db.adminCommand({ 'getLog' : '*' })"
     debug: yes
+    mongo_cmd: "auto"
   register: getLog
 
 - assert:
@@ -92,6 +95,7 @@
     login_port: 3001
     eval: "db.adminCommand({ 'getLog' : 'startupWarnings' })"
     debug: yes
+    mongo_cmd: "auto"
   register: getLogstartupWarnings
 
 - assert:
@@ -107,6 +111,7 @@
     login_port: 3001
     eval: "db.getRoles({showBuiltinRoles: true})"
     debug: yes
+    mongo_cmd: "auto"
   register: showRoles
 
 - assert:
@@ -121,6 +126,7 @@
     login_port: 3001
     eval: "show dbs"
     debug: yes
+    mongo_cmd: "auto"
   register: bad_cmd
   ignore_errors: yes
 
@@ -160,6 +166,7 @@
     file: "/root/mongo.js"
     quiet: no
     debug: yes
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -173,6 +180,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
   register: rhysDB
 
 - assert:
@@ -187,6 +195,7 @@
     login_port: 3001
     eval: "db.getRoles({showBuiltinRoles: true})"
     debug: yes
+    mongo_cmd: "auto"
   register: bad_mongo
   ignore_errors: yes
 
@@ -202,6 +211,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
     additional_args:
       verbose: True
   register: rhysDB
@@ -218,6 +228,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
     additional_args:
       networkMessageCompressors: "snappy"
   register: rhysDB
@@ -234,6 +245,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
     additional_args:
       verbose: True
       networkMessageCompressors: "snappy"
@@ -252,6 +264,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
     additional_args:
       networkMessageCompressors: "snappy"
     idempotent: yes
@@ -270,6 +283,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
     additional_args:
       networkMessageCompressors: "snappy"
     idempotent: yes
@@ -289,6 +303,7 @@
     quiet: no
     debug: yes
     idempotent: yes
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -305,6 +320,7 @@
     quiet: no
     debug: yes
     idempotent: yes
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -321,6 +337,7 @@
     quiet: no
     debug: yes
     idempotent: no
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -337,6 +354,7 @@
     db: "test"
     eval: 'db.organizations.update({"name": "test"},{"$set" : {"feature_toggles.test": false}})'
     transform: json
+    mongo_cmd: "auto"
 
 - name: Run tests for mongosh on MongoDB 5+
   block:
@@ -363,7 +381,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
       register: listDatabases
@@ -378,7 +396,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listCollections')"
         debug: yes
         stringify: yes
@@ -393,7 +411,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand({ 'getLog' : '*' })"
         debug: yes
       register: getLog
@@ -408,7 +426,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand({ 'getLog' : 'startupWarnings' })"
         debug: yes
       register: getLogstartupWarnings
@@ -424,7 +442,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.getRoles({showBuiltinRoles: true})"
         debug: yes
       register: showRoles
@@ -439,7 +457,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "show dbs"
         debug: yes
       register: bad_cmd
@@ -476,7 +494,7 @@
 
     - name: Run a file containing MongoDB commands
       community.mongodb.mongodb_shell:
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
@@ -494,7 +512,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
       register: rhysDB
@@ -524,7 +542,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -541,7 +559,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -558,7 +576,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -577,7 +595,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -596,7 +614,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -614,7 +632,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
@@ -631,7 +649,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
@@ -648,7 +666,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mmongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
@@ -664,7 +682,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         debug: yes
         quiet: no
         db: "test"
@@ -673,9 +691,10 @@
 
   when: mongodb_version[0] | int >= 5
 
-- set_fact:
-    mongo_cmd: mongo
-  when: mongodb_version[0] | int < 5
+# TODO - This can probably go... certainly when 4.4 is dropped
+#- set_fact:
+#    mongo_cmd: mongo
+#  when: mongodb_version[0] | int < 5
 
 - include_tasks: 408.yml
   when: mongodb_version[0] | int < 5
@@ -685,10 +704,10 @@
 
 - include_tasks: 436.yml
   when: mongodb_version[0] | int < 5
-
-- set_fact:
-    mongo_cmd: mongosh
-  when: mongodb_version[0] | int >= 5
+# EOF
+#- set_fact:
+#    mongo_cmd: mongosh
+#  when: mongodb_version[0] | int >= 5
 
 - include_tasks: 408.yml
   when: mongodb_version[0] | int >= 5

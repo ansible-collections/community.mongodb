@@ -69,6 +69,7 @@
     login_port: 4000
     eval: "rs.status()"
     transform: "raw"
+    mongo_cmd: "auto"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
@@ -148,6 +149,7 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -176,6 +178,7 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard 2 is draining
@@ -203,6 +206,7 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard 2 is not present
@@ -530,6 +534,7 @@
     login_database: "admin"
     login_port: 27017
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -556,7 +561,8 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     login_port: 27017
-    eval: "sh.status()"  
+    eval: "sh.status()"
+    mongo_cmd: "auto" 
   register: mongo_output
 
 - name: Assert shard 2 is draining
@@ -584,7 +590,8 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     login_port: 27017
-    eval: "sh.status()"  
+    eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard 2 is not present

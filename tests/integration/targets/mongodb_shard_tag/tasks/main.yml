@@ -70,6 +70,7 @@
     login_database: "admin"
     eval: "rs.status()"
     transform: "raw"
+    mongo_cmd: "auto"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
@@ -125,6 +126,7 @@
     login_database: "admin"
     eval: "sh.status()"
     transform: "raw"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -166,7 +168,8 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
-    transform: "raw"  
+    transform: "raw"
+    mongo_cmd: "auto"
   register: shard_info
 
 - assert:
@@ -206,7 +209,8 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
-    transform: "raw"  
+    transform: "raw"
+    mongo_cmd: "auto" 
   register: shard_info
 
 - assert:
@@ -456,7 +460,8 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
-    transform: "raw"  
+    transform: "raw"
+    mongo_cmd: "auto" 
   register: shard_info
 
 - assert:
@@ -501,7 +506,8 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
-    transform: "raw"  
+    transform: "raw"
+    mongo_cmd: "auto"
   register: shard_info
 
 - assert:

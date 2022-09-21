@@ -70,6 +70,7 @@
     login_database: "admin"
     eval: "rs.status()"
     transform: "raw"
+    mongo_cmd: "auto"
   register: cfg_replset_output
 
 - name: Assert that replset is a config server
@@ -134,6 +135,7 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: mongo_output
 
 - name: Assert shard name is in mongo_output
@@ -212,6 +214,7 @@
     login_port: 27017
     login_database: "config"
     eval: "db.tags.find()"
+    mongo_cmd: "auto"
 
 - name: Try to add zone ranges to NYC again - no change
   community.mongodb.mongodb_shard_zone:
@@ -314,6 +317,7 @@
     login_port: 27017
     login_database: "admin"
     eval: "sh.status()"
+    mongo_cmd: "auto"
   register: shard_info
 
 - assert:

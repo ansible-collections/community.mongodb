@@ -120,7 +120,8 @@
     login_host: "{{ current_replicaset }}/localhost"
     login_port: 3001
     db: "{{ item.database }}"
-    eval: "printjson(db.getCollectionNames())"  
+    eval: "printjson(db.getCollectionNames())"
+    mongo_cmd: "auto"
   with_items: '{{ mongodb_user_list }}'
   register: login_test
 
@@ -139,6 +140,7 @@
     login_database: admin
     db: "admin"
     eval: printjson(db.getUsers())
+    mongo_cmd: "auto"
   register: admin_db_users
 
 - name: Assert that roles exist in admin db output
@@ -160,6 +162,7 @@
     login_database: "admin"
     db: "test"
     eval: "printjson(db.getUsers())"
+    mongo_cmd: "auto"
   register: test_db_users
 
 - name: Assert that roles exist in test db output
@@ -192,7 +195,8 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     db: "test"
-    eval: "printjson(db.getUsers())"  
+    eval: "printjson(db.getUsers())"
+    mongo_cmd: "auto"
   register: test_db_users
 
 - name: Assert that roles do not exist in test db output
@@ -225,7 +229,8 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: "test"
-    eval: "printjson(db.getUsers())"  
+    eval: "printjson(db.getUsers())"
+    mongo_cmd: "auto"
   register: test_db_users
 
 - debug:
@@ -375,7 +380,8 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     db: admin
-    eval: "printjson(db.getUser('myuser'))"  
+    eval: "printjson(db.getUser('myuser'))"
+    mongo_cmd: "auto"
   register: admin_myuser
 
 - name: Assert that user setup is as expected

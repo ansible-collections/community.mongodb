@@ -55,6 +55,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db = db.getSiblingDB('test'); db.rhys.insert({ 'foo': 'bar' }); db = db.getSiblingDB('rhys'); db.rhys.insert({ 'foo': 'bar' });"
+    mongo_cmd: "auto"
 
 - name: Create admin user in test and rhys dbs
   community.mongodb.mongodb_user:

@@ -111,7 +111,7 @@
     login_host: "127.0.0.1"
     file: /tmp/auth.js
     debug: yes
-    mongo_cmd: mongo
+    mongo_cmd: "auto"
     additional_args:
       tls: ""
       tlsCertificateKeyFile: /tmp/certs/super.pem
