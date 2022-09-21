@@ -665,7 +665,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mmongo_cmd: "auto"
+        mongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
