@@ -76,7 +76,7 @@
 - name: Assert that replset is a config server
   assert:
     that:
-    - '''"configsvr" : true'' in cfg_replset_output.transformed_output | string'
+    - '"configsvr" in cfg_replset_output.transformed_output | string'
     - '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
 
 - name: Launch mongos
