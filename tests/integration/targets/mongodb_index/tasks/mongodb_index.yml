@@ -114,7 +114,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -160,7 +160,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -199,7 +199,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto" 
   register: output
 
@@ -242,7 +242,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -281,7 +281,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -324,7 +324,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -363,7 +363,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -408,7 +408,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -448,7 +448,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"
   register: output
 
@@ -491,7 +491,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto"  
   register: output
 
@@ -529,7 +529,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: "admin"
     db: test
-    eval: "db.rhys.getIndexes();"
+    eval: "db.rhys.getIndexes()"
     mongo_cmd: "auto" 
   register: output
 
