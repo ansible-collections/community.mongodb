@@ -211,11 +211,11 @@
 
 - name: debug info
   #command: mongo config --port 27017 -eval "db.tags.find()"
-  community.mongodb.mongodb_shell:
-    login_port: 27017
-    login_database: "config"
-    eval: "db.tags.find()"
-    mongo_cmd: "auto"
+  #community.mongodb.mongodb_shell:
+    #login_port: 27017
+    #login_database: "config"
+    #eval: "db.tags.find()"
+    #mongo_cmd: "auto"
 
 - name: Try to add zone ranges to NYC again - no change
   community.mongodb.mongodb_shard_zone:
