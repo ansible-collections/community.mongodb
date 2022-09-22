@@ -77,7 +77,7 @@
   assert:
     that:
     - '''"configsvr" : true'' in cfg_replset_output.transformed_output | string'
-    - '{{ configsrv_replicaset }} in cfg_replset_output.transformed_output | string'
+    - '"{{ configsrv_replicaset }}" in cfg_replset_output.transformed_output | string'
     #- '''"set" : "{{ configsrv_replicaset }}"'' in cfg_replset_output.transformed_output | string'
 
 - name: Launch mongos
