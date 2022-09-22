@@ -220,78 +220,82 @@
       - "'rhys' in rhysDB | string"
       - "'--verbose' in rhysDB | string"
 
-- name: Test string value flag (networkMessageCompressors)
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    mongo_cmd: "auto"
-    additional_args:
-      networkMessageCompressors: "snappy"
-  register: rhysDB
+- name: Tests for Mongodb 4 Shell
+  block:
 
-- assert:
-    that:
-      - "'rhys' in rhysDB | string"
-      - "'--networkMessageCompressors snappy' in rhysDB | string"
+  - name: Test string value flag (networkMessageCompressors)
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        networkMessageCompressors: "snappy"
+    register: rhysDB
 
-- name: Test string and boolean value flag together
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    mongo_cmd: "auto"
-    additional_args:
-      verbose: True
-      networkMessageCompressors: "snappy"
-  register: rhysDB
+  - assert:
+      that:
+        - "'rhys' in rhysDB | string"
+        - "'--networkMessageCompressors snappy' in rhysDB | string"
 
-- assert:
-    that:
-      - "'rhys' in rhysDB | string"
-      - "'--verbose' in rhysDB | string"
-      - "'--networkMessageCompressors snappy' in rhysDB | string"
+  - name: Test string and boolean value flag together
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        verbose: True
+        networkMessageCompressors: "snappy"
+    register: rhysDB
 
-- name: Test command with idempotent on 1
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    mongo_cmd: "auto"
-    additional_args:
-      networkMessageCompressors: "snappy"
-    idempotent: yes
-  register: rhysDB
+  - assert:
+      that:
+        - "'rhys' in rhysDB | string"
+        - "'--verbose' in rhysDB | string"
+        - "'--networkMessageCompressors snappy' in rhysDB | string"
 
-- assert:
-    that:
-      - "'rhys' in rhysDB | string"
-      - "'--networkMessageCompressors snappy' in rhysDB | string"
-      - "rhysDB.changed"
+  - name: Test command with idempotent on 1
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        networkMessageCompressors: "snappy"
+      idempotent: yes
+    register: rhysDB
 
-- name: Test command with idempotent on 2
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    mongo_cmd: "auto"
-    additional_args:
-      networkMessageCompressors: "snappy"
-    idempotent: yes
-  register: rhysDB
+  - assert:
+      that:
+        - "'rhys' in rhysDB | string"
+        - "'--networkMessageCompressors snappy' in rhysDB | string"
+        - "rhysDB.changed"
 
-- assert:
-    that:
-      - "rhysDB.changed == False"
-      - "'.success was found meaning this command has already successfully executed' in rhysDB.msg"
+  - name: Test command with idempotent on 2
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        networkMessageCompressors: "snappy"
+      idempotent: yes
+    register: rhysDB
+
+  - assert:
+      that:
+        - "rhysDB.changed == False"
+        - "'.success was found meaning this command has already successfully executed' in rhysDB.msg"
+  when: mongodb_version[0] | int <= 4
 
 - name: Test file with idempotent on 1
   community.mongodb.mongodb_shell:
