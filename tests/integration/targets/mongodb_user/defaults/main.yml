@@ -26,7 +26,6 @@ mongodb_user_list:
 - name: user5
   password: password5
   roles: 
-    - clusterAdmin
     - dbAdmin
   database: test
 - name: user6
@@ -40,7 +39,7 @@ mongodb_user_list:
 - name: user8
   password: password8
   roles: 
-    - userAdminAnyDatabase
+    - userAdmin
     - dbAdmin
   database: test
 - name: user9
