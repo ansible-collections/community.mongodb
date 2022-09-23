@@ -141,7 +141,7 @@
       db = db.getSiblingDB('rhys');
 
       let res = [
-        db.rhys.createIndex({ A: 1 }, { unique: true }),
+        db.rhys.createIndex({ A: 1 }),
         db.rhys.createIndex({ B: 1 }),
         db.rhys.createIndex({ C: 1 }),
         db.rhys.insert({ A: 'hello world', B: 1, AA: 'test' }),
