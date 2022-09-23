@@ -36,6 +36,7 @@
 
   - name: Execute script for 3001
     script: /root/ensure_primary.sh 3001 0
+    when: mongodb_version[0] | int <= 5
 
   - name: Ensure is_primary script exists on host
     copy:

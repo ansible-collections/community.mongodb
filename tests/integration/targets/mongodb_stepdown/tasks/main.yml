@@ -166,6 +166,7 @@
 
 - name: Execute script for 3001
   script: /root/ensure_primary.sh 3001 1
+  when: mongodb_version[0] | int <= 5
 
 - name: Run stepdown on 3002
   community.mongodb.mongodb_stepdown:
