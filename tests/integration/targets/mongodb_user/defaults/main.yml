@@ -34,7 +34,10 @@ mongodb_user_list:
   database: admin
 - name: user7
   password: password7
-  roles: readWriteAnyDatabase
+  roles: 
+    - readWriteAnyDatabase
+    - clusterAdmin
+    - userAdminAnyDatabase
   database: admin
 - name: user8
   password: password8
