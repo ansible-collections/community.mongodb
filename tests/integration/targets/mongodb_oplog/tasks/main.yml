@@ -65,6 +65,7 @@
     login_host: "{{ mongodb_replicaset1 }}/localhost"
     login_database: "admin"
     db: admin
+    mongo_cmd: "auto"
     file: mongodb_role.js
 
 - name: Add compactLocal role to user
