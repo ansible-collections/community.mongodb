@@ -141,6 +141,7 @@
     db: "admin"
     eval: printjson(db.getUsers())
     mongo_cmd: "auto"
+    transform: "raw"
   register: admin_db_users
 
 - name: Assert that roles exist in admin db output
