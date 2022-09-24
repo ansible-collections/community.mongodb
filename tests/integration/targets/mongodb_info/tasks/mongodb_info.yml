@@ -20,7 +20,7 @@
   - assert:
       that:
       - result is not changed
-      - result.general.version.startswith('4') or result.general.version.startswith('5')
+      - result.general.version[0] | int >= 4
       - result.databases.admin
       - result.total_size
       - result.users.admin.test_root
@@ -61,7 +61,7 @@
   - assert:
       that:
       - result is not changed
-      - result.general.version.startswith('4') or result.general.version.startswith('5') or result.general.version.startswith('6')
+      - result.general.version[0] | int >= 4
       - result.databases.admin
       - result.total_size
       - result.users.admin.test_root
