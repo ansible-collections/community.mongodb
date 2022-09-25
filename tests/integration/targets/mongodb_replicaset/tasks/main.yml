@@ -597,7 +597,7 @@
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
 
 - include_tasks: mongod_teardown.yml
 
@@ -655,7 +655,7 @@
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
     - '''east'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''west'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''production'' in mongo_output.transformed_output | string | replace(" ", "")'
