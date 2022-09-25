@@ -221,7 +221,7 @@
     - mongo_output.changed == true
     - '''{{ mongodb_replicaset3 }}'' in mongo_output.transformed_output | string'
     - '''localhost:3001'' in mongo_output.transformed_output | string'
-    - '''localhost:3002'' in mongo_output.transformed_output | stringt'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
