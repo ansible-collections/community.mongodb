@@ -347,13 +347,13 @@
     - localhost:3004
     - localhost:3005
 
-- name: Get replicaset info
+- name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
   community.mongodb.mongodb_shell:  
     login_host: localhost
     login_port: 3001
     login_database: admin
-    eval: "rs.status()"
+    eval: "rs.conf()"
     mongo_cmd: "auto"
     transform: "raw"    
   register: mongo_output
@@ -398,13 +398,13 @@
     - localhost:3002
     - localhost:3003
 
-- name: Get replicaset info
+- name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
   community.mongodb.mongodb_shell:  
     login_host: localhost
     login_port: 3001
     login_database: admin
-    eval: "rs.status()"
+    eval: "rs.conf()"
     mongo_cmd: "auto"
     transform: "raw"   
   register: mongo_output
@@ -418,8 +418,8 @@
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     #- '''electionTimeoutMillis" : 9999,'' in mongo_output.transformed_output | string'
-    #- '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
-    #- '''9999,'' in mongo_output.transformed_output | string'
+    - '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
+    - '''9999,'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -442,13 +442,13 @@
     - localhost:3002
     - localhost:3003
 
-- name: Get replicaset info
+- name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
   community.mongodb.mongodb_shell:  
     login_host: localhost
     login_port: 3001
     login_database: admin
-    eval: "rs.status()"
+    eval: "rs.conf()"
     mongo_cmd: "auto"
     transform: "raw"    
   register: mongo_output
@@ -462,8 +462,8 @@
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     #- '''electionTimeoutMillis" : 9000,'' in mongo_output.transformed_output | string'
-    #- '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
-    #- '''9000,'' in mongo_output.transformed_output | string'
+    - '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
+    - '''9000,'' in mongo_output.transformed_output | string'
 
 - name: Test invalid arbiter handling 1
   community.mongodb.mongodb_replicaset:
@@ -528,13 +528,13 @@
     - host: "localhost:3003"
       priority: 0.5
 
-- name: Get replicaset info
+- name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
   community.mongodb.mongodb_shell:  
     login_host: localhost
     login_port: 3001
     login_database: admin
-    eval: "rs.status()"
+    eval: "rs.conf()"
     mongo_cmd: "auto"
     transform: "raw"  
   register: mongo_output
@@ -547,8 +547,8 @@
     - '''localhost:3001'' in mongo_output.transformed_output'
     - '''localhost:3002'' in mongo_output.transformed_output'
     - '''localhost:3003'' in mongo_output.transformed_output'
-    - '''priority\" : 1''in mongo_output.transformed_output'
-    - '''priority\" : 0.5''in mongo_output.transformed_output'
+    - '''priority\":1''in mongo_output.transformed_output'
+    - '''priority\":0.5''in mongo_output.transformed_output'
 
 - include_tasks: mongod_teardown.yml
 
@@ -576,13 +576,13 @@
       hidden: true
       slaveDelay: 3600
 
-- name: Get replicaset info
+- name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
   community.mongodb.mongodb_shell:  
     login_host: localhost
     login_port: 3001
     login_database: admin
-    eval: "rs.status()"
+    eval: "rs.conf()"
     mongo_cmd: "auto"
     transform: "raw"  
   register: mongo_output
@@ -595,9 +595,9 @@
     - '''localhost:3001'' in mongo_output.transformed_output | string'
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
-    - '''priority\" : 1''in mongo_output.transformed_output | string'
-    - '''hidden\" : false'' in mongo_output.transformed_output | string'
-    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.transformed_output | string'
+    - '''priority\":1''in mongo_output.transformed_output | string'
+    - '''hidden\":false'' in mongo_output.transformed_output | string'
+    - '''slaveDelay\":3600''in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -634,13 +634,13 @@
         dc: "west"
         usage: "reporting"
 
-- name: Get replicaset info
+- name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
   community.mongodb.mongodb_shell:  
     login_host: localhost
     login_port: 3001
     login_database: admin
-    eval: "rs.status()"
+    eval: "rs.conf()"
     mongo_cmd: "auto"
     transform: "raw"    
   register: mongo_output
@@ -653,9 +653,9 @@
     - '''localhost:3001'' in mongo_output.transformed_output | string'
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
-    - '''priority\" : 1''in mongo_output.transformed_output | string'
-    - '''hidden\" : false'' in mongo_output.transformed_output | string'
-    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.transformed_output | string'
+    - '''priority\":1''in mongo_output.transformed_output | string'
+    - '''hidden\":false'' in mongo_output.transformed_output | string'
+    - '''slaveDelay\":3600''in mongo_output.transformed_output | string'
     - '''east''in mongo_output.transformed_output | string'
     - '''west''in mongo_output.transformed_output | string'
     - '''production''in mongo_output.transformed_output | string'
