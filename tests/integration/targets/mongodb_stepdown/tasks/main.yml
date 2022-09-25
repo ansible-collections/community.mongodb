@@ -29,17 +29,24 @@
     dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
 - name: Get replicaset info
-  command: mongo admin --eval "rs.status()" --port 3001
+  #command: mongo admin --eval "rs.status()" --port 3001
+  community.mongodb.mongodb_shell:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.status()"
+    mongo_cmd: "auto"
+    transform: "raw"  
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output - mongodb_replicaset1
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset1 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
 
 - name: Check with bad port and ssl = true to boost codecov
   community.mongodb.mongodb_stepdown:

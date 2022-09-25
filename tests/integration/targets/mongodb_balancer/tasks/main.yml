@@ -124,7 +124,7 @@
     shard: '{{ mongodb_replicaset2 }}/localhost:3004'
     state: present
 
-- name: Get replicaset info
+- name: Get shard info
   #command: mongo admin --eval "sh.status()" --port 27017
   community.mongodb.mongodb_shell:
     login_port: 27017

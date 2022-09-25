@@ -51,17 +51,22 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001
+    #command: mongo admin --eval "rs.status()" --port 3001
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.status()"
+      mongo_cmd: "auto"
+      transform: "raw"    
     register: mongo_output
 
   - name: Assert replicaset name is in mongo_output
     assert:
       that:
       - mongo_output.changed == true
-      - '''{{ current_replicaset }}'' in mongo_output.stdout'
-      - '''localhost:3001'' in mongo_output.stdout'
-      - '''localhost:3002'' in mongo_output.stdout'
-      - '''localhost:3003'' in mongo_output.stdout'
+      - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
+      - '''localhost:3001'' in mongo_output.transformed_output | string'
+      - '''localhost:3002'' in mongo_output.transformed_output | string'
+      - '''localhost:3003'' in mongo_output.transformed_output | string'
 
   - name: Remove a member from the replicaset - check mode
     community.mongodb.mongodb_replicaset:
@@ -102,17 +107,22 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001
+    #command: mongo admin --eval "rs.status()" --port 3001
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.status()"
+      mongo_cmd: "auto"
+      transform: "raw"      
     register: mongo_output
 
   - name: Assert that member is no longer in replicaset
     assert:
       that:
       - mongo_output.changed == true
-      - '''{{ current_replicaset }}'' in mongo_output.stdout'
-      - '''localhost:3001'' in mongo_output.stdout'
-      - '''localhost:3002'' in mongo_output.stdout'
-      - '''name\" : \"localhost:3003'' not in mongo_output.stdout'
+      - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
+      - '''localhost:3001'' in mongo_output.transformed_output | string'
+      - '''localhost:3002'' in mongo_output.transformed_output | string'
+      - '''name\" : \"localhost:3003'' not in mongo_output.transformed_output | string'
 
   - name: Set variable to create a single new member
     set_fact:
@@ -165,16 +175,21 @@
       interval: 30
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001
+    #command: mongo admin --eval "rs.status()" --port 3001
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.status()"
+      mongo_cmd: "auto"
+      transform: "raw"    
     register: mongo_output
 
   - name: Assert that member 3004 is in replicaset
     assert:
       that:
       - mongo_output.changed == true
-      - '''{{ current_replicaset }}'' in mongo_output.stdout'
-      - '''localhost:3001'' in mongo_output.stdout'
-      - '''localhost:3002'' in mongo_output.stdout'
-      - '''localhost:3004'' in mongo_output.stdout'
+      - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
+      - '''localhost:3001'' in mongo_output.transformed_output | string'
+      - '''localhost:3002'' in mongo_output.transformed_output | string'
+      - '''localhost:3004'' in mongo_output.transformed_output | string'
 
   - include_tasks: mongod_teardown.yml
