@@ -543,12 +543,12 @@
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset9 }}'' in mongo_output.transformed_output'
-    - '''localhost:3001'' in mongo_output.transformed_output'
-    - '''localhost:3002'' in mongo_output.transformed_output'
-    - '''localhost:3003'' in mongo_output.transformed_output'
-    - '''priority\":1''in mongo_output.transformed_output'
-    - '''priority\":0.5''in mongo_output.transformed_output'
+    - '''{{ mongodb_replicaset9 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''priority\":1''in mongo_output.transformed_output | string'
+    - '''priority\":0.5''in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
