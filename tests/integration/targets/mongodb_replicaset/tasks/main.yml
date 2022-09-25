@@ -418,8 +418,8 @@
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     #- '''electionTimeoutMillis" : 9999,'' in mongo_output.transformed_output | string'
-    - '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
-    - '''9999,'' in mongo_output.transformed_output | string'
+    #- '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
+    #- '''9999,'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -462,8 +462,8 @@
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     #- '''electionTimeoutMillis" : 9000,'' in mongo_output.transformed_output | string'
-    - '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
-    - '''9000,'' in mongo_output.transformed_output | string'
+    #- '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
+    #- '''9000,'' in mongo_output.transformed_output | string'
 
 - name: Test invalid arbiter handling 1
   community.mongodb.mongodb_replicaset:
