@@ -595,9 +595,9 @@
     - '''localhost:3001'' in mongo_output.transformed_output | string'
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
-    - '''priority\":1''in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''slaveDelay\":3600''in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "")'
 
 - include_tasks: mongod_teardown.yml
 
@@ -653,13 +653,13 @@
     - '''localhost:3001'' in mongo_output.transformed_output | string'
     - '''localhost:3002'' in mongo_output.transformed_output | string'
     - '''localhost:3003'' in mongo_output.transformed_output | string'
-    - '''priority\":1''in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''slaveDelay\":3600''in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''east''in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''west''in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''production''in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''reporting''in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''east'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''west'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''production'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''reporting'' in mongo_output.transformed_output | string | replace(" ", "")'
 
 - include_tasks: mongod_teardown.yml
 
