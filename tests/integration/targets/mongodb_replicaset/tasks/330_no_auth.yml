@@ -122,7 +122,7 @@
       - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
       - '''localhost:3001'' in mongo_output.transformed_output | string'
       - '''localhost:3002'' in mongo_output.transformed_output | string'
-      - '''name\":\"localhost:3003'' not in mongo_output.transformed_output | string'
+      - '''name\":\"localhost:3003'' not in mongo_output.transformed_output | string  | replace(" ", "")'
 
   - name: Set variable to create a single new member
     set_fact:
