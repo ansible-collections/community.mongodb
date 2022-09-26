@@ -248,6 +248,7 @@
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: '{{ mongodb_replicaset4 }}'
     login_host: localhost
     login_port: 3001
     login_database: admin    
