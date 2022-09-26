@@ -38,10 +38,10 @@
     - localhost:3002
     - localhost:3003
 
-- name: Ensure is_primary script exists on host
-  copy:
-    src: js/is_primary.js
-    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+#- name: Ensure is_primary script exists on host
+#  copy:
+#    src: js/is_primary.js
+#    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
 - name: Get replicaset info
   #command: mongo admin --eval "rs.status()" --port 3001
@@ -246,7 +246,11 @@
     election_timeout_millis: 1000
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin    
 
 - name: Get replicaset info
   #command: mongo admin --eval "rs.status()" --port 3001

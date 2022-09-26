@@ -23,10 +23,10 @@
     - localhost:3002
     - localhost:3003
 
-- name: Ensure is_primary script exists on host
-  copy:
-    src: js/is_primary.js
-    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+#- name: Ensure is_primary script exists on host
+#  copy:
+#    src: js/is_primary.js
+#    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
 - name: Get replicaset info
   #command: mongo admin --eval "rs.status()" --port 3001

@@ -29,19 +29,19 @@
          - localhost:3002
          - localhost:3003
 
-  - name: Copy script to host
-    template:
-      src: files/bash/ensure_primary.sh.j2
-      dest: /root/ensure_primary.sh
+  #- name: Copy script to host
+  #  template:
+  #    src: files/bash/ensure_primary.sh.j2
+  #    dest: /root/ensure_primary.sh
 
-  - name: Execute script for 3001
-    script: /root/ensure_primary.sh 3001 0
-    when: mongodb_version[0] | int <= 5
+  #- name: Execute script for 3001
+  #  script: /root/ensure_primary.sh 3001 0
+  #  when: mongodb_version[0] | int <= 5
 
-  - name: Ensure is_primary script exists on host
-    copy:
-      src: js/is_primary.js
-      dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+  #- name: Ensure is_primary script exists on host
+  #  copy:
+  #    src: js/is_primary.js
+  #    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
   - name: Wait for the replicaset to stabilise
     community.mongodb.mongodb_status:

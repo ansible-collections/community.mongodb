@@ -83,18 +83,18 @@
   command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
     "{{ remote_tmp_dir }}/tests/mongos.log" --port 27017 --fork
 
-- name: Copy script to host
-  template:
-    src: files/bash/ensure_primary.sh.j2
-    dest: /root/ensure_primary.sh
+#- name: Copy script to host
+#  template:
+#    src: files/bash/ensure_primary.sh.j2
+#    dest: /root/ensure_primary.sh
 
-- name: Execute script for 3001
-  script: /root/ensure_primary.sh 3001 0
-  when: mongodb_version[0] | int <= 5
+#- name: Execute script for 3001
+#  script: /root/ensure_primary.sh 3001 0
+#  when: mongodb_version[0] | int <= 5
 
-- name: Execute script for 3004
-  script: /root/ensure_primary.sh 3004 0
-  when: mongodb_version[0] | int <= 5
+#- name: Execute script for 3004
+#  script: /root/ensure_primary.sh 3004 0
+#  when: mongodb_version[0] | int <= 5
 
 - name: Ensure rs is stable #1
   community.mongodb.mongodb_status:
@@ -255,13 +255,13 @@
     members:
     - localhost:4000
 
-- name: Execute script for 3001
-  script: /root/ensure_primary.sh 3001 0
-  when: mongodb_version[0] | int <= 5
+#- name: Execute script for 3001
+#  script: /root/ensure_primary.sh 3001 0
+#  when: mongodb_version[0] | int <= 5
 
-- name: Execute script for 3004
-  script: /root/ensure_primary.sh 3004 0
-  when: mongodb_version[0] | int <= 5
+#- name: Execute script for 3004
+#  script: /root/ensure_primary.sh 3004 0
+#  when: mongodb_version[0] | int <= 5
 
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
