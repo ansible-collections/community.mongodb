@@ -251,7 +251,9 @@
     replica_set: '{{ mongodb_replicaset4 }}'
     login_host: localhost
     login_port: 3001
-    login_database: admin    
+    login_database: admin
+    interval: 5
+    poll: 10
 
 - name: Get replicaset info
   #command: mongo admin --eval "rs.status()" --port 3001
