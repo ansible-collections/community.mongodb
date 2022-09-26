@@ -105,6 +105,7 @@
 - name: Ensure host reaches primary before proceeding 3001
   #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: '{{ mongodb_replicaset1 }}'
     login_database: "admin"
     login_port: 3001
     interval: 5
@@ -114,6 +115,7 @@
 - name: Ensure host reaches primary before proceeding 3004
   #command: mongo admin --port 3004 "{{ remote_tmp_dir }}/tests/is_primary.js"
   community.mongodb.mongodb_status:
+    replica_set: '{{ mongodb_replicaset2 }}'
     login_database: "admin"
     login_port: 3004
     interval: 5
