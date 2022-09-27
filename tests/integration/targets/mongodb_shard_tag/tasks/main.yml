@@ -525,7 +525,7 @@
     login_database: "admin"
     eval: "sh.status()"
     transform: "raw"
-    
+    mongo_cmd: "auto"
   register: shard_info
 
 - assert:
