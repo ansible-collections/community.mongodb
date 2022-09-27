@@ -795,8 +795,8 @@
 
 - assert:
     that:
-      - "'NYC' in shard_info.stdout"
-      - "'LAX' in shard_info.stdout"
+      - "'NYC' in shard_info.transformed_output | string"
+      - "'LAX' in shard_info.transformed_output | string"
 
 - name: Remove the LAX zone ranges - check mode
   community.mongodb.mongodb_shard_zone:
