@@ -567,7 +567,9 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with members as dictionaries - mongodb_replicaset10
+
+# TODO: This can be removed when we only test with MongoDB 6+ 
+- name: Create replicaset with members as dictionaries - mongodb_replicaset10 < MongoDB 6
   community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
@@ -582,6 +584,24 @@
       priority: 0
       hidden: true
       slaveDelay: 3600
+  when: mongodb_version[0] | int < 6
+
+- name: Create replicaset with members as dictionaries - mongodb_replicaset10 >= MongoDB 6
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset10 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+    - host: "localhost:3002"
+      priority: 1
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      secondaryDelaySecs: 3600
+  when: mongodb_version[0] | int >= 6
 
 - name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
@@ -604,7 +624,19 @@
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+
+- name: slaveDelay for older MongoDB
+  assert:
+    that:
+      - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int < 6
+
+- name: secondaryDelaySecs for newer MongoDB
+  assert:
+    that:
+      - '''secondaryDelaySecs\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int >= 6
+
 
 - include_tasks: mongod_teardown.yml
 
@@ -616,7 +648,7 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset member tags - mongodb_replicaset11
+- name: Create replicaset member tags - mongodb_replicaset11 < MongoDB 6
   community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
@@ -640,6 +672,33 @@
       tags:
         dc: "west"
         usage: "reporting"
+  when: mongodb_version[0] | int < 6
+
+- name: Create replicaset member tags - mongodb_replicaset11 >= MongoDB 6
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset11 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3002"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      slaveDelay: 3600
+      tags:
+        dc: "west"
+        usage: "reporting"
+  when: mongodb_version[0] | int >= 6
 
 - name: Get replicaset conf
   #command: mongo admin --eval "rs.conf()" --port 3001
@@ -662,11 +721,23 @@
     - '''localhost:3003'' in mongo_output.transformed_output | string'
     - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
-    - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+    #- '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
     - '''east'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''west'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''production'' in mongo_output.transformed_output | string | replace(" ", "")'
     - '''reporting'' in mongo_output.transformed_output | string | replace(" ", "")'
+
+- name: slaveDelay for older MongoDB
+  assert:
+    that:
+      - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int < 6
+
+- name: secondaryDelaySecs for newer MongoDB
+  assert:
+    that:
+      - '''secondaryDelaySecs\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int >= 6
 
 - include_tasks: mongod_teardown.yml
 
