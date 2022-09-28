@@ -463,9 +463,11 @@
       - myshard.changed == True
       - myshard.sharded_enabled == ["db1", "db2"]
 
-- pause:
-    seconds: 5
 
+- pause:
+    seconds: 10
+
+# Since MongoDB 6-0 this is returning changed - increased above pause to 10 seconds to try to counter this
 - name: Add shard 2 - Fourth - Nothing should change
   community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
