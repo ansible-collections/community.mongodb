@@ -694,7 +694,7 @@
     - host: "localhost:3003"
       priority: 0
       hidden: true
-      slaveDelay: 3600
+      secondaryDelaySecs: 3600
       tags:
         dc: "west"
         usage: "reporting"

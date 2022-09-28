@@ -468,7 +468,7 @@
     seconds: 5
 
 # Since MongoDB 6-0 this is returning changed
-# All dbs returned as sharded_enabled
+# All dbs returned as sharded_enabled even when previously enabled
 - name: Add shard 2 - Fourth - Nothing should change
   community.mongodb.mongodb_shard:
     login_user: '{{ mongodb_admin_user }}'
