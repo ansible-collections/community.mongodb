@@ -146,6 +146,7 @@ jobs:
         mongodb_version:
           - "4.4"
           - "5.0"
+          - "6.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
           #- python_version: "2.7"
@@ -224,6 +225,7 @@ jobs:
         mongodb_version:
           - "4.4"
           - "5.0"
+          - "6.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
           #- python_version: "2.7"

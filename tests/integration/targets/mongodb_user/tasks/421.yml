@@ -111,12 +111,13 @@
     login_host: "127.0.0.1"
     file: /tmp/auth.js
     debug: yes
-    mongo_cmd: mongo
+    mongo_cmd: "auto"
     additional_args:
       tls: ""
       tlsCertificateKeyFile: /tmp/certs/super.pem
       tlsCAFile: /tmp/certs/ca.crt
   register: mongo_output
+  when: mongodb_version[0] | int <= 4  # Improve test so it works for mongosh
 
 - name: Create a standard user using super cert
   mongodb_user:

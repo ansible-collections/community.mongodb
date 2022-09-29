@@ -6,7 +6,7 @@
       login_password: "{{ mongodb_admin_password }}"
       login_database: admin
       eval: "db.getRoles({showBuiltinRoles: true})"
-      mongo_cmd: "{{ mongo_cmd }}"
+      mongo_cmd: "auto"
       debug: yes
     ignore_errors: yes
     register: port_error
@@ -23,7 +23,7 @@
       login_password: "{{ mongodb_admin_password }}"
       login_database: admin
       eval: "db.getRoles({showBuiltinRoles: true})"
-      mongo_cmd: "{{ mongo_cmd }}"
+      mongo_cmd: "auto"
       debug: yes
       omit:
         - "port"

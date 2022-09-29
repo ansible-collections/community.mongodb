@@ -38,23 +38,30 @@
     - localhost:3002
     - localhost:3003
 
-- name: Ensure is_primary script exists on host
-  copy:
-    src: js/is_primary.js
-    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+#- name: Ensure is_primary script exists on host
+#  copy:
+#    src: js/is_primary.js
+#    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
 - name: Get replicaset info
-  command: mongo admin --eval "rs.status()" --port 3001
+  #command: mongo admin --eval "rs.status()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.status()"
+    mongo_cmd: "auto"
+    transform: "raw"    
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset1 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset1 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
 
 - name: Attempt to set to another rs name
   community.mongodb.mongodb_replicaset:
@@ -158,17 +165,24 @@
     heartbeat_timeout_secs: 1
 
 - name: Get replicaset info
-  command: mongo admin --eval "rs.status()" --port 3001
+  #command: mongo admin --eval "rs.status()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.status()"
+    mongo_cmd: "auto"
+    transform: "raw"    
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset2 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset2 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -191,17 +205,24 @@
     election_timeout_millis: 1000
 
 - name: Get replicaset info
-  command: mongo admin --eval "rs.status()" --port 3001
+  #command: mongo admin --eval "rs.status()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.status()"
+    mongo_cmd: "auto"
+    transform: "raw"     
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset3 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset3 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -225,21 +246,35 @@
     election_timeout_millis: 1000
 
 - name: Ensure host reaches primary before proceeding 3001
-  command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  #command: mongo admin --port 3001 "{{ remote_tmp_dir }}/tests/is_primary.js"
+  community.mongodb.mongodb_status:
+    replica_set: '{{ mongodb_replicaset4 }}'
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    interval: 5
+    poll: 10
 
 - name: Get replicaset info
-  command: mongo admin --eval "rs.status()" --port 3001
+  #command: mongo admin --eval "rs.status()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.status()"
+    mongo_cmd: "auto"
+    transform: "raw"  
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset4 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''ARBITER'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset4 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''ARBITER'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -266,18 +301,25 @@
     - localhost:3003
 
 - name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.status()"
+    mongo_cmd: "auto"
+    transform: "raw"   
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset5 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''chainingAllowed" : false,'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset5 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''chainingAllowed'' not in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -312,20 +354,27 @@
     - localhost:3004
     - localhost:3005
 
-- name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+- name: Get replicaset conf
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.conf()"
+    mongo_cmd: "auto"
+    transform: "raw"    
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset6 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''localhost:3004'' in mongo_output.stdout'
-    - '''localhost:3005'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset6 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''localhost:3004'' in mongo_output.transformed_output | string'
+    - '''localhost:3005'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -356,19 +405,28 @@
     - localhost:3002
     - localhost:3003
 
-- name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+- name: Get replicaset conf
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.conf()"
+    mongo_cmd: "auto"
+    transform: "raw"   
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset7 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''electionTimeoutMillis" : 9999,'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset7 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    #- '''electionTimeoutMillis" : 9999,'' in mongo_output.transformed_output | string'
+    - '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
+    - '''9999,'' in mongo_output.transformed_output | string'
 
 - include_tasks: mongod_teardown.yml
 
@@ -391,19 +449,28 @@
     - localhost:3002
     - localhost:3003
 
-- name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+- name: Get replicaset conf
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.conf()"
+    mongo_cmd: "auto"
+    transform: "raw"    
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset8 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''electionTimeoutMillis" : 9000,'' in mongo_output.stdout'
+    - '''{{ mongodb_replicaset8 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    #- '''electionTimeoutMillis" : 9000,'' in mongo_output.transformed_output | string'
+    - '''electionTimeoutMillis'' in mongo_output.transformed_output | string'
+    - '''9000,'' in mongo_output.transformed_output | string'
 
 - name: Test invalid arbiter handling 1
   community.mongodb.mongodb_replicaset:
@@ -468,20 +535,27 @@
     - host: "localhost:3003"
       priority: 0.5
 
-- name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+- name: Get replicaset conf
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.conf()"
+    mongo_cmd: "auto"
+    transform: "raw"  
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset9 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''priority\" : 1''in mongo_output.stdout'
-    - '''priority\" : 0.5''in mongo_output.stdout'
+    - '''{{ mongodb_replicaset9 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''priority\":1''in mongo_output.transformed_output | string | replace(" ", "")' # Sometimes with spaces, sometimes not...
+    - '''priority\":0.5''in mongo_output.transformed_output | string | replace(" ", "")'
 
 - include_tasks: mongod_teardown.yml
 
@@ -493,7 +567,9 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset with members as dictionaries - mongodb_replicaset10
+
+# TODO: This can be removed when we only test with MongoDB 6+ 
+- name: Create replicaset with members as dictionaries - mongodb_replicaset10 < MongoDB 6
   community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
@@ -508,22 +584,59 @@
       priority: 0
       hidden: true
       slaveDelay: 3600
+  when: mongodb_version[0] | int < 6
 
-- name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+- name: Create replicaset with members as dictionaries - mongodb_replicaset10 >= MongoDB 6
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset10 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+    - host: "localhost:3002"
+      priority: 1
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      secondaryDelaySecs: 3600
+  when: mongodb_version[0] | int >= 6
+
+- name: Get replicaset conf
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.conf()"
+    mongo_cmd: "auto"
+    transform: "raw"  
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset10 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''priority\" : 1''in mongo_output.stdout'
-    - '''hidden\" : false'' in mongo_output.stdout'
-    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.stdout'
+    - '''{{ mongodb_replicaset10 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
+
+- name: slaveDelay for older MongoDB
+  assert:
+    that:
+      - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int < 6
+
+- name: secondaryDelaySecs for newer MongoDB
+  assert:
+    that:
+      - '''secondaryDelaySecs\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int >= 6
+
 
 - include_tasks: mongod_teardown.yml
 
@@ -535,7 +648,7 @@
 - name: Launch mongod processes
   include_tasks: mongod_replicaset.yml
 
-- name: Create replicaset member tags - mongodb_replicaset11
+- name: Create replicaset member tags - mongodb_replicaset11 < MongoDB 6
   community.mongodb.mongodb_replicaset:
     login_host: localhost
     login_port: 3001
@@ -559,26 +672,72 @@
       tags:
         dc: "west"
         usage: "reporting"
+  when: mongodb_version[0] | int < 6
 
-- name: Get replicaset info
-  command: mongo admin --eval "rs.conf()" --port 3001
+- name: Create replicaset member tags - mongodb_replicaset11 >= MongoDB 6
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset11 }}'
+    members:
+    - host: "localhost:3001"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3002"
+      priority: 1
+      tags:
+        dc: "east"
+        usage: "production"
+    - host: "localhost:3003"
+      priority: 0
+      hidden: true
+      secondaryDelaySecs: 3600
+      tags:
+        dc: "west"
+        usage: "reporting"
+  when: mongodb_version[0] | int >= 6
+
+- name: Get replicaset conf
+  #command: mongo admin --eval "rs.conf()" --port 3001
+  community.mongodb.mongodb_shell:  
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    eval: "rs.conf()"
+    mongo_cmd: "auto"
+    transform: "raw"    
   register: mongo_output
 
 - name: Assert replicaset name is in mongo_output
   assert:
     that:
     - mongo_output.changed == true
-    - '''{{ mongodb_replicaset11 }}'' in mongo_output.stdout'
-    - '''localhost:3001'' in mongo_output.stdout'
-    - '''localhost:3002'' in mongo_output.stdout'
-    - '''localhost:3003'' in mongo_output.stdout'
-    - '''priority\" : 1''in mongo_output.stdout'
-    - '''hidden\" : false'' in mongo_output.stdout'
-    - '''slaveDelay\" : NumberLong(3600)''in mongo_output.stdout'
-    - '''east''in mongo_output.stdout'
-    - '''west''in mongo_output.stdout'
-    - '''production''in mongo_output.stdout'
-    - '''reporting''in mongo_output.stdout'
+    - '''{{ mongodb_replicaset11 }}'' in mongo_output.transformed_output | string'
+    - '''localhost:3001'' in mongo_output.transformed_output | string'
+    - '''localhost:3002'' in mongo_output.transformed_output | string'
+    - '''localhost:3003'' in mongo_output.transformed_output | string'
+    - '''priority\":1'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''hidden\":false'' in mongo_output.transformed_output | string | replace(" ", "")'
+    #- '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+    - '''east'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''west'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''production'' in mongo_output.transformed_output | string | replace(" ", "")'
+    - '''reporting'' in mongo_output.transformed_output | string | replace(" ", "")'
+
+- name: slaveDelay for older MongoDB
+  assert:
+    that:
+      - '''slaveDelay\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int < 6
+
+- name: secondaryDelaySecs for newer MongoDB
+  assert:
+    that:
+      - '''secondaryDelaySecs\":3600'' in mongo_output.transformed_output | string | replace(" ", "") | replace("NumberLong(", "")'
+  when: mongodb_version[0] | int >= 6
 
 - include_tasks: mongod_teardown.yml
 

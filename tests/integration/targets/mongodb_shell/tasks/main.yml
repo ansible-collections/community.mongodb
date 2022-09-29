@@ -50,6 +50,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
   register: listDatabases
 
 - assert:
@@ -65,6 +66,7 @@
     eval: "db.adminCommand('listCollections')"
     debug: yes
     stringify: yes
+    mongo_cmd: "auto"
   register: listCollections
 
 - assert:
@@ -78,6 +80,7 @@
     login_port: 3001
     eval: "db.adminCommand({ 'getLog' : '*' })"
     debug: yes
+    mongo_cmd: "auto"
   register: getLog
 
 - assert:
@@ -92,6 +95,7 @@
     login_port: 3001
     eval: "db.adminCommand({ 'getLog' : 'startupWarnings' })"
     debug: yes
+    mongo_cmd: "auto"
   register: getLogstartupWarnings
 
 - assert:
@@ -107,6 +111,7 @@
     login_port: 3001
     eval: "db.getRoles({showBuiltinRoles: true})"
     debug: yes
+    mongo_cmd: "auto"
   register: showRoles
 
 - assert:
@@ -121,6 +126,7 @@
     login_port: 3001
     eval: "show dbs"
     debug: yes
+    mongo_cmd: "auto"
   register: bad_cmd
   ignore_errors: yes
 
@@ -135,7 +141,7 @@
       db = db.getSiblingDB('rhys');
 
       let res = [
-        db.rhys.createIndex({ A: 1 }, { unique: true }),
+        db.rhys.createIndex({ A: 1 }),
         db.rhys.createIndex({ B: 1 }),
         db.rhys.createIndex({ C: 1 }),
         db.rhys.insert({ A: 'hello world', B: 1, AA: 'test' }),
@@ -160,6 +166,7 @@
     file: "/root/mongo.js"
     quiet: no
     debug: yes
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -173,6 +180,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
   register: rhysDB
 
 - assert:
@@ -202,6 +210,7 @@
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
     debug: yes
+    mongo_cmd: "auto"
     additional_args:
       verbose: True
   register: rhysDB
@@ -211,74 +220,82 @@
       - "'rhys' in rhysDB | string"
       - "'--verbose' in rhysDB | string"
 
-- name: Test string value flag (networkMessageCompressors)
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    additional_args:
-      networkMessageCompressors: "snappy"
-  register: rhysDB
+- name: Tests for Mongodb 4 Shell
+  block:
 
-- assert:
-    that:
-      - "'rhys' in rhysDB | string"
-      - "'--networkMessageCompressors snappy' in rhysDB | string"
+  - name: Test string value flag (networkMessageCompressors)
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        networkMessageCompressors: "snappy"
+    register: rhysDB
 
-- name: Test string and boolean value flag together
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    additional_args:
-      verbose: True
-      networkMessageCompressors: "snappy"
-  register: rhysDB
+  - assert:
+      that:
+        - "'rhys' in rhysDB | string"
+        - "'--networkMessageCompressors snappy' in rhysDB | string"
 
-- assert:
-    that:
-      - "'rhys' in rhysDB | string"
-      - "'--verbose' in rhysDB | string"
-      - "'--networkMessageCompressors snappy' in rhysDB | string"
+  - name: Test string and boolean value flag together
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        verbose: True
+        networkMessageCompressors: "snappy"
+    register: rhysDB
 
-- name: Test command with idempotent on 1
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    additional_args:
-      networkMessageCompressors: "snappy"
-    idempotent: yes
-  register: rhysDB
+  - assert:
+      that:
+        - "'rhys' in rhysDB | string"
+        - "'--verbose' in rhysDB | string"
+        - "'--networkMessageCompressors snappy' in rhysDB | string"
 
-- assert:
-    that:
-      - "'rhys' in rhysDB | string"
-      - "'--networkMessageCompressors snappy' in rhysDB | string"
-      - "rhysDB.changed"
+  - name: Test command with idempotent on 1
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        networkMessageCompressors: "snappy"
+      idempotent: yes
+    register: rhysDB
 
-- name: Test command with idempotent on 2
-  community.mongodb.mongodb_shell:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    login_port: 3001
-    eval: "db.adminCommand('listDatabases')"
-    debug: yes
-    additional_args:
-      networkMessageCompressors: "snappy"
-    idempotent: yes
-  register: rhysDB
+  - assert:
+      that:
+        - "'rhys' in rhysDB | string"
+        - "'--networkMessageCompressors snappy' in rhysDB | string"
+        - "rhysDB.changed"
 
-- assert:
-    that:
-      - "rhysDB.changed == False"
-      - "'.success was found meaning this command has already successfully executed' in rhysDB.msg"
+  - name: Test command with idempotent on 2
+    community.mongodb.mongodb_shell:
+      login_user: '{{ mongodb_admin_user }}'
+      login_password: '{{ mongodb_admin_password }}'
+      login_port: 3001
+      eval: "db.adminCommand('listDatabases')"
+      debug: yes
+      mongo_cmd: "auto"
+      additional_args:
+        networkMessageCompressors: "snappy"
+      idempotent: yes
+    register: rhysDB
+
+  - assert:
+      that:
+        - "rhysDB.changed == False"
+        - "'.success was found meaning this command has already successfully executed' in rhysDB.msg"
+  when: mongodb_version[0] | int <= 4
 
 - name: Test file with idempotent on 1
   community.mongodb.mongodb_shell:
@@ -289,6 +306,7 @@
     quiet: no
     debug: yes
     idempotent: yes
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -305,6 +323,7 @@
     quiet: no
     debug: yes
     idempotent: yes
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -321,6 +340,7 @@
     quiet: no
     debug: yes
     idempotent: no
+    mongo_cmd: "auto"
   register: run_file
 
 - assert:
@@ -337,6 +357,7 @@
     db: "test"
     eval: 'db.organizations.update({"name": "test"},{"$set" : {"feature_toggles.test": false}})'
     transform: json
+    mongo_cmd: "auto"
 
 - name: Run tests for mongosh on MongoDB 5+
   block:
@@ -363,7 +384,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
       register: listDatabases
@@ -378,7 +399,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listCollections')"
         debug: yes
         stringify: yes
@@ -393,7 +414,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand({ 'getLog' : '*' })"
         debug: yes
       register: getLog
@@ -408,7 +429,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand({ 'getLog' : 'startupWarnings' })"
         debug: yes
       register: getLogstartupWarnings
@@ -424,7 +445,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.getRoles({showBuiltinRoles: true})"
         debug: yes
       register: showRoles
@@ -439,7 +460,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "show dbs"
         debug: yes
       register: bad_cmd
@@ -476,7 +497,7 @@
 
     - name: Run a file containing MongoDB commands
       community.mongodb.mongodb_shell:
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
@@ -494,7 +515,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
       register: rhysDB
@@ -524,7 +545,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -541,7 +562,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -558,7 +579,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -577,7 +598,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -596,7 +617,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         eval: "db.adminCommand('listDatabases')"
         debug: yes
         additional_args:
@@ -614,7 +635,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
@@ -631,7 +652,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
@@ -648,7 +669,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         file: "/root/mongo.js"
         quiet: no
         debug: yes
@@ -664,7 +685,7 @@
         login_user: '{{ mongodb_admin_user }}'
         login_password: '{{ mongodb_admin_password }}'
         login_port: 3001
-        mongo_cmd: "mongosh"
+        mongo_cmd: "auto"
         debug: yes
         quiet: no
         db: "test"
@@ -673,9 +694,10 @@
 
   when: mongodb_version[0] | int >= 5
 
-- set_fact:
-    mongo_cmd: mongo
-  when: mongodb_version[0] | int < 5
+# TODO - This can probably go... certainly when 4.4 is dropped
+#- set_fact:
+#    mongo_cmd: mongo
+#  when: mongodb_version[0] | int < 5
 
 - include_tasks: 408.yml
   when: mongodb_version[0] | int < 5
@@ -685,10 +707,10 @@
 
 - include_tasks: 436.yml
   when: mongodb_version[0] | int < 5
-
-- set_fact:
-    mongo_cmd: mongosh
-  when: mongodb_version[0] | int >= 5
+# EOF
+#- set_fact:
+#    mongo_cmd: mongosh
+#  when: mongodb_version[0] | int >= 5
 
 - include_tasks: 408.yml
   when: mongodb_version[0] | int >= 5

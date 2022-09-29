@@ -19,24 +19,32 @@ mongodb_user_list:
   database: test
 - name: user4
   password: password4
-  roles: userAdmin
+  roles: 
+    - userAdmin
+    - dbAdmin
   database: test
 - name: user5
   password: password5
-  roles: clusterAdmin
-  database: admin
+  roles: 
+    - dbAdmin
+  database: test
 - name: user6
   password: password6
   roles: readAnyDatabase
   database: admin
 - name: user7
   password: password7
-  roles: readWriteAnyDatabase
+  roles: 
+    - readWriteAnyDatabase
+    - clusterAdmin
+    - userAdminAnyDatabase
   database: admin
 - name: user8
   password: password8
-  roles: userAdminAnyDatabase
-  database: admin
+  roles: 
+    - userAdmin
+    - dbAdmin
+  database: test
 - name: user9
   password: password9
   roles: dbAdminAnyDatabase

@@ -48,7 +48,16 @@
     - result.indexes_created == ["test.rhys.myindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    debug: yes
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -56,7 +65,7 @@
 
 - assert:
     that:
-      - '"myindex" in output.stdout'
+      - '"myindex" in output.transformed_output | string'
 
 - name: Drop the index we just created (check mode)
   community.mongodb.mongodb_index:
@@ -98,7 +107,15 @@
       - result.indexes_dropped == ["test.rhys.myindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -106,7 +123,7 @@
 
 - assert:
     that:
-      - '"myindex" not in output.stdout'
+      - '"myindex" not in output.transformed_output | string'
 # EOF Simple index
 
 # Check adding 2 indexes
@@ -136,7 +153,15 @@
       - result.indexes_created == ["test.rhys.myuniqueindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -144,8 +169,8 @@
 
 - assert:
     that:
-      - '"myuniqueindex" in output.stdout'
-      - '"unique\" : true" in output.stdout'
+      - '"myuniqueindex" in output.transformed_output | string'
+      - output.transformed_output.1.unique
 
 - name: Drop the unique index we just created
   community.mongodb.mongodb_index:
@@ -167,7 +192,15 @@
       - result.indexes_dropped == ["test.rhys.myuniqueindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto" 
   register: output
 
 - debug:
@@ -175,7 +208,7 @@
 
 - assert:
     that:
-      - '"myuniqueindex" not in output.stdout'
+      - '"myuniqueindex" not in output.transformed_output | string'
 # EOF UNIQUE
 
 # TTL
@@ -202,7 +235,15 @@
       - result.indexes_created == ["test.rhys.myttlindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -210,8 +251,8 @@
 
 - assert:
     that:
-      - '"myttlindex" in output.stdout'
-      - '"expireAfterSeconds\" : 3600" in output.stdout'
+      - '"myttlindex" in output.transformed_output | string'
+      - output.transformed_output.1.expireAfterSeconds == 3600
 
 - name: Drop the ttl index we just created
   community.mongodb.mongodb_index:
@@ -233,7 +274,15 @@
       - result.indexes_dropped == ["test.rhys.myttlindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -241,7 +290,7 @@
 
 - assert:
     that:
-      - '"myttlindex" not in output.stdout'
+      - '"myttlindex" not in output.transformed_output | string'
 # EOF TTL
 
 # SPARSE
@@ -268,7 +317,15 @@
       - result.indexes_created == ["test.rhys.mysparseindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -276,8 +333,8 @@
 
 - assert:
     that:
-      - '"mysparseindex" in output.stdout'
-      - '"sparse\" : true" in output.stdout'
+      - '"mysparseindex" in output.transformed_output | string'
+      - output.transformed_output.1.sparse
 
 - name: Drop the sparse index we just created
   community.mongodb.mongodb_index:
@@ -299,7 +356,15 @@
       - result.indexes_dropped == ["test.rhys.mysparseindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -307,7 +372,7 @@
 
 - assert:
     that:
-      - '"mysparseindex" not in output.stdout'
+      - '"mysparseindex" not in output.transformed_output | string'
 # EOF SPARSE
 
 # PARTIAL
@@ -336,7 +401,15 @@
       - result.indexes_created == ["test.rhys.mypartialindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -344,9 +417,9 @@
 
 - assert:
     that:
-      - '"mypartialindex" in output.stdout'
-      - '"partialFilterExpression" in output.stdout'
-      - '"rating\" :" in output.stdout'
+      - '"mypartialindex" in output.transformed_output | string'
+      - '"partialFilterExpression" in output.transformed_output | string'
+      - '"rating" in output.transformed_output | string'
 
 - name: Drop the partial index we just created
   community.mongodb.mongodb_index:
@@ -368,7 +441,15 @@
       - result.indexes_dropped == ["test.rhys.mypartialindex"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"
   register: output
 
 - debug:
@@ -376,7 +457,7 @@
 
 - assert:
     that:
-      - '"mypartialindex" not in output.stdout'
+      - '"mypartialindex" not in output.transformed_output | string'
 # EOF PARTIAL
 
 # Background. Option ignored from 4.2
@@ -403,7 +484,15 @@
       - result.indexes_created == ["test.rhys.idxbackground"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto"  
   register: output
 
 - debug:
@@ -411,7 +500,7 @@
 
 - assert:
     that:
-      - '"idxbackground" in output.stdout'
+      - '"idxbackground" in output.transformed_output | string'
 
 - name: Drop the background index we just created
   community.mongodb.mongodb_index:
@@ -433,7 +522,15 @@
       - result.indexes_dropped == ["test.rhys.idxbackground"]
 
 - name: Get indexes on collection
-  command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  #command: mongo  test --authenticationDatabase admin --port 3001 -u {{ mongodb_admin_user }} -p {{ mongodb_admin_password }} --eval "db.rhys.getIndexes();"
+  community.mongodb.mongodb_shell:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"
+    db: test
+    eval: "db.rhys.getIndexes()"
+    mongo_cmd: "auto" 
   register: output
 
 - debug:
@@ -441,7 +538,7 @@
 
 - assert:
     that:
-      - '"idxbackground" not in output.stdout'
+      - '"idxbackground" not in output.transformed_output | string'
 
 # Module validation tests
 - name: Missing database key

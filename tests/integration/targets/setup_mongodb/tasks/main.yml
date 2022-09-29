@@ -78,6 +78,12 @@
     state: present
   when: ansible_os_family == "RedHat"
 
+- name: Ensure mongodb-mongosh package is installed
+  package:
+    name: mongodb-mongosh
+    state: present
+  when: mongodb_version[0] | int >= 5
+
 - name: Install pip packages
   pip:
     name: '{{ pip_packages }}'

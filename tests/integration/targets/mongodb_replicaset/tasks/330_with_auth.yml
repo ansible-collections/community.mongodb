@@ -44,18 +44,19 @@
         - root
       state: present
 
-  - name: Copy script to host
-    template:
-      src: files/bash/ensure_primary.sh.j2
-      dest: /root/ensure_primary.sh
+  #- name: Copy script to host
+  #  template:
+  #    src: files/bash/ensure_primary.sh.j2
+  #    dest: /root/ensure_primary.sh
 
-  - name: Execute script for 3001
-    script: /root/ensure_primary.sh 3001 1
+  #- name: Execute script for 3001
+  #  script: /root/ensure_primary.sh 3001 1
+  #  when: mongodb_version[0] | int <= 5
 
-  - name: Ensure is_primary script exists on host
-    copy:
-      src: js/is_primary.js
-      dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
+  #- name: Ensure is_primary script exists on host
+  #  copy:
+  #    src: js/is_primary.js
+  #    dest: '{{ remote_tmp_dir }}/tests/is_primary.js'
 
   - name: Wait for the replicaset to stabilise
     community.mongodb.mongodb_status:
@@ -65,17 +66,22 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
+    #command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.status()"
+      mongo_cmd: "auto"
+      transform: "raw"    
     register: mongo_output
 
   - name: Assert replicaset name is in mongo_output
     assert:
       that:
       - mongo_output.changed == true
-      - '''{{ current_replicaset }}'' in mongo_output.stdout'
-      - '''localhost:3001'' in mongo_output.stdout'
-      - '''localhost:3002'' in mongo_output.stdout'
-      - '''localhost:3003'' in mongo_output.stdout'
+      - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
+      - '''localhost:3001'' in mongo_output.transformed_output | string'
+      - '''localhost:3002'' in mongo_output.transformed_output | string'
+      - '''localhost:3003'' in mongo_output.transformed_output | string'
 
   - name: Remove a member from the replicaset - check mode
     community.mongodb.mongodb_replicaset:
@@ -115,17 +121,22 @@
       interval: 10
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
+    #command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
+    community.mongodb.mongodb_shell:  
+      <<: *mongo_parameters
+      eval: "rs.status()"
+      mongo_cmd: "auto"
+      transform: "raw"       
     register: mongo_output
 
   - name: Assert that member is no longer in replicaset
     assert:
       that:
       - mongo_output.changed == true
-      - '''{{ current_replicaset }}'' in mongo_output.stdout'
-      - '''localhost:3001'' in mongo_output.stdout'
-      - '''localhost:3002'' in mongo_output.stdout'
-      - '''name\" : \"localhost:3003'' not in mongo_output.stdout'
+      - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
+      - '''localhost:3001'' in mongo_output.transformed_output | string'
+      - '''localhost:3002'' in mongo_output.transformed_output | string'
+      - '''name\":\"localhost:3003'' not in mongo_output.transformed_output | string | replace(" ", "")'
 
   - name: Set variable to create a single new member
     set_fact:
@@ -178,16 +189,21 @@
       interval: 30
 
   - name: Get replicaset info
-    command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
+    #command: mongo admin --eval "rs.status()" --port 3001 --username {{ mongodb_admin_user }} --password {{ mongodb_admin_password }}
+    community.mongodb.mongodb_shell:  
+      <<: *mongo_parameters
+      eval: "rs.status()"
+      mongo_cmd: "auto"
+      transform: "raw"        
     register: mongo_output
 
   - name: Assert that member 3004 is in replicaset
     assert:
       that:
       - mongo_output.changed == true
-      - '''{{ current_replicaset }}'' in mongo_output.stdout'
-      - '''localhost:3001'' in mongo_output.stdout'
-      - '''localhost:3002'' in mongo_output.stdout'
-      - '''localhost:3004'' in mongo_output.stdout'
+      - '''{{ current_replicaset }}'' in mongo_output.transformed_output | string'
+      - '''localhost:3001'' in mongo_output.transformed_output | string'
+      - '''localhost:3002'' in mongo_output.transformed_output | string'
+      - '''localhost:3004'' in mongo_output.transformed_output | string'
 
   - include_tasks: mongod_teardown.yml
