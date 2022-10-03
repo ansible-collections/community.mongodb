@@ -1,0 +1,18 @@
+{
+  databases: [
+    { name: 'rhys', sizeOnDisk: Long("110592"), empty: false },
+    { name: 'admin', sizeOnDisk: Long("380928"), empty: false },
+    { name: 'local', sizeOnDisk: Long("6857736192"), empty: false }
+  ],
+  totalSize: Long("6858227712"),
+  totalSizeMb: Long("6540"),
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1664629312, i: 230 }),
+    signature: {
+      hash: Binary(Buffer.from("fc1fe687d76d88bbc9ea63e1ac5903789a89f96b", "hex"), 0),
+      keyId: Long("7097268525600866365")
+    }
+  },
+  operationTime: Timestamp({ t: 1664629312, i: 220 })
+}

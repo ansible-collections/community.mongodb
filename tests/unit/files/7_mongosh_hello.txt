@@ -1,0 +1,48 @@
+{
+  topologyVersion: {
+    processId: ObjectId("6336ad2c9eb652f8d666d62f"),
+    counter: Long("6")
+  },
+  hosts: [
+    'ac-4rp4yqx-shard-00-00.lyyoypw.mongodb.net:27017',
+    'ac-4rp4yqx-shard-00-01.lyyoypw.mongodb.net:27017',
+    'ac-4rp4yqx-shard-00-02.lyyoypw.mongodb.net:27017'
+  ],
+  setName: 'atlas-j5xqo0-shard-0',
+  setVersion: 9,
+  isWritablePrimary: true,
+  secondary: false,
+  primary: 'ac-4rp4yqx-shard-00-01.lyyoypw.mongodb.net:27017',
+  tags: {
+    provider: 'AWS',
+    region: 'EU_CENTRAL_1',
+    nodeType: 'ELECTABLE',
+    workloadType: 'OPERATIONAL'
+  },
+  me: 'ac-4rp4yqx-shard-00-01.lyyoypw.mongodb.net:27017',
+  electionId: ObjectId("7fffffff00000000000000bb"),
+  lastWrite: {
+    opTime: { ts: Timestamp({ t: 1664629612, i: 3 }), t: Long("187") },
+    lastWriteDate: ISODate("2022-10-01T13:06:52.000Z"),
+    majorityOpTime: { ts: Timestamp({ t: 1664629612, i: 3 }), t: Long("187") },
+    majorityWriteDate: ISODate("2022-10-01T13:06:52.000Z")
+  },
+  maxBsonObjectSize: 16777216,
+  maxMessageSizeBytes: 48000000,
+  maxWriteBatchSize: 100000,
+  localTime: ISODate("2022-10-01T13:06:52.112Z"),
+  logicalSessionTimeoutMinutes: 30,
+  connectionId: 60511,
+  minWireVersion: 0,
+  maxWireVersion: 13,
+  readOnly: false,
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1664629612, i: 3 }),
+    signature: {
+      hash: Binary(Buffer.from("174c833da2d7604c46eec21e5a71f6a55b8f37e5", "hex"), 0),
+      keyId: Long("7097268525600866365")
+    }
+  },
+  operationTime: Timestamp({ t: 1664629612, i: 3 })
+}
