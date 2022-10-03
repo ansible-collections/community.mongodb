@@ -55,7 +55,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert cmd_list[0] == "--eval"
         assert cmd_list[1] == "Text"
 
-    def test_extract_json_document1(output):
+    def test_extract_json_document1(self):
         output = """
             WriteResult({
               "nInserted" : 0,
@@ -64,7 +64,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                       "errmsg" : "E11000 duplicate key error collection: state.hosts index: _id_ dup key: { _id: \"r1\" }"
               }
       })"""
-        doc = mongodb_shell.extract_json_document(output) 
+        doc = mongodb_shell.extract_json_document(output)
         # Returns a string that should look like a json doc
         assert isinstance(doc, str)
         print(doc)
@@ -84,7 +84,6 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         json_doc = mongodb_shell.transform_output(doc, "json", None)
         assert 'nInserted' in json_doc
         assert 'writeError' in json_doc
-        print(type(json_doc))
         #assert 1 == 0
         #print(type(json_doc))
         #assert 'code' in json_doc['writeError']
@@ -104,7 +103,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert mongodb_shell.touch("/dev/null") is None
 
     def test_detect_if_cmd_exist1(self):
-        assert mongodb_shell.detect_if_cmd_exist(cmd="mongosh") == False
+        assert mongodb_shell.detect_if_cmd_exist(cmd="mongosh") is False
 
     def test_detect_if_cmd_exist1(self):
         assert mongodb_shell.detect_if_cmd_exist(cmd="cp")
@@ -116,7 +115,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             myfile.close()
             doc = mongodb_shell.extract_json_document(s)
             json_doc = mongodb_shell.transform_output(doc, "json", None)
-            assert isinstance(json_doc, str)  # we want this to return dict...    
+            assert isinstance(json_doc, str)  # we want this to return dict...
 
 if __name__ == '__main__':
     unittest.main()

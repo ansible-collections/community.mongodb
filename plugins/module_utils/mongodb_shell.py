@@ -102,11 +102,8 @@ def transform_output(output, transform_type, split_char):
             # "count": NumberLong(999),
             output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1', output)
             try:
-                print(type(output))
                 output = json.dumps(output, separators=(',',':'))
-                print(type(output))
                 doc = json.loads(output)
-                print(type(doc))
             except json.decoder.JSONDecodeError as excep:
                 raise excep
     elif transform_type == "split":
