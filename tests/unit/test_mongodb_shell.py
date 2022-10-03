@@ -86,14 +86,15 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         assert 'writeError' in json_doc
 
     def test_get_hash_value(self):
+
         class FakeModule:
+
             params = {"file": None, "eval": "XXXXX"}
+
             def __init__(self):
                 pass
 
-
         fake_module = FakeModule()
-
 
         h = mongodb_shell.get_hash_value(fake_module)
         assert isinstance(h, str)

@@ -206,6 +206,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_shell im
     detect_if_cmd_exist
 )
 
+
 def main():
     argument_spec = mongodb_common_argument_spec(ssl_options=False)
     argument_spec.update(
