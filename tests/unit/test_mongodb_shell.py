@@ -84,18 +84,17 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         json_doc = mongodb_shell.transform_output(doc, "json", None)
         assert 'nInserted' in json_doc
         assert 'writeError' in json_doc
-        #assert 1 == 0
-        #print(type(json_doc))
-        #assert 'code' in json_doc['writeError']
-        #assert 'errmsg' in json_doc['writeError']
 
     def test_get_hash_value(self):
         class FakeModule:
-            params = { "file": None, "eval": "XXXXX" }
+            params = {"file": None, "eval": "XXXXX"}
             def __init__(self):
                 pass
 
+
         fake_module = FakeModule()
+
+
         h = mongodb_shell.get_hash_value(fake_module)
         assert isinstance(h, str)
 
@@ -116,6 +115,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             doc = mongodb_shell.extract_json_document(s)
             json_doc = mongodb_shell.transform_output(doc, "json", None)
             assert isinstance(json_doc, str)  # we want this to return dict...
+
 
 if __name__ == '__main__':
     unittest.main()

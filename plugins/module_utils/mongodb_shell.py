@@ -56,12 +56,12 @@ def extract_json_document(output):
         last_bracket = output.rfind('}')
         if first_bracket > 0 and last_bracket > 0:
             tmp = output[first_bracket:last_bracket + 1]
-            tmp = tmp.replace("\\\"", '\\\\\"')
+            #tmp = tmp.replace("\\\"", '\\\\\"')
             tmp = tmp.replace('\n', '')
             tmp = tmp.replace('\t', '')
             if tmp is not None:
                 output = tmp
-    #  elif re.match(r"^[a-zA-Z].*", output):
+     # elif re.match(r"^[a-zA-Z].*", output):
         # first_bracket = output.find('{')
         # last_bracket = output.rfind('}')
         # tmp = output[first_bracket:last_bracket + 1]
@@ -102,7 +102,7 @@ def transform_output(output, transform_type, split_char):
             # "count": NumberLong(999),
             output = re.sub(r'\:\s*\S+\s*\(\s*(\S+)\s*\)', r':\1', output)
             try:
-                output = json.dumps(output, separators=(',',':'))
+                output = json.dumps(output, separators=(',', ':'))
                 doc = json.loads(output)
             except json.decoder.JSONDecodeError as excep:
                 raise excep
