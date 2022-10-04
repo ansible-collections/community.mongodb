@@ -1,0 +1,1 @@
+MongoServerError: E11000 duplicate key error collection: rhys.test index: host_1 dup key: { host: "rs2" }

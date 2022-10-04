@@ -1,0 +1,27 @@
+{
+  cursor: {
+    id: Long("0"),
+    ns: 'rhys.$cmd.listCollections',
+    firstBatch: [
+      {
+        name: 'test',
+        type: 'collection',
+        options: {},
+        info: {
+          readOnly: false,
+          uuid: new UUID("111b1f92-1672-403f-a0bb-73a109e39016")
+        },
+        idIndex: { v: 2, key: { _id: 1 }, name: '_id_' }
+      }
+    ]
+  },
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1664629409, i: 105 }),
+    signature: {
+      hash: Binary(Buffer.from("0fe4f0cd5d23ce2c0c6ca4561ba25f0483b8f3c9", "hex"), 0),
+      keyId: Long("7097268525600866365")
+    }
+  },
+  operationTime: Timestamp({ t: 1664629409, i: 105 })
+}
