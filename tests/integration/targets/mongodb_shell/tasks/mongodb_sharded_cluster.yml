@@ -1,0 +1,130 @@
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset1 }}'
+
+- set_fact:
+    configsrv_replicaset: "cfg"
+
+- set_fact:
+    mongodb_nodes:
+    - 3001
+    - 3002
+    - 3003
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_replicaset.yml
+
+- set_fact:
+    current_replicaset: '{{ mongodb_replicaset2 }}'
+
+- set_fact:
+    mongodb_nodes:
+    - 3004
+    - 3005
+    - 3006
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_replicaset.yml
+
+- name: Launch cfg server with auth
+  command: mongod --configsvr --port 4000 --dbpath {{ remote_tmp_dir }}/config --logpath
+    {{ remote_tmp_dir }}/config.log --replSet "{{ configsrv_replicaset }}" --fork --auth --keyFile {{ remote_tmp_dir }}/my.key
+
+- name: Create replicaset1 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3001
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset1 }}'
+    members:
+    - localhost:3001
+    - localhost:3002
+    - localhost:3003
+
+- name: Create replicaset2 with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 3004
+    login_database: admin
+    replica_set: '{{ mongodb_replicaset2 }}'
+    members:
+    - localhost:3004
+    - localhost:3005
+    - localhost:3006
+
+- name: Create config srv replicaset with module
+  community.mongodb.mongodb_replicaset:
+    login_host: localhost
+    login_port: 4000
+    login_database: admin
+    replica_set: '{{ configsrv_replicaset }}'
+    validate: false
+    members:
+    - localhost:4000
+
+- name:  admin user to each shard inc config rs
+  community.mongodb.mongodb_user:
+    login_host: localhost
+    login_port: "{{ item.port }}"
+    replica_set: "{{ item.rs }}"
+    database: admin
+    name: "{{ mongodb_admin_user }}"
+    password: "{{ mongodb_admin_password }}"
+    roles:
+      - root
+    state: present
+  register: mongo_admin_user
+  with_items:
+  - port: 3001
+    rs: "{{ mongodb_replicaset1 }}"
+  - port: 3004
+    rs: "{{ mongodb_replicaset2 }}"
+  - port: 4000
+    rs: "{{ configsrv_replicaset }}"
+
+
+- name: Ensure rs0 is stable
+  community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset1 }}"
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3001
+    interval: 5
+    poll: 10
+
+- name: Ensure rs1 is stable
+  community.mongodb.mongodb_status:
+    replica_set: "{{ mongodb_replicaset2 }}"
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_port: 3004
+    interval: 5
+    poll: 10
+
+- name: Launch mongos
+  command: mongos --configdb "{{ configsrv_replicaset }}/localhost:4000" --logpath
+    "{{ remote_tmp_dir }}/mongos.log" --port 27017 --fork --keyFile {{ remote_tmp_dir }}/my.key
+
+- name: Wait for mongos to become active
+  wait_for:
+    host: localhost
+    port: 4000
+    delay: 1
+
+- name: Add shard 1
+  community.mongodb.mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset1 }}/localhost:3001'
+    state: present
+
+- name: Add shard 2 - First
+  community.mongodb.mongodb_shard:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    shard: '{{ mongodb_replicaset2 }}/localhost:3004'
+    state: present
+  register: myshard

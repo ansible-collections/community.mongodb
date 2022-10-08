@@ -1,0 +1,157 @@
+# Tests for issue 498
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: "admin"
+
+  block:
+
+    - set_fact:
+        mongodb_nodes:
+          - 3001
+          - 3002
+          - 3003
+
+    - set_fact:
+        mongod_auth: true
+
+    - set_fact:
+        current_replicaset: "issue_498"
+
+    - include_tasks: mongod_replicaset.yml      
+
+    - name: Create replicaset with module
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 3001
+        replica_set: "{{ current_replicaset }}"
+        members:
+          - localhost:3001
+          - localhost:3002
+          - localhost:3003
+
+    - name: Add mongodb admin user
+      community.mongodb.mongodb_user:
+        login_host: localhost
+        login_port: 3001
+        replica_set: "{{ current_replicaset }}"
+        database: admin
+        name: "{{ mongodb_admin_user }}"
+        password: "{{ mongodb_admin_password }}"
+        roles:
+          - root
+        state: present
+
+    - name: Wait for the replicaset to stabilise
+      community.mongodb.mongodb_status:
+        <<: *mongo_parameters
+        replica_set: "{{ current_replicaset }}"
+        poll: 5
+        interval: 10
+
+    # Tests with a replicaset
+    # Test rs.conf()
+    - name: Get replicaset conf - auto
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: "rs.conf()"
+        mongo_cmd: "auto"  
+      register: mongo_output
+
+    - assert:
+        that: 
+          - mongo_output.transformed_output._id == "issue_498"
+          - mongo_output.transformed_output.members | length == 3
+          - mongo_output.transformed_output.members.0.host == "localhost:3001"
+          - mongo_output.transformed_output.settings.catchUpTakeoverDelayMillis == 30000
+          - mongo_output.transformed_output.version == 1
+
+    - name: Get replicaset conf >= 6.0 mongosh
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: "rs.conf()"
+        mongo_cmd: "mongosh"
+      register: mongo_output
+      when: mongodb_version[0] | int >= 6  
+
+    - assert:
+        that: 
+          - mongo_output.transformed_output._id == "issue_498"
+          - mongo_output.transformed_output.members | length == 3
+          - mongo_output.transformed_output.members.0.host == "localhost:3001"
+          - mongo_output.transformed_output.settings.catchUpTakeoverDelayMillis == 30000
+          - mongo_output.transformed_output.version == 1
+      when: mongodb_version[0] | int >= 6  
+
+    # Test rs.status() cmd
+    - name: Get replicaset conf - auto
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: "rs.status()"
+        mongo_cmd: "auto"  
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.transformed_output.majorityVoteCount == 2
+          - mongo_output.transformed_output.members | length == 3
+          - mongo_output.transformed_output.members.0.health == 1
+          - mongo_output.transformed_output.members.0.stateStr in ['PRIMARY', 'SECONDARY']
+
+    - name: Get replicaset conf >= 6.0 mongosh
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: "rs.status()"
+        mongo_cmd: "mongosh"
+      register: mongo_output
+      when: mongodb_version[0] | int >= 6  
+
+    - assert:
+        that:
+          - mongo_output.transformed_output.majorityVoteCount == 2
+          - mongo_output.transformed_output.members | length == 3
+          - mongo_output.transformed_output.members.0.health == 1
+          - mongo_output.transformed_output.members.0.stateStr in ['PRIMARY', 'SECONDARY']
+      when: mongodb_version[0] | int >= 6  
+
+    - include_tasks: mongod_teardown.yml
+
+# Tests with a sharded cluster
+- include_tasks: mongodb_sharded_cluster.yml
+# Test sh.status() cmd
+- name: Get sharded cluster status - auto
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"    
+    eval: "sh.status()"
+    mongo_cmd: "auto"  
+  register: mongo_output
+
+- assert:
+    that:
+      - mongo_output.transformed_output.value.shards | length == 2
+      - mongo_output.transformed_output.value.shards.0._id == "rs1"
+      - mongo_output.transformed_output.value.shards.1._id == "rs2"
+      - mongo_output.transformed_output.value.balancer["Currently enabled"] == "yes"
+
+- name: Get sharded cluster status - mongosh
+  community.mongodb.mongodb_shell:
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: "admin"    
+    eval: "sh.status()"
+    mongo_cmd: "auto"  
+  register: mongo_output
+  when: mongodb_version[0] | int >= 6
+
+- assert:
+    that:
+      - mongo_output.transformed_output.value.shards | length == 2
+      - mongo_output.transformed_output.value.shards.0._id == "rs1"
+      - mongo_output.transformed_output.value.shards.1._id == "rs2"
+      - mongo_output.transformed_output.value.balancer["Currently enabled"] == "yes"
+  when: mongodb_version[0] | int >= 6
