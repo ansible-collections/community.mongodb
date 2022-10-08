@@ -14,12 +14,13 @@ author: Rhys Campbell (@rhysmeister)
 version_added: "1.1.0"
 short_description: Run commands via the MongoDB shell.
 requirements:
-  - mongo or mongosh
+  - mongosh
 description:
     - Run commands via the MongoDB shell.
     - Commands provided with the eval parameter or included in a Javascript file.
     - Attempts to parse returned data into a format that Ansible can use.
-    - Module currently uses the mongo shell by default. This will change to mongosh in an upcoming version and support for mongo will be dropped
+    - Module uses the mongosh shell by default.
+    - Support for mongo is depreciated.
 
 extends_documentation_fragment:
   - community.mongodb.login_options
@@ -29,8 +30,9 @@ options:
     description:
       - The MongoDB shell command.
       - auto - Automatically detect which MongoDB shell command used. Use "mongosh" if available, else use "mongo" command.
+      - mongo - This should still work for most cases but you might have problems with json parsinf. Use transform_type of 'raw' is you encounter problems.
     type: str
-    default: "mongo"
+    default: "mongosh"
   db:
     description:
       - The database to run commands against
@@ -210,7 +212,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_shell im
 def main():
     argument_spec = mongodb_common_argument_spec(ssl_options=False)
     argument_spec.update(
-        mongo_cmd=dict(type='str', default="mongo"),
+        mongo_cmd=dict(type='str', default="mongosh"),
         file=dict(type='str', required=False),
         eval=dict(type='str', required=False),
         db=dict(type='str', required=False, default="test"),

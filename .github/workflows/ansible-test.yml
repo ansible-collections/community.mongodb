@@ -144,7 +144,6 @@ jobs:
     strategy:
       matrix:
         mongodb_version:
-          - "4.4"
           - "5.0"
           - "6.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
@@ -223,7 +222,6 @@ jobs:
     strategy:
       matrix:
         mongodb_version:
-          - "4.4"
           - "5.0"
           - "6.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
