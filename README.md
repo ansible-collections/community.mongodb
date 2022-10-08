@@ -1,6 +1,6 @@
 # MongoDB Version and PyMongoDB Version Compatibility
 
-- This collection is tested against the most recent two minor MongoDB releases, currently 4.4.X and 5.0.X.
+- This collection is tested against the most recent two minor MongoDB releases, currently 5.0.X and 6.0.X.
 - This collection is tested against PyMongo version 3.12.X and latest.
 - This collection will not run against any MongoDB version lower than 4.0. You can set *strict_compatibility* to false to override this behaviour but don't expect 100% success. It might be a better approach to use an older release of this collection (1.3.4 or earlier) if you're using an old MongoDB version (3.6 or earlier).
 - Compatibility may be maintained for older software versions but is not guaranteed. Please upgrade your PyMongo driver version if you encounter difficulties with older versions.
