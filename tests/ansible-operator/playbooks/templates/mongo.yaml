@@ -21,7 +21,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: mongo
-          image: mongo:4.2.9
+          image: mongo:6.0.2
           command:
             - "/bin/sh"
             - "-c"
