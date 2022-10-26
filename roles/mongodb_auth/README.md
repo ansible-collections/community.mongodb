@@ -22,7 +22,7 @@ Role Variables
 * `mongodb_admin_user`: MongoDB admin username. Default admin.
 * `mongodb_admin_pwd`: MongoDB admin password. Defaults to value of mongodb_admin_default_pwd.
 * `mongodb_admin_default_pwd`: MongoDB admin password (for parent roles to override without overriding user's password). Default admin.
-* `mongodb_users`: List of additional users to add. Each user dict should include fields: db, user, pwd, roles
+* `mongodb_users`: List of additional users to add. Each user dict should include fields: db, user, pwd, state (default: "present"), roles (default: "readWrite").
 * `mongodb_force_update_password`: Whether or not to force a password update for any users in mongodb_users. Setting this to yes will result in 'changed' on every run, even if the password is the same. Setting this to no only adds a password when creating the user.
 
 IMPORTANT NOTE: It is expected that mongodb_admin_user & mongodb_admin_pwd values be overridden in your own file protected by Ansible Vault. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)

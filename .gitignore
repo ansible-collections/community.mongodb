@@ -3,3 +3,4 @@ venv/*
 *.tar.gz
 tests/output/*
 **/__pycache__/*
+.idea/*
