@@ -87,7 +87,7 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install mtools==1.6.4 pymongo==3.12.3 psutil coverage==4.5.4 pytest-xdist
+          command: pip install mtools==1.6.4 pymongo==3.12.3 psutil coverage==4.5.4 pytest-xdist pytest-forked
 
       - name: Start a replicaset with mtools (3 nodes, starting from port 27017, auth enabled, rs name = replset)
         run: mlaunch --replicaset --auth
@@ -282,17 +282,8 @@ jobs:
           max_attempts: 3
           command: ansible-galaxy collection install community.crypto -p ansible_collections/
 
-      #- name: Upgrade pip to the max for python 2.7
-      #  run: pip install pip==20.3.* --upgrade
-
-      #- name: Upgrade setuptools
-      #  run: pip install setuptools==44.1.* --upgrade
-
       - name: Set pymongo driver version to 3.12.3
         run: sed -i 's/  - pymongo*/  - pymongo==3.12.3/g' tests/integration/targets/setup_mongodb/defaults/main.yml
-
-      #- name: Install psutils 5.4.4 for this python version
-      #  run: sed -i 's/  - psutils*/  - psutils==5.4.4/g' tests/integration/targets/setup_mongodb/defaults/main.yml
 
       - name: Ensure MongoDB version is set to ${{ matrix.mongodb_version }}
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
