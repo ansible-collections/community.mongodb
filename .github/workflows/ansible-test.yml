@@ -94,7 +94,7 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip -y uninstall pytest
+          command: pip uninstall --yes pytest
 
       - name: Start a replicaset with mtools (3 nodes, starting from port 27017, auth enabled, rs name = replset)
         run: mlaunch --replicaset --auth
