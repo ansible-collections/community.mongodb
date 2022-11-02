@@ -47,6 +47,7 @@ options:
     description:
       - Individual property specification.
     type: dict
+    default: {}
   action:
     description:
       - The validation action for MongoDB to perform when handling invalid documents.
