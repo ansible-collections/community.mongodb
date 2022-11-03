@@ -253,6 +253,8 @@ def user_add(module, client, db_name, user, password, roles):
 
     if exists:
         user_add_db_command = 'updateUser'
+        if not roles:
+            roles = None
     else:
         user_add_db_command = 'createUser'
 
