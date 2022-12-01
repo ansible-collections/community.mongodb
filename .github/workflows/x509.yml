@@ -18,7 +18,7 @@ jobs:
           path: ansible_collections/community/mongodb
 
       - name: Setup Minikube
-        uses: manusa/actions-setup-minikube@v2.3.0
+        uses: manusa/actions-setup-minikube@v2.7.1
         with:
           minikube version: 'v1.13.1'
           kubernetes version: 'v1.19.2'
@@ -105,7 +105,7 @@ jobs:
                     --eval "db.adminCommand('listDatabases')"
 
       - name: Set up Python 3.9
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
 
@@ -129,7 +129,7 @@ jobs:
         working-directory: ansible_collections/community/mongodb
 
       - name: Install pymongo
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v2.8.2
         with:
           timeout_minutes: 3
           max_attempts: 3
