@@ -52,7 +52,7 @@ jobs:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.test_scenario.python_version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.test_scenario.python_version }}
 
