@@ -225,6 +225,7 @@ Automation will bundle the release and push to Galaxy. Should take around 10-15 
 Any contribution is welcome and we only ask contributors to:
 * Provide *at least* integration tests for any contribution.
 * Create an issue for any significant contribution that would change a large portion of the codebase.
+* Unless there's a very good reason for it, i.e. it's a bug, we aim not to change default behaviour.
 
 ## Stargazers over time
 
@@ -234,4 +235,4 @@ Any contribution is welcome and we only ask contributors to:
 
 GNU General Public License v3.0 or later
 
-See LICENCING to see the full text.
+See LICENSING to see the full text.
