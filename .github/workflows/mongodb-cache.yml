@@ -31,12 +31,12 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.versions.python_version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.versions.python_version }}
 
