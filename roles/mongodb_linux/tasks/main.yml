@@ -127,7 +127,7 @@
     - "service"
 
 - name: Check if disable-transparent-huge-pages service is already run
-  shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o "never"
+  shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o "\[never\]"
   register: _huge_page_status
   ignore_errors: yes
   changed_when: _huge_page_status.stdout == ""
