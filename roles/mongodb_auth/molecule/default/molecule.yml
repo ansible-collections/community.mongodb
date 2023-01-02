@@ -29,9 +29,7 @@ platforms:
     privileged: True
   - name: amazonlinux
     image: amazonlinux:2
-    privileged: True
-    pre_build_image: true
-    override_command: false    
+    privileged: True  
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro 
 provisioner:
