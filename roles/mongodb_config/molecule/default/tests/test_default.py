@@ -55,12 +55,12 @@ def test_mongod_replicaset(host):
     port = include_vars(host)['ansible_facts']['config_port']
     cmd = "mongo --port {0} --eval 'rs.status()'".format(port)
     # We only want to run this once
-    if host.ansible.get_variables()['inventory_hostname'] == "ubuntu_16":
+    if host.ansible.get_variables()['inventory_hostname'] == "amazonlinux":
         r = host.run(cmd)
 
         assert "cfg" in r.stdout
         assert "centos_7:{0}".format(port) in r.stdout
-        assert "ubuntu_16:{0}".format(port) in r.stdout
+        assert "amazonlinux:{0}".format(port) in r.stdout
         assert "ubuntu_18:{0}".format(port) in r.stdout
         assert "debian_buster:{0}".format(port) in r.stdout
         assert "debian_stretch:{0}".format(port) in r.stdout

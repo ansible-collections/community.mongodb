@@ -18,13 +18,6 @@ platforms:
     networks:
       - name: "mongod"
     network_mode: "mongod"
-  - name: ubuntu_16
-    image: ubuntu:16.04
-    command: /sbin/init
-    privileged: True
-    networks:
-      - name: "mongod"
-    network_mode: "mongod"
   - name: ubuntu_18
     image: ubuntu:18.04
     command: /sbin/init

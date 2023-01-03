@@ -9,7 +9,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 def include_vars(host):
     if host.system_info.distribution == "redhat" \
-            or host.system_info.distribution == "centos":
+            or host.system_info.distribution == "centos" \
+                or host.system_info.distribution == "amazon":
         ansible = host.ansible('include_vars',
                                'file="../../vars/RedHat.yml"',
                                False,
