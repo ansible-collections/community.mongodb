@@ -29,6 +29,7 @@ platforms:
     privileged: True
   - name: amazonlinux
     image: amazonlinux:2
+    command: /sbin/init
     privileged: True  
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro 
