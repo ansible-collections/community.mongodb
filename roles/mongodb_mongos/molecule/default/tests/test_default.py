@@ -16,9 +16,9 @@ def include_vars(host):
                                False)
     else:
         ansible = host.ansible('include_vars',
-                        'file="../../vars/RedHat.yml"',
-                        False,
-                        False)
+                               'file="../../vars/RedHat.yml"',
+                               False,
+                               False)
     return ansible
 
 
