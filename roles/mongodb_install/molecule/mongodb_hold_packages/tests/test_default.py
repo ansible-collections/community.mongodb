@@ -26,9 +26,11 @@ def test_mongodb_packages_not_installed(host):
 
 
 def test_mongodb_packages_held(host):
-    if not host.ansible.get_variables()['inventory_hostname'].startswith('centos'):
+    if not host.ansible.get_variables()['inventory_hostname'].startswith('centos') \
+            and not host.ansible.get_variables()['inventory_hostname'].startswith('amazonlinux'):
         c = "apt-mark showhold"
-    elif host.ansible.get_variables()['inventory_hostname'].startswith('centos'):
+    elif host.ansible.get_variables()['inventory_hostname'].startswith('centos') \
+            or host.ansible.get_variables()['inventory_hostname'].startswith('amazonlinux'):
         c = "yum versionlock list"
     cmd = host.run(c)
     assert cmd.rc == 0

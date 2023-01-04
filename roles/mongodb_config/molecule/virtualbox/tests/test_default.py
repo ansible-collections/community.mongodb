@@ -8,16 +8,15 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def include_vars(host):
-    if host.system_info.distribution == "redhat" \
-            or host.system_info.distribution == "centos":
-        ansible = host.ansible('include_vars',
-                               'file="../../vars/RedHat.yml"',
-                               False,
-                               False)
     if host.system_info.distribution == "debian" \
             or host.system_info.distribution == "ubuntu":
         ansible = host.ansible('include_vars',
                                'file="../../vars/Debian.yml"',
+                               False,
+                               False)
+    else:
+        ansible = host.ansible('include_vars',
+                               'file="../../vars/RedHat.yml"',
                                False,
                                False)
     return ansible
@@ -55,11 +54,11 @@ def test_mongod_cfg_replicaset(host):
     port = include_vars(host)['ansible_facts']['config_port']
     cmd = "mongo --port {0} --eval 'rs.status()'".format(port)
     # We only want to run this once
-    if host.ansible.get_variables()['inventory_hostname'] == "ubuntu_16":
+    if host.ansible.get_variables()['inventory_hostname'] == "amazonlinux":
         r = host.run(cmd)
 
         assert "cfg" in r.stdout
-        assert "ubuntu-16.local:{0}".format(port) in r.stdout
+        assert "amazonlinux.local:{0}".format(port) in r.stdout
         assert "ubuntu-18.local:{0}".format(port) in r.stdout
         assert "debian-buster.local:{0}".format(port) in r.stdout
         assert "debian-stretch.local:{0}".format(port) in r.stdout

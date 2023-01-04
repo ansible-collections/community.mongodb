@@ -15,10 +15,6 @@ platforms:
     privileged: True
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  - name: ubuntu_16
-    image: ubuntu:16.04
-    command: /sbin/init
-    privileged: True
   - name: ubuntu_18
     image: ubuntu:18.04
     command: /sbin/init
@@ -31,6 +27,12 @@ platforms:
     image: debian:stretch
     command: /sbin/init
     privileged: True
+  - name: amazonlinux
+    image: amazonlinux:2
+    command: /sbin/init
+    privileged: True  
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
 provisioner:
   name: ansible
   lint:
