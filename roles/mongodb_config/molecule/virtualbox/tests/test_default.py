@@ -8,18 +8,17 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def include_vars(host):
-    if host.system_info.distribution == "redhat" \
-            or host.system_info.distribution == "centos":
-        ansible = host.ansible('include_vars',
-                               'file="../../vars/RedHat.yml"',
-                               False,
-                               False)
     if host.system_info.distribution == "debian" \
             or host.system_info.distribution == "ubuntu":
         ansible = host.ansible('include_vars',
                                'file="../../vars/Debian.yml"',
                                False,
                                False)
+    else:
+        ansible = host.ansible('include_vars',
+                        'file="../../vars/RedHat.yml"',
+                        False,
+                        False)
     return ansible
 
 
