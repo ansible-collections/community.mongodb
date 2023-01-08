@@ -1,0 +1,39 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: mongodb_repository
+      tags: molecule-idempotence-notest
+    - role: mongodb_mongod
+      vars:
+        db_path: "/data/db"
+        bind_ip: '"127.0.0.1,127.0.0.2,{{ ansible_default_ipv4.address }}"'
+
+  tasks:
+
+    - name: Install python stuff
+      package:
+        name: ["python-setuptools", "python-pip"]
+      when: ansible_hostname == "amazonlinux"
+
+    - name: Install pymongo
+      pip:
+        name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
+      when: ansible_hostname == "amazonlinux"
+
+    - name: Install MongoDB Shell
+      package:
+        name: mongodb-org-shell
+
+    - name: Initialise replicaset
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        replica_set: rs0
+        validate: yes
+        members:
+          - centos_7:27017
+          - amazonlinux:27017
+          - ubuntu_18:27017
+          - debian_stretch:27017
+          - debian_buster:27017
+      when: ansible_hostname == "amazonlinux"

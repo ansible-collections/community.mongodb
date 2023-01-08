@@ -1,0 +1,30 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+  vars:
+    redhat_packages:
+      - net-tools
+    amazon_packages:
+      - iproute
+  tasks:
+
+  - name: Ensure epel is available
+    package:
+      name: epel-release
+      state: present
+    when:
+      - ansible_os_family == "RedHat"
+      - ansible_distribution != "Amazon"
+
+  - name: Install redhat packages
+    package:
+      name: "{{ redhat_packages }}"
+      state: present
+    when: ansible_os_family == "RedHat"
+
+  - name: Install amazon packages
+    package:
+      name: "{{ amazon_packages }}"
+      state: present
+    when: ansible_distribution == "Amazon"
