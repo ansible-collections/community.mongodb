@@ -462,7 +462,13 @@
     that:
       - myshard.changed == True
       - myshard.sharded_enabled == ["db1", "db2"]
+  when: mongodb_version[0] | int < 6
 
+# From MongoDB 6.0 sharded_databases setting no longer relevant
+- assert:
+    that:
+      - myshard.changed == False
+  when: mongodb_version[0] | int < 6
 
 - pause:
     seconds: 5
