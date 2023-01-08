@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<title>mongodb_shell -- Run commands via the MongoDB shell.</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 8954 2022-01-20 10:10:25Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="mongodb-shell-run-commands-via-the-mongodb-shell">
+<span id="mongodb-shell-module"></span>
+<h1 class="title">mongodb_shell -- Run commands via the MongoDB shell.</h1>
+
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#synopsis" id="toc-entry-1">Synopsis</a></li>
+<li><a class="reference internal" href="#requirements" id="toc-entry-2">Requirements</a></li>
+<li><a class="reference internal" href="#parameters" id="toc-entry-3">Parameters</a></li>
+<li><a class="reference internal" href="#examples" id="toc-entry-4">Examples</a></li>
+<li><a class="reference internal" href="#return-values" id="toc-entry-5">Return Values</a></li>
+<li><a class="reference internal" href="#status" id="toc-entry-6">Status</a></li>
+</ul>
+</div>
+<div class="section" id="synopsis">
+<h1><a class="toc-backref" href="#toc-entry-1">Synopsis</a></h1>
+<p>Run commands via the MongoDB shell.</p>
+<p>Commands provided with the eval parameter or included in a Javascript file.</p>
+<p>Attempts to parse returned data into a format that Ansible can use.</p>
+<p>Module uses the mongosh shell by default.</p>
+<p>Support for mongo is depreciated.</p>
+</div>
+<div class="section" id="requirements">
+<h1><a class="toc-backref" href="#toc-entry-2">Requirements</a></h1>
+<p>The below requirements are needed on the host that executes this module.</p>
+<ul class="simple">
+<li>mongosh</li>
+</ul>
+</div>
+<div class="section" id="parameters">
+<h1><a class="toc-backref" href="#toc-entry-3">Parameters</a></h1>
+<blockquote>
+<dl class="docutils">
+<dt>mongo_cmd (optional, str, mongosh)</dt>
+<dd><p class="first">The MongoDB shell command.</p>
+<p>auto - Automatically detect which MongoDB shell command used. Use &quot;mongosh&quot; if available, else use &quot;mongo&quot; command.</p>
+<p class="last">mongo - This should still work for most cases but you might have problems with json parsinf. Use transform_type of 'raw' is you encounter problems.</p>
+</dd>
+<dt>db (False, str, test)</dt>
+<dd>The database to run commands against</dd>
+<dt>file (optional, str, None)</dt>
+<dd>Path to a file containing MongoDB commands.</dd>
+<dt>eval (optional, str, None)</dt>
+<dd>A MongoDB command to run.</dd>
+<dt>nodb (optional, bool, False)</dt>
+<dd>Specify a non-default encoding for output.</dd>
+<dt>norc (optional, bool, False)</dt>
+<dd>Prevents the shell from sourcing and evaluating ~/.mongorc.js on start up.</dd>
+<dt>quiet (optional, bool, True)</dt>
+<dd>Silences output from the shell during the connection process..</dd>
+<dt>debug (optional, bool, False)</dt>
+<dd>show additional debug info.</dd>
+<dt>transform (optional, str, auto)</dt>
+<dd><p class="first">Transform the output returned to the user.</p>
+<p>auto - Attempt to automatically decide the best tranformation.</p>
+<p>split - Split output on a character.</p>
+<p>json - parse as json.</p>
+<p class="last">raw - Return the raw output.</p>
+</dd>
+<dt>split_char (optional, str,  )</dt>
+<dd>Used by the split action in the transform stage.</dd>
+<dt>stringify (optional, bool, None)</dt>
+<dd><p class="first">Wraps the command in eval in JSON.stringify(&lt;js cmd&gt;) (mongo) or EJSON.stringify(&lt;js cmd&gt;) (mongosh).</p>
+<p>Useful for escaping documents that are returned in Extended JSON format.</p>
+<p>Automatically set to false when using mongo.</p>
+<p>Automatically set to true when using mongosh.</p>
+<p class="last">Set explicitly to override automatic selection.</p>
+</dd>
+<dt>additional_args (optional, raw, None)</dt>
+<dd><p class="first">Additional arguments to supply to the mongo command.</p>
+<p>Supply as key-value pairs.</p>
+<p class="last">If the parameter is a valueless flag supply an empty string as the value.</p>
+</dd>
+<dt>idempotent (optional, bool, False)</dt>
+<dd><p class="first">Provides a form of pseudo-idempotency to the module.</p>
+<p>We perform a hash calculation on the contents of the eval key or the file name provided in the file key.</p>
+<p>When the command is first execute a filed called &lt;hash&gt;.success will be created.</p>
+<p class="last">The module will not rerun the command if this file exists and idempotent is set to true.</p>
+</dd>
+<dt>omit (optional, list, [])</dt>
+<dd><p class="first">Parameter to omit from the command line.</p>
+<p class="last">This should match the parameter name that the MongoDB shell accepts not the module name.</p>
+</dd>
+<dt>login_user (False, str, None)</dt>
+<dd><p class="first">The MongoDB user to login with.</p>
+<p class="last">Required when <em>login_password</em> is specified.</p>
+</dd>
+<dt>login_password (False, str, None)</dt>
+<dd><p class="first">The password used to authenticate with.</p>
+<p class="last">Required when <em>login_user</em> is specified.</p>
+</dd>
+<dt>login_database (False, str, admin)</dt>
+<dd>The database where login credentials are stored.</dd>
+<dt>login_host (False, str, localhost)</dt>
+<dd>The host running MongoDB instance to login to.</dd>
+<dt>login_port (False, int, 27017)</dt>
+<dd>The MongoDB server port to login to.</dd>
+<dt>strict_compatibility (optional, bool, True)</dt>
+<dd>Enforce strict requirements for pymongo and MongoDB software versions</dd>
+</dl>
+</blockquote>
+</div>
+<div class="section" id="examples">
+<h1><a class="toc-backref" href="#toc-entry-4">Examples</a></h1>
+<pre class="code yaml+jinja literal-block">
+<span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">name</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">Run the listDatabases command</span><span class="whitespace">
+  </span><span class="name tag">community.mongodb.mongodb_shell</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="name tag">login_user</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">user</span><span class="whitespace">
+    </span><span class="name tag">login_password</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">secret</span><span class="whitespace">
+    </span><span class="name tag">eval</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal string">&quot;db.adminCommand('listDatabases')&quot;</span><span class="whitespace">
+
+</span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">name</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">List collections and stringify the output</span><span class="whitespace">
+  </span><span class="name tag">community.mongodb.mongodb_shell</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="name tag">login_user</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">user</span><span class="whitespace">
+    </span><span class="name tag">login_password</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">secret</span><span class="whitespace">
+    </span><span class="name tag">eval</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal string">&quot;db.adminCommand('listCollections')&quot;</span><span class="whitespace">
+    </span><span class="name tag">stringify</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">yes</span><span class="whitespace">
+
+</span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">name</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">Run the showBuiltinRoles command</span><span class="whitespace">
+  </span><span class="name tag">community.mongodb.mongodb_shell</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="name tag">login_user</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">user</span><span class="whitespace">
+    </span><span class="name tag">login_password</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">secret</span><span class="whitespace">
+    </span><span class="name tag">eval</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal string">&quot;db.getRoles({showBuiltinRoles:</span><span class="name variable"> </span><span class="literal string">true})&quot;</span><span class="whitespace">
+
+</span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">name</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">Run a js file containing MongoDB commands with pseudo-idempotency</span><span class="whitespace">
+  </span><span class="name tag">community.mongodb.mongodb_shell</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="name tag">login_user</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">user</span><span class="whitespace">
+    </span><span class="name tag">login_password</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">secret</span><span class="whitespace">
+    </span><span class="name tag">file</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal string">&quot;/path/to/mongo/file.js&quot;</span><span class="whitespace">
+    </span><span class="name tag">idempotent</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">yes</span><span class="whitespace">
+
+</span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">name</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">Provide a couple of additional cmd args</span><span class="whitespace">
+  </span><span class="name tag">community.mongodb.mongodb_shell</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="name tag">login_user</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">user</span><span class="whitespace">
+    </span><span class="name tag">login_password</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">secret</span><span class="whitespace">
+    </span><span class="name tag">eval</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal string">&quot;db.adminCommand('listDatabases')&quot;</span><span class="whitespace">
+    </span><span class="name tag">additional_args</span><span class="punctuation">:</span><span class="whitespace">
+      </span><span class="name tag">verbose</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">True</span><span class="whitespace">
+      </span><span class="name tag">networkMessageCompressors</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal string">&quot;snappy&quot;</span>
+</pre>
+</div>
+<div class="section" id="return-values">
+<h1><a class="toc-backref" href="#toc-entry-5">Return Values</a></h1>
+<dl class="docutils">
+<dt>file (When a js file is used., str, )</dt>
+<dd>JS file that was executed successfully.</dd>
+<dt>msg (always, str, )</dt>
+<dd>A message indicating what has happened.</dd>
+<dt>transformed_output (on success, list, )</dt>
+<dd>Output from the mongo command. We attempt to parse this into a list or json where possible.</dd>
+<dt>changed (always, bool, )</dt>
+<dd>Change status.</dd>
+<dt>failed (on failure, bool, )</dt>
+<dd>Something went wrong.</dd>
+<dt>out (when debug is set to true, str, )</dt>
+<dd>Raw stdout from mongo.</dd>
+<dt>err (when debug is set to true, str, )</dt>
+<dd>Raw stderr from mongo.</dd>
+<dt>rc (when debug is set to true, int, )</dt>
+<dd>Return code from mongo.</dd>
+</dl>
+</div>
+<div class="section" id="status">
+<h1><a class="toc-backref" href="#toc-entry-6">Status</a></h1>
+<div class="section" id="authors">
+<h2>Authors</h2>
+<ul class="simple">
+<li>Rhys Campbell (&#64;rhysmeister)</li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>
