@@ -468,7 +468,7 @@
 - assert:
     that:
       - myshard.changed == False
-  when: mongodb_version[0] | int < 6
+  when: mongodb_version[0] | int >= 6
 
 - pause:
     seconds: 5
