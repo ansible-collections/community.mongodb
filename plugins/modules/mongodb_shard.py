@@ -33,6 +33,7 @@ options:
       - Enable sharding on the listed database.
       - Can be supplied as a string or a list of strings.
       - Sharding cannot be disabled on a database.
+      - Starting in MongoDB 6.0, the enableSharding command is no longer required to shard a collection and this parameter is ignored.
     required: false
     type: raw
   mongos_process:
@@ -125,11 +126,11 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
     mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
     get_mongodb_client,
+    check_srv_version
 )
 
 
@@ -250,10 +251,10 @@ def main():
     try:
         if client["admin"].command("serverStatus")["process"] != mongos_process:
             module.fail_json(msg="Process running on {0}:{1} is not a {2}".format(login_host, login_port, mongos_process))
-        shard_created = False
+
         dbs_to_shard = []
 
-        if sharded_databases is not None:
+        if sharded_databases is not None and int(check_srv_version(module, client)[0]) < 6:
             if isinstance(sharded_databases, str):
                 sharded_databases = list(sharded_databases)
             dbs_to_shard = any_dbs_to_shard(client, sharded_databases)

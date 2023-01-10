@@ -462,7 +462,13 @@
     that:
       - myshard.changed == True
       - myshard.sharded_enabled == ["db1", "db2"]
+  when: mongodb_version[0] | int < 6
 
+# From MongoDB 6.0 sharded_databases setting no longer relevant
+- assert:
+    that:
+      - myshard.changed == False
+  when: mongodb_version[0] | int >= 6
 
 - pause:
     seconds: 5
@@ -484,7 +490,7 @@
     that:
       - myshard.changed == False
       - myshard.sharded_enabled is not defined
-  when: mongodb_version[0] | int < 6  # TODO - This assert fails in 6.0 fix this...
+  when: mongodb_version[0] | int < 6  # See https://www.mongodb.com/docs/upcoming/release-notes/6.0/#enablesharding-no-longer-required
 
 - name: Add shard 2 - Fifth - new db but check mode
   community.mongodb.mongodb_shard:
@@ -503,7 +509,7 @@
     that:
       - myshard.changed == True
       - myshard.sharded_enabled == ["db3"]
-  when: mongodb_version[0] | int < 6  # TODO - This assert fails in 6.0 fix this...
+  when: mongodb_version[0] | int < 6 
 
 - name: Add shard 2 - Sixth - new db without check mode
   community.mongodb.mongodb_shard:
@@ -521,7 +527,7 @@
     that:
       - myshard.changed == True
       - myshard.sharded_enabled == ["db3"]
-  when: mongodb_version[0] | int < 6  # TODO - This assert fails in 6.0 fix this...
+  when: mongodb_version[0] | int < 6
 
 - name: Test with bad password
   community.mongodb.mongodb_shard:
