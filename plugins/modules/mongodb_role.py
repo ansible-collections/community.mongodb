@@ -17,7 +17,7 @@ description:
     - For further information on the required format for \
       the privileges, authenticationRestriction or roles \
       parameters, see the MongoDB Documentation https://www.mongodb.com/docs/manual/reference/command/createRole/
-version_added: "1.4.3"
+version_added: "1.5.0"
 
 extends_documentation_fragment:
   - community.mongodb.login_options
@@ -43,9 +43,9 @@ options:
   privileges:
     type: list
     elements: raw
-    description: 
+    description:
       - >
-        The privileges to grant the role. A privilege consists of a resource 
+        The privileges to grant the role. A privilege consists of a resource
         and permitted actions.
     default: []
   authenticationRestrictions:
@@ -53,18 +53,20 @@ options:
     elements: raw
     description:
       - >
-          The authentication restrictions the server enforces on the role. 
-          Specifies a list of IP addresses and CIDR ranges users granted 
+          The authentication restrictions the server enforces on the role.
+          Specifies a list of IP addresses and CIDR ranges users granted
           this role are allowed to connect to and/or which they can connect from.
           Provide a list of dictionaries with the following
-          fields: clientSource (list), serverAddress (list). 
+          fields: clientSource (list), serverAddress (list).
           Provide an empty list if you don't want to use the field.
+    default: []
   roles:
     type: list
     elements: raw
     description:
       - >
           The database user roles should be provided as a dictionary with the db and role keys.
+    default: []
   state:
     description:
       - The database user state.
@@ -92,7 +94,7 @@ EXAMPLES = '''
     name: sales
     database: salesdb
     privileges:
-      - resource: 
+      - resource:
           db: salesdb
           collection: ""
         actions:
@@ -104,7 +106,7 @@ EXAMPLES = '''
     name: myClusterwideAdmin
     database: admin
     privileges:
-      - resource: 
+      - resource:
           cluster: true
         actions:
           - addShard
@@ -138,7 +140,7 @@ EXAMPLES = '''
     name: myClusterwideAdmin
     database: admin
     privileges:
-      - resource: 
+      - resource:
           cluster: true
         actions:
           - addShard
@@ -182,7 +184,7 @@ EXAMPLES = '''
   community.mongodb.mongodb_role:
     name: myClusterwideAdmin
     database: admin
-    state: absent  
+    state: absent
 '''
 
 RETURN = '''
@@ -284,49 +286,32 @@ def role_remove(module, client, db_name, role):
     else:
         module.exit_json(changed=False, role=role)
 
-# TODO refector this mess
-def check_if_role_changed(module, client, role, db_name, privileges, authenticationRestrictions, roles):
+
+def check_if_role_changed(client, role, db_name, privileges, authenticationRestrictions, roles):
     role_dict = role_find(client, role, db_name)
     changed = False
-    if module.params['output']:
-        a = []
-        for l in role_dict['authenticationRestrictions']:
-            a.append(l[0])
-        module.exit_json(one=role_dict['authenticationRestrictions'], two=authenticationRestrictions, a=a)
     if role_dict:
         a = []
         if 'authenticationRestrictions' in role_dict:
             for l in role_dict['authenticationRestrictions']:
                 a.append(l[0])
         if 'privileges' in role_dict and \
-              [{'resource':d['resource'], 'actions':sorted(d['actions'])} for d in role_dict['privileges']] != \
-                [{'resource':d['resource'], 'actions':sorted(d['actions'])} for d in privileges]  or \
+              [{'resource': d['resource'], 'actions': sorted(d['actions'])} for d in role_dict['privileges']] != \
+              [{'resource': d['resource'], 'actions': sorted(d['actions'])} for d in privileges]  or \
               'privileges' not in role_dict and privileges != []:
             changed = True
         elif 'roles' in role_dict and \
-              sorted(role_dict['roles'], key=lambda x: (x["db"],x["role"])) != \
-              sorted(roles, key=lambda x: (x["db"],x["role"])) or \
+              sorted(role_dict['roles'], key=lambda x: (x["db"], x["role"])) != \
+              sorted(roles, key=lambda x: (x["db"], x["role"])) or \
               'roles' not in role_dict and roles != []:
             changed = True
-        #elif 'authenticationRestrictions' in role_dict and \
-        #      sorted(role_dict['authenticationRestrictions'], key=lambda x: (x["clientSource"], x["serverAddress"])) != \
-        #      sorted(authenticationRestrictions, key=lambda x: (x["clientSource"], x["serverAddress"])) or \
-        #      'authenticationRestrictions' not in role_dict and authenticationRestrictions != []:
-        #elif 'authenticationRestrictions' in role_dict and \
-        #      sorted(role_dict['authenticationRestrictions'], key=lambda x: (x[0]["clientSource"])) != \
-        #      sorted(authenticationRestrictions, key=lambda x: (x[0]["clientSource"])) or \
-        #      'authenticationRestrictions' not in role_dict and authenticationRestrictions != []:
-        #elif 'authenticationRestrictions' in role_dict and \
-        #     set(role_dict['authenticationRestrictions']) != set(authenticationRestrictions) or \
-        #     'authenticationRestrictions' not in role_dict and authenticationRestrictions != []:
-        # role_dict['authenticationRestrictions'][0] - The list of dicts is itself in a list.... why???
         elif 'authenticationRestrictions' in role_dict and \
              sorted(a, key=lambda x:(x['clientSource'], x['serverAddress'])) != \
     sorted(authenticationRestrictions, key=lambda x:(x['clientSource'], x['serverAddress'])) or \
              'authenticationRestrictions' not in role_dict and authenticationRestrictions != []:
             changed = True
     else:
-        raise Exception("Role not found") # TODO replace with proper exception
+        raise Exception("Role not found")  # TODO replace with proper exception
     return changed
 
 
@@ -345,7 +330,6 @@ def main():
         roles=dict(default=[], type='list', elements='raw'),
         state=dict(default='present', choices=['absent', 'present']),
         debug=dict(type='bool', default=False),
-        output=dict(type='bool', default=False),
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -375,31 +359,32 @@ def main():
     debug = module.params['debug']
     # TODO _ Functions use a different param order... make consistent
     try:
-      if state == 'present':
-          if role_find(client, role, db_name) is False:
-              if module.check_mode is False:
-                  role_add(client, db_name, role, privileges, roles, authenticationRestrictions)
-              changed = True
-          else:
-              if check_if_role_changed(module, client, role, db_name, privileges, authenticationRestrictions, roles):
-                  if module.check_mode is False:
-                      role_add(client, db_name, role, privileges, roles, authenticationRestrictions)
-                  changed = True
-              else:
-                  changed = False
-      elif state == 'absent':
-          if role_find(client, role, db_name):
-              if module.check_mode is False:
-                  role_remove(module, client, db_name, role)
-              changed = True
-          else:
-              changed = False
-      module.exit_json(changed=changed, role=role)
+        if state == 'present':
+            if role_find(client, role, db_name) is False:
+                if module.check_mode is False:
+                    role_add(client, db_name, role, privileges, roles, authenticationRestrictions)
+                changed = True
+            else:
+                if check_if_role_changed(client, role, db_name, privileges, authenticationRestrictions, roles):
+                    if module.check_mode is False:
+                        role_add(client, db_name, role, privileges, roles, authenticationRestrictions)
+                    changed = True
+                else:
+                    changed = False
+        elif state == 'absent':
+            if role_find(client, role, db_name):
+                if module.check_mode is False:
+                    role_remove(module, client, db_name, role)
+                changed = True
+            else:
+                changed = False
+        module.exit_json(changed=changed, role=role)
     except Exception as e:
         if debug:
             module.fail_json(msg=str(e), traceback=traceback.format_exc())
         else:
             module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
