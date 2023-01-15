@@ -1,0 +1,805 @@
+- name: Ensure tests home exists
+  file:
+    path: '{{ remote_tmp_dir }}/tests'
+    state: directory
+
+- set_fact:
+    mongodb_nodes:
+    - 3001
+    - 3002
+    - 3003
+
+- include_tasks: mongod_teardown.yml
+
+- set_fact:
+    current_replicaset: mongodb_user_tests_replicaset
+
+- include_tasks: mongod_start_replicaset.yml
+
+- include_tasks: mongod_config_replicaset.yml
+
+- name: Create admin user with module
+  community.mongodb.mongodb_user:
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+  register: mongodb_admin_user_created
+- assert:
+    that:
+    - mongodb_admin_user_created.changed == True
+
+- name: Check the status of the replicaset with mongodb_status module
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: 3001
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
+
+- include_tasks: mongod_stop.yml
+
+- set_fact:
+    mongod_auth: true
+
+- include_tasks: mongod_start_replicaset.yml
+
+- name: Check the status of the replicaset with mongodb_status module
+  community.mongodb.mongodb_status:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_host: localhost
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    poll: 99
+    interval: 10
+
+- name: Run admin user creation again
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: '{{ mongodb_admin_user }}'
+    password: '{{ mongodb_admin_password }}'
+    roles: root
+    state: present
+    update_password: on_create
+  register: mongodb_admin_user_created
+
+- assert:
+    that:
+    - mongodb_admin_user_created.changed == False
+
+- name: Create sales role (check mode)
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: sales
+    database: salesdb
+    privileges:
+      - resource: 
+          db: salesdb
+          collection: ""
+        actions:
+          - find
+    state: present
+  check_mode: yes
+  register: sales_role
+
+- assert:
+    that:
+      - sales_role.changed
+
+- name: Get roles - 1
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: "salesdb"
+    eval: "printjson(db.getRoles())"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: my_roles
+
+- assert:
+    that:
+      - "'sales' not in my_roles.transformed_output | string"
+
+- name: Create sales role
+  community.mongodb.mongodb_role:
+    login_host: "localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: sales
+    database: salesdb
+    privileges:
+      - resource: 
+          db: salesdb
+          collection: ""
+        actions:
+          - find
+    state: present
+  check_mode: no
+  register: sales_role
+
+- assert:
+    that:
+      - sales_role.changed
+
+- name: Get roles - 2
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: "salesdb"
+    eval: "printjson(db.getRoles())"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: my_roles
+
+- assert:
+    that:
+      - "'sales' in my_roles.transformed_output | string"
+
+- name: Delete sales role (check mode)
+  community.mongodb.mongodb_role:
+    login_host: "localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: sales
+    database: "salesdb"
+    state: absent  
+  check_mode: yes
+  register: sales_role
+
+- assert:
+    that:
+      - sales_role.changed
+
+- name: Delete sales role
+  community.mongodb.mongodb_role:
+    login_host: "localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: sales
+    database: "salesdb"
+    state: absent  
+  check_mode: no
+  register: sales_role
+
+- assert:
+    that:
+      - sales_role.changed
+
+- name: Get roles - 3
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: "salesdb"
+    eval: "printjson(db.getRoles())"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: my_roles
+
+- assert:
+    that:
+      - "'sales' not in my_roles.transformed_output | string"
+
+- name: Delete sales role - again
+  community.mongodb.mongodb_role:
+    login_host: "localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: sales
+    database: "salesdb"
+    state: absent  
+  check_mode: no
+  register: sales_role
+
+- assert:
+    that:
+      - sales_role.changed == False
+
+- name: Create ClusterAdmin Role
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+          - remove
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+    state: present
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 4
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles())"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'myClusterwideAdmin' in cluster.transformed_output | string"
+
+- name: Create ClusterAdmin Role - Update should not change
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+          - remove
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+    state: present
+    debug: yes
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed == False
+
+- name: Create ClusterAdmin Role - Update - removes an action from privileges
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+    state: present
+    debug: yes
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Create ClusterAdmin Role - Update - adds a role
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+      - role: "read"
+        db: "mynewdb"
+    state: present
+    debug: yes
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 5 
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles())"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'mynewdb' in cluster.transformed_output | string"
+
+- name: Create ClusterAdmin Role - Reorder roles - no change
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "mynewdb"
+      - role: "read"
+        db: "admin"
+    state: present
+    debug: yes
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed == False
+
+- name: Create ClusterAdmin Role - Update - adds an auth restriction - check mode
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+      - role: "read"
+        db: "mynewdb"
+    authenticationRestrictions:
+      - clientSource:
+          - "127.0.0.1"
+        serverAddress: []
+    state: present
+    debug: yes
+  check_mode: yes
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 6
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles({showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'127.0.0.1' not in cluster.transformed_output | string"
+
+- name: Create ClusterAdmin Role - Update - adds an auth restriction
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+      - role: "read"
+        db: "mynewdb"
+    authenticationRestrictions:
+      - clientSource:
+          - "127.0.0.1"
+        serverAddress: []
+    state: present
+    debug: yes
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 7
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles({showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'127.0.0.1' in cluster.transformed_output | string"
+
+- name: Create ClusterAdmin Role - Update - adds a new auth restriction
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+      - role: "read"
+        db: "mynewdb"
+    authenticationRestrictions:
+      - clientSource:
+          - "127.0.0.1"
+        serverAddress: []    
+      - clientSource:
+          - "192.168.0.1"
+        serverAddress: []
+    state: present
+    debug: yes
+    output: no
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 8
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles({showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'127.0.0.1' in cluster.transformed_output | string"
+      - "'192.168.0.1' in cluster.transformed_output | string"
+
+- name: Create ClusterAdmin Role - Update - remove auth restrictions
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    privileges:
+      - resource: 
+          cluster: true
+        actions:
+          - addShard
+      - resource:
+          db: config
+          collection: ""
+        actions:
+          - find
+          - update
+          - insert
+      - resource:
+          db: "users"
+          collection: "usersCollection"
+        actions:
+          - update
+          - insert
+          - remove
+      - resource:
+          db: ""
+          collection: ""
+        actions:
+          - find
+    roles:
+      - role: "read"
+        db: "admin"
+      - role: "read"
+        db: "mynewdb"
+    state: present
+    debug: yes
+    output: no
+  check_mode: no
+  register: cluster_admin_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 9
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles({showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'myClusterwideAdmin' in cluster.transformed_output | string"
+      - "'127.0.0.1' not in cluster.transformed_output | string"
+      - "'192.168.0.1' not in cluster.transformed_output | string"
+
+- name: Delete myClusterwideAdmin role
+  community.mongodb.mongodb_role:
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: myClusterwideAdmin
+    database: admin
+    state: absent
+  register: sales_role
+
+- assert:
+    that:
+      - cluster_admin_role.changed
+
+- name: Get roles - 10
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.getRoles({showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: cluster
+
+- assert:
+    that:
+      - "'myClusterwideAdmin' not in cluster.transformed_output | string"
+      - "'roles:' in cluster.transformed_output | string"
