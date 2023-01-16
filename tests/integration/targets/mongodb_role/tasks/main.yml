@@ -677,7 +677,6 @@
         serverAddress: []
     state: present
     debug: yes
-    output: no
   check_mode: no
   register: cluster_admin_role
 
@@ -743,7 +742,6 @@
         db: "mynewdb"
     state: present
     debug: yes
-    output: no
   check_mode: no
   register: cluster_admin_role
 
