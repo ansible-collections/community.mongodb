@@ -296,19 +296,19 @@ def check_if_role_changed(client, role, db_name, privileges, authenticationRestr
             for item in role_dict['authenticationRestrictions']:
                 reformat_authenticationRestrictions.append(item[0])  # seems to be a list of lists of dict, we want a list of dicts
         if ('privileges' in role_dict and
-              [{'resource': d['resource'], 'actions': sorted(d['actions'])} for d in role_dict['privileges']] !=
-              [{'resource': d['resource'], 'actions': sorted(d['actions'])} for d in privileges]  or
-              'privileges' not in role_dict and privileges != []):
+                [{'resource': d['resource'], 'actions': sorted(d['actions'])} for d in role_dict['privileges']] !=
+                [{'resource': d['resource'], 'actions': sorted(d['actions'])} for d in privileges] or
+                'privileges' not in role_dict and privileges != []):
             changed = True
         elif ('roles' in role_dict and
-              sorted(role_dict['roles'], key=lambda x: (x["db"], x["role"])) !=
-              sorted(roles, key=lambda x: (x["db"], x["role"])) or
-              'roles' not in role_dict and roles != []):
+                sorted(role_dict['roles'], key=lambda x: (x["db"], x["role"])) !=
+                sorted(roles, key=lambda x: (x["db"], x["role"])) or
+                'roles' not in role_dict and roles != []):
             changed = True
         elif ('authenticationRestrictions' in role_dict and
-             sorted(reformat_authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) !=
-             sorted(authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) or
-             'authenticationRestrictions' not in role_dict and authenticationRestrictions != []):
+                sorted(reformat_authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) !=
+                sorted(authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) or
+                'authenticationRestrictions' not in role_dict and authenticationRestrictions != []):
             changed = True
     else:
         raise Exception("Role not found")  # TODO replace with proper exception
