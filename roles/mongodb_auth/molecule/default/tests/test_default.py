@@ -44,7 +44,7 @@ def test_mongo_shell_connectivity(host):
     facts = include_vars(host)["ansible_facts"]
     port = facts.get("mongod_port", 27017)
     user = facts.get("mongod_admin_user", "admin")
-    pwd = facts.get("mongod_default_admin_pwd", "admin")
+    pwd = facts.get("mongodb_default_admin_pwd", "admin")
 
     cmd = host.run(
         "mongo admin --username {user} --password {pwd} --port {port} --eval 'db.runCommand({{listDatabases: 1}})'".format(
