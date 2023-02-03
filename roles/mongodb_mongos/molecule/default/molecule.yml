@@ -50,7 +50,7 @@ platforms:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
   - name: config1
-    image: ubuntu:16.04
+    image: ubuntu:18.04
     command: /sbin/init
     privileged: True
     networks:
