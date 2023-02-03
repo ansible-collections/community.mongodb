@@ -34,6 +34,6 @@
           - centos_7:27019
           - amazonlinux:27019
           - ubuntu_18:27019
-          - debian_stretch:27019
+          - debian_bullseye:27019
           - debian_buster:27019
       when: ansible_hostname == "amazonlinux"

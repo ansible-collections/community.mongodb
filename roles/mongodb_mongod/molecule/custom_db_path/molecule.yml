@@ -32,8 +32,8 @@ platforms:
     networks:
       - name: "mongod"
     network_mode: "mongod"
-  - name: debian_stretch
-    image: debian:stretch
+  - name: debian_bullseye
+    image: debian:bullseye
     command: /sbin/init
     privileged: True
     networks:

@@ -66,7 +66,7 @@ def test_mongod_replicaset(host):
         assert "amazonlinux:{0}".format(port) in r.stdout
         assert "ubuntu_18:{0}".format(port) in r.stdout
         assert "debian_buster:{0}".format(port) in r.stdout
-        assert "debian_stretch:{0}".format(port) in r.stdout
+        assert "debian_bullseye:{0}".format(port) in r.stdout
 
 
 def test_mongod_config_custom_path(host):

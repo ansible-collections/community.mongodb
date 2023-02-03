@@ -19,8 +19,8 @@ platforms:
     image: debian:buster
     privileged: yes
     command: "/sbin/init"
-  - name: debian_stretch
-    image: debian:stretch
+  - name: debian_bullseye
+    image: debian:bullseye
     privileged: yes
     command: "/sbin/init"
   - name: amazonlinux

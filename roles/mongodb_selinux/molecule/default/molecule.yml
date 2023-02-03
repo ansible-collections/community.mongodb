@@ -15,8 +15,8 @@ platforms:
     image: ubuntu:18.04
   - name: debian_buster
     image: debian:buster
-  - name: debian_stretch
-    image: debian:stretch
+  - name: debian_bullseye
+    image: debian:bullseye
   - name: amazonlinux
     image: amazonlinux:2
 provisioner:
