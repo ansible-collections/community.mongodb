@@ -58,7 +58,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         "arbiterOnly": False,
         "buildIndexes": True,
         "hidden": False,
-        "priority": {"nonarbiter": 1.0, "arbiter": 0},
+        "priority": 1,
         "tags": {},
         "secondardDelaySecs": 0,
         "votes": 1
@@ -410,7 +410,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             "members": [
                 {"_id": 1, "host": "localhost:3001"},
                 {"_id": 2, "host": "localhost:3002"},
-                {"_id": 2, "host": "localhost:3004"}
+                {"_id": 3, "host": "localhost:3004"}
             ]
         }
         for member in conf["members"]:

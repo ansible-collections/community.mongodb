@@ -1,0 +1,146 @@
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: "admin"
+
+  block:
+
+  - set_fact:
+      mongodb_nodes:
+        - 3001
+        - 3002
+        - 3003
+
+  - set_fact:
+      mongod_auth: true
+
+  - set_fact:
+      current_replicaset: "539"
+
+  - include_tasks: mongod_replicaset.yml
+
+  - name: "create replica set - votes"
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      members:
+      - host: "localhost:3001"
+        votes: 1
+      - host: "localhost:3002"
+        votes: 1
+      - host: "localhost:3003"
+        votes: 1
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed
+
+  - name: Add mongodb admin user
+    community.mongodb.mongodb_user:
+      login_host: localhost
+      login_port: 3001
+      replica_set: "{{ current_replicaset }}"
+      database: admin
+      name: "{{ mongodb_admin_user }}"
+      password: "{{ mongodb_admin_password }}"
+      roles:
+        - root
+      state: present
+
+  - name: Get replicaset info
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.config()"
+      mongo_cmd: "auto" 
+    register: mongo_output
+
+  - assert:
+      that:
+        - mongo_output.transformed_output.members.0.votes == 1
+        - mongo_output.transformed_output.members.1.votes == 1
+        - mongo_output.transformed_output.members.2.votes == 1
+
+  - name: Wait for the replicaset to stabilise
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      poll: 5
+      interval: 10
+
+  - name: "update replica set - votes"
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      reconfigure: yes
+      replica_set: "{{ current_replicaset }}"
+      members:
+      - host: "localhost:3001"
+        votes: 1
+      - host: "localhost:3002"
+        votes: 1
+      - host: "localhost:3003"
+        votes: 0
+        priority: 0
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed
+
+  - name: Get replicaset info
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.config()"
+      mongo_cmd: "auto" 
+    register: mongo_output
+
+  - assert:
+      that:
+        - mongo_output.transformed_output.members.0.votes == 1
+        - mongo_output.transformed_output.members.1.votes == 1
+        - mongo_output.transformed_output.members.2.votes == 0
+
+  - name: Wait for the replicaset to stabilise
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      poll: 5
+      interval: 10
+
+  - name: "update replica set - should be no change - votes"
+    community.mongodb.mongodb_replicaset:
+      <<: *mongo_parameters
+      reconfigure: yes
+      replica_set: "{{ current_replicaset }}"
+      members:
+      - host: "localhost:3001"
+        votes: 1
+      - host: "localhost:3002"
+        votes: 1
+      - host: "localhost:3003"
+        votes: 0
+        priority: 0
+    register: rs
+
+  - assert:
+      that:
+        - rs.changed == False
+
+  - name: Get replicaset info
+    community.mongodb.mongodb_shell:
+      <<: *mongo_parameters
+      eval: "rs.config()"
+      mongo_cmd: "auto" 
+    register: mongo_output
+
+  - assert:
+      that:
+        - mongo_output.transformed_output.members.0.votes == 1
+        - mongo_output.transformed_output.members.1.votes == 1
+        - mongo_output.transformed_output.members.2.votes == 0
+
+  - include_tasks: mongod_teardown.yml
+  
