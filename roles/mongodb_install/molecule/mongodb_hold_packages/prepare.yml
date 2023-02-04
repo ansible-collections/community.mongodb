@@ -10,3 +10,8 @@
         name: yum-plugin-versionlock
         state: present
       when: ansible_facts.os_family == "RedHat"
+
+    - name: Set Python3 for bullseye
+      set_fact:
+        ansible_python_interpreter: /usr/bin/python3
+      when: "{{ ansible_distribution_version  }} == 'bullseye'"
