@@ -748,3 +748,5 @@
 - include_tasks: 330_dicts_no_auth.yml
 # update priority
 - include_tasks: 539_update_priority.yml
+# update votes
+- include_tasks: 539_update_votes.yml

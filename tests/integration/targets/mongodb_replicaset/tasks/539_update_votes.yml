@@ -22,17 +22,17 @@
 
   - include_tasks: mongod_replicaset.yml
 
-  - name: "create replica set - priority"
+  - name: "create replica set - votes"
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       replica_set: "{{ current_replicaset }}"
       members:
       - host: "localhost:3001"
-        priority: 4
+        votes: 1
       - host: "localhost:3002"
-        priority: 2
+        votes: 1
       - host: "localhost:3003"
-        priority: 1
+        votes: 1
     register: rs
 
   - assert:
@@ -60,9 +60,9 @@
 
   - assert:
       that:
-        - mongo_output.transformed_output.members.0.priority == 4
-        - mongo_output.transformed_output.members.1.priority == 2
-        - mongo_output.transformed_output.members.2.priority == 1
+        - mongo_output.transformed_output.members.0.votes == 1
+        - mongo_output.transformed_output.members.1.votes == 1
+        - mongo_output.transformed_output.members.2.votes == 1
 
   - name: Wait for the replicaset to stabilise
     community.mongodb.mongodb_status:
@@ -71,18 +71,19 @@
       poll: 5
       interval: 10
 
-  - name: "update replica set - priority"
+  - name: "update replica set - votes"
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       reconfigure: yes
       replica_set: "{{ current_replicaset }}"
       members:
       - host: "localhost:3001"
-        priority: 4
+        votes: 1
       - host: "localhost:3002"
-        priority: 3
+        votes: 1
       - host: "localhost:3003"
-        priority: 1
+        votes: 0
+        priority: 0
     register: rs
 
   - assert:
@@ -98,9 +99,9 @@
 
   - assert:
       that:
-        - mongo_output.transformed_output.members.0.priority == 4
-        - mongo_output.transformed_output.members.1.priority == 3
-        - mongo_output.transformed_output.members.2.priority == 1
+        - mongo_output.transformed_output.members.0.votes == 1
+        - mongo_output.transformed_output.members.1.votes == 1
+        - mongo_output.transformed_output.members.2.votes == 0
 
   - name: Wait for the replicaset to stabilise
     community.mongodb.mongodb_status:
@@ -109,18 +110,19 @@
       poll: 5
       interval: 10
 
-  - name: "update replica set - should be no change - priority"
+  - name: "update replica set - should be no change - votes"
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
       reconfigure: yes
       replica_set: "{{ current_replicaset }}"
       members:
       - host: "localhost:3001"
-        priority: 4
+        votes: 1
       - host: "localhost:3002"
-        priority: 3
+        votes: 1
       - host: "localhost:3003"
-        priority: 1
+        votes: 0
+        priority: 0
     register: rs
 
   - assert:
@@ -136,9 +138,9 @@
 
   - assert:
       that:
-        - mongo_output.transformed_output.members.0.priority == 4
-        - mongo_output.transformed_output.members.1.priority == 3
-        - mongo_output.transformed_output.members.2.priority == 1
+        - mongo_output.transformed_output.members.0.votes == 1
+        - mongo_output.transformed_output.members.1.votes == 1
+        - mongo_output.transformed_output.members.2.votes == 0
 
   - include_tasks: mongod_teardown.yml
   
