@@ -415,7 +415,7 @@ def member_dicts_different(conf, member_config):
                             different = True
                             msg = "var different {0}".format(config_item)
                             break
-                    else: # for case when the instance is not an arbiter
+                    else:  # for case when the member is not an arbiter
                         if current_member_config[member_index]["priority"] != \
                                 member_config[new_member_index].get(config_item, 1.0):
                             different = True
