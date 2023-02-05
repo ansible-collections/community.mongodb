@@ -30,6 +30,10 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  inventory:
+    host_vars:
+      debian_bullseye:
+        ansible_python_interpreter: /usr/bin/python3
 verifier:
   name: testinfra
   lint:
