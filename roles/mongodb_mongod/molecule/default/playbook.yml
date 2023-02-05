@@ -20,7 +20,7 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell
+        name: mongodb-mongosh
 
     - name: Initialise replicaset
       community.mongodb.mongodb_replicaset:

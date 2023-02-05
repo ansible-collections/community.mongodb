@@ -62,4 +62,4 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell
+        name: mongodb-mongosh
