@@ -47,7 +47,7 @@ def test_mongo_shell_connectivity(host):
     pwd = facts.get("mongod_default_admin_pwd", "admin")
 
     cmd = host.run(
-        "mongo admin --username {user} --password {pwd} --port {port} --eval 'db.runCommand({{listDatabases: 1}})'".format(
+        "mongosh admin --username {user} --password {pwd} --port {port} --eval 'db.runCommand({{listDatabases: 1}})'".format(
             user=user, pwd=pwd, port=port
         )
     )
