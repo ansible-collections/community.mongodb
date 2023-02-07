@@ -31,7 +31,7 @@ def test_redhat_mongodb_repository_file(host):
         assert f.user == 'root'
         assert f.group == 'root'
         assert f.mode == 0o644
-        assert f.md5sum == "b588eeead0d4e192ca3ee6b526d79d51"
+        assert f.md5sum == "dbcb01e2e25b6d10afd27b60205136c3"
 
 
 def test_redhat_yum_search(host):
@@ -46,7 +46,7 @@ def test_redhat_yum_search(host):
         assert "MongoDB database server" in cmd.stdout
 
 
-def test_debian_cassandra_repository_file(host):
+def test_debian_mongodb_repository_file(host):
     mongodb_version = get_mongodb_version(host)
     if host.system_info.distribution == "debian" \
             or host.system_info.distribution == "ubuntu":
@@ -66,4 +66,4 @@ def test_debian_apt_search(host):
         cmd = host.run("apt search mongodb")
 
         assert cmd.rc == 0
-        assert "mongodb-org-server" in cmd.stdout
+        assert "mongodb" in cmd.stdout

@@ -19,8 +19,8 @@ platforms:
     image: debian:buster
     privileged: yes
     command: "/sbin/init"
-  - name: debian_stretch
-    image: debian:stretch
+  - name: debian_bullseye
+    image: debian:bullseye
     privileged: yes
     command: "/sbin/init"
   - name: amazonlinux
@@ -30,6 +30,10 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  inventory:
+    host_vars:
+      debian_bullseye:
+        ansible_python_interpreter: /usr/bin/python3
 verifier:
   name: testinfra
   lint:

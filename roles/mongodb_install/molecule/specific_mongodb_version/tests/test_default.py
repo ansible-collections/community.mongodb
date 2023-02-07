@@ -14,9 +14,8 @@ def test_mongod_available(host):
 
 
 def test_mongo_available(host):
-    cmd = host.run("mongo --version")
+    cmd = host.run("mongosh --version")
     assert cmd.rc == 0
-    assert "MongoDB shell version" in cmd.stdout
 
 
 def test_mongos_available(host):
@@ -34,4 +33,4 @@ def test_mongodump_available(host):
 def test_specific_mongodb_version(host):
     cmd = host.run("mongod --version")
     assert cmd.rc == 0
-    assert "4.2.2" in cmd.stdout
+    assert "6.0.3" in cmd.stdout

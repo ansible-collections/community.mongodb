@@ -33,7 +33,7 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell
+        name: mongodb-mongosh
 
     - name: Init config server replicaset
       community.mongodb.mongodb_replicaset:

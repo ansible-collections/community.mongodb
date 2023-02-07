@@ -57,7 +57,7 @@ def test_mongod_replicaset(host):
         port = include_vars(host)['ansible_facts']['mongod_port']
     except KeyError:
         port = 27017
-    cmd = "mongo --port {0} --eval 'rs.status()'".format(port)
+    cmd = "mongosh --port {0} --eval 'rs.status()'".format(port)
     # We only want to run this once
     if host.ansible.get_variables()['inventory_hostname'] == "amazonlinux":
         r = host.run(cmd)
@@ -66,7 +66,7 @@ def test_mongod_replicaset(host):
         assert "amazonlinux:{0}".format(port) in r.stdout
         assert "ubuntu_18:{0}".format(port) in r.stdout
         assert "debian_buster:{0}".format(port) in r.stdout
-        assert "debian_stretch:{0}".format(port) in r.stdout
+        assert "debian_bullseye:{0}".format(port) in r.stdout
 
 
 def test_mongod_default_path(host):

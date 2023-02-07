@@ -35,9 +35,9 @@ platforms:
     networks:
       - name: "mymongo"
     network_mode: "mymongo"
-  - name: debian_stretch
-    hostname: debian_stretch
-    image: debian:stretch
+  - name: debian_bullseye
+    hostname: debian_bullseye
+    image: debian:bullseye
     command: /sbin/init
     privileged: True
     networks:
@@ -57,6 +57,10 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  inventory:
+    host_vars:
+      debian_bullseye:
+        ansible_python_interpreter: /usr/bin/python3
 verifier:
   name: testinfra
   lint:

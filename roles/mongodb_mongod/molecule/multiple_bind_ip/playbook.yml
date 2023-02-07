@@ -23,7 +23,7 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell
+        name: mongodb-mongosh
 
     - name: Initialise replicaset
       community.mongodb.mongodb_replicaset:
@@ -34,6 +34,6 @@
           - centos_7:27017
           - amazonlinux:27017
           - ubuntu_18:27017
-          - debian_stretch:27017
+          - debian_bullseye:27017
           - debian_buster:27017
       when: ansible_hostname == "amazonlinux"
