@@ -35,26 +35,6 @@
   tags:
     - "debug"
 
-- name: Add mongo admin user with localhost exception
-  community.mongodb.mongodb_user:
-    state: present
-
-    # on_create triggers additional queries that are not compatible with localhost exception
-    update_password: always
-
-    name: "{{ mongodb_admin_user }}"
-    password: "{{ mongodb_admin_pwd }}"
-    database: admin
-    roles: "{{ mongodb_admin_roles }}"
-
-    login_host: localhost
-    login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
-    create_for_localhost_exception: /root/mongodb_admin.success
-  tags:
-    - "mongodb"
-    - "setup"
-    - "admin_user"
-
 - name: Enable security section in mongod.conf
   lineinfile:
     path: /etc/mongod.conf
@@ -101,6 +81,26 @@
     - "mongodb"
     - "service"
     - "setup"
+
+- name: Add mongo admin user with localhost exception
+  community.mongodb.mongodb_user:
+    state: present
+
+    # on_create triggers additional queries that are not compatible with localhost exception
+    update_password: always
+
+    name: "{{ mongodb_admin_user }}"
+    password: "{{ mongodb_admin_pwd }}"
+    database: admin
+    roles: "{{ mongodb_admin_roles }}"
+
+    login_host: localhost
+    login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
+    create_for_localhost_exception: /root/mongodb_admin.success
+  tags:
+    - "mongodb"
+    - "setup"
+    - "admin_user"
 
 - name: Add additional mongo users
   include_tasks: mongodb_auth_user.yml
