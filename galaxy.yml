@@ -1,6 +1,6 @@
 namespace: community
 name: mongodb
-version: 1.4.2
+version: 1.5.0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
@@ -11,7 +11,7 @@ authors:
   - Loic Blot (http://www.infopro-digital.com/)
   - Matt Martz (https://github.com/sivel)
   - Jacob Floyd (https://github.com/cognifloyd)
-description: MongoDB related ansible Roles, Modules, and Plugins
+description: MongoDB related Ansible Roles, Modules, and Plugins
 license_file: COPYING
 tags:
   - mongodb
