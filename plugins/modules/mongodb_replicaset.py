@@ -14,7 +14,8 @@ short_description: Initialises a MongoDB replicaset.
 description:
   - Initialises a MongoDB replicaset in a new deployment.
   - Validates the replicaset name for existing deployments.
-  - Advanced replicaset member configuration possible (see examples).
+  - Advanced replicaset member (re)configuration possible (see examples).
+  - Initialize the replicaset before adding users.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
