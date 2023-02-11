@@ -4,6 +4,40 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.5.0
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 544 mongodb_replicaset - Module documentation improvements.
+- 494 mongodb_shutdown - Fix examples block.
+- 491 mongodb_shell - Add feature to detect if mongo or mongosh is available.
+- 530 mongodb_role - Adds new module to manage MongoDB roles.
+- 547 mongodb_repository - Bump default of MongoDB to 6.0.
+- 536 mongodb_auth - Add user after enabling authentication.
+- 528 multiple roles - Use first ip address when multiple bind IPs provided.
+- 524 mongodb_auth - Add supports for Amazon Linux 2.
+- 514 mongodb_linux - Remove extended FQCN for pam_limits.
+- 511 mongodb_auth - Adds support for deletion of users.
+- 494 mongodb_auth - Removes module_defaults from role.
+
+Bug Fixes
+----------
+
+- 540 mongodb_replicaset - replicaset member priority updates.
+- 488 mongodb_info - Better handling of json data types.
+
+Modules
+--------
+
+- 533 - mongodb_role - Manage MongoDB User Roles-
+
 v1.4.2
 =======
 
