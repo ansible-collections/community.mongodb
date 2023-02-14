@@ -1,14 +1,12 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
-from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from ansible.module_utils.basic import missing_required_lib  # pylint: disable=unused-import:
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 import traceback
 import os
 import ssl as ssl_lib
 
-from datetime import timedelta
-from decimal import Decimal
 
 try:
     from bson.timestamp import Timestamp
@@ -25,8 +23,8 @@ OperationFailure = None
 TYPES_NEED_TO_CONVERT = None
 
 try:
-    from pymongo.errors import ConnectionFailure
-    from pymongo.errors import OperationFailure
+    from pymongo.errors import ConnectionFailure  # pylint: disable=unused-import:
+    from pymongo.errors import OperationFailure  # pylint: disable=unused-import:
     from pymongo import version as PyMongoVersion
     from pymongo import MongoClient
     pymongo_found = True

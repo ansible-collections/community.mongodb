@@ -7,7 +7,6 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 path = "{0}/../../plugins/module_utils".format(script_path)
 sys.path.append(path)
 import mongodb_shell
-import json
 
 
 class TestMongoDBCommonMethods(unittest.TestCase):
