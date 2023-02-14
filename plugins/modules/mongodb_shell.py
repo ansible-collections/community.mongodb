@@ -199,9 +199,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
 )
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_shell import (
-    escape_param,
     add_arg_to_cmd,
-    extract_json_document,
     transform_output,
     get_hash_value,
     touch,

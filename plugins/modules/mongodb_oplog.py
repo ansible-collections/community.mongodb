@@ -81,7 +81,6 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common i
     mongodb_common_argument_spec,
     member_state,
     mongo_auth,
-    check_srv_version,
     PYMONGO_IMP_ERR,
     pymongo_found,
     get_mongodb_client,

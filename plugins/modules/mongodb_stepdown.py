@@ -95,7 +95,6 @@ from ansible.module_utils._text import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
     mongodb_common_argument_spec,
-    ssl_connection_options,
     mongo_auth,
     PYMONGO_IMP_ERR,
     pymongo_found,
