@@ -42,6 +42,7 @@
       allow mongod_t cgroup_t:dir search;
       allow mongod_t cgroup_t:file { getattr open read };
     dest: /root/mongodb_cgroup_memory.te
+  register: mongodb_policy
   tags:
     - "setup"
     - "mongodb"
@@ -49,8 +50,7 @@
 
 - name: Compile & Install MongoDB Policy
   script: files/compile_mongodb_selinux.sh
-  args:
-    creates: /root/mongodb_selinux.success
+  when: mongodb_policy.changed
   tags:
     - "setup"
     - "mongodb"
