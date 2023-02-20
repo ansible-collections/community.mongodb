@@ -251,3 +251,9 @@ releases:
           - Manage MongoDB User Roles (#530).
         name: mongodb_role
         namespace: community
+  1.5.1:
+    release_summary: |
+      This release is a maintenance release.
+    changes:
+      bug_fixes:
+        - 534 mongodb_selinux - Reinstall SELinux policy when changed.

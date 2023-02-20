@@ -4,6 +4,20 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.5.1
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+
+Bug Fixes
+----------
+
+- 534 mongodb_selinux - Reinstall SELinux policy when changed.
+
 v1.5.0
 =======
 
