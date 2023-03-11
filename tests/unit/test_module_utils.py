@@ -236,6 +236,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_user"] = "user"
         fake_module.params["login_password"] = "password"
         fake_module.params["login_database"] = "test"
+        fake_module.params["strict_compatibility"] = False
 
         client = MongoClient(host=['localhost:27017'],
                              username=None,
@@ -289,6 +290,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
         fake_module.params["replica_set"] = None
+        fake_module.params["strict_compatibility"] = False
         mongodb_common.mongo_auth(fake_module, client)
         msg = fake_module.get_msg()
         assert "When supplying login arguments" in msg
