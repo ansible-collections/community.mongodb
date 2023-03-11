@@ -83,11 +83,11 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 assert msg == ""
             else:
                 assert "This version of MongoDB is pretty old" in msg \
-                    or 'You should use pymongo 4+' in msg
+                    or 'You must use pymongo 4+' in msg
 
     def test_check_compatibility_strict_compatibility_False(self):
         tests = [
-            ('4.4.4', '3.12.1', False), # srv, drv, empty msg expected
+            ('4.4.4', '3.12.1', False),  # srv, drv, empty msg expected
             ('5.0.1', '3.12.1', False),
             ('4.4.4', '4.0.1', True),
             ('5.0.1', '4.0.1', True),
