@@ -39,7 +39,7 @@ except NameError:
 
 
 def check_compatibility(module, srv_version, driver_version):
-    if driver_version.startswith('3.12') or driver_version.startswith('4'):
+    if int(driver_version[0]) >= 4:
         if int(srv_version[0]) < 4:
             if module.params['strict_compatibility']:
                 module.fail_json("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
@@ -47,9 +47,9 @@ def check_compatibility(module, srv_version, driver_version):
                 module.warn("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
     else:
         if module.params['strict_compatibility']:
-            module.fail_json("You must use pymongo 3.12+ or 4+.")
+            module.fail_json("You must use pymongo 4+.")
         else:
-            module.warn("You should use pymongo 3.12+ or 4+ but {0} was found.".format(driver_version))
+            module.warn("You should use pymongo 4+ but {0} was found.".format(driver_version))
 
 
 def load_mongocnf():
