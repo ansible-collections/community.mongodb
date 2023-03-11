@@ -223,6 +223,7 @@ def ssl_connection_options(connection_params, module):
 
 
 def check_srv_version(module, client):
+    srv_version = None
     try:
         srv_version = client.server_info()['version']
     except Exception as excep:

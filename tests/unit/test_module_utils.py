@@ -83,7 +83,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 assert msg == ""
             else:
                 assert "This version of MongoDB is pretty old" in msg \
-                    or msg == "You must use pymongo 3.12+ or 4+."
+                    or 'You should use pymongo 4+' in msg
 
     def test_check_compatibility_strict_compatibility_False(self):
         tests = [
@@ -103,7 +103,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             if t[2]:
                 assert warn == ""
             else:
-                assert 'You should use pymongo 3.12+ or 4+ but' in warn \
+                assert 'You should use pymongo 4+' in warn \
                     or 'This version of MongoDB is pretty old' in warn
 
     def test_load_mongocnf(self):
