@@ -66,8 +66,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
     def test_check_compatibility_strict_compatibility_True(self):
         tests = [
-            ('4.4.4', '3.12.1', True),
-            ('5.0.1', '3.12.1', True),
+            ('4.4.4', '3.12.1', False),  # srv, drv, empty msg expected
+            ('5.0.1', '3.12.1', False),
             ('4.4.4', '4.0.1', True),
             ('5.0.1', '4.0.1', True),
             ('2.4.1', '3.12.1', False),
@@ -87,8 +87,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
     def test_check_compatibility_strict_compatibility_False(self):
         tests = [
-            ('4.4.4', '3.12.1', True),
-            ('5.0.1', '3.12.1', True),
+            ('4.4.4', '3.12.1', False), # srv, drv, empty msg expected
+            ('5.0.1', '3.12.1', False),
             ('4.4.4', '4.0.1', True),
             ('5.0.1', '4.0.1', True),
             ('2.4.1', '3.12.1', False),
