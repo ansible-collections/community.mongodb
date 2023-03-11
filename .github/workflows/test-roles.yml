@@ -29,7 +29,7 @@ jobs:
         id: json-list
         run: |
           output=$(cat int_test_roles.json)
-          echo "::set-output name=roles-to-test::$output"
+          echo "roles-to-test=$output" >> $GITHUB_OUTPUT
           echo "$output"
 
   roles:

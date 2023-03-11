@@ -132,7 +132,7 @@ jobs:
         id: json-list
         run: |
           output=$(cat int_test_modules.json)
-          echo "::set-output name=modules-to-test::$output"
+          echo "modules-to-test=$output" >> $GITHUB_OUTPUT
           echo "$output"
 
   integration:

@@ -81,7 +81,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=nopymongo::$output"
+          echo "nopymongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test cache handling of missing pymongo
         uses: nick-invision/assert-action@v1
@@ -108,7 +108,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
         uses: nick-invision/assert-action@v1
@@ -125,7 +125,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we don't have an index called ttl
         uses: nick-invision/assert-action@v1
@@ -152,7 +152,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
         uses: nick-invision/assert-action@v1
@@ -169,7 +169,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we don't have an index called ttl
         uses: nick-invision/assert-action@v1
@@ -198,7 +198,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
         uses: nick-invision/assert-action@v1
@@ -215,7 +215,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we do have an index called ttl
         uses: nick-invision/assert-action@v1
@@ -237,7 +237,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
         uses: nick-invision/assert-action@v1
@@ -254,7 +254,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we do have an index called ttl
         uses: nick-invision/assert-action@v1
@@ -276,7 +276,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
         uses: nick-invision/assert-action@v1
@@ -293,7 +293,7 @@ jobs:
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
           output="${output//$'\r'/'%0D'}"
-          echo "::set-output name=mongo::$output"
+          echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we don't have an index called ttl
         uses: nick-invision/assert-action@v1
