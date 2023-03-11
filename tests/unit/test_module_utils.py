@@ -103,7 +103,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             if t[2]:
                 assert warn == ""
             else:
-                assert 'You should use pymongo 4+' in warn \
+                assert 'You must use pymongo 4+' in warn \
                     or 'This version of MongoDB is pretty old' in warn
 
     def test_load_mongocnf(self):
