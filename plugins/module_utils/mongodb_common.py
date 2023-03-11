@@ -42,12 +42,12 @@ def check_compatibility(module, srv_version, driver_version):
     if int(driver_version[0]) >= 4:
         if int(srv_version[0]) < 4:
             if module.params['strict_compatibility']:
-                module.fail_json("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
+                module.fail_json(msg="This version of MongoDB is pretty old and these modules are no longer tested against this version.")
             else:
                 module.warn("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
     else:
         if module.params['strict_compatibility']:
-            module.fail_json("You must use pymongo 4+.")
+            module.fail_json(msg="You must use pymongo 4+.")
         else:
             module.warn("You should use pymongo 4+ but {0} was found.".format(driver_version))
 
