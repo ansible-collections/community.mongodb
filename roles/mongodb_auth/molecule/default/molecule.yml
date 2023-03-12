@@ -19,8 +19,8 @@ platforms:
     image: ubuntu:18.04
     command: /sbin/init
     privileged: True
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_20
+    image: ubuntu:20.04
     command: /sbin/init
     privileged: True
   - name: debian_bullseye
@@ -28,7 +28,7 @@ platforms:
     command: /sbin/init
     privileged: True
   - name: amazonlinux
-    image: amazonlinux:2
+    image: amazonlinux:2022
     command: /sbin/init
     privileged: True  
     volumes:

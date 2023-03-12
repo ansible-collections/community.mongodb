@@ -10,13 +10,13 @@
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
       - ubuntu_18
-      - debian_buster
+      - ubuntu_20
 
     # add some users for some of the hosts
     hosts_with_extra_user:
       - centos_8
       - amazonlinux
-      - debian_buster
+      - ubuntu_20
     mongodb_users_empty: []
     mongodb_users_full:
       - db: somedatabase
