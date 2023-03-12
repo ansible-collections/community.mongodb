@@ -5,6 +5,10 @@
 
   tasks:
 
+    - name: python2 for amazon linux 2
+      shell: yum install -y python2
+      when: ansible_distribution == "Amazon"  
+
     - name: Required packages
       yum:
         name: yum-plugin-versionlock

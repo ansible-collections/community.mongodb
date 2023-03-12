@@ -13,3 +13,4 @@ redhat:
   yum_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
   yum_gpgcheck: true
   yum_description: "Official MongoDB {{ mongodb_version }} yum repo"
+

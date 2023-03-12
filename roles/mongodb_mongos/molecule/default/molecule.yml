@@ -20,7 +20,7 @@ platforms:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
   - name: amazonlinux
-    image: amazonlinux:2023
+    image: amazonlinux:2
     command: /sbin/init
     privileged: True  
     volumes:

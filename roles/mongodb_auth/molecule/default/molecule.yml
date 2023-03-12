@@ -28,7 +28,7 @@ platforms:
     command: /sbin/init
     privileged: True
   - name: amazonlinux
-    image: amazonlinux:2023
+    image: amazonlinux:2
     command: /sbin/init
     privileged: True  
     volumes:

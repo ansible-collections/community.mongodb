@@ -9,6 +9,10 @@
       - iproute
   tasks:
 
+  - name: python2 for amazon linux 2
+    shell: yum install -y python2
+    when: ansible_distribution == "Amazon"  
+
   - name: Ensure epel is available
     ansible.builtin.package:
       name: epel-release
