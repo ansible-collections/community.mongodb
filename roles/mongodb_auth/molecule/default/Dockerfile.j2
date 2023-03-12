@@ -24,6 +24,8 @@ RUN yum -y install systemd sudo; \
     rm -f /lib/systemd/system/sockets.target.wants/*initctl* ; \
     rm -f /lib/systemd/system/basic.target.wants/* ; \
     rm -f /lib/systemd/system/anaconda.target.wants/*
+{% elif item.name == 'ubuntu_22' %}
+RUN apt-get update && apt-get install -y python3 sudo bash ca-certificates iproute2 systemd-sysv procps netbase && apt-get clean;
 {% else %}
 # Add systemd-sysv package for Debian to get systemd working (and procps for sysctl) and netbase for firewalld
 RUN if [ $(command -v apt-get) ]; then apt-get update && apt-get install -y python sudo bash ca-certificates iproute2 systemd-sysv procps netbase && apt-get clean; \

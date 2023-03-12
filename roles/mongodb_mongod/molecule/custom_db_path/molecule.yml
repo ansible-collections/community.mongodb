@@ -9,8 +9,8 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  - name: centos_7
-    image: centos:7
+  - name: almalinux_8
+    image: almalinux:8
     command: /sbin/init
     privileged: True
     volumes:
@@ -25,7 +25,7 @@ platforms:
     networks:
       - name: "mongod"
     network_mode: "mongod"
-  - name: ubuntu_20
+  - name: ubuntu_22
     image: ubuntu20.04
     command: /sbin/init
     privileged: True

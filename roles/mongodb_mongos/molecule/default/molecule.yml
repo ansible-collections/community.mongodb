@@ -10,8 +10,8 @@ lint:
       line-length: disable
 platforms:
   # centos_7 and debian_stretch disabled to reduce test time
-  #- name: centos_7
-  #  image: centos:7
+  #- name: almalinux_8
+  #  image: almalinux:8
   #  command: /sbin/init
   #  privileged: True
   #  volumes:
@@ -35,8 +35,8 @@ platforms:
     networks:
       - name: "mymongos"
     network_mode: "mymongos"
-  - name: ubuntu_20
-    image: ubuntu:20.04
+  - name: ubuntu_22
+    image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:

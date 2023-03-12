@@ -10,13 +10,13 @@
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
       - ubuntu_18
-      - ubuntu_20
+      - ubuntu_22
 
     # add some users for some of the hosts
     hosts_with_extra_user:
       - centos_8
       - amazonlinux
-      - ubuntu_20
+      - ubuntu_22
     mongodb_users_empty: []
     mongodb_users_full:
       - db: somedatabase
@@ -42,7 +42,7 @@
       yum:
         name: epel-release
         state: present
-      when: inventory_hostname  == 'centos_7'
+      when: inventory_hostname  == 'almalinux_8'
 
     - name: Install python stuff
       package:
