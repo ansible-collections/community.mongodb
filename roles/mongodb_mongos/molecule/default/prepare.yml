@@ -7,6 +7,10 @@
       - net-tools
   tasks:
 
+  - name: Install python2-yum for package module
+    shell: yum install -y python2-yum
+    when: ansible_distribution == "Amazon"
+
   - name: Ensure epel is available
     ansible.builtin.package:
       name: epel-release
