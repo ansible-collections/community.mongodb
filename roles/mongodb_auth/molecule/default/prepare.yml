@@ -8,7 +8,7 @@
   tasks:
 
   - name: Ensure epel is available
-    package:
+    dnf:
       name: epel-release
       state: present
     when:
