@@ -25,8 +25,8 @@ platforms:
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_20
+    image: ubuntu:20.04
     command: /sbin/init
     privileged: True
     networks:
@@ -40,7 +40,7 @@ platforms:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
   - name: amazonlinux
-    image: amazonlinux:2
+    image: amazonlinux:2022
     command: /sbin/init
     privileged: True  
     volumes:

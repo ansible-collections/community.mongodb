@@ -20,7 +20,7 @@ platforms:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
   - name: amazonlinux
-    image: amazonlinux:2
+    image: amazonlinux:2022
     command: /sbin/init
     privileged: True  
     volumes:
@@ -35,8 +35,8 @@ platforms:
     networks:
       - name: "mymongos"
     network_mode: "mymongos"
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_20
+    image: ubuntu:20.04
     command: /sbin/init
     privileged: True
     networks:

@@ -15,8 +15,8 @@ platforms:
     image: ubuntu:18.04
     privileged: yes
     command: "/sbin/init"
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_20
+    image: ubuntu:20.04
     privileged: yes
     command: "/sbin/init"
   - name: debian_bullseye
@@ -24,7 +24,7 @@ platforms:
     privileged: yes
     command: "/sbin/init"
   - name: amazonlinux
-    image: amazonlinux:2
+    image: amazonlinux:2022
 provisioner:
   name: ansible
   lint:

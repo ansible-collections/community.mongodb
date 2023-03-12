@@ -35,5 +35,5 @@
           - amazonlinux:27017
           - ubuntu_18:27017
           - debian_bullseye:27017
-          - debian_buster:27017
+          - ubuntu_20:27017
       when: ansible_hostname == "amazonlinux"

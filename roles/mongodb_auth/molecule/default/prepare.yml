@@ -16,7 +16,7 @@
       - ansible_distribution != "Amazon"
 
   - name: Install redhat packages
-    package:
+    dnf:
       name: "{{ redhat_packages }}"
       state: present
     when: ansible_os_family == "RedHat"

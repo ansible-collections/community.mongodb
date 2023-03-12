@@ -13,12 +13,12 @@ platforms:
     image: centos:7
   - name: ubuntu_18
     image: ubuntu:18.04
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_20
+    image: ubuntu:20.04
   - name: debian_bullseye
     image: debian:bullseye
   - name: amazonlinux
-    image: amazonlinux:2
+    image: amazonlinux:2022
 provisioner:
   name: ansible
   lint:
