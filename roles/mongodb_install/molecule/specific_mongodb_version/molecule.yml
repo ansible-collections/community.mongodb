@@ -9,8 +9,8 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  - name: almalinux_8
-    image: almalinux:8
+  #- name: almalinux_8
+  #  image: almalinux:8  yum seems broken for wildcard/version install for AL8
   - name: amazonlinux
     image: amazonlinux:2
   - name: ubuntu_18
