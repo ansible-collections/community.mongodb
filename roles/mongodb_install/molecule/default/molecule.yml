@@ -24,7 +24,7 @@ platforms:
     privileged: yes
     command: "/sbin/init"
   - name: amazonlinux
-    image: amazonlinux:2022
+    image: amazonlinux:2023
 provisioner:
   name: ansible
   lint:

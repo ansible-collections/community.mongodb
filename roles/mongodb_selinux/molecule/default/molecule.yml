@@ -18,7 +18,7 @@ platforms:
   - name: debian_bullseye
     image: debian:bullseye
   - name: amazonlinux
-    image: amazonlinux:2022
+    image: amazonlinux:2023
 provisioner:
   name: ansible
   lint:

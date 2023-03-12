@@ -45,7 +45,7 @@ platforms:
     network_mode: "mymongo"
   - name: amazonlinux
     hostname: amazonlinux
-    image: amazonlinux:2022
+    image: amazonlinux:2023
     command: /sbin/init
     privileged: True  
     volumes:
