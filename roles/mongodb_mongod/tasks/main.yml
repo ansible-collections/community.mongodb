@@ -79,3 +79,10 @@
     - "mongodb"
     - "setup"
     - "service"
+# debug section
+- pause:
+    seconds: 5
+
+- shell: cat /var/log/mongodb/mongod.log
+  changed_when: false
+# eof debug
