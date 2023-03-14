@@ -84,5 +84,11 @@
     seconds: 5
 
 - shell: cat /var/log/mongodb/mongod.log
-  changed_when: false
+  register: log_output
+  changed_when: false 
+  when: ansible_hostname == "amazonlinux"
+
+- debug:
+    var: log_output
+  when: ansible_hostname == "amazonlinux"
 # eof debug
