@@ -43,7 +43,6 @@ platforms:
     image: amazonlinux:2
     command: /sbin/init
     privileged: True
-    memory: 2048
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     networks:
