@@ -18,7 +18,7 @@ storage:
 
 # how the process runs
 processManagement:
-{% if ansible_facts.os_family == "RedHat" and ansible_facts.distribution != "Amazon" %}  # Breaks Ubuntu / Debian
+{% if ansible_facts.os_family == "RedHat" and ansible_facts.distribution != "Amazon" and ansible_facts.distribution != "AlmaLinux" %}  # Breaks Ubuntu / Debian
   fork: true
   pidFilePath: /var/run/mongodb/mongod.pid
 {% endif %}
