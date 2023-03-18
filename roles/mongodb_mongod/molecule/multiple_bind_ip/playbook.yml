@@ -11,11 +11,6 @@
 
   tasks:
 
-    - name: Install python stuff
-      package:
-        name: ["python-setuptools", "python-pip"]
-      when: ansible_hostname == "amazonlinux"
-
     - name: Install pymongo
       pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
