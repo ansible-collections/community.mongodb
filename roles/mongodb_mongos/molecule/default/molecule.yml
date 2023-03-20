@@ -19,12 +19,12 @@ platforms:
   #  networks:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
-  - name: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    image: fedora:37
     command: /sbin/init
-    privileged: True  
+    privileged: True
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
     networks:
       - name: "mymongos"
     network_mode: "mymongos"

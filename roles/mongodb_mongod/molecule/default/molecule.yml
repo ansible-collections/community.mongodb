@@ -39,12 +39,12 @@ platforms:
     networks:
       - name: "mongod"
     network_mode: "mongod"
-  - name: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    image: fedora:37
     command: /sbin/init
     privileged: True
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
     networks:
       - name: "mongod"
     network_mode: "mongod"

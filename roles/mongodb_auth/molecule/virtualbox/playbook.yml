@@ -45,14 +45,6 @@
         state: present
       when: inventory_hostname  == 'almalinux_8'
 
-    - name: Install python stuff
-      package:
-        name:
-          - "python{% if needs_3 %}3{% endif %}-setuptools"
-          - "python{% if needs_3 %}3{% endif %}-pip"
-      vars:
-        needs_3: "{{ ansible_facts.python.version.major == 3 }}"
-
     - name: Install pymongo
       pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"

@@ -43,13 +43,13 @@ platforms:
     networks:
       - name: "mymongo"
     network_mode: "mymongo"
-  - name: amazonlinux
-    hostname: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    hostname: fedora
+    image: fedora:37
     command: /sbin/init
-    privileged: True  
+    privileged: True
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
     networks:
       - name: "mymongo"
 provisioner:

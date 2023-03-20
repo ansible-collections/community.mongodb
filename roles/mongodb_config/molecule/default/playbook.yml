@@ -11,7 +11,7 @@
     - name: Install pymongo
       pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
-      when: ansible_hostname == "amazonlinux"
+      when: ansible_hostname == "fedora"
 
     - name: Install MongoDB Shell
       package:
@@ -25,8 +25,8 @@
         validate: no
         members:
           - almalinux_8:27019
-          - amazonlinux:27019
+          - fedora:27019
           - ubuntu_18:27019
           - debian_bullseye:27019
           - ubuntu_22:27019
-      when: ansible_hostname == "amazonlinux"
+      when: ansible_hostname == "fedora"

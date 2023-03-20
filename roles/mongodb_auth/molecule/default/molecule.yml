@@ -27,10 +27,10 @@ platforms:
     image: debian:bullseye
     command: /sbin/init
     privileged: True
-  - name: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    image: fedora:37
     command: /sbin/init
-    privileged: True  
+    privileged: True
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro 
 provisioner:
@@ -42,6 +42,7 @@ provisioner:
     host_vars:
       debian_bullseye:
         ansible_python_interpreter: /usr/bin/python3
+      fedora:
 verifier:
   name: testinfra
   lint:

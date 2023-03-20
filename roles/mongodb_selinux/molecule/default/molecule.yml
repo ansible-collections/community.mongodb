@@ -17,8 +17,8 @@ platforms:
     image: ubuntu:22.04
   - name: debian_bullseye
     image: debian:bullseye
-  - name: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    image: fedora:37
 provisioner:
   name: ansible
   lint:

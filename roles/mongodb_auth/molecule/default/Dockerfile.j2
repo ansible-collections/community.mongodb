@@ -13,7 +13,7 @@ ENV {{ var }} {{ value }}
 {% endfor %}
 {% endif %}
 
-{% if item.name == 'amazonlinux' %}
+{% if item.name == 'amazonlinux' or item.name == 'fedora' %}
 RUN yum -y install systemd sudo python3 python3-setuptools python3-pip procps-ng; \
     cd /lib/systemd/system/sysinit.target.wants/ ; \
     for i in *; do [ $i = systemd-tmpfiles-setup.service ] || rm -f $i ; done ; \
@@ -23,9 +23,7 @@ RUN yum -y install systemd sudo python3 python3-setuptools python3-pip procps-ng
     rm -f /lib/systemd/system/sockets.target.wants/*udev* ; \
     rm -f /lib/systemd/system/sockets.target.wants/*initctl* ; \
     rm -f /lib/systemd/system/basic.target.wants/* ; \
-    rm -f /lib/systemd/system/anaconda.target.wants/* ; \
-    mv /usr/bin/python3 /usr/bin/python; \ 
-    mv /usr/bin/pip3 /usr/bin/pip;
+    rm -f /lib/systemd/system/anaconda.target.wants/* ;
 {% elif item.name == 'ubuntu_22' %}
 RUN apt-get update && apt-get install -y python3 python3-setuptools python3-pip sudo bash ca-certificates iproute2 systemd-sysv procps netbase && apt-get clean;
 {% else %}
