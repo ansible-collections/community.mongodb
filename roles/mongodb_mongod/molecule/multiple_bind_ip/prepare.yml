@@ -16,6 +16,7 @@
     when:
       - ansible_os_family == "RedHat"
       - ansible_distribution != "Amazon"
+      - ansible_distribution != "Fedora"
 
   - name: Install redhat packages
     ansible.builtin.package:
