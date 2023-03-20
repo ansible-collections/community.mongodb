@@ -29,8 +29,7 @@ def test_mongodb_packages_held(host):
     test_apt = host.run("which apt-mark")
     if test_apt.rc == 0:
         c = "apt-mark showhold"
-    elif host.ansible.get_variables()['inventory_hostname'].startswith('centos') \
-            or host.ansible.get_variables()['inventory_hostname'].startswith('fedora'):
+    else:
         c = "yum versionlock list"
     cmd = host.run(c)
     assert cmd.rc == 0
