@@ -61,6 +61,10 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  inventory:
+    host_vars:
+      fedora:  # suitable for fedora 37
+          redhat.yum_baseurl: "https://repo.mongodb.org/yum/redhat/9/mongodb-org/{{ mongodb_version }}/x86_64/"
 verifier:
   name: testinfra
   lint:

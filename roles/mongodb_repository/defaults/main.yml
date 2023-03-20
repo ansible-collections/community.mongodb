@@ -9,7 +9,7 @@ debian:
   apt_repository_repo: "deb{{ ' [ arch=amd64,arm64 ]' if ansible_facts.distribution == 'Ubuntu' else '' }} https://repo.mongodb.org/apt/{{ ansible_facts.distribution|lower }} {{ ansible_facts.distribution_release }}/mongodb-org/{{ mongodb_version }} {{ 'multiverse' if ansible_facts.distribution == 'Ubuntu' else 'main' }}"
 redhat:
   rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
-  yum_baseurl: "https://repo.mongodb.org/yum/{{ 'amazon' if ansible_distribution == 'Amazon' else 'redhat'  }}/{{ '9' if ansible_distribution == 'Fedora' else '$releasever' }}/mongodb-org/{{ mongodb_version }}/x86_64/"
+  yum_baseurl: "https://repo.mongodb.org/yum/{{ 'amazon' if ansible_distribution == 'Amazon' else 'redhat'  }}/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/"
   yum_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
   yum_gpgcheck: true
   yum_description: "Official MongoDB {{ mongodb_version }} yum repo"

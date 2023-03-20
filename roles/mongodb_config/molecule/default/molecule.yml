@@ -61,6 +61,8 @@ provisioner:
     host_vars:
       debian_bullseye:
         ansible_python_interpreter: /usr/bin/python3
+      fedora:  # suitable for fedora 37
+          redhat.yum_baseurl: "https://repo.mongodb.org/yum/redhat/9/mongodb-org/{{ mongodb_version }}/x86_64/"
 verifier:
   name: testinfra
   lint:
