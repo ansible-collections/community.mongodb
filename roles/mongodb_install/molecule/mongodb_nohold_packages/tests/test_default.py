@@ -26,7 +26,8 @@ def test_mongodb_packages_installed(host):
 
 
 def test_mongodb_packages_held(host):
-    if host.ansible.get_variables()['inventory_hostname'] in ['ubuntu_22', 'debian_bullseye', 'ubuntu_18']:
+    test_apt = host.run("which apt-mark")
+    if test_apt.rc == 0:
         c = "apt-mark showhold"
     elif host.ansible.get_variables()['inventory_hostname'].startswith('centos') \
             or host.ansible.get_variables()['inventory_hostname'].startswith('fedora'):
