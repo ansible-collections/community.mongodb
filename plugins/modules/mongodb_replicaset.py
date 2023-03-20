@@ -15,7 +15,8 @@ description:
   - Initialises a MongoDB replicaset in a new deployment.
   - Validates the replicaset name for existing deployments.
   - Advanced replicaset member (re)configuration possible (see examples).
-  - Initialize the replicaset before adding users.
+  - Initialize the replicaset before adding users as per \
+    [best practice](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set-with-keyfile-access-control/).
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
