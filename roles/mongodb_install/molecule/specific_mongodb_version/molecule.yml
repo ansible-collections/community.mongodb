@@ -11,8 +11,10 @@ lint:
 platforms:
   #- name: almalinux_8
   #  image: almalinux:8  yum seems broken for wildcard/version install for AL8
-  - name: fedora
-    image: fedora:37
+  #- name: fedora
+  #  image: fedora:37 ditto
+  - name: centos7
+    image: centos:7  # Just here while the above two are broken
   - name: ubuntu_18
     image: ubuntu:18.04
   - name: ubuntu_22
