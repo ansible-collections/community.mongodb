@@ -10,8 +10,8 @@ lint:
       line-length: disable
 platforms:
   # centos_7 and debian_stretch disabled to reduce test time
-  #- name: centos_7
-  #  image: centos:7
+  #- name: almalinux_8
+  #  image: almalinux:8
   #  command: /sbin/init
   #  privileged: True
   #  volumes:
@@ -19,12 +19,12 @@ platforms:
   #  networks:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
-  - name: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    image: fedora:37
     command: /sbin/init
-    privileged: True  
+    privileged: True
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
     networks:
       - name: "mymongos"
     network_mode: "mymongos"
@@ -35,8 +35,8 @@ platforms:
     networks:
       - name: "mymongos"
     network_mode: "mymongos"
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_22
+    image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:
@@ -61,6 +61,15 @@ provisioner:
   lint:
     name: ansible-lint
     enabled: false
+  inventory:
+    host_vars:
+      fedora:  # suitable for fedora 37
+        redhat:
+          yum_baseurl: "https://repo.mongodb.org/yum/redhat/9/mongodb-org/{{ mongodb_version }}/x86_64/"
+          rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+          yum_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+          yum_gpgcheck: true
+          yum_description: "Official MongoDB {{ mongodb_version }} yum repo"
 verifier:
   name: testinfra
   lint:

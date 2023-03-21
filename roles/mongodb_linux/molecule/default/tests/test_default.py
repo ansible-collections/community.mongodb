@@ -10,7 +10,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 def test_ntp_package(host):
     ntp = host.package("ntp")
     chrony = host.package("chrony")
-    assert ntp.is_installed or chrony.is_installed
+    ntpsec = host.package("ntpsec")
+    assert ntp.is_installed or chrony.is_installed or ntpsec.is_installed
 
 
 def test_ntpd_service(host):

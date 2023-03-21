@@ -9,8 +9,8 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  - name: centos_7
-    image: centos:7
+  - name: almalinux_8
+    image: almalinux:8
     command: /sbin/init
     privileged: True
     volumes:
@@ -25,8 +25,8 @@ platforms:
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_22
+    image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:
@@ -39,12 +39,12 @@ platforms:
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
-  - name: amazonlinux
-    image: amazonlinux:2
+  - name: fedora
+    image: fedora:37
     command: /sbin/init
-    privileged: True  
+    privileged: True
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"

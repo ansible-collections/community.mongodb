@@ -10,13 +10,13 @@
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
       - ubuntu_18
-      - debian_buster
+      - ubuntu_22
 
     # add some users for some of the hosts
     hosts_with_extra_user:
       - centos_8
-      - amazonlinux
-      - debian_buster
+      - fedora
+      - ubuntu_22
     mongodb_users_empty: []
     mongodb_users_full:
       - db: somedatabase
@@ -42,19 +42,11 @@
       yum:
         name: epel-release
         state: present
-      when: inventory_hostname  == 'centos_7'
-
-    - name: Install python stuff
-      package:
-        name:
-          - "python{% if needs_3 %}3{% endif %}-setuptools"
-          - "python{% if needs_3 %}3{% endif %}-pip"
-      vars:
-        needs_3: "{{ ansible_facts.python.version.major == 3 }}"
+      when: inventory_hostname  == 'almalinux_8'
 
     - name: Install pymongo
       pip:
-        name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
+        name: pymongo
 
     - name: Enable mongo auth
       include_role:

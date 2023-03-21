@@ -8,15 +8,16 @@
   tasks:
 
   - name: Ensure epel is available
-    package:
+    ansible.builtin.package:
       name: epel-release
       state: present
     when:
       - ansible_os_family == "RedHat"
       - ansible_distribution != "Amazon"
+      - ansible_distribution != "Fedora"
 
   - name: Install redhat packages
-    package:
+    ansible.builtin.package:
       name: "{{ redhat_packages }}"
       state: present
     when: ansible_os_family == "RedHat"

@@ -66,8 +66,8 @@ class TestMongoDBCommonMethods(unittest.TestCase):
 
     def test_check_compatibility_strict_compatibility_True(self):
         tests = [
-            ('4.4.4', '3.12.1', True),
-            ('5.0.1', '3.12.1', True),
+            ('4.4.4', '3.12.1', False),  # srv, drv, empty msg expected
+            ('5.0.1', '3.12.1', False),
             ('4.4.4', '4.0.1', True),
             ('5.0.1', '4.0.1', True),
             ('2.4.1', '3.12.1', False),
@@ -83,12 +83,12 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 assert msg == ""
             else:
                 assert "This version of MongoDB is pretty old" in msg \
-                    or msg == "You must use pymongo 3.12+ or 4+."
+                    or 'You must use pymongo 4+' in msg
 
     def test_check_compatibility_strict_compatibility_False(self):
         tests = [
-            ('4.4.4', '3.12.1', True),
-            ('5.0.1', '3.12.1', True),
+            ('4.4.4', '3.12.1', False),  # srv, drv, empty msg expected
+            ('5.0.1', '3.12.1', False),
             ('4.4.4', '4.0.1', True),
             ('5.0.1', '4.0.1', True),
             ('2.4.1', '3.12.1', False),
@@ -103,7 +103,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
             if t[2]:
                 assert warn == ""
             else:
-                assert 'You should use pymongo 3.12+ or 4+ but' in warn \
+                assert 'You must use pymongo 4+' in warn \
                     or 'This version of MongoDB is pretty old' in warn
 
     def test_load_mongocnf(self):
@@ -236,6 +236,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_user"] = "user"
         fake_module.params["login_password"] = "password"
         fake_module.params["login_database"] = "test"
+        fake_module.params["strict_compatibility"] = False
 
         client = MongoClient(host=['localhost:27017'],
                              username=None,
@@ -289,6 +290,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
         fake_module.params["replica_set"] = None
+        fake_module.params["strict_compatibility"] = False
         mongodb_common.mongo_auth(fake_module, client)
         msg = fake_module.get_msg()
         assert "When supplying login arguments" in msg

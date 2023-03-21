@@ -39,17 +39,17 @@ except NameError:
 
 
 def check_compatibility(module, srv_version, driver_version):
-    if driver_version.startswith('3.12') or driver_version.startswith('4'):
+    if int(driver_version[0]) >= 4:
         if int(srv_version[0]) < 4:
             if module.params['strict_compatibility']:
-                module.fail_json("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
+                module.fail_json(msg="This version of MongoDB is pretty old and these modules are no longer tested against this version.")
             else:
                 module.warn("This version of MongoDB is pretty old and these modules are no longer tested against this version.")
     else:
         if module.params['strict_compatibility']:
-            module.fail_json("You must use pymongo 3.12+ or 4+.")
+            module.fail_json(msg="You must use pymongo 4+.")
         else:
-            module.warn("You should use pymongo 3.12+ or 4+ but {0} was found.".format(driver_version))
+            module.warn("You must use pymongo 4+.")
 
 
 def load_mongocnf():
@@ -223,6 +223,7 @@ def ssl_connection_options(connection_params, module):
 
 
 def check_srv_version(module, client):
+    srv_version = None
     try:
         srv_version = client.server_info()['version']
     except Exception as excep:
@@ -330,7 +331,7 @@ def mongo_auth(module, client, directConnection=False):
         try:
             if is_auth_enabled(module):
                 if login_user is not None and login_password is not None:
-                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4  THIS IS DEAD CODE. TO REMOVE AT SOME POINT 11.03.2023
                         client.admin.authenticate(login_user, login_password, source=login_database)
                     else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
                         client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)

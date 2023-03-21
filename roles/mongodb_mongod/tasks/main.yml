@@ -79,3 +79,16 @@
     - "mongodb"
     - "setup"
     - "service"
+# debug section
+- pause:
+    seconds: 5
+
+- shell: cat /var/log/mongodb/mongod.log
+  register: log_output
+  changed_when: false 
+  when: ansible_hostname == "fedora"
+
+- debug:
+    var: log_output
+  when: ansible_hostname == "fedora"
+# eof debug
