@@ -25,6 +25,28 @@
           db: "admin"
         - role: "read"
           db: "local"
+    register: pmmExporterRole
+
+  - assert:
+      that:
+        - pmmExporterRole.changed 
+
+  - name: Get roles - 564 - 1
+    mongodb_shell:
+      login_host: "{{ current_replicaset }}/localhost"
+      login_port: 3001
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: admin
+      db: "admin"
+      eval: "printjson(db.getRoles())"
+      mongo_cmd: "auto"
+      transform: "raw"
+    register: my_roles
+
+  - assert:
+      that:
+        - "'pmmExporterRole' in my_roles.transformed_output | string"
 
   - name: Create explainRole Role
     community.mongodb.mongodb_role:
@@ -54,3 +76,21 @@
             - dbStats
             - collStats
       state: present
+    register: explainRole
+
+  - name: Get roles - 564 - 2
+    mongodb_shell:
+      login_host: "{{ current_replicaset }}/localhost"
+      login_port: 3001
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: admin
+      db: "admin"
+      eval: "printjson(db.getRoles())"
+      mongo_cmd: "auto"
+      transform: "raw"
+    register: my_roles
+
+  - assert:
+      that:
+        - "'explainRole' in my_roles.transformed_output | string"
