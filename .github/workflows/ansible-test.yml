@@ -166,6 +166,9 @@ jobs:
           - python_version: "3.8"
             ansible_version: "stable-2.13"
             docker_image: "default"
+          - python_version: "3.9"
+            ansible_version: "stable-2.14"
+            docker_image: "default"
           # Fedora 33 should be possible after this is fixed
           # https://jira.mongodb.org/browse/MONGOSH-941
           #- python_version: "3.9"

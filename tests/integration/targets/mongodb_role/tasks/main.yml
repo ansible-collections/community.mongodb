@@ -801,3 +801,6 @@
     that:
       - "'myClusterwideAdmin' not in cluster.transformed_output | string"
       - "'roles:' in cluster.transformed_output | string"
+
+- name: Import tasks for issue 564  # https://github.com/ansible-collections/community.mongodb/issues/564
+  import_tasks: 564.yml
