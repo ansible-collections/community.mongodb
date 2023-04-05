@@ -25,7 +25,7 @@ jobs:
             python_version: "3.9"
           - ansible_version: "stable-2.13"
             python_version: "3.8"
-            - ansible_version: "stable-2.14"
+          - ansible_version: "stable-2.14"
             python_version: "3.9"
           - ansible_version: "devel"
             python_version: "3.9"
