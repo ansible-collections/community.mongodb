@@ -224,8 +224,8 @@ def role_find(client, role, db_name):
         mongo_role = None
         rolesDoc = {
             'rolesInfo': 1,
-            'showAuthenticationRestrictions': 1,
-            'showPrivileges': 1
+            'showAuthenticationRestrictions': True,
+            'showPrivileges': True
         }
         for mongo_role in client[db_name].command(rolesDoc)['roles']:
             if mongo_role['role'] == role:
