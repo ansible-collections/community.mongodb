@@ -257,3 +257,10 @@ releases:
     changes:
       bug_fixes:
         - 534 mongodb_selinux - Reinstall SELinux policy when changed.
+  1.5.2:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 558 mongodb_replicaset - Minor documentation update.
+    bugfixes:
+      - 565 mongodb_role - Replaces integers with booleans used in query doc to obtain role info. Only MongoDB <= 4.4 was affected.

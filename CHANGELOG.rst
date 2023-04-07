@@ -4,6 +4,25 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.5.2
+=======
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 558 mongodb_replicaset - Minor documentation update.
+
+Bug Fixes
+----------
+
+- 558 mongodb_replicaset - Minor documentation update.
+
+
 v1.5.1
 =======
 
