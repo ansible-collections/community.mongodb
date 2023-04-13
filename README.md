@@ -10,7 +10,6 @@
 |Category|Status|
 |---|---|
 |Github CI|![CI](https://github.com/ansible-collections/community.mongodb/workflows/CI/badge.svg)|
-|Github Docs|![documentation](https://github.com/ansible-collections/community.mongodb/workflows/documentation/badge.svg)|
 |Codecov|[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.mongodb)](https://codecov.io/gh/ansible-collections/community.mongodb)|
 |CI Roles|![CI_roles](https://github.com/ansible-collections/community.mongodb/workflows/CI_roles/badge.svg)|
 |AutomatingMongoDBWithAnsible|[![CI-basic](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-basic.yml/badge.svg)](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-basic.yml)|
@@ -62,6 +61,7 @@ These modules are for any MongoDB cluster (standalone, replicaset, or sharded):
 - `community.mongodb.mongodb_monitoring`: Manages the [free monitoring](https://docs.mongodb.com/manual/administration/free-monitoring/) feature.
 - `community.mongodb.mongodb_oplog`: [Resizes](https://docs.mongodb.com/manual/tutorial/change-oplog-size) the MongoDB oplog (MongoDB 3.6+ only).
 - `community.mongodb.mongodb_parameter`: Change an administrative parameter on a MongoDB server.
+- `community.mongodb.mongodb_role`: Manage [MongoDB Roles](https://www.mongodb.com/docs/upcoming/tutorial/manage-users-and-roles/).
 - `community.mongodb.mongodb_schema`: Manages MongoDB Document Schema Validators.
 - `community.mongodb.mongodb_shell`: Run commands via the MongoDB shell.
 - `community.mongodb.mongodb_shutdown`: Cleans up all database resources and then terminates the mongod/mongos process.
