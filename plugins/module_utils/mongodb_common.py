@@ -129,6 +129,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         login_host=dict(type='str', required=False, default='localhost'),
         login_port=dict(type='int', required=False, default=27017),
         strict_compatibility=dict(type='bool', default=True),
+        atlas_auth=dict(type='bool', default=False),
     )
     ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False, aliases=['tls']),
@@ -360,17 +361,15 @@ def mongo_auth(module, client, directConnection=False):
         if 'create_for_localhost_exception' not in module.params and fail_msg is None:
             try:
                 if login_user is not None and login_password is not None:
-                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4
-                        client.admin.authenticate(login_user, login_password, source=login_database)
-                    else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
-                        client = get_mongodb_client(module, login_user, login_password, login_database)
+                    # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
+                    client = get_mongodb_client(module, login_user, login_password, login_database)
                 else:
                     fail_msg = 'No credentials to authenticate'
             except Exception as excep:
                 fail_msg = 'unable to connect to database: %s' % to_native(excep) 
         elif fail_msg is None:  # this is the mongodb_user module
             if login_user is not None and login_password is not None:
-                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=False)
                 # Get server version:
                 srv_version = check_srv_version(module, client)
                 check_driver_compatibility(module, client, srv_version)

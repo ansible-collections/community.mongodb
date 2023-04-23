@@ -41,4 +41,9 @@ options:
       - Enforce strict requirements for pymongo and MongoDB software versions
     type: bool
     default: True
+  atlas_auth:
+    description:
+      - Authentication path intended for MongoDB Atlas Instances
+    type: bool
+    default: False
 '''
