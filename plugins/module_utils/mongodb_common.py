@@ -313,45 +313,73 @@ def mongo_auth(module, client, directConnection=False):
     login_password = module.params['login_password']
     login_database = module.params['login_database']
 
+    atlas_auth = module.params['atlas_auth']
+
     fail_msg = None  # Our test code had issues with multiple exit points with fail_json
 
     crypt_flag = 'ssl'
     if 'tls' in module.params:
         crypt_flag = 'tls'
 
-    if login_user is None and login_password is None:
-        mongocnf_creds = load_mongocnf()
-        if mongocnf_creds is not False:
-            login_user = mongocnf_creds['user']
-            login_password = mongocnf_creds['password']
-    elif not all([login_user, login_password]) and module.params[crypt_flag] is False:
-        fail_msg = "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
+    if not atlas_auth:
 
-    if 'create_for_localhost_exception' not in module.params and fail_msg is None:
-        try:
-            if is_auth_enabled(module):
+        if login_user is None and login_password is None:
+            mongocnf_creds = load_mongocnf()
+            if mongocnf_creds is not False:
+                login_user = mongocnf_creds['user']
+                login_password = mongocnf_creds['password']
+        elif not all([login_user, login_password]) and module.params[crypt_flag] is False:
+            fail_msg = "When supplying login arguments, both 'login_user' and 'login_password' must be provided"
+
+        if 'create_for_localhost_exception' not in module.params and fail_msg is None:
+            try:
+                if is_auth_enabled(module):
+                    if login_user is not None and login_password is not None:
+                        client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+                    else:
+                        fail_msg = 'No credentials to authenticate'
+            except Exception as excep:
+                fail_msg = 'unable to connect to database: %s' % to_native(excep)
+            # Get server version:
+            if fail_msg is None:
+                srv_version = check_srv_version(module, client)
+                check_driver_compatibility(module, client, srv_version)
+        elif fail_msg is None:  # this is the mongodb_user module
+            if login_user is not None and login_password is not None:
+                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+                # Get server version:
+                srv_version = check_srv_version(module, client)
+                check_driver_compatibility(module, client, srv_version)
+            elif module.params['strict_compatibility'] is False:
+                if module.params['database'] not in ["admin", "$external"]:
+                    fail_msg = 'The localhost login exception only allows the first admin account to be created'
+                # else: this has to be the first admin user added
+        if fail_msg:
+            module.fail_json(msg=fail_msg)
+    else:  # Atlas auth path
+        if 'create_for_localhost_exception' not in module.params and fail_msg is None:
+            try:
                 if login_user is not None and login_password is not None:
-                    client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4
+                        client.admin.authenticate(login_user, login_password, source=login_database)
+                    else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
+                        client = get_mongodb_client(module, login_user, login_password, login_database)
                 else:
                     fail_msg = 'No credentials to authenticate'
-        except Exception as excep:
-            fail_msg = 'unable to connect to database: %s' % to_native(excep)
-        # Get server version:
-        if fail_msg is None:
-            srv_version = check_srv_version(module, client)
-            check_driver_compatibility(module, client, srv_version)
-    elif fail_msg is None:  # this is the mongodb_user module
-        if login_user is not None and login_password is not None:
-            client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
-            # Get server version:
-            srv_version = check_srv_version(module, client)
-            check_driver_compatibility(module, client, srv_version)
-        elif module.params['strict_compatibility'] is False:
-            if module.params['database'] not in ["admin", "$external"]:
-                fail_msg = 'The localhost login exception only allows the first admin account to be created'
-            # else: this has to be the first admin user added
-    if fail_msg:
-        module.fail_json(msg=fail_msg)
+            except Exception as excep:
+                fail_msg = 'unable to connect to database: %s' % to_native(excep) 
+        elif fail_msg is None:  # this is the mongodb_user module
+            if login_user is not None and login_password is not None:
+                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+                # Get server version:
+                srv_version = check_srv_version(module, client)
+                check_driver_compatibility(module, client, srv_version)
+            elif module.params['strict_compatibility'] is False:
+                if module.params['database'] not in ["admin", "$external"]:
+                    fail_msg = 'The localhost login exception only allows the first admin account to be created'
+                # else: this has to be the first admin user added            
+        if fail_msg:
+            module.fail_json(msg=fail_msg)
     return client
 
 
