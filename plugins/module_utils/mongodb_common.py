@@ -366,7 +366,7 @@ def mongo_auth(module, client, directConnection=False):
                 else:
                     fail_msg = 'No credentials to authenticate'
             except Exception as excep:
-                fail_msg = 'unable to connect to database: %s' % to_native(excep) 
+                fail_msg = 'unable to connect to database: %s' % to_native(excep)
         elif fail_msg is None:  # this is the mongodb_user module
             if login_user is not None and login_password is not None:
                 client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=False)
@@ -376,7 +376,7 @@ def mongo_auth(module, client, directConnection=False):
             elif module.params['strict_compatibility'] is False:
                 if module.params['database'] not in ["admin", "$external"]:
                     fail_msg = 'The localhost login exception only allows the first admin account to be created'
-                # else: this has to be the first admin user added            
+                # else: this has to be the first admin user added       
         if fail_msg:
             module.fail_json(msg=fail_msg)
     return client
