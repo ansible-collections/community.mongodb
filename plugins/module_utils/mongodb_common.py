@@ -331,10 +331,7 @@ def mongo_auth(module, client, directConnection=False):
         try:
             if is_auth_enabled(module):
                 if login_user is not None and login_password is not None:
-                    if int(PyMongoVersion[0]) < 4:  # pymongo < 4  THIS IS DEAD CODE. TO REMOVE AT SOME POINT 11.03.2023
-                        client.admin.authenticate(login_user, login_password, source=login_database)
-                    else:  # pymongo >= 4. There's no authenticate method in pymongo 4.0. Recreate the connection object
-                        client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+                    client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
                 else:
                     fail_msg = 'No credentials to authenticate'
         except Exception as excep:
@@ -345,15 +342,11 @@ def mongo_auth(module, client, directConnection=False):
             check_driver_compatibility(module, client, srv_version)
     elif fail_msg is None:  # this is the mongodb_user module
         if login_user is not None and login_password is not None:
-            if int(PyMongoVersion[0]) < 4:  # pymongo < 4
-                client.admin.authenticate(login_user, login_password, source=login_database)
-            else:  # pymongo >= 4
-                client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
+            client = get_mongodb_client(module, login_user, login_password, login_database, directConnection=directConnection)
             # Get server version:
             srv_version = check_srv_version(module, client)
             check_driver_compatibility(module, client, srv_version)
-        elif (PyMongoVersion.startswith('3.12') or int(PyMongoVersion[0]) > 4) \
-                or module.params['strict_compatibility'] is False:
+        elif module.params['strict_compatibility'] is False:
             if module.params['database'] not in ["admin", "$external"]:
                 fail_msg = 'The localhost login exception only allows the first admin account to be created'
             # else: this has to be the first admin user added
