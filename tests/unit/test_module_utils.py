@@ -28,6 +28,7 @@ class FakeAnsibleModule:
         "ssl_keyfile": "/tmp/tls.key",
         "ssl_pem_passphrase": "secret",
         "auth_mechanism": None,
+        "atlas_auth": False,
         "connection_options": [{"one": 1},
                                {"two": 2},
                                {"three": 3},

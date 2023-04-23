@@ -376,7 +376,7 @@ def mongo_auth(module, client, directConnection=False):
             elif module.params['strict_compatibility'] is False:
                 if module.params['database'] not in ["admin", "$external"]:
                     fail_msg = 'The localhost login exception only allows the first admin account to be created'
-                # else: this has to be the first admin user added       
+                # else: this has to be the first admin user added
         if fail_msg:
             module.fail_json(msg=fail_msg)
     return client
