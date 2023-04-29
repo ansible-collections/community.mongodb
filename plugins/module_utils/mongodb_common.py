@@ -5,7 +5,6 @@ from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
 import traceback
 import os
-import ssl as ssl_lib
 
 
 try:
@@ -133,12 +132,9 @@ def mongodb_common_argument_spec(ssl_options=True):
     )
     ssl_options_dict = dict(
         ssl=dict(type='bool', required=False, default=False, aliases=['tls']),
-        ssl_cert_reqs=dict(type='str',
+        ssl_cert_reqs=dict(type='bool',
                            required=False,
-                           default='CERT_REQUIRED',
-                           choices=['CERT_NONE',
-                                    'CERT_OPTIONAL',
-                                    'CERT_REQUIRED'],
+                           default=False,
                            aliases=['tlsAllowInvalidCertificates']),
         ssl_ca_certs=dict(type='str', default=None, aliases=['tlsCAFile']),
         ssl_crlfile=dict(type='str', default=None),
@@ -168,10 +164,8 @@ def rename_ssl_option_for_pymongo4(connection_options):
     when the driver use is >= PyMongo 4
     """
     if int(PyMongoVersion[0]) >= 4:
-        if connection_options.get('ssl_cert_reqs', None) == 'CERT_NONE':
-            connection_options['tlsAllowInvalidCertificates'] = False
-        elif connection_options.get('ssl_cert_reqs', None) == 'CERT_REQUIRED':
-            connection_options['tlsAllowInvalidCertificates'] = False
+        if connection_options.get('ssl_cert_reqs', None) is not None:
+            connection_options['tlsAllowInvalidCertificates'] = connection_options['ssl_cert_reqs']
         connection_options.pop('ssl_cert_reqs', None)
         if connection_options.get('ssl_ca_certs', None) is not None:
             connection_options['tlsCAFile'] = connection_options['ssl_ca_certs']
@@ -202,8 +196,7 @@ def add_option_if_not_none(param_name, module, connection_params):
 
 def ssl_connection_options(connection_params, module):
     connection_params['ssl'] = True
-    if module.params['ssl_cert_reqs'] is not None:
-        connection_params['ssl_cert_reqs'] = getattr(ssl_lib, module.params['ssl_cert_reqs'])
+    connection_params = add_option_if_not_none('ssl_cert_reqs', module, connection_params)
     connection_params = add_option_if_not_none('ssl_ca_certs', module, connection_params)
     connection_params = add_option_if_not_none('ssl_crlfile', module, connection_params)
     connection_params = add_option_if_not_none('ssl_certfile', module, connection_params)

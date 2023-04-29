@@ -57,7 +57,7 @@
     - monitoring.changed == False
     - monitoring.msg == "Free monitoring is already started"
     - monitoring.url is defined
-    - "'https://cloud.mongodb.com/freemonitoring/cluster/' in monitoring.url"
+    - "'https://www.mongodb.com/docs/manual/administration/free-monitoring/' in monitoring.url"
 
 - name: Turn off free monitoring (check mode)
   community.mongodb.mongodb_monitoring:
@@ -193,7 +193,7 @@
     - monitoring.changed == False
     - monitoring.msg == "Free monitoring is already started"
     - monitoring.url is defined
-    - "'https://cloud.mongodb.com/freemonitoring/cluster/' in monitoring.url"
+    - "'https://www.mongodb.com/docs/manual/administration/free-monitoring/' in monitoring.url"
 
 - name: Turn off free monitoring (check mode)
   community.mongodb.mongodb_monitoring:
