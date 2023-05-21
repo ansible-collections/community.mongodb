@@ -12,10 +12,6 @@
 |Github CI|![CI](https://github.com/ansible-collections/community.mongodb/workflows/CI/badge.svg)|
 |Codecov|[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/community.mongodb)](https://codecov.io/gh/ansible-collections/community.mongodb)|
 |CI Roles|![CI_roles](https://github.com/ansible-collections/community.mongodb/workflows/CI_roles/badge.svg)|
-|AutomatingMongoDBWithAnsible|[![CI-basic](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-basic.yml/badge.svg)](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-basic.yml)|
-|AutomatingMongoDBWithAnsible|[![CI-etc](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-etc.yml/badge.svg)](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-etc.yml)|
-|AutomatingMongoDBWithAnsible|[![CI-resync](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-resync.yml/badge.svg)](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-resync.yml)|
-|AutomatingMongoDBWithAnsible|[![CI-upgrade-downgrade](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-upgrade-downgrade.yml/badge.svg)](https://github.com/rhysmeister/AutomatingMongoDBWithAnsible/actions/workflows/CI-upgrade-downgrade.yml)|
 |Latest Build|![Build & Publish Collection](https://github.com/ansible-collections/community.mongodb/workflows/Build%20&%20Publish%20Collection/badge.svg)|
 
 This collection called `mongodb` aims at providing all Ansible modules allowing to interact with MongoDB.
