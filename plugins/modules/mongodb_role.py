@@ -268,7 +268,7 @@ def role_add(client, db_name, role, privileges, roles, authenticationRestriction
     role_dict["privileges"] = privileges
     role_dict["roles"] = roles
 
-    if role_dict["authenticationRestrictions"]:
+    if role_dict["authenticationRestrictions"] is not None:
       role_dict["authenticationRestrictions"] = authenticationRestrictions
 
     db.command(role_add_db_command, role, **role_dict)
