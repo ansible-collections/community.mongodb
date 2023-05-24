@@ -58,8 +58,6 @@ options:
           this role are allowed to connect to and/or which they can connect from.
           Provide a list of dictionaries with the following
           fields: clientSource (list), serverAddress (list).
-          Provide an empty list if you don't want to use the field.
-    default: []
   roles:
     type: list
     elements: raw
@@ -269,7 +267,10 @@ def role_add(client, db_name, role, privileges, roles, authenticationRestriction
 
     role_dict["privileges"] = privileges
     role_dict["roles"] = roles
-    role_dict["authenticationRestrictions"] = authenticationRestrictions
+
+    if role_dict["authenticationRestrictions"]:
+      role_dict["authenticationRestrictions"] = authenticationRestrictions
+
     db.command(role_add_db_command, role, **role_dict)
 
 
@@ -302,7 +303,10 @@ def check_if_role_changed(client, role, db_name, privileges, authenticationRestr
                 sorted(roles, key=lambda x: (x["db"], x["role"])) or
                 'roles' not in role_dict and roles != []):
             changed = True
+        elif authenticationRestrictions is None and 'authenticationRestrictions' in role_dict:
+            changed = True
         elif ('authenticationRestrictions' in role_dict and
+              authenticationRestrictions is not None and
                 sorted(reformat_authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) !=
                 sorted(authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) or
                 'authenticationRestrictions' not in role_dict and authenticationRestrictions != []):
@@ -323,7 +327,7 @@ def main():
         database=dict(required=True, aliases=['db']),
         name=dict(required=True, aliases=['user']),
         privileges=dict(default=[], type='list', elements='raw'),
-        authenticationRestrictions=dict(default=[], type='list', elements='raw'),
+        authenticationRestrictions=dict(type='list', elements='raw'),
         roles=dict(default=[], type='list', elements='raw'),
         state=dict(default='present', choices=['absent', 'present']),
         debug=dict(type='bool', default=False),
@@ -352,7 +356,7 @@ def main():
     db_name = module.params['database']
     privileges = module.params['privileges']
     roles = module.params['roles']
-    authenticationRestrictions = module.params['authenticationRestrictions']
+    authenticationRestrictions = module.params.get('authenticationRestrictions', None)
     debug = module.params['debug']
     # TODO _ Functions use a different param order... make consistent
     try:
