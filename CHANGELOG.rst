@@ -4,6 +4,20 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.6.0:
+========
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 569 - All pymongo modules - Better support for MongoDB Atlas.
+- 568 - Minor documentation updates.    
+
 v1.5.2
 =======
 
