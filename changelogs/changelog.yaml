@@ -264,3 +264,9 @@ releases:
       - 558 mongodb_replicaset - Minor documentation update.
     bugfixes:
       - 565 mongodb_role - Replaces integers with booleans used in query doc to obtain role info. Only MongoDB <= 4.4 was affected.
+  1.6.0:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 569 - All pymongo modules - Better support for MongoDB Atlas.
+      - 568 - Minor documentation updates.    
