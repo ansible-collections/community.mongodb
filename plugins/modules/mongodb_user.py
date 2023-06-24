@@ -189,7 +189,6 @@ user:
 
 import os
 import traceback
-from operator import itemgetter
 
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
@@ -307,7 +306,7 @@ def check_if_roles_changed(uinfo, roles, db_name):
     roles_as_list_of_dict = make_sure_roles_are_a_list_of_dict(roles, db_name)
     uinfo_roles = uinfo.get('roles', [])
 
-    if sorted(roles_as_list_of_dict, key=itemgetter('db')) == sorted(uinfo_roles, key=itemgetter('db')):
+    if sorted(roles_as_list_of_dict, key=lambda roles: sorted(roles.items())) == sorted(uinfo_roles, key=lambda roles: sorted(roles.items())):
         return False
     return True
 
