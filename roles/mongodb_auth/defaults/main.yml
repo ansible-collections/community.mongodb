@@ -26,3 +26,5 @@ mongodb_users: []
 # Setting this to yes will result in 'changed' on every run, even if the password is the same.
 # See the comment in tasks/main.yml for more details.
 mongodb_force_update_password: no
+
+mongodb_use_tls: false
