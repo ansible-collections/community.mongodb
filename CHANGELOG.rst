@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.6.1:
+========
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 578 - mongodb_role - More robust comparison of user roles.
+
 v1.6.0:
 ========
 
