@@ -131,7 +131,7 @@ cd git/ansible_collections/community
 
 # Usage Examples
 
-The following links provide various exampels for how the community.mongodb roles and modules can be used in real projects.
+The following links provide various examples for how the community.mongodb roles and modules can be used in real projects.
 
 * https://github.com/rhysmeister/AutomatingMongoDBWithAnsible (no longer maintained)
 * https://github.com/superset1/Ansible_role_mongodb
