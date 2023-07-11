@@ -25,10 +25,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.10
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -56,10 +56,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.10
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
         uses: nick-invision/retry@v2
@@ -168,6 +168,9 @@ jobs:
             docker_image: "default"
           - python_version: "3.9"
             ansible_version: "stable-2.14"
+            docker_image: "default"
+          - python_version: "3.10"
+            ansible_version: "devel"
             docker_image: "default"
           # Fedora 33 should be possible after this is fixed
           # https://jira.mongodb.org/browse/MONGOSH-941
