@@ -97,7 +97,7 @@ jobs:
         run: mlaunch --single --port 27999
 
       - name: Run unit tests
-        run: ansible-test units -v --color --python 3.9 --coverage
+        run: ansible-test units -v --color --python 3.10 --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
