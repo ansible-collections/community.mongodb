@@ -269,4 +269,9 @@ releases:
       This release is a maintenance release.
     minor_changes:
       - 569 - All pymongo modules - Better support for MongoDB Atlas.
-      - 568 - Minor documentation updates.    
+      - 568 - Minor documentation updates.
+  1.6.1:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 578 - mongodb_role - More robust comparison of user roles.
