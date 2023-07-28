@@ -8,3 +8,7 @@ swappiness: "1"
 nproc_and_nofile_limit: 64000
 # TODO: mongo suggests infinity here
 memlock_limit: 1024
+
+mongodb_ntp_package:
+mongodb_ntp_service:
+mongodb_gnu_c_lib:
