@@ -17,8 +17,9 @@ Role Variables
 --------------
 
 swappiness: OS swappiness value. Default "1".
-ntp_package: Name of ntp package. Default ntp.
-ntp_service: Name of ntp service. Default ntpd.
+mongodb_ntp_package: Name of ntp package. Default depends on OS-specific vars.
+mongodb_ntp_service: Name of ntp service. Default depends on OS-specific vars.
+mongodb_gnu_c_lib: Name of the GNU C lib. Default depends on OS-specific vars.
 
 * On RedHat 8 and higher systems ntp_package and ntp_service are set to chrony and chronyd respectively.
 

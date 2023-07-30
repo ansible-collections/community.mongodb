@@ -17,6 +17,12 @@
   tags:
     - "vars"
 
+- name: "Override variables from OS-specific configuration"
+  set_fact:
+    ntp_package: "{{ mongodb_ntp_package | default(ntp_package, true) }}"
+    ntp_service: "{{ mongodb_ntp_service | default(ntp_service, true) }}"
+    gnu_c_lib: "{{ mongodb_gnu_c_lib | default(gnu_c_lib, true) }}"
+
 - name: See if we are in docker
   when:
     - "ansible_facts.virtualization_role == 'guest'"
