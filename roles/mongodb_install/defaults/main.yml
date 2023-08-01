@@ -1,0 +1,3 @@
+mongodb_install_pymongo: no # set to no for role old version compatibility
+mongodb_pip_package_name: python3-pip
+mongodb_pip_pymongo_name: pymongo

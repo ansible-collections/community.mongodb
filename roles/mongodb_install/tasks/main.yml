@@ -59,3 +59,11 @@
     - mongodb_hold_packages is defined
   tags:
     - "mongodb"
+
+- name: Install pymongo
+  when: mongodb_install_pymongo
+  ansible.builtin.import_tasks: install_pymongo.yml
+  tags:
+    - "mongodb"
+    - "setup"
+    - "pkg"

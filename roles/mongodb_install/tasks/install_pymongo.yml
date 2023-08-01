@@ -1,0 +1,16 @@
+---
+- name: Install pip
+  ansible.builtin.package: 
+    name: "{{ mongodb_pip_package_name }}"
+  tags:
+    - "mongodb"
+    - "setup"
+    - "pkg"
+
+- name: Install pymongo
+  ansible.builtin.pip:
+    name: "{{ mongodb_pip_pymongo_name }}"
+  tags:
+    - "mongodb"
+    - "setup"
+    - "pkg"
