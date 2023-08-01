@@ -29,6 +29,9 @@ Role Variables
 * `mongodb_use_tls`: Wether to use tls. Default false.
 * `mongodb_certificate_key_file`: Path to the PEM-file containing the certficate and private key.
 * `mongodb_certificate_ca_file`:  Path to the CA-file.
+* `mongodb_logrotate_enabled`: Add logrotate configuration. Default: `no`
+* `mongodb_logrotate_template`: Jinja template of the logrotate configuration. Default `mongodb.logrotate.j2` (role builtin logrotate configuration)
+* `mongodb_pid_file`: File that will contain the mongod PID. Default: `/var/run/mongodb/mongod.pid`
 
 IMPORTANT NOTE: It is expected that `mongodb_admin_user` & `mongodb_admin_pwd` values be overridden in your own file protected by Ansible Vault. These values are primary included here for Molecule/Travis CI integration. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
 
