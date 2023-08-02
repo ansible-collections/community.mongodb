@@ -37,16 +37,6 @@
     - "mongodb"
     - "setup"
 
-- name: "Ensure PID folder {{ mongodb_pid_file | dirname }} exists"
-  ansible.builtin.file:
-    path: "{{ mongodb_pid_file | dirname }}"
-    state: directory
-    owner: "{{ mongodb_user }}"
-    group: "{{ mongodb_group }}"
-  tags:
-    - "mongodb"
-    - "setup"
-
 - name: Copy config file
   template:
     src: "{{ mongod_config_template }}"

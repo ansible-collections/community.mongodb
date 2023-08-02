@@ -9,6 +9,6 @@
   create 640 {{ mongodb_user }} {{ mongodb_group }}
   sharedscripts
   postrotate
-    /bin/kill -SIGUSR1 `cat {{ mongodb_pid_file }} 2>/dev/null` >/dev/null 2>&1
+    /bin/kill -SIGUSR1 `pidof {{ mongod_service }} 2>/dev/null` >/dev/null 2>&1
   endscript
 }
