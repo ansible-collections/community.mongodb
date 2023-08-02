@@ -132,8 +132,14 @@
     - "setup"
     - "service"
 
+- name: Check if transparent_hugepage is enabled in the kernel
+  stat:
+    path: /sys/kernel/mm/transparent_hugepage
+  register: sys_thp
+
 - name: Check if disable-transparent-huge-pages service is already run
   shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o '[never]'
+  when: sys_thp.stat.exists
   register: _huge_page_status
   ignore_errors: yes
   changed_when: _huge_page_status.stdout == ""
@@ -147,7 +153,7 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: (not in_docker|bool) and (_huge_page_status.stdout == "")
+  when: (not in_docker|bool) and (sys_thp.stat.exists) and (_huge_page_status.stdout == "")
   tags:
     - "linux"
     - "service"
