@@ -23,8 +23,8 @@ storage:
 processManagement:
 {% if ansible_facts.os_family == "RedHat" and ansible_facts.distribution != "Amazon" and ansible_facts.distribution != "AlmaLinux" and ansible_facts.distribution != "Fedora" %}  # Breaks Ubuntu / Debian
   fork: true
+  pidFilePath: /var/run/mongodb/mongod.pid
 {% endif %}
-  pidFilePath: {{ mongodb_pid_file }}
   timeZoneInfo: /usr/share/zoneinfo
 
 # network interfaces
