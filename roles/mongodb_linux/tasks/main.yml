@@ -196,6 +196,7 @@
     # TODO: These may need to be configurable for different usage patterns.
     - { "name": "vm.dirty_ratio", "value": "15" }
     - { "name": "vm.dirty_background_ratio", "value": "5" }
+    - { "name": "vm.max_map_count", "value": "128000" }
     - { "name": "net.core.somaxconn ", "value": "4096" }
     - { "name": "net.ipv4.tcp_fin_timeout", "value": "30" }
     - { "name": "net.ipv4.tcp_keepalive_intvl", "value": "30" }
