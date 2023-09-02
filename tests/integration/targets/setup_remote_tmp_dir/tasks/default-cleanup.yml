@@ -3,3 +3,4 @@
     path: '{{ remote_tmp_dir }}'
     state: absent
   no_log: true
+  ignore_errors: true
