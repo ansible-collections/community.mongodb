@@ -30,7 +30,6 @@
       package:
         name:
           - mongodb-mongosh-shared-openssl3 
-          - mongodb-mongosh
 
     - name: Init config server replicaset
       community.mongodb.mongodb_replicaset:

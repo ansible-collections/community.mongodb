@@ -55,5 +55,4 @@
     - name: Install MongoDB Shell
       package:
         name:
-          - mongodb-mongosh-shared-openssl3 
-          - mongodb-mongosh
+          - mongodb-mongosh-shared-openssl3
