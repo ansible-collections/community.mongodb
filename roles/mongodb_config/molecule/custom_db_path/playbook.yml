@@ -17,7 +17,9 @@
 
     - name: Install MongoDB Shell
       package:
-        name: mongodb-mongosh
+        name:
+          - mongodb-mongosh-shared-openssl3 
+          - mongodb-mongosh
 
     - name: Init config server replicaset
       community.mongodb.mongodb_replicaset:
