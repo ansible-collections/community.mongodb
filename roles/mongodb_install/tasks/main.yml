@@ -37,7 +37,7 @@
     name:
       - "mongodb-org={{ specific_mongodb_version }}"
       - "mongodb-org-server={{ specific_mongodb_version }}"
-      - "mongodb-mongosh"  # mongosh package uses a new versioning number schema
+      - "{{ mongosh_package }}"  # variablized due to ssh issue
       - "mongodb-org-mongos={{ specific_mongodb_version }}"
       - "mongodb-org-tools={{ specific_mongodb_version }}"
     state: present
