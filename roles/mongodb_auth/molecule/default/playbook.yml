@@ -52,7 +52,12 @@
       include_role:
         name: mongodb_auth
 
+    - name: Set mongosh package version
+      set_fact:
+        mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
+      when: mongosh_package is not defined
+
     - name: Install MongoDB Shell
       package:
         name:
-          - mongodb-mongosh-shared-openssl3
+          - "{{ mongosh_package }}"
