@@ -1,4 +1,13 @@
 ---
+- name: Figure out openssl version
+  command: openssl version
+  register: openssl
+
+- name: Set mongosh package version
+  set_fact:
+    mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
+  when: mongosh_package is not defined
+
 # tasks file for mongodb_install
 - name: Install MongoDB Packages
   package:
