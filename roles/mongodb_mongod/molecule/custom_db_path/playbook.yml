@@ -17,6 +17,7 @@
 
     - name: Determine openssl version
       command: openssl version
+      changed_when: false
       register: openssl
 
     - name: Set mongosh package version
