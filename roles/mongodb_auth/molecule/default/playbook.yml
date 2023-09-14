@@ -9,7 +9,7 @@
 
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
-      - ubuntu_18
+      - ubuntu_22_04
       - ubuntu_22
 
     # add some users for some of the hosts

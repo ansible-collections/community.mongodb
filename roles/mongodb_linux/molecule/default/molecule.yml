@@ -18,8 +18,8 @@ platforms:
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
-  - name: ubuntu_18
-    image: ubuntu:18.04
+  - name: ubuntu_22_04
+    image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:

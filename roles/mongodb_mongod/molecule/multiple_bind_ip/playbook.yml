@@ -29,7 +29,7 @@
         members:
           - almalinux_8:27017
           - fedora:27017
-          - ubuntu_18:27017
+          - ubuntu_22_04:27017
           - debian_bullseye:27017
           - ubuntu_22:27017
       when: ansible_hostname == "fedora"
