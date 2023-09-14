@@ -1,0 +1,10 @@
+---
+- name: Prepare
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Install openssl
+      package:
+        name: "openssl"
