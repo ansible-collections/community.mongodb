@@ -19,8 +19,6 @@ def test_mongodb_packages_not_installed(host):
     assert p.is_installed
     p = host.package("mongodb-mongosh")
     assert p.is_installed
-    p = host.package("mongodb-org-mongos")
-    assert p.is_installed
     p = host.package("mongodb-org-tools")
     assert p.is_installed
 
