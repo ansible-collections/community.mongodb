@@ -21,3 +21,7 @@
       name: "{{ redhat_packages }}"
       state: present
     when: ansible_os_family == "RedHat"
+
+  - name: Install openssl
+    package:
+      name: openssl

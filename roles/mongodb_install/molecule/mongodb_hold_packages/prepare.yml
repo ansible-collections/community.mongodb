@@ -10,3 +10,7 @@
         name: yum-plugin-versionlock
         state: present
       when: ansible_facts.os_family == "RedHat"
+
+    - name: Install openssl
+      package:
+        name: "openssl"

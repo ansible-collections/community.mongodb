@@ -9,7 +9,7 @@
 
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
-      - ubuntu_18
+      - ubuntu_22_04
       - ubuntu_22
 
     # add some users for some of the hosts
@@ -52,6 +52,17 @@
       include_role:
         name: mongodb_auth
 
+    - name: Determine openssl version
+      command: openssl version
+      changed_when: false
+      register: openssl
+
+    - name: Set mongosh package version
+      set_fact:
+        mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
+      when: mongosh_package is not defined
+
     - name: Install MongoDB Shell
       package:
-        name: mongodb-mongosh
+        name:
+          - "{{ mongosh_package }}"

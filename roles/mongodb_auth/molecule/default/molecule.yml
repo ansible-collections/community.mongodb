@@ -15,8 +15,8 @@ platforms:
     privileged: True
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  - name: ubuntu_18
-    image: ubuntu:18.04
+  - name: ubuntu_22_04
+    image: ubuntu:22.04
     command: /sbin/init
     privileged: True
   - name: ubuntu_22

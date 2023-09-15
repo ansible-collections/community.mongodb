@@ -1,8 +1,23 @@
 ---
+- name: Determine openssl version
+  command: openssl version
+  changed_when: false
+  register: openssl
+
+- name: Set mongosh package version
+  set_fact:
+    mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
+  when: mongosh_package is not defined
+
 # tasks file for mongodb_install
 - name: Install MongoDB Packages
   package:
-    name: mongodb-org
+    name:
+      - "mongodb-org"
+      - "mongodb-org-server"
+      - "{{ mongosh_package }}"  # variablized due to tls issue
+      - "mongodb-org-mongos"
+      - "mongodb-org-tools"
     state: present
   when: specific_mongodb_version is not defined
   register: _pkg
@@ -15,7 +30,12 @@
 
 - name: Install MongoDB Packages (Specific version)
   package:
-    name: "mongodb-org*{{ specific_mongodb_version }}"
+    name:
+      - "mongodb-org={{ specific_mongodb_version }}"
+      - "mongodb-org-server={{ specific_mongodb_version }}"
+      - "{{ mongosh_package }}"  # variablized due to tls issue
+      - "mongodb-org-mongos={{ specific_mongodb_version }}"
+      - "mongodb-org-tools={{ specific_mongodb_version }}"
     state: present
   when:
     - specific_mongodb_version is defined
@@ -37,7 +57,7 @@
     name:
       - "mongodb-org={{ specific_mongodb_version }}"
       - "mongodb-org-server={{ specific_mongodb_version }}"
-      - "mongodb-mongosh"  # mongosh package uses a new versioning number schema
+      - "{{ mongosh_package }}"  # variablized due to tls issue
       - "mongodb-org-mongos={{ specific_mongodb_version }}"
       - "mongodb-org-tools={{ specific_mongodb_version }}"
     state: present
