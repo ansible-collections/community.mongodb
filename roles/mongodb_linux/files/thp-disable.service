@@ -1,5 +1,6 @@
 [Unit]
 Description=Disable Transparent Huge Pages
+ConditionPathIsDirectory=/sys/kernel/mm/transparent_hugepage
 
 [Service]
 Type=oneshot
