@@ -275,3 +275,14 @@ releases:
       This release is a maintenance release.
     minor_changes:
       - 578 - mongodb_role - More robust comparison of user roles.
+  1.6.2:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 583 - mongodb_linux - Add vars for RedHat 9 to role.
+      - 586 - mongodb_auth - Add ssl vars to role.
+      - 589 - mongodb_linux - Adds vars to better handle ntp package installation and handling.
+      - 588 - mongodb_linux - Default ntp system to systemd-timesyncd for Debian12.
+      - 593 - mongodb_linux - Add vm.max_map_count = 128000 sysctl config.
+      - 597 - mongodb_monitoring - Module has been deleted as Free Monitoring service has been stopped.
+      - 595 - mongodb_linux - Improvements to transparent_hugepage handling.

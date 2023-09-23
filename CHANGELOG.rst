@@ -4,6 +4,25 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.6.2:
+========
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 583 - mongodb_linux - Add vars for RedHat 9 to role.
+- 586 - mongodb_auth - Add ssl vars to role.
+- 589 - mongodb_linux - Adds vars to better handle ntp package installation and handling.
+- 588 - mongodb_linux - Default ntp system to systemd-timesyncd for Debian12.
+- 593 - mongodb_linux - Add vm.max_map_count = 128000 sysctl config.
+- 597 - mongodb_monitoring - Module has been deleted as Free Monitoring service has been stopped.
+- 595 - mongodb_linux - Improvements to transparent_hugepage handling.
+
 v1.6.1:
 ========
 
