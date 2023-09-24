@@ -54,7 +54,6 @@ These modules are for any MongoDB cluster (standalone, replicaset, or sharded):
 
 - `community.mongodb.mongodb_index`: Creates or drops indexes on MongoDB collections.
 - `community.mongodb.mongodb_info`: Gather information about MongoDB instance.
-- `community.mongodb.mongodb_monitoring`: Manages the [free monitoring](https://docs.mongodb.com/manual/administration/free-monitoring/) feature.
 - `community.mongodb.mongodb_oplog`: [Resizes](https://docs.mongodb.com/manual/tutorial/change-oplog-size) the MongoDB oplog (MongoDB 3.6+ only).
 - `community.mongodb.mongodb_parameter`: Change an administrative parameter on a MongoDB server.
 - `community.mongodb.mongodb_role`: Manage [MongoDB Roles](https://www.mongodb.com/docs/upcoming/tutorial/manage-users-and-roles/).
