@@ -23,7 +23,7 @@ jobs:
             python_version: "3.10"
           - ansible_version: "stable-2.15"
             python_version: "3.11"
-            - ansible_version: "stable-2.16"
+          - ansible_version: "stable-2.16"
             python_version: "3.11"
           - ansible_version: "devel"
             python_version: "3.11"
