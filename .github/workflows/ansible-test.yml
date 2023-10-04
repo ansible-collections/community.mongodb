@@ -163,7 +163,7 @@ jobs:
           - python_version: "3.10"
             ansible_version: "stable-2.15"
             docker_image: "ubuntu2204"
-            - python_version: "3.10"
+          - python_version: "3.10"
             ansible_version: "stable-2.16"
             docker_image: "ubuntu2204"
           - python_version: "3.10"
