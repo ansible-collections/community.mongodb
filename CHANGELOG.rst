@@ -4,6 +4,20 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.6.3:
+========
+
+Release Summary
+---------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 600 - Remove delete module from README.md.
+- 601 - mongodb_install - Fix issue with specific_mongodb_version on RedHat OS family.  
+
 v1.6.2:
 ========
 
