@@ -286,3 +286,9 @@ releases:
       - 593 - mongodb_linux - Add vm.max_map_count = 128000 sysctl config.
       - 597 - mongodb_monitoring - Module has been deleted as Free Monitoring service has been stopped.
       - 595 - mongodb_linux - Improvements to transparent_hugepage handling.
+  1.6.3:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+     - 600 - Remove delete module from README.md.
+     - 601 - mongodb_install - Fix issue with specific_mongodb_version on RedHat OS family.  
