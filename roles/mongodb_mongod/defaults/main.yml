@@ -34,3 +34,4 @@ mongod_config_template: "mongod.conf.j2"
 skip_restart: true
 db_path: "{{ '/var/lib/mongodb' if ansible_os_family == 'Debian' else '/var/lib/mongo' if ansible_os_family == 'RedHat' else '/var/lib/mongo' }}"
 mongodb_use_tls: false
+mongodb_disabled_tls_protocols: ""
