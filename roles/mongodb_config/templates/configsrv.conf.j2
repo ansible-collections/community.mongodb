@@ -41,6 +41,9 @@ net:
     mode: requireTLS
     certificateKeyFile: {{ mongodb_certificate_key_file }}
     CAFile: {{ mongodb_certificate_ca_file }}
+{% if mongodb_disabled_tls_protocols != "" %}
+    disabledProtocols: {{ mongodb_disabled_tls_protocols }}
+{% endif %}
 {% endif %}
 
 {% if authorization == "enabled" %}
