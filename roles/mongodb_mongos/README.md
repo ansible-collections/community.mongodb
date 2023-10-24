@@ -31,6 +31,7 @@ Role Variables
 * `mongos_config_template`: If defined allows to override path to mongod config template with custom configuration. Default "mongos.conf.j2"
 * `skip_restart`: If set to `true` will skip restarting mongos service when config file or the keyfile content changes. Default `true`.
 * `mongodb_use_tls`: Wether to use tls. Default false.
+* `mongodb_disabled_tls_protocols`: The tls protocols to be disabled. Leave blank to let MongoDB decide which protocols to allow according to the ones available on the system; check the [official docs](https://www.mongodb.com/docs/v6.0/reference/configuration-options/#mongodb-setting-net.tls.disabledProtocols) for details. Default "".
 * `mongodb_certificate_key_file`: Path to the PEM-file containing the certficate and private key.
 * `mongodb_certificate_ca_file`:  Path to the CA-file.
 
