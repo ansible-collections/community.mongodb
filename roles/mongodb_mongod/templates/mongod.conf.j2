@@ -47,6 +47,9 @@ net:
 {% if mongodb_disabled_tls_protocols != "" %}
     disabledProtocols: {{ mongodb_disabled_tls_protocols }}
 {% endif %}
+{% if mongodb_allow_connections_without_certificates %}
+    allowConnectionsWithoutCertificates: true
+{% endif %}
 {% endif %}
 
 {% if authorization == "enabled" %}
