@@ -28,6 +28,7 @@ Role Variables
 * `db_path`: Path to database data location. Default `/var/lib/mongodb` on Debian based distributions, `/var/lib/mongo` for others.
 * `mongodb_use_tls`: Wether to use tls. Default false.
 * `mongodb_disabled_tls_protocols`: The tls protocols to be disabled. Leave blank to let MongoDB decide which protocols to allow according to the ones available on the system; check the [official docs](https://www.mongodb.com/docs/v6.0/reference/configuration-options/#mongodb-setting-net.tls.disabledProtocols) for details. Default "".
+* `mongodb_allow_connections_without_certificates`: When enabled allows to bypass the certificate validation for clients that do not present a certificate, if a certificate is provided it _must_ be valid. Default `false`.
 * `mongodb_certificate_key_file`: Path to the PEM-file containing the certficate and private key.
 * `mongodb_certificate_ca_file`:  Path to the CA-file.
 
