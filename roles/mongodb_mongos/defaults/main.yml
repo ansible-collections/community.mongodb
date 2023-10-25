@@ -32,3 +32,4 @@ mongos_config_template: "mongos.conf.j2"
 skip_restart: true
 mongodb_use_tls: false
 mongodb_disabled_tls_protocols: ""
+mongodb_allow_connections_without_certificates: false

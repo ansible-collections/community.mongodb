@@ -22,6 +22,9 @@ net:
 {% if mongodb_disabled_tls_protocols != "" %}
     disabledProtocols: {{ mongodb_disabled_tls_protocols }}
 {% endif %}
+{% if mongodb_allow_connections_without_certificates %}
+    allowConnectionsWithoutCertificates: true
+{% endif %}
 {% endif %}
 sharding:
   configDB: "{{ config_repl_set_name }}/{{ config_servers }}"
