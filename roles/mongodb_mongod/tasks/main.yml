@@ -79,6 +79,15 @@
     - "mongodb"
     - "setup"
     - "service"
+
+- name: Configure logrotate if enabled
+  when: mongodb_logrotate_enabled
+  ansible.builtin.include_tasks: logrotate.yml
+  tags:
+    - "mongodb"
+    - "setup"
+    - "service"
+
 # debug section
 - pause:
     seconds: 5

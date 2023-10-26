@@ -8,6 +8,9 @@ systemLog:
   destination: file
   logAppend: true
   path: {{ log_path }}
+{% if mongodb_logrotate_enabled %}
+  logRotate: reopen
+{% endif %}
 
 # Where and how to store data.
 storage:
