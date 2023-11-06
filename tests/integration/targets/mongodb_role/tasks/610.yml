@@ -16,7 +16,8 @@
       - db: admin
         role: readAnyDatabase
     authenticationRestrictions:
-      - clientSource: 172.22.4.219
+      - clientSource: 
+          - 172.22.4.219
   
 - name: Create new role with serverAddress restriction
   community.mongodb.mongodb_role:
@@ -32,4 +33,5 @@
       - db: admin
         role: readAnyDatabase
     authenticationRestrictions:
-      - serverAddress: 10.1.21.75
+      - serverAddress: 
+          - 10.1.21.75
