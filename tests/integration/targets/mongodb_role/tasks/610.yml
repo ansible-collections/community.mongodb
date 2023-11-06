@@ -1,0 +1,35 @@
+---
+
+- name: Create new role with clientSource restriction
+  community.mongodb.mongodb_role:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    state: present
+    database: admin
+    name: monitoring
+    roles:
+      - db: admin
+        role: clusterMonitor
+      - db: admin
+        role: readAnyDatabase
+    authenticationRestrictions:
+      - clientSource: 172.22.4.219
+  
+- name: Create new role with serverAddress restriction
+  community.mongodb.mongodb_role:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    state: present
+    database: admin
+    name: querymanager
+    roles:
+      - db: admin
+        role: readAnyDatabase
+    authenticationRestrictions:
+      - serverAddress: 10.1.21.75
