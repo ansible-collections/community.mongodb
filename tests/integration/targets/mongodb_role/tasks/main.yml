@@ -804,3 +804,6 @@
 
 - name: Import tasks for issue 564  # https://github.com/ansible-collections/community.mongodb/issues/564
   import_tasks: 564.yml
+
+- name: Import tasks for issue 610  # https://github.com/ansible-collections/community.mongodb/issues/610
+  import_tasks: 610.yml

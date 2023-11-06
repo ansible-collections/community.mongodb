@@ -303,8 +303,8 @@ def check_if_role_changed(client, role, db_name, privileges, authenticationRestr
                 'roles' not in role_dict and roles != []):
             changed = True
         elif ('authenticationRestrictions' in role_dict and
-                sorted(reformat_authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) !=
-                sorted(authenticationRestrictions, key=lambda x: (x['clientSource'], x['serverAddress'])) or
+                sorted(reformat_authenticationRestrictions, key=lambda x: (x.get('clientSource', ''), x.get('serverAddress', ''))) !=
+                sorted(authenticationRestrictions, key=lambda x: (x.get('clientSource', ''), x.get('serverAddress', ''))) or
                 'authenticationRestrictions' not in role_dict and authenticationRestrictions != []):
             changed = True
     else:
