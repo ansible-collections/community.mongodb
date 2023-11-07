@@ -76,6 +76,12 @@ These modules are only useful for sharded MongoDB clusters:
 - `community.mongodb.mongodb_shard_tag`: Manage Shard Tags.
 - `community.mongodb.mongodb_shard_zone`: Manage Shard Zones.
 
+These modules are only useful for MongoDB Atlas clusters:
+
+- `community.mongodb.mongodb_atlas_cluster`: Manage MongoDB clusters in Atlas.
+- `community.mongodb.mongodb_atlas_ldap_user`: Manage LDAP users in Atlass.
+- `community.mongodb.mongodb_atlas__user`: Manage users in Atlas.
+- `community.mongodb.mongodb_atlas_whitelist`: Manage IP whitelists in Atlas.
 
 ## community.mongodb Role Tags
 
