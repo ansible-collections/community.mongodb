@@ -79,7 +79,7 @@ These modules are only useful for sharded MongoDB clusters:
 These modules are only useful for MongoDB Atlas clusters:
 
 - `community.mongodb.mongodb_atlas_cluster`: Manage MongoDB clusters in Atlas.
-- `community.mongodb.mongodb_atlas_ldap_user`: Manage LDAP users in Atlass.
+- `community.mongodb.mongodb_atlas_ldap_user`: Manage LDAP users in Atlas.
 - `community.mongodb.mongodb_atlas_user`: Manage users in Atlas.
 - `community.mongodb.mongodb_atlas_whitelist`: Manage IP whitelists in Atlas.
 
