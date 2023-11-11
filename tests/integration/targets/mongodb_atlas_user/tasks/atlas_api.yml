@@ -1,0 +1,81 @@
+- name: Create a test user
+  mongodb_atlas_user:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    username: testuser
+    password: testpass
+    roles:
+      - databaseName: test
+        roleName: read
+  register: create_user
+
+- name: Update a test user
+  mongodb_atlas_user:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    username: testuser
+    password: testpass
+    roles:
+      - databaseName: test
+        roleName: read
+      - databaseName: test2
+        roleName: read
+  register: update_user
+
+- name: Update a test user (idempotency)
+  mongodb_atlas_user:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    username: testuser
+    password: testpass
+    roles:
+      - databaseName: test
+        roleName: read
+      - databaseName: test2
+        roleName: read
+  register: update_user_idempotency
+
+- name: Delete a test user
+  mongodb_atlas_user:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    state: absent
+    username: testuser
+    password: testpass
+    roles:
+      - databaseName: test
+        roleName: read
+      - databaseName: test2
+        roleName: read
+  register: delete_user
+
+- name: Delete a test user (idempotency)
+  mongodb_atlas_user:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    state: absent
+    username: testuser
+    password: testpass
+    roles:
+      - databaseName: test
+        roleName: read
+      - databaseName: test2
+        roleName: read
+  register: delete_user_idempotency
+
+- name: Check test cases
+  ansible.builtin.assert:
+    that:
+      - create_user.changed == True
+      - create_user.diff.after == "state: created\n"
+      - update_user.changed == True
+      - "'test2' in update_user.diff.after.roles"
+      - update_user_idempotency.changed == False
+      - delete_user.changed == True
+      - delete_user.diff.after == "state: absent\n"
+      - delete_user_idempotency.changed == False

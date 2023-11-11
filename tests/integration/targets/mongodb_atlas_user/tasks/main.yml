@@ -1,0 +1,14 @@
+---
+# MongoDB Atlas is a cloud offering (DBaaS) and needs credentials to an account with a valid credit card
+# we gate these tests, since currently no such account is available for this community project
+- set_fact:
+    atlas_api_project: "{{ lookup('ansible.builtin.env', 'MONGODB_ATLAS_API_PROJECT') | default(omit) }}"
+    atlas_api_user: "{{ lookup('ansible.builtin.env', 'MONGODB_ATLAS_API_USER') | default(omit) }}"
+    atlas_api_password: "{{ lookup('ansible.builtin.env', 'MONGODB_ATLAS_API_PASSWORD') | default(omit) }}"
+  ignore_errors: True
+
+- include_tasks: atlas_api.yml
+  when:
+    - atlas_api_project is defined
+    - atlas_api_user is defined
+    - atlas_api_password is defined

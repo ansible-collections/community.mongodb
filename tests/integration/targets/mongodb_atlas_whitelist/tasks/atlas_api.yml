@@ -1,0 +1,57 @@
+- name: Create a whitelist
+  mongodb_atlas_whitelist:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    cidrBlock: "172.0.0.0/24"
+  register: create_whitelist
+
+- name: Update a whitelist
+  mongodb_atlas_whitelist:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    cidrBlock: "172.0.0.0/24"
+    comment: "test"
+  register: update_whitelist
+
+- name: Update a whitelist (idempotency)
+  mongodb_atlas_whitelist:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    cidrBlock: "172.0.0.0/24"
+    comment: "test"
+  register: update_whitelist_idempotency
+
+- name: Delete a whitelist
+  mongodb_atlas_whitelist:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    cidrBlock: "172.0.0.0/24"
+    comment: "test"
+    state: absent
+  register: delete_whitelist
+
+- name: Delete a whitelist (idempotency)
+  mongodb_atlas_whitelist:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    cidrBlock: "172.0.0.0/24"
+    comment: "test"
+    state: absent
+  register: delete_whitelist_idempotency
+
+- name: Check test cases
+  ansible.builtin.assert:
+    that:
+      - create_whitelist.changed == True
+      - create_whitelist.diff.after == "state: created\n"
+      - update_whitelist.changed == True
+      - update_whitelist.diff.after.comment == 'test'
+      - update_whitelist_idempotency.changed == False
+      - delete_whitelist.changed == True
+      - delete_whitelist.diff.after == "state: absent\n"
+      - delete_whitelist_idempotency.changed == False
