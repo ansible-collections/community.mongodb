@@ -106,6 +106,14 @@ These tags apply to the specific roles as indicated.
 |mongodb_auth|admin_user|Tasks that work with the MongoDB Administrator user.|
 |mongodb_auth|app_user|Tasks that work with MongoDB app users.|
 
+## Usage Examples
+
+The following links provide various examples for how the community.mongodb roles and modules can be used in real projects.
+
+* https://github.com/rhysmeister/AutomatingMongoDBWithAnsible (no longer maintained)
+* https://github.com/superset1/Ansible_role_mongodb
+* https://github.com/ansible-collections/community.mongodb/tree/master/roles/ROLENAME/molecule (replace ROLENAME, some full examples that we use in our testing)
+
 ## Running the integration and unit tests
 
 * Requirements
@@ -127,14 +135,6 @@ The ansible-test tool requires a specific directory hierarchy to function correc
 mkdir -p git/ansible_collections/community
 cd git/ansible_collections/community
 ```
-
-# Usage Examples
-
-The following links provide various examples for how the community.mongodb roles and modules can be used in real projects.
-
-* https://github.com/rhysmeister/AutomatingMongoDBWithAnsible (no longer maintained)
-* https://github.com/superset1/Ansible_role_mongodb
-* https://github.com/ansible-collections/community.mongodb/tree/master/roles/ROLENAME/molecule (replace ROLENAME, some full examples that we use in our testing)
 
 * Clone the required projects.
 
