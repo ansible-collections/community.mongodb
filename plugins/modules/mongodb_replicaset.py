@@ -554,8 +554,13 @@ def main():
     debug = module.params['debug']
     cluster_cmd = module.params['cluster_cmd']
 
+    voting_members = []
+    for member in members:
+        if ("votes" in member and member["votes"]) or "votes" not in member:
+            voting_members.append(member)
+
     if validate and reconfigure is False:
-        if len(members) <= 2 or len(members) % 2 == 0:
+        if len(members) <= 2 or len(voting_members) % 2 == 0:
             module.fail_json(msg="MongoDB Replicaset validation failed. Invalid number of replicaset members.")
         if arbiter_at_index is not None and len(members) - 1 < arbiter_at_index:
             module.fail_json(msg="MongoDB Replicaset validation failed. Invalid arbiter index.")
