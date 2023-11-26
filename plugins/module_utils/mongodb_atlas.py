@@ -22,17 +22,17 @@ class AtlasAPIObject:
     module = None
 
     def __init__(
-        self, module, object_name, groupId, path, data, data_is_array=False
+        self, module, object_name, group_id, path, data, data_is_array=False
     ):
         self.module = module
         self.path = path
         self.data = data
-        self.groupId = groupId
+        self.group_id = group_id
         self.object_name = object_name
         self.data_is_array = data_is_array
 
-        self.module.params["url_username"] = self.module.params["apiUsername"]
-        self.module.params["url_password"] = self.module.params["apiPassword"]
+        self.module.params["url_username"] = self.module.params["api_username"]
+        self.module.params["url_password"] = self.module.params["api_password"]
 
     def call_url(self, path, data="", method="GET"):
         headers = {
@@ -45,7 +45,7 @@ class AtlasAPIObject:
 
         url = (
             "https://cloud.mongodb.com/api/atlas/v1.0/groups/"
-            + self.groupId
+            + self.group_id
             + path
         )
         rsp, info = fetch_url(

@@ -1,8 +1,8 @@
 - name: Create a test cluster
   mongodb_atlas_cluster:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     name: "testcluster"
     mongoDBMajorVersion: "5.0"
     clusterType: "REPLICASET"
@@ -16,9 +16,9 @@
 
 - name: Update a test cluster
   mongodb_atlas_cluster:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     name: "testcluster"
     mongoDBMajorVersion: "5.0"
     clusterType: "REPLICASET"
@@ -33,9 +33,9 @@
 # the mongodb_atlas_cluster plugin is currently not idempotent
 #- name: Update a test cluster (idempotency)
 #  mongodb_atlas_cluster:
-#    apiUsername: "{{ atlas_api_user }}"
-#    apiPassword: "{{ atlas_api_password }}"
-#    groupId: "{{ atlas_api_project }}"
+#    api_username: "{{ atlas_api_user }}"
+#    api_password: "{{ atlas_api_password }}"
+#    group_id: "{{ atlas_api_project }}"
 #    name: "testcluster"
 #    mongoDBMajorVersion: "5.0"
 #    clusterType: "REPLICASET"
@@ -49,9 +49,9 @@
 
 - name: Delete a test cluster
   mongodb_atlas_cluster:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     state: absent
     name: "testcluster"
     mongoDBMajorVersion: "5.0"
@@ -66,9 +66,9 @@
 # the mongodb_atlas_cluster plugin is currently not idempotent
 #- name: Update a test cluster (idempotency)
 #  atlas_cluster:
-#    apiUsername: "{{ atlas_api_user }}"
-#    apiPassword: "{{ atlas_api_password }}" 
-#    groupId: "{{ atlas_api_project }}"
+#    api_username: "{{ atlas_api_user }}"
+#    api_password: "{{ atlas_api_password }}" 
+#    group_id: "{{ atlas_api_project }}"
 #    state: absent
 #    name: "testcluster"
 #    mongoDBMajorVersion: "4.2"

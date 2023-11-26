@@ -1,34 +1,34 @@
 - name: Create a whitelist
   mongodb_atlas_whitelist:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     cidrBlock: "172.0.0.0/24"
   register: create_whitelist
 
 - name: Update a whitelist
   mongodb_atlas_whitelist:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     cidrBlock: "172.0.0.0/24"
     comment: "test"
   register: update_whitelist
 
 - name: Update a whitelist (idempotency)
   mongodb_atlas_whitelist:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     cidrBlock: "172.0.0.0/24"
     comment: "test"
   register: update_whitelist_idempotency
 
 - name: Delete a whitelist
   mongodb_atlas_whitelist:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     cidrBlock: "172.0.0.0/24"
     comment: "test"
     state: absent
@@ -36,9 +36,9 @@
 
 - name: Delete a whitelist (idempotency)
   mongodb_atlas_whitelist:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     cidrBlock: "172.0.0.0/24"
     comment: "test"
     state: absent

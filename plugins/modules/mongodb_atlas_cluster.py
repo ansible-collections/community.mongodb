@@ -107,9 +107,9 @@ options:
 EXAMPLES = '''
     - name: test cluster
       community.mongodb.mongodb_atlas_cluster:
-        apiUsername: "API_user"
-        apiPassword: "API_passwort_or_token"
-        groupId: "GROUP_ID"
+        api_username: "API_user"
+        api_password: "API_passwort_or_token"
+        group_id: "GROUP_ID"
         name: "testcluster"
         mongoDBMajorVersion: "4.0"
         clusterType: "REPLICASET"
@@ -133,9 +133,9 @@ def main():
     # add our own arguments
     argument_spec = dict(
         state=dict(default="present", choices=["absent", "present"]),
-        apiUsername=dict(required=True),
-        apiPassword=dict(required=True, no_log=True),
-        groupId=dict(required=True),
+        api_username=dict(required=True, aliases=['apiUsername']),
+        api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
+        group_id=dict(required=True, aliases=['groupId']),
         name=dict(required=True),
         mongoDBMajorVersion=dict(
             choices=["4.2", "4.4", "5.0", "6.0", "7.0"]
@@ -194,7 +194,7 @@ def main():
             module=module,
             path="/clusters",
             object_name="name",
-            groupId=module.params["groupId"],
+            group_id=module.params["group_id"],
             data=data,
         )
     except Exception as e:

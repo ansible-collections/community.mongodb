@@ -73,10 +73,10 @@ options:
 EXAMPLES = '''
     - name: LDAP Group or Username
       community.mongodb.mongodb_atlas_ldap_user:
-        apiUsername: "API_user"
-        apiPassword: "API_passwort_or_token"
+        api_username: "API_user"
+        api_password: "API_passwort_or_token"
         atlas_ldap_user: "USER DN or GROUP DN"
-        groupId: "GROUP_ID"
+        group_id: "GROUP_ID"
         databaseName: "admin"
         username: my_app_user
         roles:
@@ -99,9 +99,9 @@ def main():
     # add our own arguments
     argument_spec = dict(
         state=dict(default="present", choices=["absent", "present"]),
-        apiUsername=dict(required=True),
-        apiPassword=dict(required=True, no_log=True),
-        groupId=dict(required=True),
+        api_username=dict(required=True, aliases=['apiUsername']),
+        api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
+        group_id=dict(required=True, aliases=['groupId']),
         ldapAuthType=dict(default="GROUP", choices=["GROUP", "USER"]),
         databaseName=dict(default="admin", choices=["admin", "$external"]),
         username=dict(required=True),
@@ -133,7 +133,7 @@ def main():
             module=module,
             path="/databaseUsers",
             object_name="username",
-            groupId=module.params["groupId"],
+            group_id=module.params["group_id"],
             data=data,
         )
     except Exception as e:

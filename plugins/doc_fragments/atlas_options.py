@@ -25,23 +25,26 @@ class ModuleDocFragment(object):
     # Documentation for global options that are always the same
     DOCUMENTATION = r'''
 options:
-  apiUsername:
+  api_username:
     description:
       - The username for use in authentication with the Atlas API.
       - Can use API users and tokens (public key is username)
     type: str
     required: True
-  apiPassword:
+    aliases: [apiUsername]
+  api_password:
     description:
       - The password for use in authentication with the Atlas API.
       - Can use API users and tokens (private key is password)
     type: str
     required: True
-  groupId:
+    aliases: [apiPassword]
+  group_id:
     description:
       - Unique identifier for the Atlas project.
     type: str
     required: True
+    aliases: [groupId]
   state:
     description:
       - State of the ressource.

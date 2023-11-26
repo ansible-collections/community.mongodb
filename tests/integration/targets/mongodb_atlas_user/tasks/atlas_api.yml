@@ -1,8 +1,8 @@
 - name: Create a test user
   mongodb_atlas_user:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     username: testuser
     password: testpass
     roles:
@@ -12,9 +12,9 @@
 
 - name: Update a test user
   mongodb_atlas_user:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     username: testuser
     password: testpass
     roles:
@@ -26,9 +26,9 @@
 
 - name: Update a test user (idempotency)
   mongodb_atlas_user:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     username: testuser
     password: testpass
     roles:
@@ -40,9 +40,9 @@
 
 - name: Delete a test user
   mongodb_atlas_user:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     state: absent
     username: testuser
     password: testpass
@@ -55,9 +55,9 @@
 
 - name: Delete a test user (idempotency)
   mongodb_atlas_user:
-    apiUsername: "{{ atlas_api_user }}"
-    apiPassword: "{{ atlas_api_password }}"
-    groupId: "{{ atlas_api_project }}"
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
     state: absent
     username: testuser
     password: testpass
