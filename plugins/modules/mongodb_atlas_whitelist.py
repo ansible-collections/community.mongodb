@@ -31,11 +31,12 @@ description:
 author: "Martin Schurz (@schurzi)"
 extends_documentation_fragment: community.mongodb.atlas_options
 options:
-  cidrBlock:
+  cidr_block:
     description:
       - Whitelist entry in Classless Inter-Domain Routing (CIDR) notation.
     type: str
     required: True
+    aliases: [ "cidrBlock" ]
   comment:
     description:
       - Optional Comment associated with the whitelist entry.
@@ -49,7 +50,7 @@ EXAMPLES = '''
         api_username: "API_user"
         api_password: "API_passwort_or_token"
         group_id: "GROUP_ID"
-        cidrBlock: "192.168.0.0/24"
+        cidr_block: "192.168.0.0/24"
         comment: "test"
 '''
 
@@ -69,7 +70,7 @@ def main():
         api_username=dict(required=True, aliases=['apiUsername']),
         api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
         group_id=dict(required=True, aliases=['groupId']),
-        cidrBlock=dict(required=True),
+        cidr_block=dict(required=True,aliases=["cidrBlock"]),
         comment=dict(default="created by Ansible"),
     )
 
@@ -79,7 +80,7 @@ def main():
     )
 
     data = {
-        "cidrBlock": module.params["cidrBlock"],
+        "cidrBlock": module.params["cidr_block"],
         "comment": module.params["comment"],
     }
 

@@ -3,7 +3,7 @@
     api_username: "{{ atlas_api_user }}"
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
-    cidrBlock: "172.0.0.0/24"
+    cidr_block: "172.0.0.0/24"
   register: create_whitelist
 
 - name: Update a whitelist
@@ -11,7 +11,7 @@
     api_username: "{{ atlas_api_user }}"
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
-    cidrBlock: "172.0.0.0/24"
+    cidr_block: "172.0.0.0/24"
     comment: "test"
   register: update_whitelist
 
@@ -20,7 +20,7 @@
     api_username: "{{ atlas_api_user }}"
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
-    cidrBlock: "172.0.0.0/24"
+    cidr_block: "172.0.0.0/24"
     comment: "test"
   register: update_whitelist_idempotency
 
@@ -29,7 +29,7 @@
     api_username: "{{ atlas_api_user }}"
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
-    cidrBlock: "172.0.0.0/24"
+    cidr_block: "172.0.0.0/24"
     comment: "test"
     state: absent
   register: delete_whitelist
@@ -39,7 +39,7 @@
     api_username: "{{ atlas_api_user }}"
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
-    cidrBlock: "172.0.0.0/24"
+    cidr_block: "172.0.0.0/24"
     comment: "test"
     state: absent
   register: delete_whitelist_idempotency
