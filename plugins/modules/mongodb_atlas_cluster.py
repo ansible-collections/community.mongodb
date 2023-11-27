@@ -37,71 +37,83 @@ options:
       - Name of the cluster as it appears in Atlas. Once the cluster is created, its name cannot be changed.
     type: str
     required: True
-  mongoDBMajorVersion:
+  mongo_db_major_version:
     description:
       - Version of the cluster to deploy.
       - Atlas always deploys the cluster with the latest stable release of the specified version.
       - You can upgrade to a newer version of MongoDB when you modify a cluster.
     choices: [ "4.2", "4.4", "5.0", "6.0", "7.0" ]
     type: str
-  clusterType:
+    aliases: [ "mongoDBMajorVersion" ]
+  cluster_type:
     description:
       - Type of the cluster that you want to create.
     choices: [ "REPLICASET", "SHARDED" ]
     default: "REPLICASET"
     type: str
-  replicationFactor:
+    aliases: [ "clusterType" ]
+  replication_factor:
     description:
       - Number of replica set members. Each member keeps a copy of your databases, providing high availability and data redundancy.
     choices: [ 3, 5, 7 ]
     default: 3
     type: int
-  autoScaling:
+    aliases: [ "replicationFactor" ]
+  auto_scaling:
     description:
       - Configure your cluster to automatically scale its storage and cluster tier.
     suboptions:
-      diskGBEnabled:
+      disk_gb_enabled:
         type: bool
         description:
           - Specifies whether disk auto-scaling is enabled. The default is true.
+        aliases: [ "diskGBEnabled" ]
     required: False
     type: dict
-  providerSettings:
+    aliases: [ "autoScaling" ]
+  provider_settings:
     description:
       - Configuration for the provisioned servers on which MongoDB runs.
       - The available options are specific to the cloud service provider.
     suboptions:
-      providerName:
+      provider_name:
         required: True
         type: str
         description:
           - Cloud service provider on which the servers are provisioned.
-      regionName:
+        aliases: [ "providerName" ]
+      region_name:
         required: True
         type: str
         description:
           - Physical location of your MongoDB cluster.
-      instanceSizeName:
+        aliases: [ "regionName" ]
+      instance_size_name:
         required: True
         type: str
         description:
           - Atlas provides different cluster tiers, each with a default storage capacity and RAM size.
           - The cluster you select is used for all the data-bearing servers in your cluster tier.
+        aliases: [ "instanceSizeName" ]
     required: True
     type: dict
-  diskSizeGB:
+    aliases: [ "providerSettings" ]
+  disk_size_gb:
     description:
       - Capacity, in gigabytes, of the host's root volume. Increase this number to add capacity,
         up to a maximum possible value of 4096 (i.e., 4 TB). This value must be a positive integer.
     type: int
-  providerBackupEnabled:
+    aliases: [ "diskSizeGB" ]
+  provider_backup_enabled:
     description:
       - Flag that indicates if the cluster uses Cloud Backups for backups.
     type: bool
-  pitEnabled:
+    aliases: [ "providerBackupEnabled" ]
+  pit_enabled:
     description:
       - Flag that indicates the cluster uses continuous cloud backups.
     type: bool
+    aliases: [ "pitEnabled" ]
 '''
 
 EXAMPLES = '''
@@ -111,12 +123,12 @@ EXAMPLES = '''
         api_password: "API_passwort_or_token"
         group_id: "GROUP_ID"
         name: "testcluster"
-        mongoDBMajorVersion: "4.0"
-        clusterType: "REPLICASET"
-        providerSettings:
-          providerName: "GCP"
-          regionName: "EUROPE_WEST_3"
-          instanceSizeName: "M10"
+        mongo_db_major_version: "4.0"
+        cluster_type: "REPLICASET"
+        provider_settings:
+          provider_name: "GCP"
+          region_name: "EUROPE_WEST_3"
+          instance_size_name: "M10"
 ...
 '''
 
@@ -137,31 +149,36 @@ def main():
         api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
         group_id=dict(required=True, aliases=['groupId']),
         name=dict(required=True),
-        mongoDBMajorVersion=dict(
-            choices=["4.2", "4.4", "5.0", "6.0", "7.0"]
+        mongo_db_major_version=dict(
+            choices=["4.2", "4.4", "5.0", "6.0", "7.0"],
+            aliases=["mongoDBMajorVersion"]
         ),
-        clusterType=dict(
-            default="REPLICASET", choices=["REPLICASET", "SHARDED"]
+        cluster_type=dict(
+            default="REPLICASET", choices=["REPLICASET", "SHARDED"],
+            aliases=["clusterType"]
         ),
-        replicationFactor=dict(default=3, type="int", choices=[3, 5, 7]),
-        autoScaling=dict(
+        replication_factor=dict(default=3, type="int", choices=[3, 5, 7], aliases=["replicationFactor"]),
+        auto_scaling=dict(
             type="dict",
             options=dict(
-                diskGBEnabled=dict(type="bool"),
+                disk_gb_enabled=dict(type="bool"),
+                aliases=["diskGBEnabled"]
             ),
+            aliases=["autoScaling"]
         ),
-        providerSettings=dict(
+        provider_settings=dict(
             type="dict",
             required=True,
             options=dict(
-                providerName=dict(required=True),
-                regionName=dict(required=True),
-                instanceSizeName=dict(required=True),
+                provider_name=dict(required=True, aliases=["providerName"]),
+                region_name=dict(required=True, aliases=["regionName"]),
+                instance_size_name=dict(required=True, aliases=["instanceSizeName"]),
             ),
+            aliases=["providerSettings"]
         ),
-        diskSizeGB=dict(type="int"),
-        providerBackupEnabled=dict(type="bool"),
-        pitEnabled=dict(type="bool"),
+        disk_size_gb=dict(type="int", alises=["diskSizeGB"]),
+        provider_backup_enabled=dict(type="bool", aliases=["providerBackupEnabled"]),
+        pit_enabled=dict(type="bool", aliases=["pitEnabled"]),
     )
 
     # Define the main module
@@ -171,23 +188,30 @@ def main():
 
     data = {
         "name": module.params["name"],
-        "clusterType": module.params["clusterType"],
-        "replicationFactor": module.params["replicationFactor"],
-        "providerSettings": module.params["providerSettings"],
+        "clusterType": module.params["cluster_type"],
+        "replicationFactor": module.params["replication_factor"],
+        "providerSettings": {
+            "providerName": module.params["provider_settings"]["provider_name"],
+            "regionName": module.params["provider_settings"]["region_name"],
+            "instanceSizeName": module.params["provider_settings"]["instance_size_name"],
+        }
     }
 
     # handle optional options
-    optional_vars = [
-        "mongoDBMajorVersion",
-        "autoScaling",
-        "diskSizeGB",
-        "providerBackupEnabled",
-        "pitEnabled",
-    ]
+    optional_vars = {
+        "mongo_db_major_version": "mongoDBMajorVersion",
+        "auto_scaling": "autoScaling",
+        "disk_size_gb": "diskSizeGB",
+        "provider_backup_enabled": "providerBackupEnabled",
+        "pit_enabled": "pitEnabled",
+    }
 
-    for var in optional_vars:
-        if var in module.params:
-            data.update({var: module.params[var]})
+    for key in optional_vars:
+        if key in module.params:
+            if key == "auto_scaling":
+              data.update({optional_vars[key]: {"diskGBEnabled": module.params[key]["disk_gb_enabled"]}})
+            else:
+              data.update({optional_vars[key]: module.params[key]})
 
     try:
         atlas = AtlasAPIObject(

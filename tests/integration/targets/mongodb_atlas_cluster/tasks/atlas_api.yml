@@ -4,14 +4,14 @@
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
     name: "testcluster"
-    mongoDBMajorVersion: "5.0"
-    clusterType: "REPLICASET"
-    providerSettings:
-      providerName: "GCP"
-      regionName: "WESTERN_EUROPE"
-      instanceSizeName: "M10"
-    pitEnabled: False
-    providerBackupEnabled: False
+    mongo_db_major_version: "5.0"
+    cluster_type: "REPLICASET"
+    provider_settings:
+      provider_name: "GCP"
+      region_name: "WESTERN_EUROPE"
+      instance_size_name: "M10"
+    pit_enabled: False
+    provider_backup_enabled: False
   register: create_cluster
 
 - name: Update a test cluster
@@ -20,14 +20,14 @@
     api_password: "{{ atlas_api_password }}"
     group_id: "{{ atlas_api_project }}"
     name: "testcluster"
-    mongoDBMajorVersion: "5.0"
-    clusterType: "REPLICASET"
-    providerSettings:
-      providerName: "GCP"
-      regionName: "WESTERN_EUROPE"
-      instanceSizeName: "M10"
-    pitEnabled: False
-    providerBackupEnabled: False
+    mongo_db_major_version: "5.0"
+    cluster_type: "REPLICASET"
+    provider_settings:
+      provider_name: "GCP"
+      region_name: "WESTERN_EUROPE"
+      instance_size_name: "M10"
+    pit_enabled: False
+    provider_backup_enabled: False
   register: update_cluster
 
 # the mongodb_atlas_cluster plugin is currently not idempotent
@@ -37,14 +37,14 @@
 #    api_password: "{{ atlas_api_password }}"
 #    group_id: "{{ atlas_api_project }}"
 #    name: "testcluster"
-#    mongoDBMajorVersion: "5.0"
-#    clusterType: "REPLICASET"
-#    providerSettings:
-#      providerName: "GCP"
-#      regionName: "WESTERN_EUROPE"
-#      instanceSizeName: "M10"
-#    pitEnabled: False
-#    providerBackupEnabled: False
+#    mongo_db_major_version: "5.0"
+#    cluster_type: "REPLICASET"
+#    provider_settings:
+#      provider_name: "GCP"
+#      region_name: "WESTERN_EUROPE"
+#      instance_size_name: "M10"
+#    pit_enabled: False
+#    provider_backup_enabled: False
 #  register: update_cluster_idempotency
 
 - name: Delete a test cluster
@@ -54,13 +54,13 @@
     group_id: "{{ atlas_api_project }}"
     state: absent
     name: "testcluster"
-    mongoDBMajorVersion: "5.0"
-    clusterType: "REPLICASET"
-    providerSettings:
-      providerName: "GCP"
-      regionName: "WESTERN_EUROPE"
-      instanceSizeName: "M10"
-    pitEnabled: False
+    mongo_db_major_version: "5.0"
+    cluster_type: "REPLICASET"
+    provider_settings:
+      provider_name: "GCP"
+      region_name: "WESTERN_EUROPE"
+      instance_size_name: "M10"
+    pit_enabled: False
   register: delete_cluster
 
 # the mongodb_atlas_cluster plugin is currently not idempotent
@@ -71,13 +71,13 @@
 #    group_id: "{{ atlas_api_project }}"
 #    state: absent
 #    name: "testcluster"
-#    mongoDBMajorVersion: "4.2"
-#    clusterType: "REPLICASET"
-#    providerSettings:
-#      providerName: "GCP"
-#      regionName: "WESTERN_EUROPE"
-#      instanceSizeName: "M10"
-#    pitEnabled: False
+#    mongo_db_major_version: "4.2"
+#    cluster_type: "REPLICASET"
+#    provider_settings:
+#      provider_name: "GCP"
+#      region_name: "WESTERN_EUROPE"
+#      instance_size_name: "M10"
+#    pit_enabled: False
 #  register: delete_cluster_idempotency
 
 - name: Check test cases
