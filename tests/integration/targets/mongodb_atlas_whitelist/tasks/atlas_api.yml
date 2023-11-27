@@ -6,6 +6,13 @@
     cidr_block: "172.0.0.0/24"
   register: create_whitelist
 
+- name: Create a whitelist with old parameters
+  mongodb_atlas_whitelist:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    cidrBlock: "172.0.0.0/24"
+
 - name: Update a whitelist
   mongodb_atlas_whitelist:
     api_username: "{{ atlas_api_user }}"

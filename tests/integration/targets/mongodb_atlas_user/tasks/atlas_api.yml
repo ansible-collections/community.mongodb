@@ -10,6 +10,17 @@
         role_name: read
   register: create_user
 
+- name: Create a test user with old parameters
+  mongodb_atlas_user:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    username: testuser
+    password: testpass
+    roles:
+      - databaseName: test
+        roleName: read
+
 - name: Update a test user
   mongodb_atlas_user:
     api_username: "{{ atlas_api_user }}"

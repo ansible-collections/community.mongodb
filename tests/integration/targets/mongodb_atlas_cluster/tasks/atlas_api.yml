@@ -14,6 +14,21 @@
     provider_backup_enabled: False
   register: create_cluster
 
+- name: Create a test cluster with old parameters
+  mongodb_atlas_cluster:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    name: "testcluster"
+    mongoDBMajorVersion: "5.0"
+    clusterType: "REPLICASET"
+    providerSettings:
+      providerName: "GCP"
+      regionName: "WESTERN_EUROPE"
+      instanceSizeName: "M10"
+    pitEnabled: False
+    providerBackupEnabled: False
+
 - name: Update a test cluster
   mongodb_atlas_cluster:
     api_username: "{{ atlas_api_user }}"
