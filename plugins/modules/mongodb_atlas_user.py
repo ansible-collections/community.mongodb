@@ -158,14 +158,16 @@ def main():
         "databaseName": module.params["database_name"],
         "username": module.params["username"],
         "password": module.params["password"],
-        "roles": module.params["roles"],
+        "roles": [],
         "scopes": module.params["scopes"],
     }
 
     # remap keys to API format
-    api_mapping = {'database_name': 'databaseName', 'role_name': 'roleName'}
-    for role in data["roles"]:
-        role = dict((api_mapping[name], val) for name, val in role.iteritems())
+    for role in module.params.get("roles"):
+        data["roles"].append({
+                "databaseName": role.get("database_name"),
+                "roleName": role.get("role_name")
+            })
 
     try:
         atlas = AtlasAPIObject(
