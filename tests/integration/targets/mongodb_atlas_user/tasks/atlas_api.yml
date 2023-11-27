@@ -6,8 +6,8 @@
     username: testuser
     password: testpass
     roles:
-      - databaseName: test
-        roleName: read
+      - database_name: test
+        role_name: read
   register: create_user
 
 - name: Update a test user
@@ -18,10 +18,10 @@
     username: testuser
     password: testpass
     roles:
-      - databaseName: test
-        roleName: read
-      - databaseName: test2
-        roleName: read
+      - database_name: test
+        role_name: read
+      - database_name: test2
+        role_name: read
   register: update_user
 
 - name: Update a test user (idempotency)
@@ -32,10 +32,10 @@
     username: testuser
     password: testpass
     roles:
-      - databaseName: test
-        roleName: read
-      - databaseName: test2
-        roleName: read
+      - database_name: test
+        role_name: read
+      - database_name: test2
+        role_name: read
   register: update_user_idempotency
 
 - name: Delete a test user
@@ -47,10 +47,10 @@
     username: testuser
     password: testpass
     roles:
-      - databaseName: test
-        roleName: read
-      - databaseName: test2
-        roleName: read
+      - database_name: test
+        role_name: read
+      - database_name: test2
+        role_name: read
   register: delete_user
 
 - name: Delete a test user (idempotency)
@@ -62,10 +62,10 @@
     username: testuser
     password: testpass
     roles:
-      - databaseName: test
-        roleName: read
-      - databaseName: test2
-        roleName: read
+      - database_name: test
+        role_name: read
+      - database_name: test2
+        role_name: read
   register: delete_user_idempotency
 
 - name: Check test cases

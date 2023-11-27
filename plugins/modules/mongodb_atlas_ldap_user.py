@@ -32,18 +32,20 @@ description:
 author: "Martin Schurz (@schurzi) / Derek Giri"
 extends_documentation_fragment: community.mongodb.atlas_options
 options:
-  databaseName:
+  database_name:
     description:
       - Database against which Atlas authenticates the user.
     choices: ["admin", "$external"]
     default: "admin"
     type: str
-  ldapAuthType:
+    aliases: [ "databaseName" ]
+  ldap_auth_type:
     description:
       - Type of LDAP authorization for the user i.e. USER or GROUP
     choices: ["GROUP", "USER"]
     default: "GROUP"
     type: str
+    aliases: [ "ldapAuthType" ]
   username:
     description:
       - Username for authenticating to MongoDB.
@@ -54,17 +56,19 @@ options:
       - Array of this user's roles and the databases / collections on which the roles apply.
       - A role must include folliwing elements
     suboptions:
-      databaseName:
+      database_name:
         required: true
         type: str
         description:
           - Database on which the user has the specified role.
           - A role on the admin database can include privileges that apply to the other databases.
-      roleName:
+        aliases: [ "databaseName" ]
+      role_name:
         required: true
         type: str
         description:
           - Name of the role. This value can either be a built-in role or a custom role.
+        aliases: ["roleName" ]
     required: true
     type: list
     elements: dict
@@ -77,13 +81,13 @@ EXAMPLES = '''
         api_password: "API_passwort_or_token"
         atlas_ldap_user: "USER DN or GROUP DN"
         group_id: "GROUP_ID"
-        databaseName: "admin"
+        database_name: "admin"
         username: my_app_user
         roles:
-          - databaseName: private_info
-            roleName: read
-          - databaseName: public_info
-            roleName: readWrite
+          - database_name: private_info
+            role_name: read
+          - database_name: public_info
+            role_name: readWrite
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -102,16 +106,16 @@ def main():
         api_username=dict(required=True, aliases=['apiUsername']),
         api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
         group_id=dict(required=True, aliases=['groupId']),
-        ldapAuthType=dict(default="GROUP", choices=["GROUP", "USER"]),
-        databaseName=dict(default="admin", choices=["admin", "$external"]),
+        ldap_auth_type=dict(default="GROUP", choices=["GROUP", "USER"], aliases=["ldapAuthType"]),
+        database_name=dict(default="admin", choices=["admin", "$external"], aliases=["databaseName"]),
         username=dict(required=True),
         roles=dict(
             required=True,
             type="list",
             elements="dict",
             options=dict(
-                databaseName=dict(required=True),
-                roleName=dict(required=True),
+                database_name=dict(required=True, aliases=["databaseName"]),
+                role_name=dict(required=True, aliases=["roleName"]),
             ),
         ),
     )
@@ -122,11 +126,16 @@ def main():
     )
 
     data = {
-        "databaseName": module.params["databaseName"],
-        "ldapAuthType": module.params["ldapAuthType"],
+        "databaseName": module.params["database_name"],
+        "ldapAuthType": module.params["ldap_auth_type"],
         "username": module.params["username"],
         "roles": module.params["roles"],
     }
+
+    # remap keys to API format
+    api_mapping = {'database_name': 'databaseName', 'role_name': 'roleName'}
+    for role in data["roles"]:
+        role = dict((api_mapping[name], val) for name, val in role.iteritems())
 
     try:
         atlas = AtlasAPIObject(

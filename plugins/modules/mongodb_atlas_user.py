@@ -35,12 +35,13 @@ description:
 author: "Martin Schurz (@schurzi)"
 extends_documentation_fragment: community.mongodb.atlas_options
 options:
-  databaseName:
+  database_name:
     description:
       - Database against which Atlas authenticates the user.
     choices: ["admin", "$external"]
     default: "admin"
     type: str
+    aliases: [ "databaseName" ]
   username:
     description:
       - Username for authenticating to MongoDB.
@@ -56,13 +57,14 @@ options:
       - Array of this user's roles and the databases / collections on which the roles apply.
       - A role must include following elements
     suboptions:
-      databaseName:
+      database_name:
         required: true
         type: str
         description:
           - Database on which the user has the specified role.
           - A role on the admin database can include privileges that apply to the other databases.
-      roleName:
+        aliases: [ "databaseName" ]
+      role_name:
         required: true
         type: str
         description:
@@ -101,10 +103,10 @@ EXAMPLES = '''
         username: my_app_user
         password: SuperSecret!
         roles:
-          - databaseName: private_info
-            roleName: read
-          - databaseName: public_info
-            roleName: readWrite
+          - database_name: private_info
+            role_name: read
+          - database_name: public_info
+            role_name: readWrite
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -123,7 +125,7 @@ def main():
         api_username=dict(required=True, aliases=['apiUsername']),
         api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
         group_id=dict(required=True, aliases=['groupId']),
-        databaseName=dict(default="admin", choices=["admin", "$external"]),
+        database_name=dict(default="admin", choices=["admin", "$external"], aliases=["databaseName"]),
         username=dict(required=True),
         password=dict(required=True, no_log=True),
         roles=dict(
@@ -131,8 +133,8 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                databaseName=dict(required=True),
-                roleName=dict(required=True),
+                database_name=dict(required=True,aliases=["databaseName"]),
+                role_name=dict(required=True, aliases=["roleName"]),
             ),
         ),
         scopes=dict(
@@ -153,12 +155,17 @@ def main():
     )
 
     data = {
-        "databaseName": module.params["databaseName"],
+        "databaseName": module.params["database_name"],
         "username": module.params["username"],
         "password": module.params["password"],
         "roles": module.params["roles"],
         "scopes": module.params["scopes"],
     }
+
+    # remap keys to API format
+    api_mapping = {'database_name': 'databaseName', 'role_name': 'roleName'}
+    for role in data["roles"]:
+        role = dict((api_mapping[name], val) for name, val in role.iteritems())
 
     try:
         atlas = AtlasAPIObject(
