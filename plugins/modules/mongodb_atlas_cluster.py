@@ -161,8 +161,7 @@ def main():
         auto_scaling=dict(
             type="dict",
             options=dict(
-                disk_gb_enabled=dict(type="bool"),
-                aliases=["diskGBEnabled"]
+                disk_gb_enabled=dict(type="bool", aliases=["diskGBEnabled"]),
             ),
             aliases=["autoScaling"]
         ),
@@ -207,7 +206,7 @@ def main():
     }
 
     for key in optional_vars:
-        if key in module.params:
+        if module.params[key] is not None:
             if key == "auto_scaling":
               data.update({optional_vars[key]: {"diskGBEnabled": module.params[key]["disk_gb_enabled"]}})
             else:
