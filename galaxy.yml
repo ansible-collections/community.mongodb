@@ -11,6 +11,7 @@ authors:
   - Loic Blot (http://www.infopro-digital.com/)
   - Matt Martz (https://github.com/sivel)
   - Jacob Floyd (https://github.com/cognifloyd)
+  - Martin Schurz (https://github.com/schurzi)
 description: MongoDB related Ansible Roles, Modules, and Plugins
 license_file: COPYING
 tags:

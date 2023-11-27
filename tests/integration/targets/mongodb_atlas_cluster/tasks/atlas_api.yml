@@ -1,0 +1,108 @@
+- name: Create a test cluster
+  mongodb_atlas_cluster:
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
+    name: "testcluster"
+    mongo_db_major_version: "5.0"
+    cluster_type: "REPLICASET"
+    provider_settings:
+      provider_name: "GCP"
+      region_name: "WESTERN_EUROPE"
+      instance_size_name: "M10"
+    pit_enabled: False
+    provider_backup_enabled: False
+  register: create_cluster
+
+- name: Create a test cluster with old parameters
+  mongodb_atlas_cluster:
+    apiUsername: "{{ atlas_api_user }}"
+    apiPassword: "{{ atlas_api_password }}"
+    groupId: "{{ atlas_api_project }}"
+    name: "testcluster"
+    mongoDBMajorVersion: "5.0"
+    clusterType: "REPLICASET"
+    providerSettings:
+      providerName: "GCP"
+      regionName: "WESTERN_EUROPE"
+      instanceSizeName: "M10"
+    pitEnabled: False
+    providerBackupEnabled: False
+
+- name: Update a test cluster
+  mongodb_atlas_cluster:
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
+    name: "testcluster"
+    mongo_db_major_version: "5.0"
+    cluster_type: "REPLICASET"
+    provider_settings:
+      provider_name: "GCP"
+      region_name: "WESTERN_EUROPE"
+      instance_size_name: "M10"
+    pit_enabled: False
+    provider_backup_enabled: False
+  register: update_cluster
+
+# the mongodb_atlas_cluster plugin is currently not idempotent
+#- name: Update a test cluster (idempotency)
+#  mongodb_atlas_cluster:
+#    api_username: "{{ atlas_api_user }}"
+#    api_password: "{{ atlas_api_password }}"
+#    group_id: "{{ atlas_api_project }}"
+#    name: "testcluster"
+#    mongo_db_major_version: "5.0"
+#    cluster_type: "REPLICASET"
+#    provider_settings:
+#      provider_name: "GCP"
+#      region_name: "WESTERN_EUROPE"
+#      instance_size_name: "M10"
+#    pit_enabled: False
+#    provider_backup_enabled: False
+#  register: update_cluster_idempotency
+
+- name: Delete a test cluster
+  mongodb_atlas_cluster:
+    api_username: "{{ atlas_api_user }}"
+    api_password: "{{ atlas_api_password }}"
+    group_id: "{{ atlas_api_project }}"
+    state: absent
+    name: "testcluster"
+    mongo_db_major_version: "5.0"
+    cluster_type: "REPLICASET"
+    provider_settings:
+      provider_name: "GCP"
+      region_name: "WESTERN_EUROPE"
+      instance_size_name: "M10"
+    pit_enabled: False
+  register: delete_cluster
+
+# the mongodb_atlas_cluster plugin is currently not idempotent
+#- name: Update a test cluster (idempotency)
+#  atlas_cluster:
+#    api_username: "{{ atlas_api_user }}"
+#    api_password: "{{ atlas_api_password }}" 
+#    group_id: "{{ atlas_api_project }}"
+#    state: absent
+#    name: "testcluster"
+#    mongo_db_major_version: "4.2"
+#    cluster_type: "REPLICASET"
+#    provider_settings:
+#      provider_name: "GCP"
+#      region_name: "WESTERN_EUROPE"
+#      instance_size_name: "M10"
+#    pit_enabled: False
+#  register: delete_cluster_idempotency
+
+- name: Check test cases
+  ansible.builtin.assert:
+    that:
+      - create_cluster.changed == True
+      - create_cluster.diff.after == "state: created\n"
+      - update_cluster.changed == True
+      - update_cluster.diff.after
+      #- update_cluster_idempotency.changed == False
+      - delete_cluster.changed == True
+      - delete_cluster.diff.after == "state: absent\n"
+      #- delete_cluster_idempotency.changed == False
