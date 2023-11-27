@@ -69,6 +69,7 @@ options:
         type: str
         description:
           - Name of the role. This value can either be a built-in role or a custom role.
+        aliases: [ "roleName" ]
     required: true
     type: list
     elements: dict

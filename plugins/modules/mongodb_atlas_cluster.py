@@ -175,7 +175,7 @@ def main():
             ),
             aliases=["providerSettings"]
         ),
-        disk_size_gb=dict(type="int", alises=["diskSizeGB"]),
+        disk_size_gb=dict(type="int", aliases=["diskSizeGB"]),
         provider_backup_enabled=dict(type="bool", aliases=["providerBackupEnabled"]),
         pit_enabled=dict(type="bool", aliases=["pitEnabled"]),
     )
