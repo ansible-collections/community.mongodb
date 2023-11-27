@@ -9,6 +9,6 @@
 
 - include_tasks: atlas_api.yml
   when:
-    - atlas_api_project is defined
-    - atlas_api_user is defined
-    - atlas_api_password is defined
+    - atlas_api_project | length > 0
+    - atlas_api_user | length > 0
+    - atlas_api_password | length > 0
