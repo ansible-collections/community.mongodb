@@ -135,9 +135,9 @@ def main():
     # remap keys to API format
     for role in module.params.get("roles"):
         data["roles"].append({
-                "databaseName": role.get("database_name"),
-                "roleName": role.get("role_name")
-            })
+            "databaseName": role.get("database_name"),
+            "roleName": role.get("role_name")
+        })
 
     try:
         atlas = AtlasAPIObject(

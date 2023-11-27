@@ -70,7 +70,7 @@ def main():
         api_username=dict(required=True, aliases=['apiUsername']),
         api_password=dict(required=True, no_log=True, aliases=['apiPassword']),
         group_id=dict(required=True, aliases=['groupId']),
-        cidr_block=dict(required=True,aliases=["cidrBlock"]),
+        cidr_block=dict(required=True, aliases=["cidrBlock"]),
         comment=dict(default="created by Ansible"),
     )
 

@@ -208,9 +208,9 @@ def main():
     for key in optional_vars:
         if module.params[key] is not None:
             if key == "auto_scaling":
-              data.update({optional_vars[key]: {"diskGBEnabled": module.params[key]["disk_gb_enabled"]}})
+                data.update({optional_vars[key]: {"diskGBEnabled": module.params[key]["disk_gb_enabled"]}})
             else:
-              data.update({optional_vars[key]: module.params[key]})
+                data.update({optional_vars[key]: module.params[key]})
 
     try:
         atlas = AtlasAPIObject(
