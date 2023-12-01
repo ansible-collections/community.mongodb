@@ -597,6 +597,7 @@ def main():
 
         if module.check_mode is False:
             try:
+                client = mongo_auth(module, client, directConnection=True)
                 replicaset_add(module, client, replica_set, members,
                                arbiter_at_index, protocol_version,
                                chaining_allowed, heartbeat_timeout_secs,
