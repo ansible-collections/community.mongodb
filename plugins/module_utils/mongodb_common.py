@@ -168,9 +168,9 @@ def rename_ssl_option_for_pymongo4(connection_options):
     when the driver use is >= PyMongo 4
     """
     if int(PyMongoVersion[0]) >= 4:
-        if connection_options.get('ssl_cert_reqs', None) == 'CERT_NONE':
-            connection_options['tlsAllowInvalidCertificates'] = False
-        elif connection_options.get('ssl_cert_reqs', None) == 'CERT_REQUIRED':
+        if connection_options.get('ssl_cert_reqs', None) in ('CERT_NONE', ssl_lib.CERT_NONE):
+            connection_options['tlsAllowInvalidCertificates'] = True
+        elif connection_options.get('ssl_cert_reqs', None) in ('CERT_REQUIRED', ssl_lib.CERT_REQUIRED):
             connection_options['tlsAllowInvalidCertificates'] = False
         connection_options.pop('ssl_cert_reqs', None)
         if connection_options.get('ssl_ca_certs', None) is not None:
