@@ -38,3 +38,10 @@ mongodb_disabled_tls_protocols: ""
 mongodb_allow_connections_without_certificates: false
 mongodb_logrotate_enabled: false
 mongodb_logrotate_template: "mongodb.logrotate.j2"
+
+# Override systemd default configuration
+# Examples:
+# mongodb_systemd_service_override: |
+#   [Service]
+#   Restart=on-failure # Mongod will restart on-failure (by default mongod don't restart)
+mongodb_systemd_service_override: ""
