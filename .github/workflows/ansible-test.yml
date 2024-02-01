@@ -151,6 +151,7 @@ jobs:
       matrix:
         mongodb_version:
           - "6.0"
+          - "7.0"
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
           - python_version: "3.8"
