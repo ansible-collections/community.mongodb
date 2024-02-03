@@ -80,7 +80,7 @@
     login_database: "$external"
     database: "$external"
     create_for_localhost_exception: /tmp/super.success
-    name: "CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: userAdminAnyDatabase
@@ -96,12 +96,12 @@
 - assert:
     that:
       - certificate_user.changed
-      - certificate_user.user == 'CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US'
+      - certificate_user.user == 'CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US'
 
 - name: Make js script with auth
   copy:
     content: |
-      db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
+      db.getSiblingDB("$external").auth({user:"CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
       db.system.users.find({db: "$external"})
     dest: /tmp/auth.js
 
@@ -121,7 +121,7 @@
 
 - name: Create a standard user using super cert
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -172,12 +172,12 @@
 
 - name: Create another cert user
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: readAnyDatabase
@@ -193,16 +193,16 @@
 - assert:
     that:
       - another_user.changed
-      - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - another_user.user == "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Modify cert user - adds a role
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: readAnyDatabase
@@ -220,16 +220,16 @@
 - assert:
     that:
       - another_user.changed
-      - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - another_user.user == "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Modify cert user - no change
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: readAnyDatabase
@@ -250,12 +250,12 @@
 
 - name: Delete cert user - check mode
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
@@ -272,12 +272,12 @@
 
 - name: Delete cert user
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
@@ -293,12 +293,12 @@
 
 - name: Delete cert user - does not exist
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN={{ ansible_default_ipv4.address }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN={{ ansible_default_ipv4.address }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
