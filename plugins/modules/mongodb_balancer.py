@@ -29,6 +29,8 @@ options:
   autosplit:
     description:
       - Disable or enable the autosplit flag in the config.settings collection.
+      - From MongoDB 6.1 automatic chunk splitting is not performed so this parameter is not valid in this and later versions. See more see [enableAutoSplit](https://www.mongodb.com/docs/manual/reference/method/sh.enableAutoSplit/).
+      - This parameter is deprecated and will be removed in a future release.
     required: false
     type: bool
   chunksize:

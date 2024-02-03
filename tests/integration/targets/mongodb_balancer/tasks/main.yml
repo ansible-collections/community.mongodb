@@ -143,12 +143,11 @@
       in mongo_output.transformed_output | string'
     - '''balancer'' in mongo_output.transformed_output | string'
 
-- name: Ensure balancer is started before begining and autosplit is enabled
+- name: Ensure balancer is started before begining
   community.mongodb.mongodb_balancer:
     login_user: admin
     login_password: admin
     state: started
-    autosplit: true
   register: balancer
 
 - name: Stop the balancer
@@ -163,38 +162,6 @@
       - "balancer.changed == True"
       - "balancer.old_balancer_state == 'started'"
       - "balancer.new_balancer_state == 'stopped'"
-
-- name: Disable autosplit (will already be disabled from 4.2)
-  community.mongodb.mongodb_balancer:
-    login_user: admin
-    login_password: admin
-    autosplit: false
-  register: balancer
-
-- name: Test only relevant before 4.2
-  block:
-    - assert:
-        that:
-          - "balancer.changed == True"
-          - "balancer.old_autosplit == True"
-          - "balancer.new_autosplit == False"
-  when: balancer.old_autosplit is defined
-
-- name: Enable autosplit
-  community.mongodb.mongodb_balancer:
-    login_user: admin
-    login_password: admin
-    autosplit: true
-  register: balancer
-
-- name: Test only relevant before 4.2
-  block:
-    - assert:
-        that:
-          - "balancer.changed == True"
-          - "balancer.old_autosplit == False"
-          - "balancer.new_autosplit == True"
-  when: balancer.old_autosplit is defined
 
 - include_tasks: mongod_teardown.yml
 
@@ -418,66 +385,6 @@
       - myshard.changed == True
       - myshard.old_balancer_state == "stopped"
       - myshard.new_balancer_state == "started"
-
-- name: Ensure autosplit starts at an off state
-  community.mongodb.mongodb_balancer:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    autosplit: false
-
-- name: Activate autosplit check mode
-  community.mongodb.mongodb_balancer:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    autosplit: true
-  register: autosplit
-  check_mode: yes
-
-- assert:
-    that:
-      - "autosplit.changed == True"
-      - "autosplit.old_autosplit == False"
-      - "autosplit.new_autosplit == True"
-
-- name: Activate autosplit without check mode
-  community.mongodb.mongodb_balancer:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    autosplit: true
-  register: autosplit
-
-- assert:
-    that:
-      - "autosplit.changed == True"
-      - "autosplit.old_autosplit == False"
-      - "autosplit.new_autosplit == True"
-
-- name: Disable autosplit check mode
-  community.mongodb.mongodb_balancer:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    autosplit: false
-  register: autosplit
-  check_mode: yes
-
-- assert:
-    that:
-      - "autosplit.changed == True"
-      - "autosplit.old_autosplit == True"
-      - "autosplit.new_autosplit == False"
-
-- name: Disable autosplit without check mode
-  community.mongodb.mongodb_balancer:
-    login_user: '{{ mongodb_admin_user }}'
-    login_password: '{{ mongodb_admin_password }}'
-    autosplit: false
-  register: autosplit
-
-- assert:
-    that:
-      - "autosplit.changed == True"
-      - "autosplit.old_autosplit == True"
-      - "autosplit.new_autosplit == False"
 
 - name: Get balancer state
   #command: mongo admin --port 27017 -u "{{ mongodb_admin_user }}" -p "{{ mongodb_admin_password }}" -eval "sh.getBalancerState()"
