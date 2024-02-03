@@ -6,4 +6,4 @@
 - name: Install iproute2 for Debian
   apt:
     name: "iproute2"
-  when: ansible_os_family = "Debian"
+  when: ansible_os_family == "Debian"
