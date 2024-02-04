@@ -121,7 +121,7 @@
 
 - name: Create a standard user using super cert
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -172,7 +172,7 @@
 
 - name: Create another cert user
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -197,7 +197,7 @@
 
 - name: Modify cert user - adds a role
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -224,7 +224,7 @@
 
 - name: Modify cert user - no change
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -250,7 +250,7 @@
 
 - name: Delete cert user - check mode
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -272,7 +272,7 @@
 
 - name: Delete cert user
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -293,7 +293,7 @@
 
 - name: Delete cert user - does not exist
   mongodb_user:
-    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
