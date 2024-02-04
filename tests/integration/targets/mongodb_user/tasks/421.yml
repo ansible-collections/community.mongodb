@@ -80,7 +80,7 @@
     login_database: "$external"
     database: "$external"
     create_for_localhost_exception: /tmp/super.success
-    name: "CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: userAdminAnyDatabase
@@ -96,7 +96,7 @@
 - assert:
     that:
       - certificate_user.changed
-      - certificate_user.user == "CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - certificate_user.user == "CN=rhys,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Make js script with auth
   copy:
