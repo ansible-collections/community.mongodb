@@ -22,7 +22,7 @@
     username="super"
 
     # Generate server certs
-    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN={{ ansible_hostname }}"
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN=XXXX"
     openssl x509 -days 3650 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
     cat server.key server.crt > server.pem
     ############ EOF 
