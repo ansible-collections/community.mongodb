@@ -22,7 +22,7 @@
     username="super"
 
     # Generate server certs
-    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN=127.0.0.1"
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN=XXXX"
     openssl x509 -days 3650 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
     cat server.key server.crt > server.pem
     ############ EOF 
@@ -30,7 +30,7 @@
     #-----------------------------------------------------------
     # Generate client cert to be signed
     #-----------------------------------------------------------
-    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=127.0.0.1"
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=XXXX"
 
     #-----------------------------------------------------------
     # Sign the client cert
@@ -48,10 +48,6 @@
   shell: |
     chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
     chmod 0400 -R /tmp/certs;
-
-- name: Save mongod_storage_engine_opts to a variable so we can reset it later
-  set_fact:
-    old_mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}"
 
 - name: Set additional options for the mongod (4.4+)
   set_fact:
@@ -80,7 +76,7 @@
     login_database: "$external"
     database: "$external"
     create_for_localhost_exception: /tmp/super.success
-    name: "CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: userAdminAnyDatabase
@@ -96,12 +92,12 @@
 - assert:
     that:
       - certificate_user.changed
-      - certificate_user.user == 'CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US'
+      - certificate_user.user == "CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Make js script with auth
   copy:
     content: |
-      db.getSiblingDB("$external").auth({user:"CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
+      db.getSiblingDB("$external").auth({user:"CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US",mechanism:"MONGODB-X509"});
       db.system.users.find({db: "$external"})
     dest: /tmp/auth.js
 
@@ -121,7 +117,7 @@
 
 - name: Create a standard user using super cert
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
@@ -153,7 +149,7 @@
     #-----------------------------------------------------------
     # Generate client cert to be signed
     #-----------------------------------------------------------
-    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=127.0.0.1"
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=rhys"
 
     #-----------------------------------------------------------
     # Sign the client cert
@@ -172,12 +168,12 @@
 
 - name: Create another cert user
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: readAnyDatabase
@@ -193,16 +189,16 @@
 - assert:
     that:
       - another_user.changed
-      - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - another_user.user == "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Modify cert user - adds a role
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: readAnyDatabase
@@ -220,16 +216,16 @@
 - assert:
     that:
       - another_user.changed
-      - another_user.user == "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - another_user.user == "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Modify cert user - no change
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     roles:
       - db: admin
         role: readAnyDatabase
@@ -250,12 +246,12 @@
 
 - name: Delete cert user - check mode
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
@@ -272,12 +268,12 @@
 
 - name: Delete cert user
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
@@ -293,12 +289,12 @@
 
 - name: Delete cert user - does not exist
   mongodb_user:
-    login_user: CN=127.0.0.1,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
+    login_user: CN=XXXX,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US
     login_host: 127.0.0.1
     login_port: 3001
     login_database: "$external"
     database: "$external"
-    name: "CN=127.0.0.1,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+    name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
     ssl: true 
     ssl_ca_certs: /tmp/certs/ca.crt
