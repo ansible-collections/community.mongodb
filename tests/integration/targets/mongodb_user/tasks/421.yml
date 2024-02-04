@@ -49,10 +49,6 @@
     chown {{ mongodb_user }}:{{ mongodb_user }} -R /tmp/certs;
     chmod 0400 -R /tmp/certs;
 
-- name: Save mongod_storage_engine_opts to a variable so we can reset it later
-  set_fact:
-    old_mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}"
-
 - name: Set additional options for the mongod (4.4+)
   set_fact:
     mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \

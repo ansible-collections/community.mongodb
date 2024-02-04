@@ -416,6 +416,10 @@
 
 - include_tasks: mongod_teardown.yml
 
+- name: Save mongod_storage_engine_opts to a variable so we can reset it later
+  set_fact:
+    old_mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}"
+
 - include_tasks: 421.yml
   when: mongodb_version == "6.0"  # TODO This needs to work for MongoDB 7.0+
 
