@@ -417,6 +417,7 @@
 - include_tasks: mongod_teardown.yml
 
 - include_tasks: 421.yml
+  when: mongodb_version == "6.0"
 
 - include_tasks: mongod_teardown.yml
 
