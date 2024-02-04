@@ -30,7 +30,7 @@
     #-----------------------------------------------------------
     # Generate client cert to be signed
     #-----------------------------------------------------------
-    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN={{ ansible_hostname }}"
+    openssl req -days 3650 -nodes -newkey rsa:2048 -keyout ${username}.key -out ${username}.csr -subj "${prefix}/OU=${username}/CN=XXXX"
 
     #-----------------------------------------------------------
     # Sign the client cert
