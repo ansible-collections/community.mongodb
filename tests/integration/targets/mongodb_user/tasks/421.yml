@@ -96,7 +96,7 @@
 - assert:
     that:
       - certificate_user.changed
-      - certificate_user.user == 'CN={{ ansible_hostname }},OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US'
+      - certificate_user.user == 'CN=ansible_hostname,OU=super,O=YourCompany,L=YourCity,ST=YourState,C=US'
 
 - name: Make js script with auth
   copy:
@@ -193,7 +193,7 @@
 - assert:
     that:
       - another_user.changed
-      - another_user.user == "CN={{ ansible_hostname }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - another_user.user == "CN=ansible_hostname,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Modify cert user - adds a role
   mongodb_user:
@@ -220,7 +220,7 @@
 - assert:
     that:
       - another_user.changed
-      - another_user.user == "CN={{ ansible_hostname }},OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
+      - another_user.user == "CN=ansible_hostname,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
 
 - name: Modify cert user - no change
   mongodb_user:
