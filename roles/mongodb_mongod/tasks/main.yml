@@ -64,6 +64,30 @@
     - "mongodb"
     - "setup"
 
+- name: Override mongod service
+  when: mongodb_systemd_service_override | length > 0
+  tags:
+    - "mongodb"
+    - "setup"
+    - "service"
+  block:
+  - name: "Create {{ mongod_service }}.service.d directory"
+    file:
+      path: "/etc/systemd/system/{{ mongod_service }}.service.d/"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Override mongod service from provided content
+    copy:
+      content: "{{ mongodb_systemd_service_override }}"
+      dest: "/etc/systemd/system/{{ mongod_service }}.service.d/override.conf"
+      owner: root
+      group: root
+      mode: 0644
+    notify: daemon-reload
+
 - name: Check for github override
   set_fact:
     x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"

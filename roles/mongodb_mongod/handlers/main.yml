@@ -12,3 +12,8 @@
     host: "{{ bind_ip | split(',') | first }}"
     port: "{{ mongod_port }}"
   when: not skip_restart
+
+- name: Reload systemd configuration
+  listen: daemon-reload
+  systemd:
+    daemon_reload: true
