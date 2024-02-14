@@ -84,6 +84,13 @@
       that:
         - rs.changed == True
 
+  - name: Wait for the replicaset to stabilise 
+    community.mongodb.mongodb_status:
+      <<: *mongo_parameters
+      replica_set: "{{ current_replicaset }}"
+      poll: 5
+      interval: 30
+
   - name: Remove a member from the replicaset
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
