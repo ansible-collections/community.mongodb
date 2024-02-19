@@ -199,8 +199,8 @@ releases:
       - 440 - Fix incorrect alias ssl_crlfile.
       - 450 - Fix issues with mongodb_replicaset connecting with the pymongo 4.0.X driver.
     minor_changes:
-      - 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello. 
-        hello is the default. isMaster is useful for older versions of MongoDB. 
+      - 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello.
+        hello is the default. isMaster is useful for older versions of MongoDB.
         See [db.hello()](https://www.mongodb.com/docs/manual/reference/method/db.hello/) for more.
   1.3.4:
     release_summary: |
@@ -212,7 +212,7 @@ releases:
       This release is a maintenance release. Pymongo versions 3.12.* or 4.* are now required. MongoDB version 4+ are also required but can be overriden if desired.
     major_changes:
       - 470 - Removes depreciated distutils package and require Pymongo 3.12+ and MongoDB 4+
-        Adds a new parameter strict_compatibility (default true). 
+        Adds a new parameter strict_compatibility (default true).
         Set to false to disable Pymongo and MongoDB requirements.
   1.4.1:
     release_summary: |
@@ -247,7 +247,7 @@ releases:
         - 540 mongodb_replicaset - replicaset member priority updates.
         - 488 mongodb_info - Better handling of json data types.
     modules:
-      - description: 
+      - description:
           - Manage MongoDB User Roles (#530).
         name: mongodb_role
         namespace: community
@@ -291,4 +291,33 @@ releases:
       This release is a maintenance release.
     minor_changes:
      - 600 - Remove delete module from README.md.
-     - 601 - mongodb_install - Fix issue with specific_mongodb_version on RedHat OS family.  
+     - 601 - mongodb_install - Fix issue with specific_mongodb_version on RedHat OS family.
+  1.7.0:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 622 - mongodb_mongod - Allow systemd configuration override.
+      - 620 - mongodb_common - Use SSL constants in shared connection code.
+      - 609 - mongodb_mongod, mongodb_mongos, mongodb_config - support for allowConnectionsWithoutCertificates.
+      - 605 - mongodb_mongod, mongodb_mongos, mongodb_config - support for security.disabledProtocols.
+    bugfixes:
+      - 614 - mongodb_replicaset - Count voting members based on the sum of "votes" and using a comprehension
+    list.
+      - 611 - mongodb_role - lambda function changed to support non-existing keys.
+    modules:
+      - description:
+          - Manage database clusters in Atlas (#612)
+        name: mongodb_atlas_cluster
+        namespace: community
+      - description:
+          - Manage LDAP users in Atlas (#612)
+        name: mongodb_atlas_ldap_user
+        namespace: community
+      - description:
+          - Manage database users in Atlas (#612)
+        name: mongodb_atlas_user
+        namespace: community
+      - description:
+          - Manage IP whitelists in Atlas (#612)
+        name: mongodb_atlas_whitelist
+        namespace: community

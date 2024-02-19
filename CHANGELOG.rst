@@ -4,6 +4,36 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.0:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 622 - mongodb_mongod - Allow systemd configuration override.
+- 620 - mongodb_common - Use SSL constants in shared connection code.
+- 609 - mongodb_mongod, mongodb_mongos, mongodb_config - support for allowConnectionsWithoutCertificates.
+- 605 - mongodb_mongod, mongodb_mongos, mongodb_config - support for security.disabledProtocols.
+
+Bug Fixes:
+
+- 614 - mongodb_replicaset - Count voting members based on the sum of "votes" and using a comprehension
+list.
+- 611 - mongodb_role - lambda function changed to support non-existing keys.
+
+Modules
+---------
+
+- 612 - mongodb_atlas_cluster - Manage database clusters in Atlas (#612).
+- 612 - mongodb_atlas_ldap_user - Manage ldap users in Atlas (#612).
+- 612 - mongodb_atlas_user - Manage database users in Atlas (#612).
+- 612 - mongodb_atlas_whitelist - Manage IP whitelists in Atlas (#612).
+
 v1.6.3:
 ========
 
@@ -16,7 +46,7 @@ Minor Changes
 --------------
 
 - 600 - Remove delete module from README.md.
-- 601 - mongodb_install - Fix issue with specific_mongodb_version on RedHat OS family.  
+- 601 - mongodb_install - Fix issue with specific_mongodb_version on RedHat OS family.
 
 v1.6.2:
 ========
@@ -62,7 +92,7 @@ Minor Changes
 --------------
 
 - 569 - All pymongo modules - Better support for MongoDB Atlas.
-- 568 - Minor documentation updates.    
+- 568 - Minor documentation updates.
 
 v1.5.2
 =======
@@ -177,7 +207,7 @@ Major Changes
 ---------------
 
 - 470 - Removes depreciated distutils package and require Pymongo 3.12+ and MongoDB 4+
-  Adds a new parameter strict_compatibility (default true). 
+  Adds a new parameter strict_compatibility (default true).
   Set to false to disable Pymongo and MongoDB requirements.
 
 v1.3.4
@@ -211,8 +241,8 @@ Bug Fixes
 Minor Changes
 ---------------
 
-- 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello. 
-  Hello is the default. isMaster is useful for older versions of MongoDB. 
+- 450 - mongodb_replicaset. Introduce cluster_cmd parameter. Can be set to isMaster or hello.
+  Hello is the default. isMaster is useful for older versions of MongoDB.
   See [db.hello()](https://www.mongodb.com/docs/manual/reference/method/db.hello/) for more.
 
 v1.3.2
