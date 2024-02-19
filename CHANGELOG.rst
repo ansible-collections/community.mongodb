@@ -22,8 +22,7 @@ Minor Changes
 
 Bug Fixes:
 
-- 614 - mongodb_replicaset - Count voting members based on the sum of "votes" and using a comprehension
-list.
+- 614 - mongodb_replicaset - Count voting members based on the sum of "votes" and using a comprehension list.
 - 611 - mongodb_role - lambda function changed to support non-existing keys.
 
 Modules
