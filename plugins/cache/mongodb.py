@@ -182,7 +182,7 @@ class CacheModule(BaseCacheModule):
 
     def contains(self, key):
         with self._collection() as collection:
-            return bool(collection.count({'_id': self._make_key(key)}))
+            return bool(collection.count_documents({'_id': self._make_key(key)}))
 
     def delete(self, key):
         del self._cache[key]
