@@ -31,17 +31,17 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.versions.python_version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.versions.python_version }}
 
       - name: Install ansible-base (${{ matrix.versions.ansible_version }})
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -66,7 +66,7 @@ jobs:
           -v mongocache:/data/db mongo:latest
 
       - name: Install mongodb-org-shell
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -84,14 +84,14 @@ jobs:
           echo "nopymongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test cache handling of missing pymongo
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: "The 'pymongo' python module is required for the mongodb fact cache"
           actual: ${{ steps.no-pymongo.outputs.nopymongo }}
           comparison: contains
 
       - name: Install pymongo
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -111,7 +111,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ansible_processor_count
           actual: ${{ steps.mongo1.outputs.mongo }}
@@ -128,14 +128,14 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we don't have an index called ttl
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ttl
           actual: ${{ steps.mongo2.outputs.mongo }}
           comparison: notContains
 
       - name: Test that we have good output from getindexes
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: "_id_"
           actual: ${{ steps.mongo2.outputs.mongo }}
@@ -155,7 +155,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ansible_processor_count
           actual: ${{ steps.mongo3.outputs.mongo }}
@@ -172,14 +172,14 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we don't have an index called ttl
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ttl
           actual: ${{ steps.mongo4.outputs.mongo }}
           comparison: notContains
 
       - name: Test that we have good output from getindexes
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: "_id_"
           actual: ${{ steps.mongo4.outputs.mongo }}
@@ -201,7 +201,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ansible_processor_count
           actual: ${{ steps.mongo5.outputs.mongo }}
@@ -218,7 +218,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we do have an index called ttl
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ttl
           actual: ${{ steps.mongo6.outputs.mongo }}
@@ -240,7 +240,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ansible_processor_count
           actual: ${{ steps.mongo7.outputs.mongo }}
@@ -257,7 +257,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we do have an index called ttl
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ttl
           actual: ${{ steps.mongo8.outputs.mongo }}
@@ -279,7 +279,7 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we have something that looks like a cache record
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ansible_processor_count
           actual: ${{ steps.mongo9.outputs.mongo }}
@@ -296,14 +296,14 @@ jobs:
           echo "mongo=$output" >> $GITHUB_OUTPUT
 
       - name: Test that we don't have an index called ttl
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: ttl
           actual: ${{ steps.mongo10.outputs.mongo }}
           comparison: notContains
 
       - name: Test that we have good output from getindexes
-        uses: nick-invision/assert-action@v1
+        uses: nick-invision/assert-action@v2
         with:
           expected: "_id_"
           actual: ${{ steps.mongo10.outputs.mongo }}

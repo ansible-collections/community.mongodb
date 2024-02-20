@@ -29,12 +29,12 @@ jobs:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -63,33 +63,33 @@ jobs:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
       - name: Install ansible-base (${{ matrix.ansible_version }})
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Install mongodb
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: sudo apt-get install -y mongodb-org
 
       - name: Install dateutil
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install python-dateutil
 
       - name: Install python libs
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -177,26 +177,26 @@ jobs:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.versions.python_version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.versions.python_version }}
 
       - name: Install ansible-base (${{ matrix.versions.ansible_version }})
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install https://github.com/ansible/ansible/archive/${{ matrix.versions.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Install community.general
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: ansible-galaxy collection install 'community.general' -p ansible_collections/
 
       - name: Install community.crypto
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
