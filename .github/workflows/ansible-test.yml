@@ -24,7 +24,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           path: ansible_collections/community/mongodb
 
@@ -58,7 +58,7 @@ jobs:
           - stable-2.16
     steps:
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           path: ansible_collections/community/mongodb
 
@@ -126,7 +126,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           path: ansible_collections/community/mongodb
 
@@ -172,7 +172,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           path: ansible_collections/community/mongodb
 
