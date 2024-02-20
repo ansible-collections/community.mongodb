@@ -320,3 +320,8 @@ releases:
           - Manage IP whitelists in Atlas (#612)
         name: mongodb_atlas_whitelist
         namespace: community
+  1.7.1:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 631 - cache/mongodb.py - Support pymongo 4.0+. This plugin no longer support pymongo 3.12.*.

@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.1:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bug Fixes
+----------
+
+- 631 - cache/mongodb.py - Support pymongo 4.0+. This plugin no longer support pymongo 3.12.*.
+
 v1.7.0:
 =========
 
@@ -20,7 +33,8 @@ Minor Changes
 - 609 - mongodb_mongod, mongodb_mongos, mongodb_config - support for allowConnectionsWithoutCertificates.
 - 605 - mongodb_mongod, mongodb_mongos, mongodb_config - support for security.disabledProtocols.
 
-Bug Fixes:
+Bug Fixes
+----------
 
 - 614 - mongodb_replicaset - Count voting members based on the sum of "votes" and using a comprehension list.
 - 611 - mongodb_role - lambda function changed to support non-existing keys.
