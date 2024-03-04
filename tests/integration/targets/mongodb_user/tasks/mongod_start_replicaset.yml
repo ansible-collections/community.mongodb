@@ -34,7 +34,7 @@
 - name: Spawn mongod process without auth
   command: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
-    mongod{{ item }}/log.log --fork
+    mongod{{ item }}/log.log --fork --setParameter tlsUseSystemCA=true
   args:
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
@@ -43,12 +43,12 @@
 - name: Spawn mongod process with auth
   command: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
-    mongod{{ item }}/log.log --fork --auth --keyFile my.key
+    mongod{{ item }}/log.log --fork --auth --keyFile my.key --setParameter tlsUseSystemCA=true
   args:
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
   when: mongod_auth == True
-  
+
 - name: Wait for mongod to start responding
   wait_for:
     port: '{{ item }}'
