@@ -36,7 +36,7 @@
 
 - name: Spawn mongod process without auth
   command: mongod {{ mongod_storage_engine_opts }} --dbpath
-    mongod{{ item }} --port {{ item }} --logpath mongod{{ item }}/log.log --fork --setParameter tlsUseSystemCA=true
+    mongod{{ item }} --port {{ item }} --logpath mongod{{ item }}/log.log --fork --tlsAllowInvalidCertificates
   args:
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
@@ -45,7 +45,7 @@
 - name: Spawn mongod process with auth
   command: mongod {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --logpath mongod{{ item }}/log.log
-    --auth --keyFile my.key --fork --setParameter tlsUseSystemCA=true
+    --auth --keyFile my.key --fork --tlsAllowInvalidCertificates
   args:
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
