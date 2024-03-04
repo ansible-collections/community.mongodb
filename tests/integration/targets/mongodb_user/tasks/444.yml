@@ -16,10 +16,10 @@
 
 - name: Set additional options for the mongod (5+)
   set_fact:
-    mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
+    mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}\
       --tlsMode requireTLS \
-      --tlsCertificateKeyFile /tmp/certs44/mongodb.pem" \
-      --tlsUseSystemCA
+      --tlsCertificateKeyFile /tmp/certs44/mongodb.pem\
+      --tlsUseSystemCA"
   when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - include_tasks: mongod_singlenode.yml
