@@ -14,18 +14,12 @@
     openssl req -newkey rsa:2048 -new -x509 -days 365 -nodes -out mongodb-cert.crt -keyout mongodb-cert.key -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"
     cat mongodb-cert.key mongodb-cert.crt > mongodb.pem
 
-- name: Set additional options for the mongod (4)
-  set_fact:
-    mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
-      --sslMode requireSSL \
-      --sslPEMKeyFile /tmp/certs44/mongodb.pem"
-  when: mongodb_version == '4.0'
-
 - name: Set additional options for the mongod (5+)
   set_fact:
     mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }}  \
       --tlsMode requireTLS \
-      --tlsCertificateKeyFile /tmp/certs44/mongodb.pem"
+      --tlsCertificateKeyFile /tmp/certs44/mongodb.pem" \
+      --tlsUseSystemCA
   when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - include_tasks: mongod_singlenode.yml
@@ -44,7 +38,6 @@
       - "tlsAllowInvalidHostnames=true"
 
 - name: Get admin user
-  #shell: mongo admin --host localhost --port 3001 --ssl --sslCAFile /tmp/certs44/mongodb.pem --sslAllowInvalidHostnames  --username "{{ mongodb_admin_user }}" --password "{{ mongodb_admin_password }}" --eval "printjson(db.getUser('{{ mongodb_admin_user }}'))"
   mongodb_shell:
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
@@ -59,7 +52,6 @@
     debug: yes
     mongo_cmd: "auto"
   register: admin_myuser
-  #when: mongodb_version == '4.0'
 
 # The above task is not working as expected. See.. https://github.com/ansible-collections/community.mongodb/actions/runs/3077728127/jobs/4972801997
 - name: Assert that user setup is as expected

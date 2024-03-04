@@ -25,7 +25,7 @@
     openssl req -days 3650 -nodes -newkey rsa:2048 -keyout server.key -out server.csr -subj "${prefix}/CN=XXXX"
     openssl x509 -days 3650 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
     cat server.key server.crt > server.pem
-    ############ EOF 
+    ############ EOF
 
     #-----------------------------------------------------------
     # Generate client cert to be signed
@@ -54,18 +54,9 @@
     mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
       --clusterAuthMode x509 \
       --tlsMode requireTLS \
-      --tlsCAFile /tmp/certs/ca.crt
+      --tlsCAFile /tmp/certs/ca.crt \
       --tlsCertificateKeyFile /tmp/certs/server.pem"
   when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
-
-- name: Set additional options for the mongod (4.0)
-  set_fact:
-    mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
-      --clusterAuthMode x509 \
-      --sslMode requireSSL \
-      --sslCAFile /tmp/certs/ca.crt \
-      --sslPEMKeyFile /tmp/certs/mongodb.pem"
-  when: mongodb_version == '4.0'
 
 - include_tasks: mongod_singlenode.yml
 
@@ -80,7 +71,7 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/server.pem
     auth_mechanism: 'MONGODB-X509'
@@ -127,7 +118,7 @@
     roles:
       - db: admin
         role: userAdminAnyDatabase
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
@@ -177,7 +168,7 @@
     roles:
       - db: admin
         role: readAnyDatabase
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
@@ -204,7 +195,7 @@
         role: readAnyDatabase
       - db: test
         role: readWrite
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
@@ -231,7 +222,7 @@
         role: readAnyDatabase
       - db: test
         role: readWrite
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
@@ -253,7 +244,7 @@
     database: "$external"
     name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
@@ -275,7 +266,7 @@
     database: "$external"
     name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'
@@ -296,7 +287,7 @@
     database: "$external"
     name: "CN=rhys,OU=readonly,O=YourCompany,L=YourCity,ST=YourState,C=US"
     state: absent
-    ssl: true 
+    ssl: true
     ssl_ca_certs: /tmp/certs/ca.crt
     ssl_certfile: /tmp/certs/super.pem
     auth_mechanism: 'MONGODB-X509'

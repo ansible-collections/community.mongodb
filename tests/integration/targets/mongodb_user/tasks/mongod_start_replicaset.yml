@@ -34,7 +34,7 @@
 - name: Spawn mongod process without auth
   command: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
-    mongod{{ item }}/log.log --fork --tlsAllowInvalidCertificates
+    mongod{{ item }}/log.log --fork
   args:
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
@@ -43,7 +43,7 @@
 - name: Spawn mongod process with auth
   command: mongod --shardsvr {{ mongod_storage_engine_opts }} --dbpath
     mongod{{ item }} --port {{ item }} --replSet {{ current_replicaset }} --logpath
-    mongod{{ item }}/log.log --fork --auth --keyFile my.key --tlsAllowInvalidCertificates
+    mongod{{ item }}/log.log --fork --auth --keyFile my.key
   args:
     chdir: '{{ remote_tmp_dir }}'
   with_items: '{{ mongodb_nodes | sort }}'
