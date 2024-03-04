@@ -58,11 +58,13 @@ options:
     type: str
     aliases:
       - tlsCertificateKeyFilePassword
-  tls_user_system_ca:
+  tls_use_system_ca:
     description:
       - Use the system-wide CA certificate store.
     type: bool
-    default: false
+    default: true
+    aliases:
+      - tlsUseSystemCA
   auth_mechanism:
     description:
       - Authentication type.
