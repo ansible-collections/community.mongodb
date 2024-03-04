@@ -145,6 +145,7 @@ def mongodb_common_argument_spec(ssl_options=True):
         ssl_certfile=dict(type='str', default=None, aliases=['tlsCertificateKeyFile']),
         ssl_keyfile=dict(type='str', default=None, no_log=True),
         ssl_pem_passphrase=dict(type='str', default=None, no_log=True, aliases=['tlsCertificateKeyFilePassword']),
+        tls_user_system_ca=dict(type='bool', required=False, default=True, aliases=['tlsUseSystemCA']),
         auth_mechanism=dict(type='str',
                             required=False,
                             default=None,
