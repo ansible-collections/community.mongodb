@@ -395,6 +395,7 @@ def member_dicts_different(conf, member_config):
         "hidden": False,
         "priority": {"nonarbiter": 1.0, "arbiter": 0},
         "tags": {},
+        "horizons": {},
         "secondardDelaySecs": 0,
         "votes": 1
     }
