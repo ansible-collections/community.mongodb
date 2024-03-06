@@ -426,7 +426,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         # Should return false as the additonal dict keys are default values
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
 
-    def test_member_dicts_different_5(self):
+    def test_member_dicts_different_6(self):
         # mongodb replicaset config document format
         conf = {
             "members": [
