@@ -61,6 +61,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         "hidden": False,
         "priority": 1,
         "tags": {},
+        "horizons": {},
         "secondardDelaySecs": 0,
         "votes": 1
     }
@@ -424,6 +425,24 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                    {"host": "localhost:3004", "votes": 1, "priority": 1, "hidden": False}]
         # Should return false as the additonal dict keys are default values
         self.assertFalse(mongodb_common.member_dicts_different(conf, members))
+
+    def test_member_dicts_different_5(self):
+        # mongodb replicaset config document format
+        conf = {
+            "members": [
+                {"_id": 1, "host": "localhost:3001"},
+                {"_id": 2, "host": "localhost:3002"},
+                {"_id": 3, "host": "localhost:3004"}
+            ]
+        }
+        for member in conf["members"]:
+            member.update(self.member_config_defaults)
+        # list of dicts
+        members = [{"host": "localhost:3001", "horizons": { "test": "testhost:3001"}},
+                   {"host": "localhost:3002", "horizons": { "test": "testhost:3002"}},
+                   {"host": "localhost:3004", "horizons": { "test": "testhost:3004"}}]
+        # Using non default values
+        self.assertTrue(mongodb_common.member_dicts_different(conf, members))
 
     def test_lists_are_different1(self):
         l1 = [
