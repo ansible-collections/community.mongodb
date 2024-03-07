@@ -1,8 +1,11 @@
 from __future__ import (absolute_import, division, print_function)
+
 __metaclass__ = type
+
 import unittest
 import sys
 import os
+
 path = os.path.dirname(os.path.realpath(__file__))
 path = "{0}/../../plugins/module_utils".format(path)
 sys.path.append(path)
@@ -14,7 +17,6 @@ from bson import ObjectId
 
 
 class FakeAnsibleModule:
-
     params = {
         "login_host": "localhost",
         "login_port": 27017,
@@ -54,7 +56,6 @@ class FakeAnsibleModule:
 
 
 class TestMongoDBCommonMethods(unittest.TestCase):
-
     member_config_defaults = {
         "arbiterOnly": False,
         "buildIndexes": True,
@@ -85,7 +86,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 assert msg == ""
             else:
                 assert "This version of MongoDB is pretty old" in msg \
-                    or 'You must use pymongo 4+' in msg
+                       or 'You must use pymongo 4+' in msg
 
     def test_check_compatibility_strict_compatibility_False(self):
         tests = [
@@ -106,7 +107,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
                 assert warn == ""
             else:
                 assert 'You must use pymongo 4+' in warn \
-                    or 'This version of MongoDB is pretty old' in warn
+                       or 'This version of MongoDB is pretty old' in warn
 
     def test_load_mongocnf(self):
         with open(os.path.expanduser("~/.mongodb.cnf"), "w+") as w:
@@ -438,9 +439,9 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         for member in conf["members"]:
             member.update(self.member_config_defaults)
         # list of dicts
-        members = [{"host": "localhost:3001", "horizons": { "test": "testhost:3001"}},
-                   {"host": "localhost:3002", "horizons": { "test": "testhost:3002"}},
-                   {"host": "localhost:3004", "horizons": { "test": "testhost:3004"}}]
+        members = [{"host": "localhost:3001", "horizons": {"test": "testhost:3001"}},
+                   {"host": "localhost:3002", "horizons": {"test": "testhost:3002"}},
+                   {"host": "localhost:3004", "horizons": {"test": "testhost:3004"}}]
         # Using non default values
         self.assertTrue(mongodb_common.member_dicts_different(conf, members))
 
