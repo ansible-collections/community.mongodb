@@ -8,7 +8,7 @@
     owner: "{{ mongodb_user }}"
     group: "{{ mongodb_user }}"
 
-- name: Generate certs
+- name: Generate certs - TODO Can this one be removed now?
   shell: |
     cd /tmp/certs44
     openssl req -newkey rsa:2048 -new -x509 -days 365 -nodes -out mongodb-cert.crt -keyout mongodb-cert.key -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost"

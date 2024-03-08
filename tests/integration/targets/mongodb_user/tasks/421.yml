@@ -53,9 +53,7 @@
   set_fact:
     mongod_storage_engine_opts: "{{ mongod_storage_engine_opts }}  \
       --clusterAuthMode x509 \
-      --tlsMode requireTLS \
-      --tlsCAFile /tmp/certs/ca.crt \
-      --tlsCertificateKeyFile /tmp/certs/server.pem"
+      --tlsMode requireTLS
   when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - include_tasks: mongod_singlenode.yml
