@@ -18,7 +18,6 @@
   set_fact:
     mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }} \
       --tlsMode requireTLS \
-      --tlsCertificateKeyFile /tmp/certs44/mongodb.pem \
       --tlsUseSystemCA"
   when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
