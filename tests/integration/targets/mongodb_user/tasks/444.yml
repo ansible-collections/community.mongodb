@@ -18,7 +18,7 @@
   set_fact:
     mongod_storage_engine_opts: "{{ old_mongod_storage_engine_opts }} \
       --tlsMode requireTLS \
-      --tlsUseSystemCA"
+      --setParameter tlsUseSystemCA=true"
   when: mongodb_version == '4.4' or mongodb_version[0] | int >= 5
 
 - include_tasks: mongod_singlenode.yml
