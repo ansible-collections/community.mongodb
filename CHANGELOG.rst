@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.2:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bug Fixes
+----------
+
+- 638 - mongodb_replicaset - Allow module to update replicaset horizons.
+
 v1.7.1:
 =========
 

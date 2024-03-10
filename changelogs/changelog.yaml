@@ -325,3 +325,8 @@ releases:
       This release is a maintenance release.
     bugfixes:
       - 631 - cache/mongodb.py - Support pymongo 4.0+. This plugin no longer support pymongo 3.12.*.
+  1.7.2:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 638 - mongodb_replicaset - Allow module to update replicaset horizons.
