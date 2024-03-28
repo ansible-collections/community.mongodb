@@ -330,3 +330,8 @@ releases:
       This release is a maintenance release.
     bugfixes:
       - 638 - mongodb_replicaset - Allow module to update replicaset horizons.
+  1.7.3:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 641 - mongodb_mongod -  Add test condition for storage option in mongod.conf template file.

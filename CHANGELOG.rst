@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.3:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bug Fixes
+----------
+
+- 641 - mongodb_mongod -  Add test condition for storage option in mongod.conf template file.
+
 v1.7.2:
 =========
 
