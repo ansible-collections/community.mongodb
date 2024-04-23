@@ -145,6 +145,7 @@ cd git/ansible_collections/community
 ```bash
 git clone  https://github.com/ansible-collections/community.mongodb.git ./mongodb
 git clone  https://github.com/ansible-collections/community.general.git ./general
+git clone  https://github.com/ansible-collections/community.crypto.git ./crypto
 ```
 
 * Create and activate a virtual environment.
