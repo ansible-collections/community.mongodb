@@ -24,6 +24,7 @@ description:
 
 extends_documentation_fragment:
   - community.mongodb.login_options
+  - community.mongodb.ssl_options
 
 options:
   mongo_cmd:
@@ -195,7 +196,7 @@ import os
 __metaclass__ = type
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
-    mongodb_common_argument_spec
+    load_mongocnf, mongodb_common_argument_spec
 )
 
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_shell import (
@@ -208,7 +209,7 @@ from ansible_collections.community.mongodb.plugins.module_utils.mongodb_shell im
 
 
 def main():
-    argument_spec = mongodb_common_argument_spec(ssl_options=False)
+    argument_spec = mongodb_common_argument_spec(ssl_options=True)
     argument_spec.update(
         mongo_cmd=dict(type='str', default="mongosh"),
         file=dict(type='str', required=False),
@@ -267,15 +268,33 @@ def main():
 
     omit = module.params['omit']
 
+    username = module.params['login_user']
+    password = module.params['login_password']
+
+    credentials = load_mongocnf()
+    if credentials:
+        if not username:
+            username = credentials['user']
+        if not password:
+            password = credentials['password']
+
     args = add_arg_to_cmd(args, "--host", module.params['login_host'], omit=omit)
     args = add_arg_to_cmd(args, "--port", module.params['login_port'], omit=omit)
-    args = add_arg_to_cmd(args, "--username", module.params['login_user'], omit=omit)
-    args = add_arg_to_cmd(args, "--password", module.params['login_password'], omit=omit)
+    args = add_arg_to_cmd(args, "--username", username, omit=omit)
+    args = add_arg_to_cmd(args, "--password", password, omit=omit)
     args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'], omit=omit)
+    args = add_arg_to_cmd(args, "--authenticationMechanism", module.params['auth_mechanism'], omit=omit)
     args = add_arg_to_cmd(args, "--eval", module.params['eval'], omit=omit)
     args = add_arg_to_cmd(args, "--nodb", None, module.params['nodb'], omit=omit)
     args = add_arg_to_cmd(args, "--norc", None, module.params['norc'], omit=omit)
     args = add_arg_to_cmd(args, "--quiet", None, module.params['quiet'], omit=omit)
+
+    args = add_arg_to_cmd(args, "--tls", None, module.params['ssl'], omit=omit)
+    args = add_arg_to_cmd(args, "--tlsAllowInvalidCertificates", None, module.params['ssl_cert_reqs'] in ('CERT_NONE', 'CERT_OPTIONAL'), omit=omit)
+    args = add_arg_to_cmd(args, "--tlsCAFile", module.params['ssl_ca_certs'], omit=omit)
+    args = add_arg_to_cmd(args, "--tlsCRLFile", module.params['ssl_crlfile'], omit=omit)
+    args = add_arg_to_cmd(args, "--tlsCertificateKeyFile", module.params['ssl_keyfile'], omit=omit)
+    args = add_arg_to_cmd(args, "--tlsCertificateKeyFilePassword", module.params['ssl_pem_passphrase'], omit=omit)
 
     additional_args = module.params['additional_args']
     if additional_args is not None:
