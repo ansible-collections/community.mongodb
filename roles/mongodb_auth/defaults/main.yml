@@ -28,3 +28,5 @@ mongodb_users: []
 mongodb_force_update_password: no
 
 mongodb_use_tls: false
+
+mongodb_create_for_localhost_exception: /root/mongodb_admin.success
