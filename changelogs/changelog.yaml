@@ -335,3 +335,8 @@ releases:
       This release is a maintenance release.
     bugfixes:
       - 641 - mongodb_mongod -  Add test condition for storage option in mongod.conf template file.
+  1.7.4:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 644 - mongodb_shell - Add ssl/tls options.

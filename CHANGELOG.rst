@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.4:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Minor Changes
+-------------
+
+- 644 - mongodb_shell - Add ssl/tls options.
+
 v1.7.3:
 =========
 
