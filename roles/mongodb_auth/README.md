@@ -7,9 +7,11 @@ If your mongo instance requires ssl or an alternative auth_mechanism, please use
 to provide the default auth details for `community.mongodb.mongodb_user` (these defaults are ignored
 when adding the initial admin user with the localhost exception).
 
-If running this on a MongoDB server that already has an admin user (ie when using this role to audit
-an alternate install method), you must touch `/root/mongodb_admin.success` or you will get an error
-when this role tries to add the admin user again.
+By default this role checks and creates a file at `/root/mongodb_admin.success` to provide idempotent creation of the first admin user.
+
+- If running this on a MongoDB server that already has an admin user (ie when using this role to audit
+an alternate install method), you must touch the file or you will get an error when this role tries to add the admin user again.
+- When setting up a fresh MongoDB installation on a system previously configured with this role, remember to delete this file. 
 
 Role Variables
 --------------
@@ -24,6 +26,7 @@ Role Variables
 * `mongodb_admin_default_pwd`: MongoDB admin password (for parent roles to override without overriding user's password). Default admin.
 * `mongodb_users`: List of additional users to add. Each user dict should include fields: db, user, pwd, state (default: "present"), roles (default: "readWrite").
 * `mongodb_force_update_password`: Whether or not to force a password update for any users in mongodb_users. Setting this to yes will result in 'changed' on every run, even if the password is the same. Setting this to no only adds a password when creating the user.
+* `mongodb_create_for_localhost_exception`: Path of the file checked before creating the first admin user. If present, it is skipped. If absent, admin is added and the file is created afterwards. Default `/root/mongodb_admin.success`.
 
 IMPORTANT NOTE: It is expected that mongodb_admin_user & mongodb_admin_pwd values be overridden in your own file protected by Ansible Vault. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
 
