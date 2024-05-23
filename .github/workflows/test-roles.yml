@@ -43,6 +43,7 @@ jobs:
       matrix:
         python_version:
           - "3.10"
+          - "3.12"
         mongodb_role: ${{ fromJson(needs.roles_matrix.outputs.matrix) }}
 
     steps:
