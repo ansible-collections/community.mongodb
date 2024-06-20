@@ -96,7 +96,7 @@
 
     ssl: "{{ mongodb_use_tls }}"
     ssl_ca_certs: "{{ mongodb_certificate_ca_file if mongodb_use_tls else omit }}"
-    login_host: localhost
+    login_host: "{{ mongod_host }}"
     login_port: "{{ mongod_port | string }}"  # silence implicit int->str conversion warning
     create_for_localhost_exception: "{{ mongodb_create_for_localhost_exception }}"
   tags:
