@@ -18,10 +18,10 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
 
       - name: Install ansible-base (devel)
         run: pip install https://github.com/ansible/ansible/archive/devel.tar.gz --disable-pip-version-check
