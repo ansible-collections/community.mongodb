@@ -1,5 +1,6 @@
 ---
 # defaults file for mongodb_auth
+mongod_host: "localhost"
 mongod_port: 27017
 mongod_package: "mongodb-org-server"
 
