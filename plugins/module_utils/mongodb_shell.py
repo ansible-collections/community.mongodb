@@ -1,8 +1,13 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+# DeprecationWarning: 'pipes' is deprecated and slated for removal in Python 3.13
+# Ignore for now
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
+
 import shlex
-import pipes
+import pipes 
 import re
 import json
 import os
