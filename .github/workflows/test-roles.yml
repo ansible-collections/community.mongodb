@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         python_version:
-          - "3.10"
+          - "3.8"
         mongodb_role: ${{ fromJson(needs.roles_matrix.outputs.matrix) }}
 
     steps:
