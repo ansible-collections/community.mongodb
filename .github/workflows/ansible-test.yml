@@ -15,12 +15,17 @@ jobs:
         working-directory: ansible_collections/community/mongodb
     strategy:
       matrix:
-        ansible_version:
-          - devel
-          - stable-2.13
-          - stable-2.14
-          - stable-2.15
-          - stable-2.16
+        versions: 
+          - python_version: "3.8"
+            ansible_version: "stable-2.13"
+          - python_version: "3.9"
+            ansible_version: "stable-2.14"
+          - python_version: "3.10"
+            ansible_version: "stable-2.15"
+          - python_version: "3.10"
+            ansible_version: "stable-2.16"
+          - python_version: "3.11"
+            ansible_version: "devel"
     steps:
 
       - name: Check out code
@@ -28,12 +33,12 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.11
+      - name: Set up Python ${{ matrix.versions.python_version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.versions.python_version }}
 
-      - name: Install ansible-base (${{ matrix.ansible_version }})
+      - name: Install ansible-base (${{ matrix.versions.ansible_version }})
         uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
@@ -41,7 +46,7 @@ jobs:
           command: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Run sanity tests
-        run: ansible-test sanity --docker -v --color --python 3.9 --exclude docs/* --exclude tests/ansible-operator/
+        run: ansible-test sanity --docker -v --color --python ${{ matrix.versions.python_version }} --exclude docs/* --exclude tests/ansible-operator/
 
   units:
     runs-on: ubuntu-20.04
@@ -50,24 +55,29 @@ jobs:
         working-directory: ansible_collections/community/mongodb
     strategy:
       matrix:
-        ansible_version:
-          - devel
-          - stable-2.13
-          - stable-2.14
-          - stable-2.15
-          - stable-2.16
+        versions: 
+          - python_version: "3.8"
+            ansible_version: "stable-2.13"
+          - python_version: "3.9"
+            ansible_version: "stable-2.14"
+          - python_version: "3.10"
+            ansible_version: "stable-2.15"
+          - python_version: "3.10"
+            ansible_version: "stable-2.16"
+          - python_version: "3.11"
+            ansible_version: "devel"
     steps:
       - name: Check out code
         uses: actions/checkout@v4
         with:
           path: ansible_collections/community/mongodb
 
-      - name: Set up Python 3.11
+      - name: Set up Python ${{ matrix.versions.python_version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.versions.python_version }}
 
-      - name: Install ansible-base (${{ matrix.ansible_version }})
+      - name: Install ansible-base (${{ matrix.versions.ansible_version }})
         uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
@@ -103,7 +113,7 @@ jobs:
         run: mlaunch --single --port 27999
 
       - name: Run unit tests
-        run: ansible-test units -v --color --python 3.10 --coverage
+        run: ansible-test units -v --color --python ${{ matrix.versions.python_version }} --coverage
 
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
