@@ -20,7 +20,7 @@ platforms:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
   - name: fedora
-    image: fedora:latest
+    image: fedora:38
     #command: /sbin/init
     privileged: True
     volumes:
