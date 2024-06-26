@@ -11,7 +11,7 @@ lint:
 platforms:
   - name: almalinux_8
     image: almalinux:8
-    command: /sbin/init
+    command: /usr/lib/systemd/systemd
     privileged: True
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
