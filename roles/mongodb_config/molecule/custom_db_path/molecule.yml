@@ -19,24 +19,24 @@ platforms:
   #  networks:
   #    - name: "mymongo"
   #  network_mode: "mymongo"
-  - name: ubuntu_22_04
-    hostname: ubuntu_22_04
+  - name: "ubuntu_22_04"
+    hostname: "ubuntu_22_04"
     image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongo"
     network_mode: "mymongo"
-  - name: ubuntu_22
-    hostname: ubuntu_22
+  - name: "ubuntu_22"
+    hostname: "ubuntu_22"
     image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongo"
     network_mode: "mymongo"
-  - name: debian_bullseye
-    hostname: debian_bullseye
+  - name: "debian_bullseye"
+    hostname: "debian_bullseye"
     image: debian:bullseye
     command: /sbin/init
     privileged: True
