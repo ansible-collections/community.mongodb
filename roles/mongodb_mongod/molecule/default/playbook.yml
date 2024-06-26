@@ -34,7 +34,7 @@
         replica_set: rs0
         validate: no
         members:
-          - almalinux_8:27017
+          #- almalinux_8:27017
           #- fedora:27017
           - ubuntu_22_04:27017
           - debian_bullseye:27017

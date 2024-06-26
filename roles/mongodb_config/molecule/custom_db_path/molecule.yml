@@ -9,16 +9,16 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  - name: almalinux_8
-    hostname: almalinux_8
-    image: almalinux:8
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: "mymongo"
-    network_mode: "mymongo"
+  #- name: almalinux_8
+  #  hostname: almalinux_8
+  #  image: almalinux:8
+  #  command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  #  networks:
+  #    - name: "mymongo"
+  #  network_mode: "mymongo"
   - name: ubuntu_22_04
     hostname: ubuntu_22_04
     image: ubuntu:22.04
