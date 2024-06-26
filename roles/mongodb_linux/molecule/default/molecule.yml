@@ -18,6 +18,7 @@ platforms:
     networks:
       - name: "mongodb_linux"
     network_mode: "mongodb_linux"
+    cgroupns_mode: host
   - name: ubuntu_22_04
     image: ubuntu:22.04
     command: /sbin/init
