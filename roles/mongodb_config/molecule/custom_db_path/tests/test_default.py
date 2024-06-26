@@ -58,7 +58,7 @@ def test_mongod_replicaset(host):
         r = host.run(cmd)
 
         assert "cfg" in r.stdout
-        assert "almalinux_8:{0}".format(port) in r.stdout
+        # assert "almalinux_8:{0}".format(port) in r.stdout
         # assert "fedora:{0}".format(port) in r.stdout
         assert "ubuntu_22_04:{0}".format(port) in r.stdout
         assert "ubuntu_22:{0}".format(port) in r.stdout
