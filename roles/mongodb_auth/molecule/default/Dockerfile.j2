@@ -26,6 +26,15 @@ RUN yum -y install systemd sudo python3 python3-setuptools python3-pip procps-ng
     rm -f /lib/systemd/system/anaconda.target.wants/* ;
 {% elif item.name == 'ubuntu_22' %}
 RUN apt-get update && apt-get install -y python3 python3-setuptools python3-pip sudo bash ca-certificates iproute2 systemd-sysv procps netbase && apt-get clean;
+{% elif item.name == 'almalinux_8' %}
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in ; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done);
+RUN rm -rf /lib/systemd/system/multi-user.target.wants/ \
+&& rm -rf /etc/systemd/system/.wants/ \
+&& rm -rf /lib/systemd/system/local-fs.target.wants/ \
+&& rm -f /lib/systemd/system/sockets.target.wants/udev \
+&& rm -f /lib/systemd/system/sockets.target.wants/initctl \
+&& rm -rf /lib/systemd/system/basic.target.wants/ \
+&& rm -f /lib/systemd/system/anaconda.target.wants/*
 {% else %}
 # Add systemd-sysv package for Debian to get systemd working (and procps for sysctl) and netbase for firewalld
 RUN if [ $(command -v apt-get) ]; then apt-get update && apt-get install -y python3 python3-setuptools python3-pip sudo bash ca-certificates iproute2 systemd-sysv procps netbase && apt-get clean; \
