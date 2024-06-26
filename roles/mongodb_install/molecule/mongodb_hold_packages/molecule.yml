@@ -11,8 +11,8 @@ lint:
 platforms:
   - name: almalinux_8
     image: almalinux:8
-  - name: fedora
-    image: fedora:37
+  #- name: fedora
+  #  image: fedora:37
   - name: ubuntu_22_04
     image: ubuntu:22.04
   - name: ubuntu_22

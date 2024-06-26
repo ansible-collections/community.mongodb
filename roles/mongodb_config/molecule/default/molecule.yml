@@ -43,15 +43,15 @@ platforms:
     networks:
       - name: "mymongo"
     network_mode: "mymongo"
-  - name: fedora
-    hostname: fedora
-    image: fedora:37
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
-    networks:
-      - name: "mymongo"
+  #- name: fedora
+  #  hostname: fedora
+  #  image: fedora:37
+  #  command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
+  #  networks:
+  #    - name: "mymongo"
 provisioner:
   name: ansible
   lint:

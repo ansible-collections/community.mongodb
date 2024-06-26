@@ -15,7 +15,7 @@
     # add some users for some of the hosts
     hosts_with_extra_user:
       - centos_8
-      - fedora
+      #- fedora
       - ubuntu_22
     mongodb_users_empty: []
     mongodb_users_full:

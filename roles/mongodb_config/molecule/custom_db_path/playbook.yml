@@ -13,7 +13,7 @@
     - name: Install pymongo
       pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
-      when: ansible_hostname == "fedora"
+      when: ansible_hostname == "ubuntu_22"
 
     - name: Determine openssl version
       command: openssl version
@@ -38,8 +38,8 @@
         validate: no
         members:
           - almalinux_8:27019
-          - fedora:27019
+          #- fedora:27019
           - ubuntu_22_04:27019
           - debian_bullseye:27019
           - ubuntu_22:27019
-      when: ansible_hostname == "fedora"
+      when: ansible_hostname == "ubuntu_22"

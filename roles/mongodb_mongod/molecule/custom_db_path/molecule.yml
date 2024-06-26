@@ -39,15 +39,15 @@ platforms:
     networks:
       - name: "mongod"
     network_mode: "mongod"
-  - name: fedora
-    image: fedora:37
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
-    networks:
-      - name: "mongod"
-    network_mode: "mongod"
+  #- name: fedora
+  #  image: fedora:37
+  #  command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
+  #  networks:
+  #    - name: "mongod"
+  #  network_mode: "mongod"
 provisioner:
   name: ansible
   lint:

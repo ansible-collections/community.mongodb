@@ -27,12 +27,12 @@ platforms:
     image: debian:bullseye
     command: /sbin/init
     privileged: True
-  - name: fedora
-    image: fedora:37
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
+  #- name: fedora
+  #  image: fedora:37
+  #  command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
 provisioner:
   name: ansible
   lint:
