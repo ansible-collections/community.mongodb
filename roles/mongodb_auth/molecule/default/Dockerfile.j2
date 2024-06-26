@@ -13,8 +13,8 @@ ENV {{ var }} {{ value }}
 {% endfor %}
 {% endif %}
 
-{% if item.name == 'amazonlinux' or item.name == 'fedora' %}
-RUN yum -y install systemd sudo python3 python3-setuptools python3-pip procps-ng; \
+{% if item.name == 'amazonlinux' or item.name == 'fedora' or item.name == 'almalinux_8' %}
+RUN yum -y install systemd sudo python3 python3-setuptools python3-pip procps-ng initscripts hostname; \
     cd /lib/systemd/system/sysinit.target.wants/ ; \
     for i in *; do [ $i = systemd-tmpfiles-setup.service ] || rm -f $i ; done ; \
     rm -f /lib/systemd/system/multi-user.target.wants/* ; \
