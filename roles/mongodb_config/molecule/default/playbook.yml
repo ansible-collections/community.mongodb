@@ -8,6 +8,10 @@
 
   tasks:
 
+    - name: Debug task
+      debug:
+        var: ansible_hostname
+
     - name: Install pymongo
       pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
