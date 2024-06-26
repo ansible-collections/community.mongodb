@@ -9,16 +9,15 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  - name: almalinux_8
-    image: almalinux:8
-    command: /usr/sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: "mongodb_linux"
-    network_mode: "mongodb_linux"
-    cgroupns_mode: host
+  # - name: almalinux_8
+  #  image: almalinux:8
+  #  command: /usr/sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  #  networks:
+  #    - name: "mongodb_linux"
+  #  network_mode: "mongodb_linux"
   - name: ubuntu_22_04
     image: ubuntu:22.04
     command: /sbin/init
