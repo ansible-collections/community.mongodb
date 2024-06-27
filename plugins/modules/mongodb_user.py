@@ -79,9 +79,9 @@ options:
       - If this file is present (and C(login_user) is not defined), then skip this task.
 
 notes:
-    - Requires the pymongo Python package on the remote host, version 2.4.2+. This
+    - Requires the pymongo Python package on the remote host, version 4+. This
       can be installed using pip or the OS package manager. Newer mongo server versions require newer
-      pymongo versions. @see http://api.mongodb.org/python/current/installation.html
+      pymongo versions. @see https://www.mongodb.com/docs/languages/python/pymongo-driver/current/compatibility/
 requirements:
   - "pymongo"
 author:
