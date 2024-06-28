@@ -73,11 +73,11 @@ options:
         description:
             - Extra connection parameters that to be sent to pymongo.MongoClient
             - Check the example to see how to connect to mongo using an SSL certificate.
-            - "All possible parameters are here: U(https://api.mongodb.com/python/current/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient)"
+            - "All possible parameters are here: U(https://pymongo.readthedocs.io/en/stable/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient)"
         type: dict
         default: {}
 notes:
-    - "Please check https://api.mongodb.org/python/current/api/pymongo/collection.html?highlight=find#pymongo.collection.Collection.find for more details."
+    - "Please check https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html#pymongo.collection.Collection.find for more details."
 requirements:
     - pymongo >= 2.4 (python library)
 '''

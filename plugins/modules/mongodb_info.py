@@ -38,7 +38,7 @@ options:
     elements: str
 
 notes:
-    - Requires the pymongo Python package on the remote host, version 2.4.2+.
+    - Requires the pymongo Python package on the remote host, version 4+.
 
 requirements:
   - pymongo
