@@ -95,7 +95,7 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: pip install mtools==1.7.2 pymongo psutil coverage pytest-xdist pytest
+          command: pip install mtools==1.7.2 pymongo psutil coverage pytest-xdist
 
       - name: Start a replicaset with mtools (3 nodes, starting from port 27017, auth enabled, rs name = replset)
         run: mlaunch --replicaset --auth
