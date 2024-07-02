@@ -158,6 +158,9 @@
        }
     dest: /root/mongo.js
 
+- name: "Debug step"
+  shell: ls -lh /root
+
 - name: Run a file containing MongoDB commands
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
@@ -296,6 +299,9 @@
         - "rhysDB.changed == False"
         - "'.success was found meaning this command has already successfully executed' in rhysDB.msg"
   when: mongodb_version[0] | int <= 4
+
+- name: "Debug step"
+  shell: ls -lh /root
 
 - name: Test file with idempotent on 1
   community.mongodb.mongodb_shell:
