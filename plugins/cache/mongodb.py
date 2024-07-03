@@ -129,7 +129,7 @@ class CacheModule(BaseCacheModule):
     def _collection(self):
         '''
         This is a context manager for opening and closing mongo connections as needed. This exists as to not create a global
-        connection, due to pymongo not being fork safe (http://api.mongodb.com/python/current/faq.html#is-pymongo-fork-safe)
+        connection, due to pymongo not being fork safe (https://www.mongodb.com/docs/languages/python/pymongo-driver/current/faq/#is-pymongo-fork-safe-)
         '''
         mongo = pymongo.MongoClient(self._connection)
         try:
