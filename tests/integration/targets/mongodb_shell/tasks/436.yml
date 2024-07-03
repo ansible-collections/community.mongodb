@@ -32,5 +32,5 @@
       
 - assert:
     that: 
-      - first_insert_duplicate.failed is False
+      - "first_insert_duplicate.failed"
       - "' E11000 duplicate key error collection' in first_insert_duplicate.msg"
