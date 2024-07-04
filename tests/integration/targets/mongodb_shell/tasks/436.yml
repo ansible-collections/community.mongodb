@@ -8,48 +8,29 @@
     login_port: 3001
     debug: yes
     db: "test"
-    eval: 'db.hosts.insert({"_id": "first_record"})'
+    eval: 'db.hosts.insertOne({"_id": "first_record"})'
     mongo_cmd: "auto"
   register: first_insert
 
 - assert:
     that: 
       - first_insert.changed
+      - "first_insert.transformed_output == {\"acknowledged\": true, \"insertedId\": \"first_record\"}"
 
-- assert:
-    that:
-      - "first_insert.out == 'WriteResult({ \"nInserted\" : 1 })\n'"
-      - "first_insert.transformed_output == {\"nInserted\": 1}"
-  when: mongodb_version[0] | int < 5
-
-- assert:
-    that:
-      - "'DeprecationWarning: Collection.insert() is deprecated' in first_insert.out"
-      - "first_insert.transformed_output == {\"acknowledged\":true,\"insertedIds\":{\"0\":\"first_record\"}}"
-  when: mongodb_version[0] | int >= 5
-
-- name: Insert a duplicate record into a collection - mongo shell does not throw an error so neither do we (mongosh does throw an error)
+# mongosh throws an error, previously mongo did not
+- name: Insert a duplicate record into a collection
   community.mongodb.mongodb_shell:
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     debug: yes
     db: "test"
-    eval: 'db.hosts.insert({"_id": "first_record"})'
+    eval: 'db.hosts.insertOne({"_id": "first_record"})'
     mongo_cmd: "auto"
-  ignore_errors: "{{ 'yes' if mongodb_version.startswith('5') else 'no' }}"
+  ignore_errors: true
   register: first_insert_duplicate
-
-- assert:
-    that: 
-      - first_insert_duplicate.changed
       
 - assert:
     that: 
-      - first_insert_duplicate.out.startswith('WriteResult({')
-      - "first_insert_duplicate.transformed_output == {\"nInserted\": 0, \"writeError\": {\"code\": 11000, \"errmsg\": \"E11000 duplicate key error collection: test.hosts index: _id_ dup key: { _id: \\\"first_record\\\" }\"}}"
-  when: mongodb_version[0] | int < 5
-
-# TODO - Checks for V5
-#- assert:
-#    that: 
+      - "first_insert_duplicate.failed"
+      - "' E11000 duplicate key error collection' in first_insert_duplicate.msg"

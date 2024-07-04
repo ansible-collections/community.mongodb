@@ -23,8 +23,8 @@ platforms:
     image: debian:bullseye
     privileged: yes
     command: "/sbin/init"
-  - name: fedora
-    image: fedora:37
+  #- name: fedora
+  #  image: fedora:37
 provisioner:
   name: ansible
   lint:

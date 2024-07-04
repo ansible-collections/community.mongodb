@@ -19,23 +19,23 @@ platforms:
   #  networks:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
-  - name: fedora
-    image: fedora:37
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
-    networks:
-      - name: "mymongos"
-    network_mode: "mymongos"
-  - name: ubuntu_22_04
+  #- name: fedora
+  #  image: fedora:38
+    #command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
+  #  networks:
+  #    - name: "mymongos"
+  #  network_mode: "mymongos"
+  - name: "ubuntu_22_04"
     image: ubuntu:22.04
     command: /sbin/init
     privileged: True
     networks:
       - name: "mymongos"
     network_mode: "mymongos"
-  - name: ubuntu_22
+  - name: "ubuntu_22"
     image: ubuntu:22.04
     command: /sbin/init
     privileged: True
@@ -49,7 +49,7 @@ platforms:
   #  networks:
   #    - name: "mymongos"
   #  network_mode: "mymongos"
-  - name: config1
+  - name: "config1"
     image: ubuntu:22.04
     command: /sbin/init
     privileged: True

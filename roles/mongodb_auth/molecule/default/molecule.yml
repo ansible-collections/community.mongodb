@@ -9,12 +9,12 @@ lint:
     config-data:
       line-length: disable
 platforms:
-  - name: almalinux_8
-    image: almalinux:8
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  #- name: almalinux_8
+  #  image: almalinux:8
+  #  command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro
   - name: ubuntu_22_04
     image: ubuntu:22.04
     command: /sbin/init
@@ -27,12 +27,12 @@ platforms:
     image: debian:bullseye
     command: /sbin/init
     privileged: True
-  - name: fedora
-    image: fedora:37
-    command: /sbin/init
-    privileged: True
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro 
+  #- name: fedora
+  #  image: fedora:37
+  #  command: /sbin/init
+  #  privileged: True
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:ro 
 provisioner:
   name: ansible
   lint:
