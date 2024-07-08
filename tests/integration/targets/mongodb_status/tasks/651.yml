@@ -2,7 +2,7 @@
 - vars:
     mongo_parameters: &mongo_parameters
       login_host: localhost
-      login_port: 3001
+      login_port: 3003 # Run on Arbiter
       login_database: "admin"
 
   block:
