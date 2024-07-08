@@ -296,7 +296,7 @@ def is_auth_enabled(module):
         auth_is_enabled = False
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code in [13436]:  # NotPrimaryOrSecondary
-            time.sleep(5)
+            time.sleep(10)
             try:
                 myclient['admin'].command('listDatabases', 1.0)
                 auth_is_enabled = False
