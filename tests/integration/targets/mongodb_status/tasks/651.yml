@@ -36,6 +36,6 @@
       community.mongodb.mongodb_status:
         <<: *mongo_parameters
         replica_set: "{{ current_replicaset }}"
-        auth_mechanism: "SCRAM-SHA-256"  # Why is this here for no auth?
+        #auth_mechanism: "SCRAM-SHA-256"  # Why is this here for no auth?
         poll: 6
         interval: 10
