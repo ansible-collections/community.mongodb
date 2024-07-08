@@ -298,7 +298,7 @@ def is_auth_enabled(module):
         if hasattr(excep, 'code') and excep.code in [13436]:  # NotPrimaryOrSecondary
             time.sleep(10)
             try:
-                myclient['admin'].command('listDatabases', 1.0)
+                myclient['admin'].command('replSetGetStatus', 1.0)
                 auth_is_enabled = False
             except Exception as excep:
                 pass  # let code below handle this
