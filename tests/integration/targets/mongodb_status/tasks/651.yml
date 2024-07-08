@@ -32,6 +32,14 @@
           - localhost:3003
         arbiter_at_index: 2
 
+    - name: Run test command
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: "rs.status()"
+        mongo_cmd: "auto"
+        transform: "raw"   
+      register: mongo_output
+
     - name: Get replica_set status
       community.mongodb.mongodb_status:
         <<: *mongo_parameters
