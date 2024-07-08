@@ -3,8 +3,6 @@
     mongo_parameters: &mongo_parameters
       login_host: localhost
       login_port: 3001
-      login_user: "{{ mongodb_admin_user }}"
-      login_password: "{{ mongodb_admin_password }}"
       login_database: "admin"
 
   block:
