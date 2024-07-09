@@ -35,7 +35,12 @@
     - name: Run test command
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
-        eval: "rs.status()"
+        eval: |
+          db.adminCommand(
+            {
+              listDatabases: 1
+            }
+          )
         mongo_cmd: "auto"
         transform: "raw"   
       register: mongo_output
