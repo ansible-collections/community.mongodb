@@ -431,3 +431,11 @@
 - include_tasks: mongod_teardown.yml
 
 - include_tasks: 302.yml
+
+- include_tasks: mongod_teardown.yml
+
+- include_tasks: 651_noauth.yml
+
+- include_tasks: mongod_teardown.yml
+
+- include_tasks: 651_auth.yml
