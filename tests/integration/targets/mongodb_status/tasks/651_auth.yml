@@ -54,3 +54,12 @@
         #auth_mechanism: "SCRAM-SHA-256"  # Why is this here for no auth?
         poll: 6
         interval: 10
+      register: replset_status
+
+    - name: Validate expected number of PRIMARY, SECONDARY, ARBITER hosts
+      assert:
+        that:
+          - "{{ replset_status['replicaset'].values() | list | length == 3 }}"
+          - "{{ replset_status['replicaset'].values() | list | select('match', 'PRIMARY') | list  | length == 1 }}"
+          - "{{ replset_status['replicaset'].values() | list | select('match', 'SECONDARY') | list  | length == 1 }}"
+          - "{{ replset_status['replicaset'].values() | list | select('match', 'ARBITER') | list  | length == 1 }}"
