@@ -45,7 +45,7 @@
         roles:
           - root
         state: present
-        run_once: true
+      run_once: true
 
     - name: Get replica_set status
       community.mongodb.mongodb_status:
