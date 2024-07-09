@@ -1,0 +1,56 @@
+# Tests for issue 651
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_host: localhost
+      login_port: 3003 # Run on Arbiter
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: "admin"
+
+  block:
+
+    - set_fact:
+        mongodb_nodes:
+          - 3001
+          - 3002
+          - 3003
+
+    - set_fact:
+        mongod_auth: true
+
+    - set_fact:
+        current_replicaset: "issue_651"
+
+    - include_tasks: mongod_replicaset.yml      
+
+    - name: Create replicaset with module
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 3001
+        replica_set: "{{ current_replicaset }}"
+        members:
+          - localhost:3001
+          - localhost:3002
+          - localhost:3003
+        arbiter_at_index: 2
+
+    - name: Add mongodb admin user - rs0
+      community.mongodb.mongodb_user:
+        login_host: localhost
+        login_port: 3001
+        replica_set: '{{ current_replicaset }}'
+        database: admin
+        name: '{{ mongodb_admin_user }}'
+        password: '{{ mongodb_admin_password }}'
+        roles:
+          - root
+        state: present
+        run_once: true
+
+    - name: Get replica_set status
+      community.mongodb.mongodb_status:
+        <<: *mongo_parameters
+        replica_set: "{{ current_replicaset }}"
+        #auth_mechanism: "SCRAM-SHA-256"  # Why is this here for no auth?
+        poll: 6
+        interval: 10

@@ -6,7 +6,6 @@ from ansible.module_utils._text import to_native
 import traceback
 import os
 import ssl as ssl_lib
-import time
 
 
 try:
