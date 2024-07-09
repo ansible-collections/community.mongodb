@@ -292,17 +292,13 @@ def is_auth_enabled(module):
         connection_params = rename_ssl_option_for_pymongo4(connection_params)
     try:
         myclient = MongoClient(**connection_params)
-        myclient['admin'].command('listDatabases', 1.0)
-        auth_is_enabled = False
+        hello_response = myclient.admin.command('hello')
+        if 'arbiterOnly' in hello_response and hello_response['arbiterOnly']:
+            auth_is_enabled = False  # Arbiters cannot login with a user
+        else:
+            myclient['admin'].command('listDatabases', 1.0)
+            auth_is_enabled = False
     except Exception as excep:
-        module.debug(excep)  # Debug
-        if hasattr(excep, 'code') and excep.code in [13436, 10107]:  # NotPrimaryOrSecondary, NotMaster
-            time.sleep(10)
-            try:
-                myclient['admin'].command('replSetGetStatus', 1.0)
-                auth_is_enabled = False
-            except Exception as excep:
-                pass  # let code below handle this
         if hasattr(excep, 'code') and excep.code in [13]:
             auth_is_enabled = True
         if auth_is_enabled is None:  # if this is still none we have a problem
