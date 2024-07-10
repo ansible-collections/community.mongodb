@@ -340,3 +340,11 @@ releases:
       This release is a maintenance release.
     minor_changes:
       - 644 - mongodb_shell - Add ssl/tls options.
+  1.7.5:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 648 - mongodb_auth - make create_for_localhost_exception configurable.
+      - 653 - mongodb_auth - Use mongod_host variable instead of hardcoded localhost.
+      - 657 - mongodb_common (all modules) - Handle arbiters in test for auth. This was done for the mongodb_status module but affects all modules using this shared code.
+      - 660 - runtime.yml - Adds atlas, mongodb and all action_groups to collection.
