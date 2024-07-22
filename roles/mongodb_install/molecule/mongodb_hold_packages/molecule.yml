@@ -3,48 +3,24 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
-  options:
-    config-data:
-      line-length: disable
 platforms:
-  - name: almalinux_8
-    image: almalinux:8
-  #- name: fedora
-  #  image: fedora:37
-  - name: ubuntu_22_04
-    image: ubuntu:22.04
-  - name: ubuntu_22
-    image: ubuntu:22.04
-  - name: debian_bullseye
-    image: debian:bullseye
+  - name: amazon2023
+    image: geerlingguy/docker-amazonlinux2023-ansible
+  - name: debian11
+    image: quay.io/aminvakil/debian11-systemd
+  - name: ubuntu2204
+    image: geerlingguy/docker-ubuntu2204-ansible
+  - name: almalinux9
+    image: almalinux:9.4
+  - name: rockylinux9
+    image: rockylinux:9.3
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
-    enabled: false
-  inventory:
-    host_vars:
-      debian_bullseye:
-        ansible_python_interpreter: /usr/bin/python3
-      fedora:  # suitable for fedora 37
-        redhat:
-          yum_baseurl: "https://repo.mongodb.org/yum/redhat/9/mongodb-org/{{ mongodb_version }}/x86_64/"
-          rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
-          yum_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
-          yum_gpgcheck: true
-          yum_description: "Official MongoDB {{ mongodb_version }} yum repo"
 verifier:
   name: testinfra
-  lint:
-    name: flake8
-    options:
-      ignore: 'E501'
 scenario:
   test_sequence:
     - dependency
-    - lint
     - cleanup
     - destroy
     - syntax

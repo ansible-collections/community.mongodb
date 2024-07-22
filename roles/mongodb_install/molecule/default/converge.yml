@@ -1,9 +1,9 @@
 ---
 - name: Converge
   hosts: all
-  vars:
-    specific_mongodb_version: "6.0.3"
+  gather_facts: true
   roles:
     - role: mongodb_repository
-      mongodb_version: "6.0"
+      tags: molecule-idempotence-notest
     - role: mongodb_install
+  tasks:
