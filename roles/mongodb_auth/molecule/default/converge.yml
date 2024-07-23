@@ -1,7 +1,6 @@
 ---
 - name: Converge
   hosts: all
-  become: yes
   vars:
     # for this test, each machine is an isolated mongod instance
     replicaset: false
@@ -9,14 +8,15 @@
 
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
-      - ubuntu_18
-      - ubuntu_22
+      - ubuntu2204
+      - debian11
+      - rockylinux9
 
     # add some users for some of the hosts
     hosts_with_extra_user:
-      - centos_8
-      - ubuntu_16
-      - ubuntu_22
+      - almalinux9
+      - debian11
+      - amazon2023
     mongodb_users_empty: []
     mongodb_users_full:
       - db: somedatabase
@@ -33,26 +33,36 @@
     - role: mongodb_repository
       tags: molecule-idempotence-notest
     - role: mongodb_mongod
-      vars:
-        authorization: "{% if inventory_hostname in hosts_with_auth_disabled %}disabled{% else %}enabled{% endif %}"
+      authorization: "{% if inventory_hostname in hosts_with_auth_disabled %}disabled{% else %}enabled{% endif %}"
       tags: molecule-idempotence-notest # avoids false positive where replacing conf file disables authorization again
 
   tasks:
-    - name: Add EPEL repo to CentOS 7 to allow installing pip package
-      become: yes
-      yum:
-        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_facts.distribution_major_version }}.noarch.rpm"
-        state: present
-      when: inventory_hostname  == 'almalinux_8'
+    #- name: Add EPEL repo to CentOS 7 to allow installing pip package
+    #  become: yes
+    #  yum:
+    #    name: epel-release
+    #    state: present
+    #  when: inventory_hostname  == 'almalinux_8'
 
     - name: Install pymongo
       pip:
-        name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
+        name: pymongo
 
     - name: Enable mongo auth
       include_role:
         name: mongodb_auth
 
+    - name: Determine openssl version
+      command: openssl version
+      changed_when: false
+      register: openssl
+
+    - name: Set mongosh package version
+      set_fact:
+        mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
+      when: mongosh_package is not defined
+
     - name: Install MongoDB Shell
       package:
-        name: mongodb-org-shell
+        name:
+          - "{{ mongosh_package }}"
