@@ -6,8 +6,8 @@ driver:
 platforms:
   - name: amazon2023
     image: geerlingguy/docker-amazonlinux2023-ansible
-  - name: debian11
-    image: quay.io/aminvakil/debian11-systemd
+  - name: debian12
+    image: quay.io/aminvakil/debian12-systemd
   - name: ubuntu2204
     image: geerlingguy/docker-ubuntu2204-ansible
   - name: almalinux9

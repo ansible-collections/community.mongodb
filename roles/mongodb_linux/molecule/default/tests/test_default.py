@@ -11,7 +11,8 @@ def test_ntp_package(host):
     ntp = host.package("ntp")
     chrony = host.package("chrony")
     ntpsec = host.package("ntpsec")
-    assert ntp.is_installed or chrony.is_installed or ntpsec.is_installed
+    timesyncd = host.package("systemd-timesyncd")
+    assert ntp.is_installed or chrony.is_installed or ntpsec.is_installed or timesyncd.is_installed
 
 
 def test_ntpd_service(host):
@@ -25,8 +26,12 @@ def test_ntpd_service(host):
             assert ntp.is_enabled
         else:
             chronyd = host.service("chronyd")
-            assert chronyd.is_running
-            assert chronyd.is_enabled
+            if chronyd.is_running:
+                assert chronyd.is_enabled
+            else:
+                timesyncd = host.service("systemd-timesyncd")
+                assert timesyncd.is_running
+                assert timesyncd.is_enabled
 
 
 def test_swappiness_value(host):

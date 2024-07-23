@@ -9,13 +9,13 @@
     # initially disable authorization on some hosts
     hosts_with_auth_disabled:
       - ubuntu2204
-      - debian11
+      - debian12
       - rockylinux9
 
     # add some users for some of the hosts
     hosts_with_extra_user:
       - almalinux9
-      - debian11
+      - debian12
       - amazon2023
     mongodb_users_empty: []
     mongodb_users_full:
