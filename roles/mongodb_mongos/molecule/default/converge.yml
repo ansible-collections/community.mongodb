@@ -17,6 +17,8 @@
       when: "'config' in ansible_hostname"
       tags: molecule-idempotence-notest
     - role: mongodb_mongos
+      vars:
+        config_servers: "config1:27019"
       when: "'config' not in ansible_hostname"
 
   tasks:
