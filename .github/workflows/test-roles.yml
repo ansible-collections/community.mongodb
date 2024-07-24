@@ -66,7 +66,7 @@ jobs:
 
       - name: Install requirements
         run: |
-          pip install molecule
+          pip install molecule molecule-docker
 
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
