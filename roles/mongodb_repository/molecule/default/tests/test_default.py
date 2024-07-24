@@ -9,7 +9,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 def include_vars(host):
     ansible = host.ansible('include_vars',
-                           'file="../../defaults/main.yml"',
+                           'file="defaults/main.yml"',
                            False,
                            False)
     print(str(ansible))
