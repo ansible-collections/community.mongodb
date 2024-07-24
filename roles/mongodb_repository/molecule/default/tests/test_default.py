@@ -22,6 +22,7 @@ def include_vars(host):
         else:
             trim_count += 1
     trim_count = (len(path_components) - 1) - trim_count
+    # Trim off the dirs after the role dir
     trimmed_components = path_components[:-trim_count]
     trimmed_path = os.sep.join(trimmed_components)
     vars_file_path = os.path.join(trimmed_path, 'defaults', 'main.yml')
