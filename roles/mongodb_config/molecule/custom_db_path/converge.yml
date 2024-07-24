@@ -5,23 +5,21 @@
     - role: mongodb_repository
       tags: molecule-idempotence-notest
     - role: mongodb_config
+      vars:
+        db_path: "/data/db"
 
   tasks:
-
-    - name: Debug task
-      debug:
-        var: inventory_hostname
 
     - name: Install pymongo
       pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
-      when: inventory_hostname == "ubuntu_22"
+      when: inventory_hostname == "ubuntu2204"
 
     - name: Determine openssl version
       command: openssl version
       changed_when: false
       register: openssl
-    
+
     - name: Set mongosh package version
       set_fact:
         mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
@@ -39,9 +37,9 @@
         replica_set: cfg
         validate: no
         members:
-          #- almalinux_8:27019
-          #- fedora:27019
-          - ubuntu_22_04:27019
-          - debian_bullseye:27019
-          - ubuntu_22:27019
-      when: inventory_hostname == "ubuntu_22"
+          - amazon2023:27019
+          - debian12:27019
+          - ubuntu2204:27019
+          - almalinux9:27019
+          - rockylinux9:27019
+      when: ansible_hostname == "ubuntu2204"

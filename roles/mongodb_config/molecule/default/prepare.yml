@@ -1,9 +1,11 @@
 ---
 - name: Prepare
   hosts: all
-  become: yes
+
   vars:
     redhat_packages:
+      - net-tools
+    debian_packages:
       - net-tools
   tasks:
 
@@ -21,3 +23,14 @@
       name: "{{ redhat_packages }}"
       state: present
     when: ansible_os_family == "RedHat"
+
+  - name: Update the APT cache on Debian-based systems
+    apt:
+      update_cache: yes
+    when: ansible_os_family == "Debian"
+
+  - name: Install Debian packages
+    ansible.builtin.package:
+      name: "{{ debian_packages }}"
+      state: present
+    when: ansible_os_family == "Debian"
