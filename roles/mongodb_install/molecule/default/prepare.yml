@@ -13,7 +13,3 @@
     - name: Install openssl
       package:
         name: "openssl"
-        
-
-
-
