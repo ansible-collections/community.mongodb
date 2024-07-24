@@ -12,6 +12,9 @@ def include_vars(host):
                            'file="../../defaults/main.yml"',
                            False,
                            False)
+    if ansible["failed"]:
+        raise Exception(str(ansible))
+
     return ansible
 
 
