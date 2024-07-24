@@ -12,6 +12,9 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
   - name: debian12
     image: quay.io/aminvakil/debian12-systemd
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -20,6 +23,9 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
   - name: ubuntu2204
     image: geerlingguy/docker-ubuntu2204-ansible
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -28,6 +34,9 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
   - name: almalinux9
     image: mullholland/docker-almalinux-systemd:9
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -36,6 +45,9 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
   - name: rockylinux9
     image: geerlingguy/docker-rockylinux9-ansible
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -44,6 +56,9 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
+    networks:
+      - name: "mongod"
+    network_mode: "mongod"
 provisioner:
   name: ansible
 verifier:
