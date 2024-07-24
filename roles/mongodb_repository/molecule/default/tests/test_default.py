@@ -8,11 +8,16 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def include_vars(host):
+    current_dir = os.path.dirname(os.path.abspath(__name__))
+    path_components = current_dir.split(os.sep)
+    trimmed_components = path_components[:-2]
+    trimmed_path = os.sep.join(trimmed_components)
+    vars_file_path = os.path.join(trimmed_path, 'defaults', 'main.yml')
     ansible = host.ansible('include_vars',
-                           'file="../../../defaults/main.yml"',
+                           f'file="{vars_file_path}"',
                            False,
                            False)
-
+    print(str(ansible))
     return ansible
 
 
