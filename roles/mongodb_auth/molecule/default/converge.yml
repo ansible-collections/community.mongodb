@@ -51,7 +51,7 @@
         - ansible_hostname != "debian12"
 
     - name: Install pymongo on Debian 12
-      ansible-builtin.command: pip install pymongo --break-system-packages
+      ansible.builtin.command: pip install pymongo --break-system-packages
       when:
         - ansible_hostname == "debian12"
 
