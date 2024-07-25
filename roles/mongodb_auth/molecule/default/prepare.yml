@@ -8,7 +8,6 @@
       - python3-packaging
     debian_packages:
       - net-tools
-      - python3-pymongo
   tasks:
 
   - name: Ensure epel is available
