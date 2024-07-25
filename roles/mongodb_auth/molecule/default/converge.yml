@@ -47,6 +47,8 @@
     - name: Install pymongo
       pip:
         name: pymongo
+      when:
+        - ansible_hostname != "debian12"
 
     - name: Enable mongo auth
       include_role:
