@@ -9,10 +9,29 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def include_vars(host):
-    ansible = host.ansible("include_vars",
-                           'file="../../defaults/main.yml"',
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    path_components = current_dir.split(os.sep)
+    trim_count = 0
+    # Weird bug where the path of this file is incorrect
+    # It seems the ansible module, at least when used here
+    # Used to run in a different directory, meaning the
+    # relative path was not correct. This method should mean it's
+    # always correct whatever the context.
+    for component in path_components:
+        if component.startswith("mongodb_"):
+            break
+        else:
+            trim_count += 1
+    trim_count = (len(path_components) - 1) - trim_count
+    # Trim off the dirs after the role dir
+    trimmed_components = path_components[:-trim_count]
+    trimmed_path = os.sep.join(trimmed_components)
+    vars_file_path = os.path.join(trimmed_path, 'defaults', 'main.yml')
+    ansible = host.ansible('include_vars',
+                           f'file="{vars_file_path}"',
                            False,
                            False)
+    # print(str(ansible))
     return ansible
 
 

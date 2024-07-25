@@ -30,7 +30,7 @@ def include_vars(host):
                            f'file="{vars_file_path}"',
                            False,
                            False)
-    print(str(ansible))
+    # print(str(ansible))
     return ansible
 
 
