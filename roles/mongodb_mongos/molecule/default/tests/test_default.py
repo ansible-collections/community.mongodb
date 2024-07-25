@@ -25,7 +25,6 @@ def include_vars(host):
     # Trim off the dirs after the role dir
     trimmed_components = path_components[:-trim_count]
     trimmed_path = os.sep.join(trimmed_components)
-    
 
     if host.system_info.distribution == "debian" \
             or host.system_info.distribution == "ubuntu":
