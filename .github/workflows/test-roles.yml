@@ -6,6 +6,8 @@ on:
 
 jobs:
 
+  # TODO - Consider adding ansible-lint and pylint steps as molecule removed these
+
   roles_matrix:
     runs-on: ubuntu-20.04
     defaults:
@@ -42,7 +44,7 @@ jobs:
     strategy:
       matrix:
         python_version:
-          - "3.8"
+          - "3.11"
         mongodb_role: ${{ fromJson(needs.roles_matrix.outputs.matrix) }}
 
     steps:
@@ -64,8 +66,8 @@ jobs:
 
       - name: Install requirements
         run: |
-          export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
-          pip install --requirement requirements-${pyv}.txt
+          pip install molecule molecule-docker pytest-testinfra
+
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
 

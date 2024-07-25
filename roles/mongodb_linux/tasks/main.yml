@@ -78,6 +78,34 @@
     - "setup"
     - "redhat"
 
+- name: Ensure override directory exists for systemd-timesyncd.service
+  file:
+    path: /lib/systemd/system/systemd-timesyncd.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: 
+    - ansible_facts.distribution == "Debian"
+
+- name: Create override.conf to disable ConditionVirtualization for systemd-timesyncd.service
+  copy:
+    dest: /lib/systemd/system/systemd-timesyncd.service.d/override.conf
+    content: |
+      [Unit]
+      ConditionVirtualization=
+    owner: root
+    group: root
+    mode: '0644'
+  when: 
+    - ansible_facts.distribution == "Debian"
+  register: timesync
+
+- name: Reload systemd manager configuration
+  command: systemctl daemon-reload
+  changed_when: false  
+  when: timesync.changed
+
 - name: Ensure ntp service is configured
   service:
     name: "{{ ntp_service }}"

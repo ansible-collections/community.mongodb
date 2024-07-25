@@ -8,15 +8,35 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def include_vars(host):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    path_components = current_dir.split(os.sep)
+    trim_count = 0
+    # Weird bug where the path of this file is incorrect
+    # It seems the ansible module, at least when used here
+    # Used to run in a different directory, meaning the
+    # relative path was not correct. This method should mean it's
+    # always correct whatever the context.
+    for component in path_components:
+        if component.startswith("mongodb_"):
+            break
+        else:
+            trim_count += 1
+    trim_count = (len(path_components) - 1) - trim_count
+    # Trim off the dirs after the role dir
+    trimmed_components = path_components[:-trim_count]
+    trimmed_path = os.sep.join(trimmed_components)
+
     if host.system_info.distribution == "debian" \
             or host.system_info.distribution == "ubuntu":
+        vars_file_path = os.path.join(trimmed_path, 'vars', 'Debian.yml')
         ansible = host.ansible('include_vars',
-                               'file="../../vars/Debian.yml"',
+                               f'file="{vars_file_path}"',
                                False,
                                False)
     else:
+        vars_file_path = os.path.join(trimmed_path, 'vars', 'RedHat.yml')
         ansible = host.ansible('include_vars',
-                               'file="../../vars/RedHat.yml"',
+                               f'file="{vars_file_path}"',
                                False,
                                False)
     return ansible
@@ -54,15 +74,15 @@ def test_mongod_replicaset(host):
     port = include_vars(host)['ansible_facts']['config_port']
     cmd = "mongosh --port {0} --eval 'rs.status()'".format(port)
     # We only want to run this once
-    if host.ansible.get_variables()['inventory_hostname'] == "ubuntu_22":
+    if host.ansible.get_variables()['inventory_hostname'] == "ubuntu2204":
         r = host.run(cmd)
 
         assert "cfg" in r.stdout
-        # assert "almalinux_8:{0}".format(port) in r.stdout
-        # assert "fedora:{0}".format(port) in r.stdout
-        assert "ubuntu_22_04:{0}".format(port) in r.stdout
-        assert "ubuntu_22:{0}".format(port) in r.stdout
-        assert "debian_bullseye:{0}".format(port) in r.stdout
+        assert "amazon2023:{0}".format(port) in r.stdout
+        assert "debian12:{0}".format(port) in r.stdout
+        assert "ubuntu2204:{0}".format(port) in r.stdout
+        assert "almalinux9:{0}".format(port) in r.stdout
+        assert "rockylinux9:{0}".format(port) in r.stdout
 
 
 def test_mongod_config_custom_path(host):

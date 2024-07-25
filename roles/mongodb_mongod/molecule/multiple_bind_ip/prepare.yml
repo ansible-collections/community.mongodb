@@ -7,6 +7,9 @@
       - net-tools
     amazon_packages:
       - iproute
+    debian_packages:
+      - net-tools
+      - iproute2
   tasks:
 
   - name: Ensure epel is available
@@ -29,3 +32,14 @@
       name: "{{ amazon_packages }}"
       state: present
     when: ansible_distribution == "Amazon"
+
+  - name: Update the APT cache on Debian-based systems
+    apt:
+      update_cache: yes
+    when: ansible_os_family == "Debian"
+
+  - name: Install Debian packages
+    ansible.builtin.package:
+      name: "{{ debian_packages }}"
+      state: present
+    when: ansible_os_family == "Debian"

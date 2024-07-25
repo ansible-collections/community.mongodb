@@ -12,8 +12,10 @@ systemLog:
 # Where and how to store data.
 storage:
   dbPath: {{ db_path }}
+{% if mongodb_version < '6.1' %}
   journal:
     enabled: true
+{% endif %}
   engine: "wiredTiger"
 
 # how the process runs

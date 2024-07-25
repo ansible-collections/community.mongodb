@@ -33,4 +33,4 @@ def test_mongodump_available(host):
 def test_specific_mongodb_version(host):
     cmd = host.run("mongod --version")
     assert cmd.rc == 0
-    assert "6.0.3" in cmd.stdout
+    assert "7.0.9" in cmd.stdout

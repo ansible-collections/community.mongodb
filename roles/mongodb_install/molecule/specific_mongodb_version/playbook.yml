@@ -1,9 +1,0 @@
----
-- name: Converge
-  hosts: all
-  vars:
-    specific_mongodb_version: "6.0.3"
-  roles:
-    - role: mongodb_repository
-      mongodb_version: "6.0"
-    - role: mongodb_install
