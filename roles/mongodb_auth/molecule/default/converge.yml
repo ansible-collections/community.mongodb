@@ -54,6 +54,7 @@
       ansible.builtin.command: pip install pymongo --break-system-packages
       when:
         - ansible_hostname == "debian12"
+      changed_when: False
 
     - name: Enable mongo auth
       include_role:
