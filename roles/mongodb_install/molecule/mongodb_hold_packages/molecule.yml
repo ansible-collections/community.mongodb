@@ -6,14 +6,19 @@ driver:
 platforms:
   - name: amazon2023
     image: geerlingguy/docker-amazonlinux2023-ansible
+    privileged: true
   - name: debian12
     image: quay.io/aminvakil/debian12-systemd
+    privileged: true
   - name: ubuntu2204
     image: geerlingguy/docker-ubuntu2204-ansible
+    privileged: true
   - name: almalinux9
-    image: almalinux:9.4
+    image: mullholland/docker-almalinux-systemd:9
+    privileged: true
   - name: rockylinux9
-    image: rockylinux:9.3
+    image: geerlingguy/docker-rockylinux9-ansible
+    privileged: true
 provisioner:
   name: ansible
 verifier:
