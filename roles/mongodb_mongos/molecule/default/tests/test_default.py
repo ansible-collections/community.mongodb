@@ -29,13 +29,13 @@ def include_vars(host):
 
     if host.system_info.distribution == "debian" \
             or host.system_info.distribution == "ubuntu":
-        vars_file_path = os.path.join(trimmed_path, 'defaults', 'Debian.yml')
+        vars_file_path = os.path.join(trimmed_path, 'vars', 'Debian.yml')
         ansible = host.ansible('include_vars',
                                f'file="{vars_file_path}"',
                                False,
                                False)
     else:
-        vars_file_path = os.path.join(trimmed_path, 'defaults', 'RedHat.yml')
+        vars_file_path = os.path.join(trimmed_path, 'vars', 'RedHat.yml')
         ansible = host.ansible('include_vars',
                                f'file="{vars_file_path}"',
                                False,
