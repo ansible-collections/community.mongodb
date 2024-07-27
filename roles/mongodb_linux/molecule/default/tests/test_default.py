@@ -64,7 +64,6 @@ def test_thp_service(host):
         # inspecting cgroups is iffy on GHA, so use the /.dockerenv file
         in_docker = host.file("/.dockerenv").exists
 
-    #if not in_docker:
     for d in switches:
         cmd = host.run("cat {0}".format(d))
 
