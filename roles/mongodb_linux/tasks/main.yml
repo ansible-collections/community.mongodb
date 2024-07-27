@@ -64,7 +64,7 @@
     - "setup"
     - "pkg"
 
-- name: Update perms on chrony pid dir on RedHat 8
+- name: Update perms on chrony pid dir on RedHat 8+
   file:
     path: /run/chrony/
     owner: root
@@ -166,7 +166,7 @@
   register: sys_thp
 
 - name: Check if disable-transparent-huge-pages service is already run
-  shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o '[never]'
+  shell: cat /sys/kernel/mm/transparent_hugepage/enabled | grep -o '{{ bs }}[never{{ bs }}]'
   when: sys_thp.stat.exists
   register: _huge_page_status
   ignore_errors: yes
@@ -175,13 +175,18 @@
     - "linux"
     - "service"
     - "setup"
+  vars:
+    bs: \
+
+- debug:
+    var:  _huge_page_status.stdout
 
 - name: Enable disable-transparent-huge-pages service
   service:
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  when: (not in_docker|bool) and (sys_thp.stat.exists) and (_huge_page_status.stdout == "")
+  when: (sys_thp.stat.exists) and (_huge_page_status.stdout == "")
   tags:
     - "linux"
     - "service"

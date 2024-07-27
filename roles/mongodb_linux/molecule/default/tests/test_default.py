@@ -64,12 +64,11 @@ def test_thp_service(host):
         # inspecting cgroups is iffy on GHA, so use the /.dockerenv file
         in_docker = host.file("/.dockerenv").exists
 
-    if not in_docker:
-        for d in switches:
-            cmd = host.run("cat {0}".format(d))
+    for d in switches:
+        cmd = host.run("cat {0}".format(d))
 
-            assert cmd.rc == 0
-            assert "[never]" in cmd.stdout
+        assert cmd.rc == 0
+        assert "[never]" in cmd.stdout
 
 
 def test_limit_file(host):
