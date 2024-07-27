@@ -186,7 +186,6 @@
     name: disable-transparent-huge-pages
     state: started
     enabled: yes
-  #when: (not in_docker|bool) and (sys_thp.stat.exists) and (_huge_page_status.stdout == "")
   when: (sys_thp.stat.exists) and (_huge_page_status.stdout == "")
   tags:
     - "linux"
