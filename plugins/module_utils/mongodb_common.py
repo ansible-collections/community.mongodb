@@ -57,7 +57,7 @@ def load_mongocnf():
     mongocnf = os.path.expanduser('~/.mongodb.cnf')
 
     try:
-        config.readfp(open(mongocnf))
+        config.read_file(open(mongocnf))
     except (configparser.NoOptionError, IOError):
         return False
 
