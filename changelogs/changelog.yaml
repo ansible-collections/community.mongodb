@@ -348,3 +348,11 @@ releases:
       - 653 - mongodb_auth - Use mongod_host variable instead of hardcoded localhost.
       - 657 - mongodb_common (all modules) - Handle arbiters in test for auth. This was done for the mongodb_status module but affects all modules using this shared code.
       - 660 - runtime.yml - Adds atlas, mongodb and all action_groups to collection.
+  1.7.6:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 666 - mongodb_linux - Fix check for Transparent Huge Pages.
+      - 669 - mongodb_common - Replaces readfp function with read_file to support Python 3.12.
+    minor_changes:
+      - 667 - Several modules - Minor documentation update.
