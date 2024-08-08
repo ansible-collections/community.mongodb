@@ -4,6 +4,25 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v 1.7.6:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bug Fixes
+----------
+      
+- 666 - mongodb_linux - Fix check for Transparent Huge Pages.
+- 669 - mongodb_common - Replaces readfp function with read_file to support Python 3.12.
+
+Minor Changes
+--------------
+
+- 667 - Several modules - Minor documentation update.
+
 v1.7.5:
 =========
 
