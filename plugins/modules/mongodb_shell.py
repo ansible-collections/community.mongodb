@@ -278,8 +278,27 @@ def main():
         if not password:
             password = credentials['password']
 
-    args = add_arg_to_cmd(args, "--host", module.params['login_host'], omit=omit)
-    args = add_arg_to_cmd(args, "--port", module.params['login_port'], omit=omit)
+    tmp_con_options = ""
+    # TODO This could be refactored into a function
+    if module.params['connection_options']:
+        tmp_con_options = "?"
+        for item in module.params['connection_options']:
+            # could be a list of dicts or a list of strings
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    tmp_con_options += "{0}={1}&".format(key, value)
+            elif isinstance(item, str) and "=" in item:
+                tmp_con_options += "{0}&".format(item)
+            else:
+                raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
+        # We need to use a different connection format when conn params are supplied
+        tmp_db = args[1]
+        args[1] = "mongodb://{0}:{1}}/{2}".format(module.params['login_host'],
+                                                  module.params['login_port'],
+                                                  tmp_con_options)
+    else:
+        args = add_arg_to_cmd(args, "--host", module.params['login_host'], omit=omit)
+        args = add_arg_to_cmd(args, "--port", module.params['login_port'], omit=omit)
     args = add_arg_to_cmd(args, "--username", username, omit=omit)
     args = add_arg_to_cmd(args, "--password", password, omit=omit)
     args = add_arg_to_cmd(args, "--authenticationDatabase", module.params['login_database'], omit=omit)
