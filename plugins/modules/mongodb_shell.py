@@ -294,7 +294,7 @@ def main():
         # We need to use a different connection format when conn params are supplied
         tmp_db = args[1]
         tmp_con_options = tmp_con_options[:-1]
-        args[1] = "mongodb://{0}:{1}}/{2}/{3}".format(module.params['login_host'],
+        args[1] = "mongodb://{0}:{1}/{2}/{3}".format(module.params['login_host'],
                                                       module.params['login_port'],
                                                       tmp_db,
                                                       tmp_con_options)
