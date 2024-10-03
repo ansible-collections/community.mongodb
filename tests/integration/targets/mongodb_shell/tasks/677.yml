@@ -52,6 +52,11 @@
         poll: 5
         interval: 10
 
+    - name: The test db needs to exist for the connection string test below to work
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.test.insertOne()'
+
     - name: Test with a single string conn option
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
