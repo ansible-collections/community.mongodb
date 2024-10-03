@@ -293,9 +293,11 @@ def main():
                 raise ValueError("Invalid value supplied in connection_options: {0} .".format(str(item)))
         # We need to use a different connection format when conn params are supplied
         tmp_db = args[1]
-        args[1] = "mongodb://{0}:{1}}/{2}".format(module.params['login_host'],
-                                                  module.params['login_port'],
-                                                  tmp_con_options)
+        tmp_con_options = tmp_con_options[:-1]
+        args[1] = "mongodb://{0}:{1}}/{2}/{3}".format(module.params['login_host'],
+                                                      module.params['login_port'],
+                                                      tmp_db,
+                                                      tmp_con_options)
     else:
         args = add_arg_to_cmd(args, "--host", module.params['login_host'], omit=omit)
         args = add_arg_to_cmd(args, "--port", module.params['login_port'], omit=omit)
