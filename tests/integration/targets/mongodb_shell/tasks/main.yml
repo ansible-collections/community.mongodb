@@ -297,5 +297,3 @@
 - include_tasks: mongod_teardown.yml
 
 - include_tasks: 677.yml
-
-
