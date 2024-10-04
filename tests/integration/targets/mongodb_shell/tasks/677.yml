@@ -65,6 +65,7 @@
         eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
           - "retryWrites=false"
+        debug: true
       register: mongo_output
 
     - name: Test with a dict conn option
@@ -73,6 +74,7 @@
         eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
           - retryWrites: "false"
+        debug: true
       register: mongo_output
 
     - name: This will throw an error because false is not quoted
@@ -81,6 +83,7 @@
         eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
           - retryWrites: false
+        debug: true
       register: mongo_output
       ignore_errors: true
 
@@ -96,6 +99,7 @@
         connection_options:
           - "retryWrites=false"
           - "replicaSet=issue_677"
+        debug: true
       register: mongo_output
 
     - name: Test with 2 dict conn options
@@ -105,6 +109,7 @@
         connection_options:
           - retryWrites: "false"
           - replicaSet: "issue_677"
+        debug: true
       register: mongo_output
 
     - name: Test with a 3 string conn options
@@ -115,6 +120,7 @@
           - "retryWrites=false"
           - "replicaSet=issue_677"
           - "connectTimeoutMS=10000"
+        debug: true
       register: mongo_output
 
     - name: Test with 3 dict conn options
@@ -125,4 +131,5 @@
           - retryWrites: "false"
           - replicaSet: "issue_677"
           - connectTimeoutMS: 10000
+        debug: true
       register: mongo_output
