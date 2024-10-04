@@ -60,7 +60,7 @@
     - name: Test with a single string conn option
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
-        eval: 'db.scriptResults.insertOne({ "name": dba_init", "status": "ran", "execution": new Date() })'
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
           - "retryWrites=false"
       register: mongo_output
