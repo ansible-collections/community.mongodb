@@ -70,5 +70,5 @@
         <<: *mongo_parameters
         eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
-          - retryWrites: False
+          - retryWrites: false
       register: mongo_output
