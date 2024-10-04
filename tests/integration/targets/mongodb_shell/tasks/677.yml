@@ -56,6 +56,8 @@
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
         eval: 'db.test.insertOne({"foo": "bar"})'
+        connection_options:
+          - "replicaSet=issue_677"
 
     - name: Test with a single string conn option
       community.mongodb.mongodb_shell:
