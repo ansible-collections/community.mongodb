@@ -64,28 +64,28 @@
         <<: *mongo_parameters
         eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
-          - "retryWrites=false"
+          - "replicaSet=issue_677"
         debug: true
       register: mongo_output
 
     - assert:
         that:
           - mongo_output.changed
-          - "'mongodb://localhost:3001/test?retryWrites=false' in mongo_output.cmd"
+          - "'mongodb://localhost:3001/test?replicaSet=issue_677' in mongo_output.cmd"
 
     - name: Test with a dict conn option
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
         eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
         connection_options:
-          - retryWrites: "false"
+          - "replicaSet=issue_677"
         debug: true
       register: mongo_output
 
     - assert:
         that:
           - mongo_output.changed
-          - "'mongodb://localhost:3001/test?retryWrites=false' in mongo_output.cmd"
+          - "'mongodb://localhost:3001/test?replicaSet=issue_677' in mongo_output.cmd"
 
     - name: This will throw an error because false is not quoted
       community.mongodb.mongodb_shell:
