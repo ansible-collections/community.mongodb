@@ -86,3 +86,41 @@
         that:
           - mongo_output.failed
           - "'MongoParseError: retryWrites must be either' in mongo_output.msg"
+
+    - name: Test with a 2 string conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - "retryWrites=false"
+          - "replicaSet=issue_677"
+      register: mongo_output
+
+    - name: Test with 2 dict conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - retryWrites: "false"
+          - replicaSet: "issue_677"
+      register: mongo_output
+
+    - name: Test with a 3 string conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - "retryWrites=false"
+          - "replicaSet=issue_677"
+          - "connectTimeoutMS=10000"
+      register: mongo_output
+
+    - name: Test with 3 dict conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - retryWrites: "false"
+          - replicaSet: "issue_677"
+          - connectTimeoutMS: 10000
+      register: mongo_output
