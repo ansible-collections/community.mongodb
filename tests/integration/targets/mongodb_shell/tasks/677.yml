@@ -68,6 +68,11 @@
         debug: true
       register: mongo_output
 
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false' in mongo_output.cmd"
+
     - name: Test with a dict conn option
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
@@ -76,6 +81,11 @@
           - retryWrites: "false"
         debug: true
       register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false' in mongo_output.cmd"
 
     - name: This will throw an error because false is not quoted
       community.mongodb.mongodb_shell:
@@ -91,6 +101,7 @@
         that:
           - mongo_output.failed
           - "'MongoParseError: retryWrites must be either' in mongo_output.msg"
+          - "'mongodb://localhost:3001/test?retryWrites=False' in mongo_output.cmd"
 
     - name: Test with a 2 string conn options
       community.mongodb.mongodb_shell:
@@ -102,6 +113,11 @@
         debug: true
       register: mongo_output
 
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677' in mongo_output.cmd"
+
     - name: Test with 2 dict conn options
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
@@ -111,6 +127,11 @@
           - replicaSet: "issue_677"
         debug: true
       register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677' in mongo_output.cmd"
 
     - name: Test with a 3 string conn options
       community.mongodb.mongodb_shell:
@@ -123,6 +144,11 @@
         debug: true
       register: mongo_output
 
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677&connectTimeoutMS=10000' in mongo_output.cmd"
+
     - name: Test with 3 dict conn options
       community.mongodb.mongodb_shell:
         <<: *mongo_parameters
@@ -133,3 +159,8 @@
           - connectTimeoutMS: 10000
         debug: true
       register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677&connectTimeoutMS=10000' in mongo_output.cmd"
