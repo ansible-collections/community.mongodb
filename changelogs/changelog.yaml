@@ -356,3 +356,14 @@ releases:
       - 669 - mongodb_common - Replaces readfp function with read_file to support Python 3.12.
     minor_changes:
       - 667 - Several modules - Minor documentation update.
+  1.7.7:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 678 - mongodb_shell - This module did not implement the standard connection_options 
+        feature since it is not a pymongo module. This has now been implemented in this module.
+        The connection_options parameter will be parsed, in a similar way to pymongo based modules,
+        and those options will be appended to the mongodb connection url. 
+        e.g. mongodb://localhost:3001/test?replicaSet=myReplSet
+    minor_changed:
+      - 675 & 673 - Minor documentation updates.

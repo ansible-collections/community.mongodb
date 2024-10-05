@@ -4,6 +4,28 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v 1.7.7:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bug Fixes
+----------
+
+- 678 - mongodb_shell - This module did not implement the standard connection_options 
+        feature since it is not a pymongo module. This has now been implemented in this module.
+        The connection_options parameter will be parsed, in a similar way to pymongo based modules,
+        and those options will be appended to the mongodb connection url. 
+        e.g. mongodb://localhost:3001/test?replicaSet=myReplSet
+
+Minor Changes
+--------------
+
+- 675 & 673 - Minor documentation updates.
+
 v 1.7.6:
 =========
 
