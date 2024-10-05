@@ -1,0 +1,166 @@
+# Tests for issue 498
+- vars:
+    mongo_parameters: &mongo_parameters
+      login_host: localhost
+      login_port: 3001
+      login_user: "{{ mongodb_admin_user }}"
+      login_password: "{{ mongodb_admin_password }}"
+      login_database: "admin"
+
+  block:
+
+    - set_fact:
+        mongodb_nodes:
+          - 3001
+          - 3002
+          - 3003
+
+    - set_fact:
+        mongod_auth: true
+
+    - set_fact:
+        current_replicaset: "issue_677"
+
+    - include_tasks: mongod_replicaset.yml      
+
+    - name: Create replicaset with module
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 3001
+        replica_set: "{{ current_replicaset }}"
+        members:
+          - localhost:3001
+          - localhost:3002
+          - localhost:3003
+
+    - name: Add mongodb admin user
+      community.mongodb.mongodb_user:
+        login_host: localhost
+        login_port: 3001
+        replica_set: "{{ current_replicaset }}"
+        database: admin
+        name: "{{ mongodb_admin_user }}"
+        password: "{{ mongodb_admin_password }}"
+        roles:
+          - root
+        state: present
+
+    - name: Wait for the replicaset to stabilise
+      community.mongodb.mongodb_status:
+        <<: *mongo_parameters
+        replica_set: "{{ current_replicaset }}"
+        poll: 5
+        interval: 10
+
+    - name: The test db needs to exist for the connection string test below to work
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.test.insertOne({"foo": "bar"})'
+        connection_options:
+          - "replicaSet=issue_677"
+
+    - name: Test with a single string conn option
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - "replicaSet=issue_677"
+        debug: true
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?replicaSet=issue_677' in mongo_output.cmd"
+
+    - name: Test with a dict conn option
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - "replicaSet=issue_677"
+        debug: true
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?replicaSet=issue_677' in mongo_output.cmd"
+
+    - name: This will throw an error because false is not quoted
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - retryWrites: false
+        debug: true
+      register: mongo_output
+      ignore_errors: true
+
+    - assert:
+        that:
+          - mongo_output.failed
+          - "'MongoParseError: retryWrites must be either' in mongo_output.msg"
+          - "'mongodb://localhost:3001/test?retryWrites=False' in mongo_output.cmd"
+
+    - name: Test with a 2 string conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - "retryWrites=false"
+          - "replicaSet=issue_677"
+        debug: true
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677' in mongo_output.cmd"
+
+    - name: Test with 2 dict conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - retryWrites: "false"
+          - replicaSet: "issue_677"
+        debug: true
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677' in mongo_output.cmd"
+
+    - name: Test with a 3 string conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - "retryWrites=false"
+          - "replicaSet=issue_677"
+          - "connectTimeoutMS=10000"
+        debug: true
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677&connectTimeoutMS=10000' in mongo_output.cmd"
+
+    - name: Test with 3 dict conn options
+      community.mongodb.mongodb_shell:
+        <<: *mongo_parameters
+        eval: 'db.scriptResults.insertOne({ "name": "dba_init", "status": "ran", "execution": new Date() })'
+        connection_options:
+          - retryWrites: "false"
+          - replicaSet: "issue_677"
+          - connectTimeoutMS: 10000
+        debug: true
+      register: mongo_output
+
+    - assert:
+        that:
+          - mongo_output.changed
+          - "'mongodb://localhost:3001/test?retryWrites=false&replicaSet=issue_677&connectTimeoutMS=10000' in mongo_output.cmd"
