@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v 1.7.8:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+      
+- 681 - mongodb_repository - Updates the default of apt_key_url.
+
 v 1.7.7:
 =========
 
