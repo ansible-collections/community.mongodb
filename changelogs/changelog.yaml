@@ -365,5 +365,10 @@ releases:
         The connection_options parameter will be parsed, in a similar way to pymongo based modules,
         and those options will be appended to the mongodb connection url. 
         e.g. mongodb://localhost:3001/test?replicaSet=myReplSet
-    minor_changed:
+    minor_changes:
       - 675 & 673 - Minor documentation updates.
+  1.7.8:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 681 - mongodb_repository - Updates the default of apt_key_url.
