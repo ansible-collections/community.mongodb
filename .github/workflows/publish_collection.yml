@@ -33,7 +33,7 @@ jobs:
         run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
 
       - name: Upload community-mongodb-latest.tar.gz as an artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: community-mongodb-latest
           path: ansible_collections/community/mongodb/community-mongodb-latest.tar.gz
