@@ -19,9 +19,12 @@
 - name: Ensure mongod package is installed
   package:
     name: "{{ mongod_package }}"
+    state: "{{ mongod_package_state | d('present') }}"
   register: _pkg
   until: _pkg is succeeded
   retries: 5
+  notify:
+    - Restart mongod service
   tags:
     - "mongodb"
     - "pkg"
