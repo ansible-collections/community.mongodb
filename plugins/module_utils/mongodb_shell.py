@@ -1,16 +1,14 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-# DeprecationWarning: 'pipes' is deprecated and slated for removal in Python 3.13
-# Ignore for now
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-import shlex
-import pipes
 import re
 import json
 import os
+
+try:
+    from shlex import quote
+except ImportError:
+    from pipes import quote
 
 
 def escape_param(param):
@@ -18,14 +16,7 @@ def escape_param(param):
     Escapes the given parameter
     @param - The parameter to escape
     '''
-    escaped = None
-    if hasattr(shlex, 'quote'):
-        escaped = shlex.quote(param)
-    elif hasattr(pipes, 'quote'):
-        escaped = pipes.quote(param)
-    else:
-        escaped = "'" + param.replace("'", "'\\''") + "'"
-    return escaped
+    return quote(param)
 
 
 def add_arg_to_cmd(cmd_list, param_name, param_value, is_bool=False, omit=None):
