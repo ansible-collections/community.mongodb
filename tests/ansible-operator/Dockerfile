@@ -1,11 +1,11 @@
 FROM quay.io/operator-framework/ansible-operator:v1.0.0
 
 USER 0
-COPY tests/ansible-operator/mongodb-org-6.0.repo /etc/yum.repos.d/mongodb-org-6.0.repo
+COPY tests/ansible-operator/mongodb-org-8.0.repo /etc/yum.repos.d/mongodb-org-8.0.repo
 RUN yum -y update \
     && yum install -y python36-devel python3-pip python3-setuptools mongodb-mongosh
 
-RUN rm /etc/yum.repos.d/mongodb-org-6.0.repo
+RUN rm /etc/yum.repos.d/mongodb-org-8.0.repo
 
 RUN pip3 install pymongo
 
