@@ -91,6 +91,16 @@
       poll: 5
       interval: 30
 
+  - name: Ensure 3001 is master
+    community.mongodb.mongodb_stepdown:
+      login_host: "localhost"
+      login_port: "{{ item }}"
+      login_database: admin
+    loop:
+      - 3002
+      - 3003
+
+  # Todo.. login to primary and have other two values for members
   - name: Remove a member from the replicaset
     community.mongodb.mongodb_replicaset:
       <<: *mongo_parameters
