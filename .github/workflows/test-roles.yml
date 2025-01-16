@@ -106,3 +106,9 @@ jobs:
           molecule test --scenario-name custom_db_path
         if: ${{ matrix.mongodb_role == 'mongodb_config' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_config
+
+      - name: Run molecule tests for an extra mongodb_mongod scenario
+        run: |
+          molecule test --scenario-name mongodb_version_float
+        if: ${{ matrix.mongodb_role == 'mongodb_mongod' }}
+        working-directory: ansible_collections/community/mongodb/roles/mongodb_mongod

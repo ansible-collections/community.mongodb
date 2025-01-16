@@ -12,7 +12,7 @@ systemLog:
 # Where and how to store data.
 storage:
   dbPath: {{ db_path }}
-{% if mongodb_version < '6.1' %}
+{% if mongodb_version | float < 6.1 %}
   journal:
     enabled: true
 {% endif %}
