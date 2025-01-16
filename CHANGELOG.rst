@@ -4,6 +4,19 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.9:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bugfixes
+---------
+- 684 - mongodb_shell / Rework escapre_param to work on Python 3.13.
+- 689 - mongodb_mongod & mongodb_config - Make version compare Jinja2 filter more robust to work across Python versions.
+
 v 1.7.8:
 =========
 

@@ -372,3 +372,9 @@ releases:
       This release is a maintenance release.
     minor_changes:
       - 681 - mongodb_repository - Updates the default of apt_key_url.
+  1.7.9:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 684 - mongodb_shell / Rework escapre_param to work on Python 3.13.
+      - 689 - mongodb_mongod & mongodb_config - Make version compare Jinja2 filter more robust to work across Python versions.
