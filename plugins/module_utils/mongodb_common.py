@@ -3,6 +3,9 @@ __metaclass__ = type
 from ansible.module_utils.basic import missing_required_lib  # pylint: disable=unused-import:
 from ansible.module_utils.six.moves import configparser
 from ansible.module_utils._text import to_native
+from bson.binary import Binary
+import base64
+from uuid import UUID
 import traceback
 import os
 import ssl as ssl_lib
@@ -33,7 +36,7 @@ except ImportError:
     pymongo_found = False
 
 try:
-    TYPES_NEED_TO_CONVERT = (Timestamp, ObjectId)
+    TYPES_NEED_TO_CONVERT = (Timestamp, ObjectId, Binary, bytes)
 except NameError:
     pass  # sanity tests
 
@@ -466,6 +469,13 @@ def convert_to_supported(val):
         return str(val)
     elif isinstance(val, ObjectId):
         return str(val)
+    # This is for replicasets in the output of general.signature.hash segment
+     # This is intended to solve userId output of 
+    elif isinstance(val, bytes) and len(val) == 16:
+       return str(UUID(bytes=val))
+    # Signature hash
+    elif isinstance(val, bytes) and len(val) == 20:
+       return str(base64.b64encode(val).decode('utf-8'))
 
     return val  # By default returns the same value
 
