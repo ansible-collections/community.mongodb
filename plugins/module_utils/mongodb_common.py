@@ -471,12 +471,15 @@ def convert_to_supported(val):
         return str(val)
     # This is for replicasets in the output of general.signature.hash segment
      # This is intended to solve userId output of 
-    elif isinstance(val, bytes) and len(val) == 16:
-       return str(UUID(bytes=val))
-    # Signature hash
-    elif isinstance(val, bytes) and len(val) == 20:
-       return str(base64.b64encode(val).decode('utf-8'))
-
+    elif isinstance(val, bytes):
+        if len(val) == 16:       
+          return str(UUID(bytes=val))
+        elif len(val) == 20:
+          # Signature hash
+          return str(base64.b64encode(val).decode('utf-8'))
+        else:
+          # We dont know what this is but we try to handle it to avoid errors.
+          return val.decode('utf-8'))
     return val  # By default returns the same value
 
 
