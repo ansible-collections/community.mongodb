@@ -1,0 +1,10 @@
+[Unit]
+Description=Enable Transparent Huge Pages
+ConditionPathIsDirectory=/sys/kernel/mm/transparent_hugepage
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env sh -c "echo 'always' > /sys/kernel/mm/transparent_hugepage/enabled && echo 'always' > /sys/kernel/mm/transparent_hugepage/defrag"
+
+[Install]
+WantedBy=multi-user.target
