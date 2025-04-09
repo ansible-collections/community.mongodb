@@ -140,7 +140,7 @@
     - "setup"
 
 # https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/
-- name: Ensure thp-disable service exists
+- name: Ensure manage-transparent-huge-pages service exists
   copy:
     src: "{{ mongodb_enable_thp | ternary('thp-enable.service', 'thp-disable.service') }}"
     dest: /etc/systemd/system/manage-transparent-huge-pages.service
@@ -170,6 +170,7 @@
     name: manage-transparent-huge-pages
     state: started
     enabled: yes
+  when: thp.changed
   tags:
     - "linux"
     - "service"
