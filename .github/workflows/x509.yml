@@ -82,10 +82,10 @@ jobs:
           kubectl cp ansible-operator-system/${managerpod}:/tmp/mongodb-sample.default/ca.crt ca.crt -c manager
           kubectl cp ansible-operator-system/${managerpod}:/tmp/mongodb-sample.default/tls.key tls.key -c manager
 
-      - name: Run mongosh shell command to test x509 membership connectivity
+      - name: Run mongo shell command to test x509 membership connectivity
         run: |
           kubectl -n ansible-operator-system exec -ti deployment.apps/ansible-operator-controller-manager -c manager -- \
-              /usr/bin/mongosh mongodb://mongodb-sample.default.svc.cluster.local \
+              /usr/bin/mongo mongodb://mongodb-sample.default.svc.cluster.local \
                     --tls \
                     --tlsCAFile /tmp/mongodb-sample.default/ca.crt \
                     --tlsCertificateKeyFile /tmp/mongodb-sample.default/tls.key \
@@ -93,9 +93,9 @@ jobs:
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
 
-      - name: Run mongosh shell command to test x509 membership connectivity from localhost
+      - name: Run mongo shell command to test x509 membership connectivity from localhost
         run: |
-          /usr/bin/mongosh mongodb://127.0.0.1 \
+          /usr/bin/mongo mongodb://127.0.0.1 \
                     --tls \
                     --tlsCAFile ca.crt \
                     --tlsCertificateKeyFile tls.key \
