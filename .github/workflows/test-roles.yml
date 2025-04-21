@@ -9,7 +9,7 @@ jobs:
   # TODO - Consider adding ansible-lint and pylint steps as molecule removed these
 
   roles_matrix:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -35,7 +35,7 @@ jobs:
           echo "$output"
 
   roles:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: roles_matrix
     defaults:
       run:
