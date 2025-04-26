@@ -10,6 +10,8 @@ jobs:
 
   roles_matrix:
     runs-on: ubuntu-24.04
+    env:
+      ANSIBLE_ROLES_PATH: ${{ github.workspace }}/ansible_collections/community/mongodb/roles
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
