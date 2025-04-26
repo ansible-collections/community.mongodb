@@ -61,5 +61,5 @@
     - assert:
         that:
         - mongo_info is not changed
-        - result.databases.admin
-        - result.total_size
+        - result.databases.admin is defined
+        - result.total_size is defined

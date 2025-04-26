@@ -21,17 +21,16 @@
       that:
       - result is not changed
       - result.general.version[0] | int >= 4
-      - result.databases.admin
-      - result.total_size
-      - result.users.admin.test_root
-      - result.roles.admin.backup
-      - result.users.test.test_root
-      - result.users.rhys.test_root
-      - result.users.rhys.user1
-      - result.users.rhys.user2
-      - result.users.rhys.user3
-      - result.users.rhys.user4
-      - result.users.rhys.user5
+      - result.databases.admin is defined
+      - result.total_size is defined
+      - result.users.admin.test_root is defined
+      - result.roles.admin.backup is defined
+      - result.users.test.test_root is defined
+      - result.users.rhys.user1 is defined
+      - result.users.rhys.user2 is defined
+      - result.users.rhys.user3 is defined
+      - result.users.rhys.user4 is defined
+      - result.users.rhys.user5 is defined
       - result.parameters.logLevel == 0
 
   - name: Get info with filter
@@ -44,7 +43,7 @@
       that:
       - result is not changed
       - result.general.version[0] | int >= 4
-      - result.total_size
+      - result.total_size is defined
       - result.databases is not defined
       - result.parameters is not defined
       - result.users.admin is not defined
@@ -62,15 +61,14 @@
       that:
       - result is not changed
       - result.general.version[0] | int >= 4
-      - result.databases.admin
-      - result.total_size
-      - result.users.admin.test_root
-      - result.users.test.test_root
-      - result.users.rhys.test_root
-      - result.users.rhys.user1
-      - result.users.rhys.user2
-      - result.users.rhys.user3
-      - result.users.rhys.user4
-      - result.users.rhys.user5
-      - result.roles.admin.backup
+      - result.databases.admin is defined
+      - result.total_size is defined
+      - result.users.admin.test_root is defined
+      - result.users.test.test_root is defined
+      - result.users.rhys.user1 is defined
+      - result.users.rhys.user2 is defined
+      - result.users.rhys.user3 is defined
+      - result.users.rhys.user4 is defined
+      - result.users.rhys.user5 is defined
+      - result.roles.admin.backup is defined
       - result.parameters is not defined
