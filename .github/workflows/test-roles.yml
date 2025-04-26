@@ -67,7 +67,7 @@ jobs:
 
       - name: Install requirements
         run: |
-          pip install molecule==4.0.4 molecule-docker pytest-testinfra 'ansible-runner<2.3'
+          pip install molecule molecule-docker pytest-testinfra
 
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
