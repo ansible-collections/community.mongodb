@@ -79,7 +79,9 @@ jobs:
         run: mv community-mongodb-*.tar.gz community-mongodb-latest.tar.gz
 
       - name: Install collection
-        run: ansible-galaxy collection install community-mongodb-*.tar.gz
+        run: |
+          
+          ansible-galaxy collection install community-mongodb-*.tar.gz
 
       - name: Run molecule test for ${{ matrix.mongodb_role }}
         run: molecule test
