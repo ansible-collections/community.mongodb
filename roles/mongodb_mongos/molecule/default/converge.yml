@@ -8,15 +8,15 @@
     admin_user_password: "admin"
 
   roles:
-    - role: mongodb_repository
+    - role: community.mongodb.mongodb_repository
       tags: molecule-idempotence-notest
-    - role: mongodb_install
+    - role: community.mongodb.mongodb_install
       when: "'config' in ansible_hostname"
       tags: molecule-idempotence-notest
-    - role: mongodb_config
+    - role: community.mongodb.mongodb_config
       when: "'config' in ansible_hostname"
       tags: molecule-idempotence-notest
-    - role: mongodb_mongos
+    - role: community.mongodb.mongodb_mongos
       vars:
         config_servers: "config1:27019"
       when: "'config' not in ansible_hostname"
