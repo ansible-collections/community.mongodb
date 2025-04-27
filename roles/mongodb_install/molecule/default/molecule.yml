@@ -61,5 +61,7 @@ platforms:
     network_mode: "mongod"
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: /home/runner/.ansible/collections/ansible_collections/community/mongodb/roles
 verifier:
   name: testinfra
