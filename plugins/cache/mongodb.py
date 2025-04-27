@@ -157,7 +157,10 @@ class CacheModule(BaseCacheModule):
         if key not in self._cache:
             with self._collection() as collection:
                 value = collection.find_one({'_id': self._make_key(key)})
-            self._cache[key] = value['data']
+                if value and 'data' in value:
+                    self._cache[key] = value['data']
+                else:
+                    self._cache[key] = {}
 
         return self._cache.get(key)
 

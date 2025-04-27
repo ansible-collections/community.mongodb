@@ -30,9 +30,9 @@
     mongodb_users: "{% if inventory_hostname in hosts_with_extra_user %}{{ mongodb_users_full }}{% else %}{{ mongodb_users_empty }}{% endif %}"
 
   roles:
-    - role: mongodb_repository
+    - role: community.mongodb.mongodb_repository
       tags: molecule-idempotence-notest
-    - role: mongodb_mongod
+    - role: community.mongodb.mongodb_mongod
       authorization: "{% if inventory_hostname in hosts_with_auth_disabled %}disabled{% else %}enabled{% endif %}"
       tags: molecule-idempotence-notest # avoids false positive where replacing conf file disables authorization again
 
@@ -58,7 +58,7 @@
 
     - name: Enable mongo auth
       include_role:
-        name: mongodb_auth
+        name: community.mongodb.mongodb_auth
 
     - name: Determine openssl version
       command: openssl version

@@ -9,7 +9,7 @@ env:
 
 jobs:
   sanity:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -47,7 +47,7 @@ jobs:
         run: ansible-test sanity --docker -v --color --python ${{ matrix.versions.python_version }} --exclude docs/* --exclude tests/ansible-operator/
 
   units:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -85,7 +85,14 @@ jobs:
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: sudo apt-get install -y mongodb-org
+          command: |
+            sudo apt-get install -y gnupg curl
+            curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+              sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+              --dearmor
+            echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+            sudo apt-get update
+            sudo apt-get install -y mongodb-org
 
       - name: Install dateutil
         uses: nick-invision/retry@v3
@@ -122,7 +129,7 @@ jobs:
         run: mtools stop --auth-user user --auth-password password || true
 
   integration_matrix:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -149,7 +156,7 @@ jobs:
 
   integration:
     needs: integration_matrix
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb

@@ -2,9 +2,9 @@
 - name: Converge
   hosts: all
   roles:
-    - role: mongodb_repository
+    - role: community.mongodb.mongodb_repository
       tags: molecule-idempotence-notest
-    - role: mongodb_mongod
+    - role: community.mongodb.mongodb_mongod
       mongodb_version: 7.1  # test role with a float version
 
   tasks:

@@ -6,7 +6,7 @@ on:
 
 jobs:
   mongodb-cache:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ansible_collections/community/mongodb
@@ -67,12 +67,18 @@ jobs:
           -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017
           -v mongocache:/data/db mongo:latest
 
-      - name: Install mongodb-org-shell
+      - name: Install mongodb-mongosh
         uses: nick-invision/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: sudo apt-get install mongodb-org-shell
+          command: |
+            sudo apt-get install gnupg curl
+            curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+            sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
+            echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+            sudo apt-get update
+            sudo apt-get install mongodb-mongosh
 
       # https://github.community/t/set-output-truncates-multiline-strings/16852/5
       - name: Run ansible without pymongo installed to generate the warning
@@ -105,7 +111,7 @@ jobs:
       - name: Query mongo to see what we have in the cache
         id: mongo1
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -122,7 +128,7 @@ jobs:
       - name: Collection should not have a ttl index
         id: mongo2
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -146,10 +152,10 @@ jobs:
       - name: Repeat the action to hit the cache again
         run: ansible localhost -m setup
 
-      - name: Query mongo to see what we have in the cach3
+      - name: Query mongo to see what we have in the cache
         id: mongo3
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -166,7 +172,7 @@ jobs:
       - name: Collection should not have a ttl index
         id: mongo4
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -195,7 +201,7 @@ jobs:
       - name: Query mongo to see what we have in the cache
         id: mongo5
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -212,7 +218,7 @@ jobs:
       - name: Collection should have a ttl index
         id: mongo6
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -234,7 +240,7 @@ jobs:
       - name: Query mongo to see what we have in the cache
         id: mongo7
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -251,7 +257,7 @@ jobs:
       - name: Collection should have a ttl index
         id: mongo8
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -273,7 +279,7 @@ jobs:
       - name: Query mongo to see what we have in the cache
         id: mongo9
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.find()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
@@ -290,7 +296,7 @@ jobs:
       - name: Collection should not have a ttl index
         id: mongo10
         run: |
-          output=$(mongo cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
+          output=$(mongosh cache --authenticationDatabase admin -u mongoadmin -p secret --eval "db.cache.getIndexes()")
           echo "$output"
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"

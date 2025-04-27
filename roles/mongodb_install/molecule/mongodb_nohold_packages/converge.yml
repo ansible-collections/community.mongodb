@@ -4,5 +4,5 @@
   vars:
     mongodb_hold_packages: "NOHOLD"
   roles:
-    - role: mongodb_repository
-    - role: mongodb_install
+    - role: community.mongodb.mongodb_repository
+    - role: community.mongodb.mongodb_install

@@ -42,7 +42,7 @@ def test_swappiness_value(host):
 
 
 def test_thp_service_file(host):
-    f = host.file("/etc/systemd/system/disable-transparent-huge-pages.service")
+    f = host.file("/etc/systemd/system/manage-transparent-huge-pages.service")
 
     assert f.exists
     assert f.user == "root"

@@ -2,4 +2,4 @@
 - name: Converge
   hosts: all
   roles:
-    - role: mongodb_selinux
+    - role: community.mongodb.mongodb_selinux

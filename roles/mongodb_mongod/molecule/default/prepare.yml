@@ -1,12 +1,13 @@
 ---
 - name: Prepare
   hosts: all
-  become: yes
+  become: false
   vars:
     redhat_packages:
       - net-tools
     debian_packages:
       - net-tools
+
   tasks:
 
   - name: Ensure epel is available

@@ -241,7 +241,7 @@ class MongoDbInfo():
                 if isinstance(val, UUID):
                     val = val.hex
 
-                users_dict[elem['user']][key] = val
+                users_dict[elem['user']][key] = str(val)  # Force conversion to avoid: Refusing to deserialize an invalid UTF8 string value
 
         return {dbname: users_dict}
 
