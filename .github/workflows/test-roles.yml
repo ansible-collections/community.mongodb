@@ -36,6 +36,8 @@ jobs:
 
   roles:
     runs-on: ubuntu-24.04
+    env:
+      ANSIBLE_COLLECTIONS_PATH: "/home/runner/.ansible/collections/ansible_collections/"
     needs: roles_matrix
     defaults:
       run:
