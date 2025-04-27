@@ -58,7 +58,7 @@
 
     - name: Enable mongo auth
       include_role:
-        name: mongodb_auth
+        name: community.mongodb.mongodb_auth
 
     - name: Determine openssl version
       command: openssl version
