@@ -7,6 +7,18 @@
       - net-tools
     debian_packages:
       - net-tools
+  gather_facts: false
+
+  pre_tasks:
+    - name: Gather minimal facts manually (safe)
+      ansible.builtin.setup:
+        gather_subset:
+          - "hardware"
+          - "network"
+          - "virtual"
+          - "!all"
+      when: ansible_facts.keys() | length == 0
+
   tasks:
 
   - name: Ensure epel is available
