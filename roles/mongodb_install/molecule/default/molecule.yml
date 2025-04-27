@@ -62,6 +62,6 @@ platforms:
 provisioner:
   name: ansible
   env:
-    ANSIBLE_ROLES_PATH: "/home/runner/.ansible/collections/ansible_collections/ansible/*/roles/"
+    ANSIBLE_ROLES_PATH: "/home/runner/.ansible/collections/ansible_collections/ansible/*/*/roles/"
 verifier:
   name: testinfra
