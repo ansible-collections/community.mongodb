@@ -1,6 +1,6 @@
 # MongoDB Version and PyMongoDB Version Compatibility
 
-- This collection is tested against the most recent two MongoDB releases, currently 6.0.X and 7.0.X.
+- This collection is tested against at least the most recent two MongoDB releases.
 - PyMongo - latest version supported only.
 - Please upgrade your PyMongo driver version if you encounter difficulties.
 
