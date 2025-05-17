@@ -83,6 +83,7 @@ options:
       - Only one member should be removed or added per invocation.
       - Members should be specific as either all strings or all dicts when reconfiguring.
       - Currently no support for replicaset settings document changes.
+      - Please always specify ports in the replicaset list when using this feature or some operations may fail.
     type: bool
     default: false
   force:
