@@ -378,3 +378,9 @@ releases:
     bugfixes:
       - 684 - mongodb_shell / Rework escapre_param to work on Python 3.13.
       - 689 - mongodb_mongod & mongodb_config - Make version compare Jinja2 filter more robust to work across Python versions.
+  1.7.10:
+    release_summary: |
+      This release is a maintenance release.
+    minor_changes:
+      - 695 - mongodb_linux - New method for managing THP (#697).
+      - 696 & 703 - Minor documentation improvements.
