@@ -4,6 +4,20 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.10:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Minor Changes
+--------------
+
+- 695 - mongodb_linux - New method for managing THP (#697).
+- 696 & 703 - Minor documentation improvements.
+
 v1.7.9:
 =========
 
