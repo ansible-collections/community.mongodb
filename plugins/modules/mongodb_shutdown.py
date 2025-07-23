@@ -91,7 +91,7 @@ def main():
 
     try:
         from collections import OrderedDict
-    except ImportError as excep:
+    except ImportError:
         try:
             from ordereddict import OrderedDict
         except ImportError as excep:
