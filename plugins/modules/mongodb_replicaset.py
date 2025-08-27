@@ -111,6 +111,11 @@ options:
       - isMaster
       - hello
     default: hello
+  configsvr:
+    description:
+      - Indicates whether the replica set is used for a sharded cluster's config servers. Set to true if the replica set is for a sharded cluster's config servers.
+    type: bool
+    default: false
 notes:
 - Requires the pymongo Python package on the remote host, version 4+.. This
   can be installed using pip or the OS package manager.
@@ -419,7 +424,7 @@ def replicaset_find(client, cluster_cmd):
 
 
 def replicaset_add(module, client, replica_set, members, arbiter_at_index, protocol_version,
-                   chaining_allowed, heartbeat_timeout_secs, election_timeout_millis):
+                   chaining_allowed, heartbeat_timeout_secs, election_timeout_millis, configsvr):
 
     try:
         from collections import OrderedDict
@@ -464,7 +469,8 @@ def replicaset_add(module, client, replica_set, members, arbiter_at_index, proto
     conf = OrderedDict([("_id", replica_set),
                         ("protocolVersion", protocol_version),
                         ("members", members_dict_list),
-                        ("settings", settings)])
+                        ("settings", settings),
+                        ("configsvr", configsvr)])
     try:
         client["admin"].command('replSetInitiate', conf)
     except Exception as excep:
@@ -530,7 +536,8 @@ def main():
         force=dict(type='bool', default=False),
         max_time_ms=dict(type='int', default=None),
         debug=dict(type='bool', default=False),
-        cluster_cmd=dict(type='str', choices=['isMaster', 'hello'], default='hello')
+        cluster_cmd=dict(type='str', choices=['isMaster', 'hello'], default='hello'),
+        configsvr=dict(type='bool', default=False)
     )
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -555,6 +562,7 @@ def main():
     max_time_ms = module.params['max_time_ms']
     debug = module.params['debug']
     cluster_cmd = module.params['cluster_cmd']
+    configsvr = module.params['configsvr']
 
     # Count voting members
     voting_members = sum([1 if not isinstance(m, dict) or m.get("votes", 1) == 1 else 0 for m in members])
@@ -602,7 +610,7 @@ def main():
                 replicaset_add(module, client, replica_set, members,
                                arbiter_at_index, protocol_version,
                                chaining_allowed, heartbeat_timeout_secs,
-                               election_timeout_millis)
+                               election_timeout_millis, configsvr)
                 result['changed'] = True
             except Exception as e:
                 module.fail_json(msg='Unable to create replica_set: %s' % to_native(e))
