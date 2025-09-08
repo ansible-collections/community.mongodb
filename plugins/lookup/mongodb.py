@@ -154,7 +154,7 @@ RETURN = """
 
 import datetime
 
-from ansible.module_utils.six import string_types, integer_types
+from ansible.module_utils.six import string_types, integer_types  # pylint: disable=ansible-bad-import-from
 from ansible.module_utils._text import to_native
 from ansible.errors import AnsibleError
 from ansible.plugins.lookup import LookupBase
