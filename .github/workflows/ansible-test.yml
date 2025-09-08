@@ -60,9 +60,9 @@ jobs:
             ansible_version: "stable-2.15"
           - python_version: "3.10"
             ansible_version: "stable-2.16"
-          - python_version: "3.11"
+          - python_version: "3.13"
             ansible_version: "devel"
-          - python_version: "3.12"
+          - python_version: "3.13"
             ansible_version: "devel"
     steps:
       - name: Check out code
