@@ -21,12 +21,12 @@ jobs:
             python_version: "3.11"
           - ansible_version: "stable-2.16"
             python_version: "3.11"
-          - ansible_version: "devel"
-            python_version: "3.11"
           - ansible_version: "stable-2.19"
             python_version: "3.12"
           - ansible_version: "devel"
             python_version: "3.12"
+          - ansible_version: "devel"
+            python_version: "3.13"
 
     steps:
 
