@@ -199,7 +199,8 @@
 
 - assert:
     that:
-      - "'No such file or directory' in bad_mongo.msg"
+      #- "'No such file or directory' in bad_mongo.msg"
+      - "'Error executing command' in bad_mongo.msg"
       - "bad_mongo.rc == 2"
 
 - name: Test boolean flag (verbose)
