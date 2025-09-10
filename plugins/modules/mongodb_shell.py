@@ -333,7 +333,15 @@ def main():
     result = {}
     cmd = " ".join(str(item) for item in args)
 
-    (rc, out, err) = module.run_command(cmd, check_rc=False)
+    # Change froma tuple to a dict - we want this to work across versions
+    run_rc = module.run_command(cmd, check_rc=False)
+    # Handle both tuple and dict styles
+    if isinstance(run_rc, tuple):
+        rc, out, err = run_rc
+    else:
+        rc = run_rc.get('rc')
+        out = run_rc.get('stdout', '')
+        err = run_rc.get('stderr', '')
 
     if module.params['debug']:
         result['out'] = out
