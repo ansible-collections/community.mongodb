@@ -20,6 +20,9 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
 
+      - name: Enable kubelet
+        run: sudo systemctl enable kubelet
+
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.14.0
         with:
