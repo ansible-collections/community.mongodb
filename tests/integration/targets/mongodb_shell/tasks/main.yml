@@ -45,7 +45,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
   register: listDatabases
 
@@ -60,8 +60,8 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.adminCommand('listCollections')"
-    debug: yes
-    stringify: yes
+    debug: true
+    stringify: true
     mongo_cmd: "auto"
   register: listCollections
 
@@ -75,7 +75,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.adminCommand({ 'getLog' : '*' })"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
   register: getLog
 
@@ -90,7 +90,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.adminCommand({ 'getLog' : 'startupWarnings' })"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
   register: getLogstartupWarnings
 
@@ -106,7 +106,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.getRoles({showBuiltinRoles: true})"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
   register: showRoles
 
@@ -121,7 +121,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "show dbs"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
   register: bad_cmd
   ignore_errors: true
@@ -163,8 +163,8 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     file: "/root/mongo.js"
-    quiet: no
-    debug: yes
+    quiet: false
+    debug: true
     mongo_cmd: "auto"
   register: run_file
 
@@ -178,7 +178,7 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
   register: rhysDB
 
@@ -193,9 +193,9 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.getRoles({showBuiltinRoles: true})"
-    debug: yes
+    debug: true
   register: bad_mongo
-  ignore_errors: yes
+  ignore_errors: true
 
 - assert:
     that:
@@ -208,10 +208,10 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     eval: "db.adminCommand('listDatabases')"
-    debug: yes
+    debug: true
     mongo_cmd: "auto"
     additional_args:
-      verbose: True
+      verbose: true
   register: rhysDB
 
 - assert:
@@ -228,9 +228,9 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     file: "/root/mongo.js"
-    quiet: no
-    debug: yes
-    idempotent: yes
+    quiet: false
+    debug: true
+    idempotent: true
     mongo_cmd: "auto"
   register: run_file
 
@@ -245,9 +245,9 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     file: "/root/mongo.js"
-    quiet: no
-    debug: yes
-    idempotent: yes
+    quiet: false
+    debug: true
+    idempotent: true
     mongo_cmd: "auto"
   register: run_file
 
@@ -262,9 +262,9 @@
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
     file: "/root/mongo.js"
-    quiet: no
-    debug: yes
-    idempotent: no
+    quiet: false
+    debug: true
+    idempotent: false
     mongo_cmd: "auto"
   register: run_file
 
@@ -277,8 +277,8 @@
     login_user: '{{ mongodb_admin_user }}'
     login_password: '{{ mongodb_admin_password }}'
     login_port: 3001
-    debug: yes
-    quiet: no
+    debug: true
+    quiet: false
     db: "test"
     eval: 'db.organizations.update({"name": "test"},{"$set" : {"feature_toggles.test": false}})'
     transform: json
