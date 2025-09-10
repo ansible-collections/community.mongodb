@@ -17,6 +17,9 @@ jobs:
         with:
           path: ansible_collections/community/mongodb
 
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.14.0
         with:
