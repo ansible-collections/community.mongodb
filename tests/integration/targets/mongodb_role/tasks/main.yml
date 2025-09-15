@@ -181,7 +181,10 @@
   shell: cat {{ remote_tmp_dir }}/mongod3002/log.log
   ignore_errors: true
 
-- name: Check MongoDB status on localhost:3002
+- pause:
+    seconds: 10
+
+- name: Check MongoDB status on members
   community.mongodb.mongodb_status:
     login_host: localhost
     login_port: "{{ item }}"
