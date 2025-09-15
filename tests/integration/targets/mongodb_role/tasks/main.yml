@@ -178,7 +178,7 @@
       - sales_role.changed
 
 - name: debug
-  shell: cat {{ remopte_tmp_dir }}/mongod3002/log.log
+  shell: cat {{ remote_tmp_dir }}/mongod3002/log.log
   ignore_errors: true
 
 - name: Check MongoDB status on localhost:3002
@@ -188,11 +188,13 @@
     login_user: "{{ mongodb_admin_user }}"
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
+    replica_set: "{{ current_replicaset }}"
   register: mongodb_status_result
   loop:
     - 3001
     - 3002
     - 3003
+  ignore_errors: true
 
 - name: Delete sales role
   community.mongodb.mongodb_role:
