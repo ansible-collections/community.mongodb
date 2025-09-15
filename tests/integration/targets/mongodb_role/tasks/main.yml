@@ -181,8 +181,38 @@
   shell: cat {{ remote_tmp_dir }}/mongod3002/log.log
   ignore_errors: true
 
+- name: Check MongoDB status on members
+  community.mongodb.mongodb_status:
+    login_host: localhost
+    login_port: "{{ item }}"
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+  register: mongodb_status_result
+  loop:
+    - 3001
+    - 3002
+    - 3003
+  ignore_errors: true
+
 - pause:
     seconds: 10
+
+- name: Delete sales role
+  community.mongodb.mongodb_role:
+    login_host: "localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    replica_set: "{{ current_replicaset }}"
+    name: sales
+    database: "salesdb"
+    state: absent  
+  check_mode: no
+  register: sales_role
+  ignore_errors: true # tmp to remove
 
 - name: Check MongoDB status on members
   community.mongodb.mongodb_status:
@@ -199,19 +229,9 @@
     - 3003
   ignore_errors: true
 
-- name: Delete sales role
-  community.mongodb.mongodb_role:
-    login_host: "localhost"
-    login_port: 3001
-    login_user: "{{ mongodb_admin_user }}"
-    login_password: "{{ mongodb_admin_password }}"
-    login_database: admin
-    replica_set: "{{ current_replicaset }}"
-    name: sales
-    database: "salesdb"
-    state: absent  
-  check_mode: no
-  register: sales_role
+- name: debug
+  shell: cat {{ remote_tmp_dir }}/mongod3001/log.log
+  ignore_errors: true
 
 - assert:
     that:
