@@ -13,19 +13,26 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ansible_collections/community/mongodb
 
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+
+      - name: Enable and start docker
+        run: sudo systemctl enable --now docker
+
       - name: Setup Minikube
-        uses: manusa/actions-setup-minikube@v2.7.1
+        uses: manusa/actions-setup-minikube@v2.14.0
         with:
           minikube version: 'v1.13.1'
           kubernetes version: 'v1.19.2'
           github token: ${{ secrets.GITHUB_TOKEN }}
+          driver: docker
 
       - name: Install mongodb-mongosh
-        uses: nick-invision/retry@v3
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -142,7 +149,7 @@ jobs:
         working-directory: ansible_collections/community/mongodb
 
       - name: Install pymongo
-        uses: nick-invision/retry@v3
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 3
           max_attempts: 3
