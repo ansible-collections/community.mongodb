@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: "0 6 * * *"
 env:
-  ALLOW_BROKEN_CONDITIONALS: "TRUE"  # need for  TASK [Set async_dir for HOME env]
+  ALLOW_BROKEN_CONDITIONALS: 1  # need for  TASK [Set async_dir for HOME env]
 
 jobs:
 
