@@ -3,8 +3,6 @@ on:
   pull_request:
   schedule:
     - cron: "0 6 * * *"
-env:
-  ALLOW_BROKEN_CONDITIONALS: 1  # need for  TASK [Set async_dir for HOME env]
 
 jobs:
 
@@ -88,6 +86,8 @@ jobs:
       - name: Run molecule test for ${{ matrix.mongodb_role }}
         run: molecule test
         working-directory: ansible_collections/community/mongodb/roles/${{ matrix.mongodb_role }}
+        env:
+          ALLOW_BROKEN_CONDITIONALS: 1  # need for  TASK [Set async_dir for HOME env]
 
       # I don't like this
       - name: Run molecule tests for a few extra mongodb_install role scenarios
@@ -97,6 +97,8 @@ jobs:
           molecule test --scenario-name mongodb_nohold_packages
         if: ${{ matrix.mongodb_role == 'mongodb_install' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_install
+        env:
+          ALLOW_BROKEN_CONDITIONALS: 1 
 
       # TODO - This step is hanging, probably on the first molecule test scenario... check why
       #- name: Run molecule tests for extra mongodb_mongod scenarios
@@ -110,9 +112,13 @@ jobs:
           molecule test --scenario-name custom_db_path
         if: ${{ matrix.mongodb_role == 'mongodb_config' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_config
+        env:
+          ALLOW_BROKEN_CONDITIONALS: 1 
 
       - name: Run molecule tests for an extra mongodb_mongod scenario
         run: |
           molecule test --scenario-name mongodb_version_float
         if: ${{ matrix.mongodb_role == 'mongodb_mongod' }}
         working-directory: ansible_collections/community/mongodb/roles/mongodb_mongod
+        env:
+          ALLOW_BROKEN_CONDITIONALS: 1 
