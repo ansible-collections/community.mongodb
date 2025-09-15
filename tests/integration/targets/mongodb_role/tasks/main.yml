@@ -189,15 +189,13 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     replica_set: "{{ current_replicaset }}"
+    poll: 3
   register: mongodb_status_result
   loop:
     - 3001
     - 3002
     - 3003
   ignore_errors: true
-
-- pause:
-    seconds: 10
 
 - name: Delete sales role
   community.mongodb.mongodb_role:
@@ -222,6 +220,7 @@
     login_password: "{{ mongodb_admin_password }}"
     login_database: admin
     replica_set: "{{ current_replicaset }}"
+    poll: 3
   register: mongodb_status_result
   loop:
     - 3001
