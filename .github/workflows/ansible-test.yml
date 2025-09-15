@@ -167,7 +167,8 @@ jobs:
         mongodb_version:
           - "6.0"
           - "7.0"
-          - "8.0"
+          #- "8.0". tmp remove MongoDB 8 - Bug? Invalid access at address: 0x20
+          # https://github.com/ansible-collections/community.mongodb/actions/runs/17740301799/job/50412355202?pr=718
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
           - python_version: "3.10"

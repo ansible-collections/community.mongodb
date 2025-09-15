@@ -210,7 +210,6 @@
     state: absent  
   check_mode: no
   register: sales_role
-  ignore_errors: true # tmp to remove
 
 - name: Check MongoDB status on members
   community.mongodb.mongodb_status:
