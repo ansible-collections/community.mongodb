@@ -21,7 +21,9 @@ jobs:
         uses: docker/setup-docker-action@v4
 
       - name: Enable and start docker
-        run: sudo systemctl enable --now docker
+        run: |
+          sudo systemctl enable --now docker
+          sudo systemctl status docker
 
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.14.0
