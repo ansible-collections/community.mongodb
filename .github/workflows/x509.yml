@@ -50,6 +50,10 @@ jobs:
         run: |
           kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.1/cert-manager.yaml
 
+      - name: Wait for cert-manager webhook to be ready
+        run: |
+          kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=120s
+
       - name: Generate certs
         run: |
           openssl genrsa -out ca.key 8192
