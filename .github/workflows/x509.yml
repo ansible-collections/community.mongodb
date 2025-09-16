@@ -64,6 +64,10 @@ jobs:
             kubectl get svc cert-manager-webhook -n cert-manager && break || sleep 15
           done
 
+      - name: debug cert-manager
+        run: |
+          kubectl get pods,secrets -n cert-manager
+
       - name: Register the certs with k8
         run: |
           kubectl create secret tls mongodb-cluster-ca-key-pair --key=ca.key --cert=ca.crt
