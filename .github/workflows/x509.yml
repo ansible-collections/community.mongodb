@@ -50,17 +50,19 @@ jobs:
         run: |
           kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.1/cert-manager.yaml
 
-      - name: Wait for cert-manager webhook to be ready
-        run: |
-          kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=120s
-
       - name: Generate certs
         run: |
           openssl genrsa -out ca.key 8192
           openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
 
-      - name: Wait for a bit
-        run: sleep 60
+      - name: Wait for cert-manager webhook to be ready
+        run: |
+          kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=300s
+          kubectl wait --for=condition=Available=True deployment/cert-manager-webhook -n cert-manager --timeout=300s
+          # Additional wait to ensure the webhook service is reachable
+          for i in {1..10}; do
+            kubectl get svc cert-manager-webhook -n cert-manager && break || sleep 15
+          done
 
       - name: Register the certs with k8
         run: |
