@@ -79,14 +79,18 @@ jobs:
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
-      - name: use minikubes docker
+      - name: use minikubes docker - TODO Can delete this?
         run: eval $(minikube docker-env --shell sh)
 
       - name: make docker-build
-        run: make docker-build IMG=test-mongodb-operator:latest
+        run: |
+          eval $(minikube docker-env --shell sh)
+          make docker-build IMG=test-mongodb-operator:latest
 
       - name: make deploy
-        run: make deploy IMG=test-mongodb-operator:latest
+        run: |
+          eval $(minikube docker-env --shell sh)
+          make deploy IMG=test-mongodb-operator:latest
 
       - name: Debug controller
         run: kubectl get all -n ansible-operator-system 
@@ -95,10 +99,13 @@ jobs:
         run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s || kubectl get all -n ansible-operator-system && kubectl -n ansible-operator-system describe pod $(kubectl get pods -o name | grep ansible-operator-controller-manager | head -n1)
 
       - name: Load image into minikube
-        run: minikube image load test-mongodb-operator:latest
+        run: |
+          eval $(minikube docker-env --shell sh)
+          minikube image load test-mongodb-operator:latest
 
       - name: Setup the k8 mongodb env
         run: |
+          eval $(minikube docker-env --shell sh)
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
           sleep 10
           kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager
