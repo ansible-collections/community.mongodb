@@ -79,9 +79,6 @@ jobs:
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
-      - name: use minikubes docker - TODO Can delete this?
-        run: eval $(minikube docker-env --shell sh)
-
       - name: make docker-build
         run: |
           eval $(minikube docker-env --shell sh)
@@ -96,7 +93,7 @@ jobs:
         run: kubectl get all -n ansible-operator-system 
 
       - name: Wait for controller to be ready
-        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s || kubectl get all -n ansible-operator-system && kubectl -n ansible-operator-system describe pod $(kubectl get pods -o name | grep ansible-operator-controller-manager | head -n1)
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s
 
       - name: Load image into minikube
         run: |
