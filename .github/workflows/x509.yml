@@ -94,6 +94,9 @@ jobs:
       - name: Wait for controller to be ready
         run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s || kubectl get all -n ansible-operator-system && kubectl -n ansible-operator-system describe pod $(kubectl get pods -o name | grep ansible-operator-controller-manager | head -n1)
 
+      - name: Load image into minikube
+        run: minikube image load test-mongodb-operator:latest
+
       - name: Setup the k8 mongodb env
         run: |
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
