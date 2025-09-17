@@ -246,6 +246,10 @@ def get_mongodb_client(module, login_user=None, login_password=None, login_datab
     """
     Build the connection params dict and returns a MongoDB Client object
     """
+    login_user = module.params['login_user']
+    login_password = module.params['login_password']
+    login_database = module.params['login_database']
+    
     connection_params = {
         'host': module.params['login_host'],
         'port': module.params['login_port'],
