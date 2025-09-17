@@ -21,13 +21,15 @@ jobs:
         uses: docker/setup-docker-action@v4
 
       - name: Enable and start docker
-        run: sudo systemctl enable --now docker
+        run: |
+          sudo systemctl enable --now docker
+          sudo systemctl status docker
 
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.14.0
         with:
-          minikube version: 'v1.13.1'
-          kubernetes version: 'v1.19.2'
+          minikube version: 'v1.35.0'
+          kubernetes version: 'v1.33.0'
           github token: ${{ secrets.GITHUB_TOKEN }}
           driver: docker
 
@@ -46,15 +48,25 @@ jobs:
 
       - name: Install cert-manager
         run: |
-          kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.1/cert-manager.yaml
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.yaml
 
       - name: Generate certs
         run: |
           openssl genrsa -out ca.key 8192
           openssl req -x509 -new -nodes -key ca.key -sha256 -subj "/CN=mongodb-cluster-ca.local" -days 36500 -reqexts v3_req -extensions v3_ca -out ca.crt
 
-      - name: Wait for a bit
-        run: sleep 60
+      - name: Wait for cert-manager webhook to be ready
+        run: |
+          kubectl rollout status deployment/cert-manager-webhook -n cert-manager --timeout=300s
+          kubectl wait --for=condition=Available=True deployment/cert-manager-webhook -n cert-manager --timeout=300s
+          # Additional wait to ensure the webhook service is reachable
+          for i in {1..10}; do
+            kubectl get svc cert-manager-webhook -n cert-manager && break || sleep 15
+          done
+
+      - name: debug cert-manager
+        run: |
+          kubectl get pods,secrets -n cert-manager
 
       - name: Register the certs with k8
         run: |
@@ -67,20 +79,30 @@ jobs:
       - name: Create k8 namesapce
         run: kubectl create ns ansible-operator-system
 
-      - name: use minikubes docker
-        run: eval $(minikube docker-env --shell sh)
-
       - name: make docker-build
-        run: make docker-build IMG=test-mongodb-operator:latest
+        run: |
+          eval $(minikube docker-env --shell sh)
+          make docker-build IMG=test-mongodb-operator:latest
 
       - name: make deploy
-        run: make deploy IMG=test-mongodb-operator:latest
+        run: |
+          eval $(minikube docker-env --shell sh)
+          make deploy IMG=test-mongodb-operator:latest
+
+      - name: Debug controller
+        run: kubectl get all -n ansible-operator-system 
 
       - name: Wait for controller to be ready
-        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s
+
+      - name: Load image into minikube
+        run: |
+          eval $(minikube docker-env --shell sh)
+          minikube image load test-mongodb-operator:latest
 
       - name: Setup the k8 mongodb env
         run: |
+          eval $(minikube docker-env --shell sh)
           kubectl apply -f config/samples/mongodb_v1alpha1_mongodb.yaml
           sleep 10
           kubectl -n ansible-operator-system logs deployment.apps/ansible-operator-controller-manager -c manager
@@ -124,10 +146,10 @@ jobs:
                     --authenticationDatabase '$external' \
                     --eval "db.adminCommand('listDatabases')"
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Install ansible-base devel
         uses: nick-invision/retry@v3
