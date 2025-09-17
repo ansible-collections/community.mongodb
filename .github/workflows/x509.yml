@@ -92,7 +92,7 @@ jobs:
         run: kubectl get all -n ansible-operator-system 
 
       - name: Wait for controller to be ready
-        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=60s
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s
 
       - name: Setup the k8 mongodb env
         run: |
