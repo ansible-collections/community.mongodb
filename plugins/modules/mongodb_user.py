@@ -26,6 +26,7 @@ options:
   replica_set:
     description:
       - Replica set to connect to (automatically connects to primary for writes).
+      - Leave empty if you need the localhost exception, e.g. to create the initial user
     type: str
   database:
     description:
