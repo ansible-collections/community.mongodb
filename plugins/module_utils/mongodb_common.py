@@ -400,7 +400,7 @@ def member_dicts_different(conf, member_config):
         "priority": {"nonarbiter": 1.0, "arbiter": 0},
         "tags": {},
         "horizons": {},
-        "secondardDelaySecs": 0,
+        "secondaryDelaySecs": 0,
         "votes": 1
     }
     different = False

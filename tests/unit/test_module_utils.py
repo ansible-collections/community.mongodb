@@ -63,7 +63,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         "priority": 1,
         "tags": {},
         "horizons": {},
-        "secondardDelaySecs": 0,
+        "secondaryDelaySecs": 0,
         "votes": 1
     }
 
