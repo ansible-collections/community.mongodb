@@ -48,8 +48,8 @@ platforms:
     networks:
       - name: "mongos"
     network_mode: "mongos"
-  - name: rockylinux9
-    image: geerlingguy/docker-rockylinux9-ansible
+  - name: rockylinux10
+    image: geerlingguy/docker-rockylinux10-ansible
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw

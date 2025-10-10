@@ -16,8 +16,8 @@ platforms:
   - name: almalinux9
     image: mullholland/docker-almalinux-systemd:9
     privileged: true
-  - name: rockylinux9
-    image: geerlingguy/docker-rockylinux9-ansible
+  - name: rockylinux10
+    image: geerlingguy/docker-rockylinux10-ansible
     privileged: true
 provisioner:
   name: ansible
