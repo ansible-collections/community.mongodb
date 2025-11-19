@@ -4,11 +4,10 @@ debian_packages:
   - apt-transport-https
   - curl
   - gnupg
+apt_key: "/usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg"
 debian:
-  apt_key: "/usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg"
-  apt_header: "{{ '[arch=amd64,arm64 signed-by=' ~ apt_key ~ ']' if ansible_facts['distribution'] == 'Ubuntu' else '[signed-by=' ~ apt_key ~ ']' }}"
   apt_repository_repo: >
-    deb {{ apt_header }} 
+    deb {{ '[arch=amd64,arm64 signed-by=' ~ apt_key ~ ']' if ansible_facts['distribution'] == 'Ubuntu' else '[signed-by=' ~ apt_key ~ ']' }}
     https://repo.mongodb.org/apt/{{ ansible_facts['distribution']|lower }} 
     {{ ansible_facts['distribution_release'] }}/mongodb-org/{{ mongodb_version }} 
     {{ 'multiverse' if ansible_facts['distribution'] == 'Ubuntu' else 'main' }}
