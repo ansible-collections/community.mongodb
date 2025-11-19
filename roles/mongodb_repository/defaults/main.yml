@@ -7,7 +7,11 @@ debian_packages:
 debian:
   apt_key: "/usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg"
   apt_header: "{{ '[arch=amd64,arm64 signed-by=' ~ apt_key ~ ']' if ansible_facts['distribution'] == 'Ubuntu' else '[signed-by=' ~ apt_key ~ ']' }}"
-  apt_repository_repo: "deb {{ apt_header }} https://repo.mongodb.org/apt/{{ ansible_facts['distribution']|lower }} {{ ansible_facts['distribution_release'] }}/mongodb-org/{{ mongodb_version }} {{ 'multiverse' if ansible_facts['distribution'] == 'Ubuntu' else 'main' }}"
+  apt_repository_repo: >
+    deb {{ apt_header }} 
+    https://repo.mongodb.org/apt/{{ ansible_facts['distribution']|lower }} 
+    {{ ansible_facts['distribution_release'] }}/mongodb-org/{{ mongodb_version }} 
+    {{ 'multiverse' if ansible_facts['distribution'] == 'Ubuntu' else 'main' }}
 redhat:
   rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
   yum_baseurl: "https://repo.mongodb.org/yum/{{ 'amazon' if ansible_facts['distribution'] == 'Amazon' else 'redhat'  }}/{{ ansible_facts['distribution_major_version'] }}/mongodb-org/{{ mongodb_version }}/{{ ansible_facts['architecture'] }}/"
