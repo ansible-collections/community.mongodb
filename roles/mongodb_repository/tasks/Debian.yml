@@ -15,9 +15,9 @@
 - name: Add apt key for MongoDB repository
   shell: |
     curl -fsSL https://pgp.mongodb.com/server-{{ mongodb_version }}.asc | \
-    gpg -o /usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg --dearmor
+    gpg --dearmor --output "{{ apt_key }}"
   args:
-    creates: /usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg
+    creates: "{{ apt_key }}"
   register: _apt
   until: _apt is succeeded
   retries: 5
