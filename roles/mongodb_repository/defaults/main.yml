@@ -5,7 +5,6 @@ debian_packages:
   - curl
   - gnupg
 debian:
-  apt_key_url: "https://pgp.mongodb.com/server-{{ mongodb_version }}.asc"
   apt_repository_repo: "deb{{ ' [ arch=amd64,arm64 ]' if ansible_facts.distribution == 'Ubuntu' else '' }} https://repo.mongodb.org/apt/{{ ansible_facts.distribution|lower }} {{ ansible_facts.distribution_release }}/mongodb-org/{{ mongodb_version }} {{ 'multiverse' if ansible_facts.distribution == 'Ubuntu' else 'main' }}"
 redhat:
   rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
