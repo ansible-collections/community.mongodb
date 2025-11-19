@@ -15,9 +15,9 @@
 - name: Add apt key for MongoDB repository
   shell: |
     curl -fsSL https://pgp.mongodb.com/server-{{ mongodb_version }}.asc | \
-    gpg --dearmor --output "{{ apt_key }}"
+    gpg --dearmor --output "{{ debian.apt_key }}"
   args:
-    creates: "{{ apt_key }}"
+    creates: "{{ debian.apt_key }}"
   register: _apt
   until: _apt is succeeded
   retries: 5
