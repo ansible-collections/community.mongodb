@@ -1,7 +1,7 @@
 ---
 # tasks file for mongodb_auth
 - name: Include OS-specific vars
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ lookup('first_found', params) }}"
   vars:
     params:
@@ -17,7 +17,7 @@
     - "vars"
 
 - name: Ensure mongod and pyyaml packages are installed
-  package:
+  ansible.builtin.package:
     name:
       - "{{ mongod_package }}"
       # pyyaml is used to validate yaml files on change
@@ -30,13 +30,13 @@
 
 - name: Warn about default credentials
   when: mongodb_admin_pwd == mongodb_default_admin_pwd
-  debug:
+  ansible.builtin.debug:
     msg: "[WARNING] Using default admin credentials for mongodb admin account! Please change them!"
   tags:
     - "debug"
 
 - name: Enable security section in mongod.conf
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/mongod.conf
     regexp: |-
       ^[#'"\s]*security['"]?\s*:
@@ -52,7 +52,7 @@
     - "setup"
 
 - name: Enable authentication in mongod.conf
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/mongod.conf
     insertafter: '^security:'
     # two space indentation (the default) assumed
@@ -74,7 +74,7 @@
 - name: Restart mongodb to enable auth before adding additional users
   # This allows us to safely assume auth is already enabled when adding more users
   when: _enable_mongo_auth is changed
-  service:
+  ansible.builtin.service:
     name: mongod
     state: restarted
   tags:
@@ -105,7 +105,7 @@
     - "admin_user"
 
 - name: Add additional mongo users
-  include_tasks: mongodb_auth_user.yml
+  ansible.builtin.include_tasks: mongodb_auth_user.yml
   loop: "{{ mongodb_users }}"
   loop_control:
     loop_var: _mongodb_user

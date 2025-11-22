@@ -25,11 +25,11 @@
     when: ansible_os_family == "RedHat"
 
   - name: Install openssl
-    package:
+    ansible.builtin.package:
       name: openssl
 
   - name: Update the APT cache on Debian-based systems
-    apt:
+    ansible.builtin.apt:
       update_cache: yes
     when: ansible_os_family == "Debian"
 

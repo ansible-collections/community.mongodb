@@ -1,7 +1,7 @@
 ---
 # tasks file for mongodb_repository (Debian os_family)
 - name: Install debian packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ debian_packages }}"
     state: present
   register: _apt
@@ -13,7 +13,7 @@
     - "debian"
 
 - name: Add apt key for MongoDB repository
-  shell: |
+  ansible.builtin.shell: |
     curl -fsSL https://pgp.mongodb.com/server-{{ mongodb_version }}.asc | \
     gpg --dearmor --output "{{ apt_key }}"
   args:
@@ -28,7 +28,7 @@
     - "debian"
 
 - name: Ensure MongoDB apt repository exists
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ debian.apt_repository_repo }}"
     state: present
     filename: "mongodb-{{ mongodb_version }}"

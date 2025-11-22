@@ -1,7 +1,7 @@
 ---
 # tasks file for mongodb_repository (RedHat os_family)
 - name: Add mongodb.org gpgkey
-  rpm_key:
+  ansible.builtin.rpm_key:
     key: "{{ redhat.rpm_key_key }}"
     state: present
   register: _yum
@@ -14,7 +14,7 @@
     - "redhat"
 
 - name: Ensure MongoDB yum repository exists
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: "mongodb-{{ mongodb_version }}"
     description: "{{ redhat.yum_description }}"
     baseurl: "{{ redhat.yum_baseurl }}"

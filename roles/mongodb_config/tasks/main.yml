@@ -17,7 +17,7 @@
     "vars"
 
 - name: Ensure mongod package is installed
-  package:
+  ansible.builtin.package:
     name: "{{ mongod_package }}"
   register: _pkg
   until: _pkg is succeeded
@@ -28,7 +28,7 @@
     - "mongodb"
 
 - name: Ensure db_path dir exists
-  file:
+  ansible.builtin.file:
     path: "{{ db_path }}"
     state: directory
     owner: "{{ mongodb_user }}"
@@ -38,7 +38,7 @@
     - "mongodb"
 
 - name: Copy config file
-  template:
+  ansible.builtin.template:
     src: "{{ mongod_config_template }}"
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
@@ -50,7 +50,7 @@
     - "mongodb"
 
 - name: Copy keyfile to host
-  copy:
+  ansible.builtin.copy:
     content: |
       {{ openssl_keyfile_content }}
     dest: "{{ openssl_keyfile_path }}"
@@ -64,13 +64,13 @@
     - "mongodb"
 
 - name: Check for github override
-  set_fact:
+  ansible.builtin.set_fact:
     x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"
   tags:
     - "ci"
 
 - name: Start mongod service
-  service:
+  ansible.builtin.service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes

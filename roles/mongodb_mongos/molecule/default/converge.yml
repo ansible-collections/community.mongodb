@@ -24,22 +24,22 @@
   tasks:
 
     - name: Install pymongo
-      pip:
+      ansible.builtin.pip:
         name: "{{ 'pymongo==3.12.*' if ansible_python_version[0:3] | float < 3.6 else 'pymongo' }}"
       when: ansible_hostname == "config1"
 
     - name: Determine openssl version
-      command: openssl version
+      ansible.builtin.command: openssl version
       changed_when: false
       register: openssl
 
     - name: Set mongosh package version
-      set_fact:
+      ansible.builtin.set_fact:
         mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
       when: mongosh_package is not defined
 
     - name: Install MongoDB Shell
-      package:
+      ansible.builtin.package:
         name:
           - "{{ mongosh_package }}"
 
@@ -54,7 +54,7 @@
       when: ansible_hostname == "config1"
 
     - name: Restart the mongos service
-      service:
+      ansible.builtin.service:
         name: mongos
         state: started
       when: "'config' not in ansible_hostname"

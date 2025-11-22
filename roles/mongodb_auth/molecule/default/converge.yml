@@ -45,7 +45,7 @@
     #  when: inventory_hostname  == 'almalinux_8'
 
     - name: Install pymongo
-      pip:
+      ansible.builtin.pip:
         name: pymongo
       when: 
         - ansible_hostname != "debian12"
@@ -57,20 +57,20 @@
       changed_when: False
 
     - name: Enable mongo auth
-      include_role:
+      ansible.builtin.include_role:
         name: community.mongodb.mongodb_auth
 
     - name: Determine openssl version
-      command: openssl version
+      ansible.builtin.command: openssl version
       changed_when: false
       register: openssl
 
     - name: Set mongosh package version
-      set_fact:
+      ansible.builtin.set_fact:
         mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
       when: mongosh_package is not defined
 
     - name: Install MongoDB Shell
-      package:
+      ansible.builtin.package:
         name:
           - "{{ mongosh_package }}"
