@@ -6,12 +6,12 @@
   tasks:
 
     - name: Update the APT cache on Debian-based systems
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
       when: ansible_os_family == "Debian"
 
     - name: Install procps
-      package:
+      ansible.builtin.package:
         name: "procps"
       when: ansible_os_family == "Debian"
         

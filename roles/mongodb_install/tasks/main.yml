@@ -1,17 +1,17 @@
 ---
 - name: Determine openssl version
-  command: openssl version
+  ansible.builtin.command: openssl version
   changed_when: false
   register: openssl
 
 - name: Set mongosh package version
-  set_fact:
+  ansible.builtin.set_fact:
     mongosh_package: "{{ 'mongodb-mongosh-shared-openssl3' if openssl.stdout.startswith('OpenSSL 3') else 'mongodb-mongosh-shared-openssl11' }}"
   when: mongosh_package is not defined
 
 # tasks file for mongodb_install
 - name: Install MongoDB Packages
-  package:
+  ansible.builtin.package:
     name:
       - "mongodb-org"
       - "mongodb-org-server"
@@ -29,7 +29,7 @@
     - "pkg"
 
 - name: Install MongoDB Packages (Specific version)
-  package:
+  ansible.builtin.package:
     name:
       - "mongodb-org-{{ specific_mongodb_version }}"
       - "mongodb-org-server-{{ specific_mongodb_version }}"
@@ -53,7 +53,7 @@
 # we must also specify version of mongodb-org deps.
 # https://dba.stackexchange.com/questions/197336/how-to-install-specific-mongo-version-from-the-ppa
 - name: Install MongoDB Packages (Specific version)
-  package:
+  ansible.builtin.package:
     name:
       - "mongodb-org={{ specific_mongodb_version }}"
       - "mongodb-org-server={{ specific_mongodb_version }}"
@@ -74,7 +74,7 @@
     - "debian"
 
 - name: Manage package locks - {{ mongodb_hold_packages }}
-  script: lock_mongodb_packages.sh {{ mongodb_hold_packages }}
+  ansible.builtin.script: lock_mongodb_packages.sh {{ mongodb_hold_packages }}
   when:
     - mongodb_hold_packages is defined
   tags:

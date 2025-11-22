@@ -1,7 +1,7 @@
 ---
 # tasks file for mongodb_mongod
 - name: Include OS-specific vars
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ lookup('first_found', params) }}"
   vars:
     params:
@@ -17,7 +17,7 @@
     - "vars"
 
 - name: Ensure mongod package is installed
-  package:
+  ansible.builtin.package:
     name: "{{ mongod_package }}"
   register: _pkg
   until: _pkg is succeeded
@@ -28,7 +28,7 @@
     - "setup"
 
 - name: Ensure db_path dir exists
-  file:
+  ansible.builtin.file:
     path: "{{ db_path }}"
     state: directory
     owner: "{{ mongodb_user }}"
@@ -38,7 +38,7 @@
     - "setup"
 
 - name: Copy config file
-  template:
+  ansible.builtin.template:
     src: "{{ mongod_config_template }}"
     dest: /etc/mongod.conf
     owner: "{{ mongodb_user }}"
@@ -50,7 +50,7 @@
     - "setup"
 
 - name: Copy keyfile to host
-  copy:
+  ansible.builtin.copy:
     content: |
       {{ openssl_keyfile_content }}
     dest: "{{ openssl_keyfile_path }}"
@@ -72,7 +72,7 @@
     - "service"
   block:
   - name: "Create {{ mongod_service }}.service.d directory"
-    file:
+    ansible.builtin.file:
       path: "/etc/systemd/system/{{ mongod_service }}.service.d/"
       state: directory
       owner: root
@@ -80,7 +80,7 @@
       mode: 0755
 
   - name: Override mongod service from provided content
-    copy:
+    ansible.builtin.copy:
       content: "{{ mongodb_systemd_service_override }}"
       dest: "/etc/systemd/system/{{ mongod_service }}.service.d/override.conf"
       owner: root
@@ -89,13 +89,13 @@
     notify: daemon-reload
 
 - name: Check for github override
-  set_fact:
+  ansible.builtin.set_fact:
     x_github_override: "{{ lookup('env', 'X_GITHUB_OVERRIDE') | default('0', True) }}"
   tags:
     - "ci"
 
 - name: Start mongod service
-  service:
+  ansible.builtin.service:
     name: "{{ mongod_service }}"
     state: started
     enabled: yes
@@ -113,15 +113,15 @@
     - "service"
 
 # debug section
-- pause:
+- ansible.builtin.pause:
     seconds: 5
 
-- shell: cat /var/log/mongodb/mongod.log
+- ansible.builtin.shell: cat /var/log/mongodb/mongod.log
   register: log_output
   changed_when: false 
   when: ansible_hostname == "fedora"
 
-- debug:
+- ansible.builtin.debug:
     var: log_output
   when: ansible_hostname == "fedora"
 # eof debug
