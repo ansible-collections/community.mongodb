@@ -208,7 +208,7 @@
     name: sales
     database: "salesdb"
     state: absent  
-  check_mode: no
+  retries: 5
   register: sales_role
 
 - name: Check MongoDB status on members
@@ -263,7 +263,7 @@
     name: sales
     database: "salesdb"
     state: absent  
-  check_mode: no
+  retries: 5
   register: sales_role
 
 - assert:
