@@ -197,6 +197,9 @@
     - 3003
   ignore_errors: true
 
+- sleep:
+    seconds: 5
+
 - name: Delete sales role
   community.mongodb.mongodb_role:
     login_host: "localhost"
