@@ -196,8 +196,10 @@
     - 3002
     - 3003
 
-- ansible.builtin.pause:
-    seconds: 5
+# The next delete sales role task was always failing due to replicaset issues
+- name: Allow replicaset time to settle
+  ansible.builtin.pause:
+    seconds: 30
 
 - name: debug
   shell: cat {{ remote_tmp_dir }}/mongod3001/log.log
