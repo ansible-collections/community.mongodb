@@ -195,6 +195,14 @@
     - 3001
     - 3002
     - 3003
+
+# The next delete sales role task was always failing due to replicaset issues
+- name: Allow replicaset time to settle
+  ansible.builtin.pause:
+    seconds: 30
+
+- name: debug
+  shell: cat {{ remote_tmp_dir }}/mongod3001/log.log
   ignore_errors: true
 
 - name: Delete sales role
@@ -208,7 +216,7 @@
     name: sales
     database: "salesdb"
     state: absent  
-  check_mode: no
+  retries: 5
   register: sales_role
 
 - name: Check MongoDB status on members
@@ -225,7 +233,6 @@
     - 3001
     - 3002
     - 3003
-  ignore_errors: true
 
 - name: debug
   shell: cat {{ remote_tmp_dir }}/mongod3001/log.log
@@ -263,7 +270,7 @@
     name: sales
     database: "salesdb"
     state: absent  
-  check_mode: no
+  retries: 5
   register: sales_role
 
 - assert:
