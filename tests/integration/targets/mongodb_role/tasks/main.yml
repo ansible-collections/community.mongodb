@@ -197,7 +197,7 @@
     - 3003
   ignore_errors: true
 
-- sleep:
+- ansible.builtin.pause:
     seconds: 5
 
 - name: Delete sales role
