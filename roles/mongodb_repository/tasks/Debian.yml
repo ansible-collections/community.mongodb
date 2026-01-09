@@ -14,7 +14,7 @@
 
 - name: Add apt key for MongoDB repository
   ansible.builtin.shell: |
-    curl -fsSL https://pgp.mongodb.com/server-{{ mongodb_version }}.asc | \
+    curl -fsSL https://pgp.mongodb.com/server-{{ mongodb_key_version }}.asc | \
     gpg --dearmor --output "{{ apt_key }}"
   args:
     creates: "{{ apt_key }}"

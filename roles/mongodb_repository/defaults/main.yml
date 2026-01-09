@@ -1,10 +1,11 @@
 ---
-mongodb_version: "7.0"
+mongodb_version: "8.2"
+mongodb_key_version: "{{ mongodb_version.split('.')[0] + '.0' if mongodb_version.split('.')[0]|int >= 8 else mongodb_version }}"
 debian_packages:
   - apt-transport-https
   - curl
   - gnupg
-apt_key: "/usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg"
+apt_key: "/usr/share/keyrings/mongodb-server-{{ mongodb_key_version }}.gpg"
 debian:
   apt_repository_repo: >
     deb {{ '[arch=amd64,arm64 signed-by=' ~ apt_key ~ ']' if ansible_facts['distribution'] == 'Ubuntu' else '[signed-by=' ~ apt_key ~ ']' }}
@@ -12,8 +13,8 @@ debian:
     {{ ansible_facts['distribution_release'] }}/mongodb-org/{{ mongodb_version }} 
     {{ 'multiverse' if ansible_facts['distribution'] == 'Ubuntu' else 'main' }}
 redhat:
-  rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+  rpm_key_key: "https://www.mongodb.org/static/pgp/server-{{ mongodb_key_version }}.asc"
   yum_baseurl: "https://repo.mongodb.org/yum/{{ 'amazon' if ansible_facts['distribution'] == 'Amazon' else 'redhat'  }}/{{ ansible_facts['distribution_major_version'] }}/mongodb-org/{{ mongodb_version }}/{{ ansible_facts['architecture'] }}/"
-  yum_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+  yum_gpgkey: "https://www.mongodb.org/static/pgp/server-{{ mongodb_key_version }}.asc"
   yum_gpgcheck: true
   yum_description: "Official MongoDB {{ mongodb_version }} yum repo"
