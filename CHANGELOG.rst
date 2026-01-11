@@ -4,6 +4,27 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.11:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bugfixes
+---------
+- 707 - mongodb_shutdown - Remove unused excess variable.
+- 722 - mongodb_replicaset - Fix typo in secondaryDelaySecs.
+- 724 - mongodb_repository - Role - add support of ARM architecture.
+- 725 - mongodb_repository - Role - Update app key setup method.
+- 727 - Various roles - Use full module paths.
+- 725 - mongodb_repository - Role - Fix role for MongoDB 8.2 installation.
+
+Minor Changes
+--------------
+- 721 - mongodb_replicaset - replica_set needs to be empty to leverage localhost exception. Docs improvement.
+
 v1.7.10:
 =========
 
