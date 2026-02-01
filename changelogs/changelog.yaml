@@ -396,3 +396,8 @@ releases:
       - 725 - mongodb_repository - Role - Fix role for MongoDB 8.2 installation.
     minor_changes:
       - 721 - mongodb_replicaset - replica_set needs to be empty to leverage localhost exception. Docs improvement.
+  1.7.12:
+    release_summary: |
+      This release is a maintenance release.
+    bugfixes:
+      - 737 - mongodb_replicaset - Update expression breaking when mongodb_version is float.    
