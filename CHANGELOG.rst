@@ -4,6 +4,18 @@ Community.MongoDB Release Notes
 
 .. contents:: Topics
 
+v1.7.12:
+=========
+
+Release Summary
+----------------
+
+This release is a maintenance release.
+
+Bugfixes
+---------
+- 737 - mongodb_replicaset - Update expression breaking when mongodb_version is float.
+
 v1.7.11:
 =========
 
