@@ -1,6 +1,6 @@
 ---
 mongodb_version: "8.2"
-mongodb_key_version: "{{ mongodb_version.split('.')[0] + '.0' if mongodb_version.split('.')[0]|int >= 8 else mongodb_version }}"
+mongodb_key_version: "{{ ((mongodb_version | string).split('.')[0] ~ '.0') if ((mongodb_version | string).split('.')[0] | int >= 8) else (mongodb_version | string) }}"
 debian_packages:
   - apt-transport-https
   - curl
