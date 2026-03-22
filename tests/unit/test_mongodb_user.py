@@ -85,6 +85,60 @@ class TestMongoDBUserMethods(unittest.TestCase):
             mongodb_user.check_if_authentication_restrictions_changed(uinfo, restrictions)
         )
 
+    def test_user_add_omits_empty_authentication_restrictions_on_create(self):
+        class FakeDB:
+            def __init__(self):
+                self.calls = []
+
+            def command(self, command_name, user, **kwargs):
+                self.calls.append((command_name, user, kwargs))
+
+        class FakeClient(dict):
+            pass
+
+        db = FakeDB()
+        client = FakeClient({'admin': db})
+        original_user_find = mongodb_user.user_find
+
+        try:
+            mongodb_user.user_find = lambda client, user, db_name: False
+            mongodb_user.user_add(None, client, 'admin', 'alice', 'secret', ['root'], [])
+        finally:
+            mongodb_user.user_find = original_user_find
+
+        self.assertEqual(1, len(db.calls))
+        command_name, user, kwargs = db.calls[0]
+        self.assertEqual('createUser', command_name)
+        self.assertEqual('alice', user)
+        self.assertNotIn('authenticationRestrictions', kwargs)
+
+    def test_user_add_keeps_empty_authentication_restrictions_on_update(self):
+        class FakeDB:
+            def __init__(self):
+                self.calls = []
+
+            def command(self, command_name, user, **kwargs):
+                self.calls.append((command_name, user, kwargs))
+
+        class FakeClient(dict):
+            pass
+
+        db = FakeDB()
+        client = FakeClient({'admin': db})
+        original_user_find = mongodb_user.user_find
+
+        try:
+            mongodb_user.user_find = lambda client, user, db_name: {'user': user}
+            mongodb_user.user_add(None, client, 'admin', 'alice', None, ['root'], [])
+        finally:
+            mongodb_user.user_find = original_user_find
+
+        self.assertEqual(1, len(db.calls))
+        command_name, user, kwargs = db.calls[0]
+        self.assertEqual('updateUser', command_name)
+        self.assertEqual('alice', user)
+        self.assertEqual([], kwargs['authenticationRestrictions'])
+
 
 if __name__ == '__main__':
     unittest.main()

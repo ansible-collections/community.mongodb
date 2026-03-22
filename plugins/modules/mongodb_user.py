@@ -295,7 +295,10 @@ def user_add(module, client, db_name, user, password, roles, authentication_rest
         user_dict["pwd"] = password
     if roles is not None:
         user_dict["roles"] = roles
-    if authentication_restrictions is not None:
+    # Keep localhost-exception flows working by omitting the field on createUser
+    # when the desired restriction list is empty. updateUser still needs an empty
+    # list to clear existing authentication restrictions.
+    if exists or authentication_restrictions:
         user_dict["authenticationRestrictions"] = authentication_restrictions
 
     db.command(user_add_db_command, user, **user_dict)
