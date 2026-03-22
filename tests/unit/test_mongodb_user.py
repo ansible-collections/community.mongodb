@@ -139,6 +139,36 @@ class TestMongoDBUserMethods(unittest.TestCase):
         self.assertEqual('alice', user)
         self.assertEqual([], kwargs['authenticationRestrictions'])
 
+    def test_user_find_uses_exact_match_users_info_query(self):
+        class FakeDB:
+            def __init__(self):
+                self.calls = []
+
+            def command(self, payload):
+                self.calls.append(payload)
+                return {
+                    'users': [
+                        {'user': 'alice', 'db': 'admin', 'roles': []},
+                    ]
+                }
+
+        class FakeClient(dict):
+            pass
+
+        db = FakeDB()
+        client = FakeClient({'admin': db})
+
+        result = mongodb_user.user_find(client, 'alice', 'admin')
+
+        self.assertEqual('alice', result['user'])
+        self.assertEqual(
+            {
+                'usersInfo': {'user': 'alice', 'db': 'admin'},
+                'showAuthenticationRestrictions': True,
+            },
+            db.calls[0],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

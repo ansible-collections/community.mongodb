@@ -245,12 +245,18 @@ def user_find(client, user, db_name):
     Returns:
         dict: when user exists, False otherwise.
     """
-    try:
+    def run_users_info(query_db_name, lookup_db_name):
         users_doc = {
-            'usersInfo': 1,
+            'usersInfo': {
+                'user': user,
+                'db': lookup_db_name,
+            },
             'showAuthenticationRestrictions': True,
         }
-        for mongo_user in client[db_name].command(users_doc)['users']:
+        return client[query_db_name].command(users_doc)['users']
+
+    try:
+        for mongo_user in run_users_info(db_name, db_name):
             if mongo_user['user'] == user:
                 # NOTE: there is no 'db' field in mongo 2.4.
                 if 'db' not in mongo_user:
@@ -258,6 +264,11 @@ def user_find(client, user, db_name):
                 # Workaround to make the condition works with AWS DocumentDB,
                 # since all users are in the admin database.
                 if mongo_user["db"] in [db_name, "admin"]:
+                    return mongo_user
+
+        if db_name != 'admin':
+            for mongo_user in run_users_info('admin', 'admin'):
+                if mongo_user['user'] == user and mongo_user.get('db') == 'admin':
                     return mongo_user
     except Exception as excep:
         if hasattr(excep, 'code') and excep.code == 11:  # 11=UserNotFound
