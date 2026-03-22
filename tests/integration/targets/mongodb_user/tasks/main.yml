@@ -175,6 +175,9 @@
     - "'dbAdmin' in test_db_users.transformed_output | string"
     - "'userAdmin' in test_db_users.transformed_output | string"
 
+- name: Import tasks for issue 709
+  import_tasks: 709.yml
+
 - name: Drop users in test db
   community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'

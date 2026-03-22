@@ -55,6 +55,36 @@ class TestMongoDBUserMethods(unittest.TestCase):
         self.assertFalse(mongodb_user.check_if_roles_changed(uinfo, roles_ordered, ''))
         self.assertFalse(mongodb_user.check_if_roles_changed(uinfo, roles_disordered, ''))
 
+    def test_check_if_authentication_restrictions_changed_same_values(self):
+        uinfo = {
+            'authenticationRestrictions': [
+                [{'clientSource': ['127.0.0.1', '::1'], 'serverAddress': []}],
+                [{'clientSource': ['10.0.0.0/8'], 'serverAddress': ['192.168.1.10']}],
+            ]
+        }
+        restrictions = [
+            {'clientSource': ['10.0.0.0/8'], 'serverAddress': ['192.168.1.10']},
+            {'clientSource': ['::1', '127.0.0.1'], 'serverAddress': []},
+        ]
+
+        self.assertFalse(
+            mongodb_user.check_if_authentication_restrictions_changed(uinfo, restrictions)
+        )
+
+    def test_check_if_authentication_restrictions_changed_detects_difference(self):
+        uinfo = {
+            'authenticationRestrictions': [
+                {'clientSource': ['127.0.0.1'], 'serverAddress': []},
+            ]
+        }
+        restrictions = [
+            {'clientSource': ['127.0.0.1'], 'serverAddress': ['10.0.0.0/8']},
+        ]
+
+        self.assertTrue(
+            mongodb_user.check_if_authentication_restrictions_changed(uinfo, restrictions)
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

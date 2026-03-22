@@ -55,6 +55,17 @@ options:
           'dbAdminAnyDatabase'
       - "Or the following dictionary '{ db: DATABASE_NAME, role: ROLE_NAME }'."
       - "This param requires pymongo 2.5+. If it is a string, mongodb 2.4+ is also required. If it is a dictionary, mongo 2.6+ is required."
+  authentication_restrictions:
+    type: list
+    elements: raw
+    description:
+      - >
+          The authentication restrictions the server enforces on the user.
+          Specifies a list of IP addresses and CIDR ranges the user is allowed
+          to connect from and/or server addresses they can connect to.
+          Provide a list of dictionaries with the following fields:
+          C(clientSource) (list) and C(serverAddress) (list).
+      - Provide an empty list if you don't want to use the field.
   state:
     description:
       - The database user state.
@@ -179,6 +190,22 @@ EXAMPLES = '''
     auth_mechanism: "MONGODB-X509"
     connection_options:
      - "tlsAllowInvalidHostnames=true"
+
+- name: Create a user restricted to localhost authentication
+  community.mongodb.mongodb_user:
+    login_user: root
+    login_password: root_password
+    database: admin
+    name: app_user
+    password: secure_password
+    roles:
+      - db: appdb
+        role: readWrite
+    authentication_restrictions:
+      - clientSource:
+          - "127.0.0.1"
+          - "::1"
+    state: present
 '''
 
 RETURN = '''
@@ -217,7 +244,11 @@ def user_find(client, user, db_name):
         dict: when user exists, False otherwise.
     """
     try:
-        for mongo_user in client[db_name].command('usersInfo')['users']:
+        users_doc = {
+            'usersInfo': 1,
+            'showAuthenticationRestrictions': True,
+        }
+        for mongo_user in client[db_name].command(users_doc)['users']:
             if mongo_user['user'] == user:
                 # NOTE: there is no 'db' field in mongo 2.4.
                 if 'db' not in mongo_user:
@@ -234,7 +265,7 @@ def user_find(client, user, db_name):
     return False
 
 
-def user_add(module, client, db_name, user, password, roles):
+def user_add(module, client, db_name, user, password, roles, authentication_restrictions):
     # pymongo's user_add is a _create_or_update_user so we won't know if it was changed or updated
     # without reproducing a lot of the logic in database.py of pymongo
     db = client[db_name]
@@ -262,6 +293,8 @@ def user_add(module, client, db_name, user, password, roles):
         user_dict["pwd"] = password
     if roles is not None:
         user_dict["roles"] = roles
+    if authentication_restrictions is not None:
+        user_dict["authenticationRestrictions"] = authentication_restrictions
 
     db.command(user_add_db_command, user, **user_dict)
 
@@ -294,22 +327,43 @@ def check_if_roles_changed(uinfo, roles, db_name):
     #     ]
     # }
 
-    def make_sure_roles_are_a_list_of_dict(roles, db_name):
-        output = list()
-        for role in roles:
-            if isinstance(role, (binary_type, text_type)):
-                new_role = {"role": role, "db": db_name}
-                output.append(new_role)
-            else:
-                output.append(role)
-        return output
-
     roles_as_list_of_dict = make_sure_roles_are_a_list_of_dict(roles, db_name)
     uinfo_roles = uinfo.get('roles', [])
 
     if sorted(roles_as_list_of_dict, key=lambda roles: sorted(roles.items())) == sorted(uinfo_roles, key=lambda roles: sorted(roles.items())):
         return False
     return True
+
+
+def make_sure_roles_are_a_list_of_dict(roles, db_name):
+    output = list()
+    for role in roles:
+        if isinstance(role, (binary_type, text_type)):
+            new_role = {"role": role, "db": db_name}
+            output.append(new_role)
+        else:
+            output.append(role)
+    return output
+
+
+def normalize_authentication_restrictions(authentication_restrictions):
+    normalized = []
+    for restriction in authentication_restrictions or []:
+        if isinstance(restriction, (list, tuple)) and restriction and isinstance(restriction[0], dict):
+            restriction = restriction[0]
+
+        normalized.append({
+            'clientSource': sorted(restriction.get('clientSource', [])),
+            'serverAddress': sorted(restriction.get('serverAddress', [])),
+        })
+
+    return sorted(normalized, key=lambda item: (item['clientSource'], item['serverAddress']))
+
+
+def check_if_authentication_restrictions_changed(uinfo, authentication_restrictions):
+    current = normalize_authentication_restrictions(uinfo.get('authenticationRestrictions', []))
+    desired = normalize_authentication_restrictions(authentication_restrictions)
+    return current != desired
 
 
 # =========================================
@@ -324,6 +378,7 @@ def main():
         password=dict(aliases=['pass'], no_log=True),
         replica_set=dict(default=None),
         roles=dict(default=None, type='list', elements='raw'),
+        authentication_restrictions=dict(default=[], type='list', elements='raw', aliases=['authenticationRestrictions']),
         state=dict(default='present', choices=['absent', 'present']),
         update_password=dict(default="always", choices=["always", "on_create"], no_log=False),
         create_for_localhost_exception=dict(default=None, type='path'),
@@ -352,6 +407,7 @@ def main():
     user = module.params['name']
     password = module.params['password']
     roles = module.params['roles'] or []
+    authentication_restrictions = module.params['authentication_restrictions'] or []
     state = module.params['state']
     update_password = module.params['update_password']
 
@@ -381,12 +437,13 @@ def main():
                 uinfo = user_find(client, user, db_name)
                 if uinfo:
                     password = None
-                    if not check_if_roles_changed(uinfo, roles, db_name):
+                    if (not check_if_roles_changed(uinfo, roles, db_name) and
+                            not check_if_authentication_restrictions_changed(uinfo, authentication_restrictions)):
                         module.exit_json(changed=False, user=user)
 
             if module.check_mode:
                 module.exit_json(changed=True, user=user)
-            user_add(module, client, db_name, user, password, roles)
+            user_add(module, client, db_name, user, password, roles, authentication_restrictions)
         except Exception as e:
             module.fail_json(msg='Unable to add or update user: %s' % to_native(e), exception=traceback.format_exc())
         finally:
