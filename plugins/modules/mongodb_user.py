@@ -58,6 +58,8 @@ options:
   authentication_restrictions:
     type: list
     elements: raw
+    default: []
+    aliases: [authenticationRestrictions]
     description:
       - >
           The authentication restrictions the server enforces on the user.
