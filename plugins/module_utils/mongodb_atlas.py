@@ -75,7 +75,7 @@ class AtlasAPIObject:
     def exists(self):
         additional_path = ""
         if self.path == "/databaseUsers":
-            additional_path = "/admin"
+            additional_path = "/" + self.data.get("databaseName", "admin")
         ret = self.call_url(
             path=self.path
             + additional_path
@@ -97,7 +97,7 @@ class AtlasAPIObject:
     def delete(self):
         additional_path = ""
         if self.path == "/databaseUsers":
-            additional_path = "/admin"
+            additional_path = "/" + self.data.get("databaseName", "admin")
         ret = self.call_url(
             path=self.path
             + additional_path
@@ -110,7 +110,7 @@ class AtlasAPIObject:
     def modify(self):
         additional_path = ""
         if self.path == "/databaseUsers":
-            additional_path = "/admin"
+            additional_path = "/" + self.data.get("databaseName", "admin")
         ret = self.call_url(
             path=self.path
             + additional_path
@@ -124,7 +124,7 @@ class AtlasAPIObject:
     def diff(self):
         additional_path = ""
         if self.path == "/databaseUsers":
-            additional_path = "/admin"
+            additional_path = "/" + self.data.get("databaseName", "admin")
         ret = self.call_url(
             path=self.path
             + additional_path
