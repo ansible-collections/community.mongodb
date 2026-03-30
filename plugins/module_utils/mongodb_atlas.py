@@ -75,7 +75,7 @@ class AtlasAPIObject:
     def exists(self):
         additional_path = ""
         if self.path == "/databaseUsers":
-            additional_path = "/" + self.data.get("databaseName", "admin")
+            additional_path = "/" +self.module.params["database_name"]
         ret = self.call_url(
             path=self.path
             + additional_path
