@@ -244,10 +244,16 @@ def user_find(client, user, db_name):
 
     Returns:
         dict: when user exists, False otherwise.
+
+    Notes: Now that we query using showAuthenticationRestrictions
+    we have to update the query to filter for a specifc user
     """
     try:
         for mongo_user in client[db_name].command({
-            'usersInfo': 1,
+            'usersInfo': {
+                'user': user,
+                'db': db_name
+            },
             'showAuthenticationRestrictions': True,
         })['users']:
             if mongo_user['user'] == user:
