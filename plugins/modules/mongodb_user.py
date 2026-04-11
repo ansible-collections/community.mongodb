@@ -279,7 +279,6 @@ def user_add(module, client, db_name, user, password, roles, authentication_rest
 
     try:
         exists = user_find(client, user, db_name)
-        module.warn(f"user find returned {str(exists)}")
     except Exception as excep:
         # We get this exception: "not authorized on admin to execute command"
         # when auth is enabled on a new instance. The loalhost exception should
