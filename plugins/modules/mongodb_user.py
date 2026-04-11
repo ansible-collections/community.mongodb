@@ -246,7 +246,10 @@ def user_find(client, user, db_name):
         dict: when user exists, False otherwise.
     """
     try:
-        for mongo_user in client[db_name].command('usersInfo')['users']:
+        for mongo_user in client[db_name].command({
+            'usersInfo': 1,
+            'showAuthenticationRestrictions': True,
+        })['users']:
             if mongo_user['user'] == user:
                 # NOTE: there is no 'db' field in mongo 2.4.
                 if 'db' not in mongo_user:
