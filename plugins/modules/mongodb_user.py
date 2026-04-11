@@ -281,7 +281,7 @@ def user_add(module, client, db_name, user, password, roles, authentication_rest
         exists = user_find(client, user, db_name)
     except Exception as excep:
         # We get this exception: "not authorized on admin to execute command"
-        # when auth is enabled on a new instance. The loalhost exception should
+        # when auth is enabled on a new instance. The localhost exception should
         # allow us to create the first user. If the localhost exception does not apply,
         # then user creation will also fail with unauthorized. So, ignore Unauthorized here.
         if hasattr(excep, 'code') and excep.code == 13:  # 13=Unauthorized
