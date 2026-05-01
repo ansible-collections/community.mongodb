@@ -29,7 +29,6 @@ options:
     description:
       - MongoDB Atlas Service Account client secret (OAuth2).
       - Mutually exclusive with C(api_password).
-    no_log: true
     type: str
     aliases: [ "serviceAccountSecret" ]
   api_username:
@@ -40,7 +39,6 @@ options:
   api_password:
     description:
       - Atlas API private key. Alternative to C(service_account_secret).
-    no_log: true
     type: str
     aliases: [ "apiPassword" ]
   org_id:
@@ -289,7 +287,7 @@ def main():
                 module.exit_json(changed=True, diff=diff_result)
 
             url = "{0}/orgs/{1}/invites/{2}".format(ATLAS_BASE, org_id, pending_invite["id"])
-            status, _ = call_url(module, url, method="DELETE", token=token)
+            status, _ignored = call_url(module, url, method="DELETE", token=token)
             if status == 204:
                 changed = True
                 diff_result["after"] = "state: absent\n"

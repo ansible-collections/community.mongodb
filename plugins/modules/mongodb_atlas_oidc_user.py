@@ -29,7 +29,6 @@ options:
     description:
       - MongoDB Atlas Service Account client secret (OAuth2).
       - Mutually exclusive with C(api_password).
-    no_log: true
     type: str
     aliases: [ "serviceAccountSecret" ]
   api_username:
@@ -40,7 +39,6 @@ options:
   api_password:
     description:
       - Atlas API private key. Alternative to C(service_account_secret).
-    no_log: true
     type: str
     aliases: [ "apiPassword" ]
   group_id:
