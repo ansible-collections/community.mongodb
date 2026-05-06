@@ -17,6 +17,31 @@ except ImportError:
         quote,
     )  # pylint: disable=locally-disabled, import-error, no-name-in-module
 
+ATLAS_API_V2_VERSION = "2025-02-19"
+
+
+def get_bearer_token(module, service_account_id, service_account_secret):
+    """Obtain OAuth2 Bearer token using client_credentials grant."""
+    import base64
+    credentials = base64.b64encode(
+        "{0}:{1}".format(service_account_id, service_account_secret).encode("utf-8")
+    ).decode("utf-8")
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+        "Authorization": "Basic {0}".format(credentials),
+    }
+    rsp, info = fetch_url(
+        module=module,
+        url="https://cloud.mongodb.com/api/oauth/token",
+        data="grant_type=client_credentials",
+        headers=headers,
+        method="POST",
+    )
+    if info["status"] != 200:
+        module.fail_json(msg="Failed to obtain Atlas Bearer token. HTTP %d" % info["status"])
+    return json.loads(rsp.read())["access_token"]
+
 
 class AtlasAPIObject:
     module = None
@@ -218,3 +243,89 @@ class AtlasAPIObject:
                             msg="exception while creating: " + str(e)
                         )
         return changed, diff_result
+
+
+class AtlasAPIObjectV2(AtlasAPIObject):
+    """Atlas API v2 variant supporting both OAuth2 Bearer (Service Account)
+    and Digest authentication (API public/private key).
+
+    Authentication priority:
+      - If service_account_id and service_account_secret are provided: OAuth2 Bearer
+      - If api_username and api_password are provided: Digest (same as AtlasAPIObject)
+
+    Additional arguments vs AtlasAPIObject:
+      - base_url             : full URL prefix replacing /api/atlas/v1.0/groups/{group_id}
+      - service_account_id   : OAuth2 client ID (optional)
+      - service_account_secret: OAuth2 client secret (optional)
+    """
+
+    def __init__(
+        self,
+        module,
+        object_name,
+        path,
+        data,
+        base_url,
+        group_id="",
+        data_is_array=False,
+        service_account_id=None,
+        service_account_secret=None,
+        api_username=None,
+        api_password=None,
+    ):
+        self.module = module
+        self.path = path
+        self.data = data
+        self.group_id = group_id
+        self.object_name = object_name
+        self.data_is_array = data_is_array
+        self._base_url = base_url
+
+        if service_account_id and service_account_secret:
+            self._auth_type = "bearer"
+            self._bearer_token = get_bearer_token(module, service_account_id, service_account_secret)
+        elif api_username and api_password:
+            self._auth_type = "digest"
+            self.module.params["url_username"] = api_username
+            self.module.params["url_password"] = api_password
+        else:
+            module.fail_json(
+                msg="Either service_account_id/service_account_secret or api_username/api_password must be provided."
+            )
+
+    def call_url(self, path, data="", method="GET"):
+        headers = {
+            "Accept": "application/vnd.atlas.{0}+json".format(ATLAS_API_V2_VERSION),
+            "Content-Type": "application/vnd.atlas.{0}+json".format(ATLAS_API_V2_VERSION),
+        }
+
+        if self._auth_type == "bearer":
+            headers["Authorization"] = "Bearer {0}".format(self._bearer_token)
+
+        if self.data_is_array and data != "":
+            data = "[" + data + "]"
+
+        url = self._base_url + path
+        rsp, info = fetch_url(
+            module=self.module,
+            url=url,
+            data=data,
+            headers=headers,
+            method=method,
+        )
+
+        content = ""
+        error = ""
+        if rsp and info["status"] not in (204, 404):
+            content = json.loads(rsp.read())
+        if info["status"] >= 400:
+            try:
+                content = json.loads(info["body"])
+                error = content.get("reason", "Unknown error")
+                if "detail" in content:
+                    error += ". Detail: " + content["detail"]
+            except ValueError:
+                error = info["msg"]
+        if info["status"] < 0:
+            error = info["msg"]
+        return {"code": info["status"], "data": content, "error": error}
