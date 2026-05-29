@@ -73,7 +73,7 @@
     - "pkg"
     - "debian"
 
-- name: Manage package locks - {{ mongodb_hold_packages }}
+- name: Manage package locks - {{ mongodb_hold_packages | default("undefined") }}
   ansible.builtin.script: lock_mongodb_packages.sh {{ mongodb_hold_packages }}
   when:
     - mongodb_hold_packages is defined
