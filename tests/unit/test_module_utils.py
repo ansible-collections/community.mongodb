@@ -319,6 +319,7 @@ class TestMongoDBCommonMethods(unittest.TestCase):
         fake_module.params["login_user"] = None
         fake_module.params["login_password"] = None
         fake_module.params["login_database"] = "test"
+        fake_module.params['strict_compatibility'] = False
         fake_module.params["database"] = "test"
         client = mongodb_common.mongo_auth(fake_module, client)
         fail_msg = fake_module.get_msg()
