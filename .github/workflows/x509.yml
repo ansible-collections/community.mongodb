@@ -90,7 +90,10 @@ jobs:
           make deploy IMG=test-mongodb-operator:latest
 
       - name: Debug controller
-        run: kubectl get all -n ansible-operator-system 
+        run: |
+          kubectl get all -n ansible-operator-system
+          kubectl logs deployment.apps/ansible-operator-controller-manager
+          kubectl describe deployment ansible-operator-controller-manager
 
       - name: Wait for controller to be ready
         run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s
