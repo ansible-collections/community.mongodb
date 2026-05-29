@@ -1,0 +1,109 @@
+- name: Create user with authentication restrictions
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: restricted_user
+    password: secret
+    roles: readAnyDatabase
+    authentication_restrictions:
+      - clientSource:
+          - 127.0.0.1
+          - ::1
+    state: present
+    update_password: on_create
+  register: restricted_user_created
+
+- assert:
+    that:
+    - restricted_user_created.changed
+
+- name: Re-run restricted user creation to verify idempotence
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: restricted_user
+    password: secret
+    roles: readAnyDatabase
+    authentication_restrictions:
+      - clientSource:
+          - ::1
+          - 127.0.0.1
+    state: present
+    update_password: on_create
+  register: restricted_user_idempotent
+
+- assert:
+    that:
+    - not restricted_user_idempotent.changed
+
+- name: Get restricted user details with authentication restrictions
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.runCommand({usersInfo: 'restricted_user', showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: restricted_user_details
+
+- assert:
+    that:
+    - "'restricted_user' in restricted_user_details.transformed_output | string"
+    - "'127.0.0.1' in restricted_user_details.transformed_output | string"
+    - "'::1' in restricted_user_details.transformed_output | string"
+
+- name: Update user with additional authentication restrictions
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: admin
+    name: restricted_user
+    password: secret
+    roles: readAnyDatabase
+    authentication_restrictions:
+      - clientSource:
+          - 127.0.0.1
+          - ::1
+        serverAddress:
+          - 127.0.0.1
+      - clientSource:
+          - 10.0.0.0/8
+    state: present
+    update_password: on_create
+  register: restricted_user_updated
+
+- assert:
+    that:
+    - restricted_user_updated.changed
+
+- name: Get updated restricted user details
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: admin
+    eval: "printjson(db.runCommand({usersInfo: 'restricted_user', showAuthenticationRestrictions: true}))"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: restricted_user_updated_details
+
+- assert:
+    that:
+    - "'10.0.0.0/8' in restricted_user_updated_details.transformed_output | string"
+    - "'serverAddress' in restricted_user_updated_details.transformed_output | string"
