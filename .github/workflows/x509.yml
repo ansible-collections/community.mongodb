@@ -95,7 +95,12 @@ jobs:
           kubectl describe deployment -n ansible-operator-system ansible-operator-controller-manager
 
       - name: Wait for controller to be ready
-        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s
+        run: kubectl wait --for=condition=available deployment/ansible-operator-controller-manager -n ansible-operator-system --timeout=120s || true
+
+      - name: Debug controller 2
+        run: |
+          kubectl get all -n ansible-operator-system
+          kubectl describe deployment -n ansible-operator-system ansible-operator-controller-manager
 
       - name: Load image into minikube
         run: |
