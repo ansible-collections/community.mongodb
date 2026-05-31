@@ -4,5 +4,5 @@ projectName: ansible-operator
 resources:
 - group: mongodb
   kind: MongoDB
-  version: v1alpha1
-version: 3-alpha
+  version: v1
+version: "3"

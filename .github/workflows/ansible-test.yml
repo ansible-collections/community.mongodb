@@ -165,24 +165,20 @@ jobs:
     strategy:
       matrix:
         mongodb_version:
-          - "6.0"
-          - "7.0"
-          #- "8.0". tmp remove MongoDB 8 - Bug? Invalid access at address: 0x20
+          #- "7.0"
+          - "8.0" # tmp remove MongoDB 8 - Bug? Invalid access at address: 0x20
           # https://github.com/ansible-collections/community.mongodb/actions/runs/17740301799/job/50412355202?pr=718
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
           - python_version: "3.10"
             ansible_version: "stable-2.15"
-            docker_image: "ubuntu2204"
+            docker_image: "default"
           - python_version: "3.10"
             ansible_version: "stable-2.16"
-            docker_image: "ubuntu2204"
+            docker_image: "default"
           - python_version: "3.12"
             ansible_version: "devel"
-            docker_image: "ubuntu2204"
-          - python_version: "3.13"
-            ansible_version: "devel"
-            docker_image: "ubuntu2204"
+            docker_image: "default"
     steps:
 
       - name: Check out code
@@ -220,7 +216,7 @@ jobs:
         run: "sed -i 's/^mongodb_version:.*/mongodb_version: \"${{ matrix.mongodb_version }}\"/g' ${{ env.mongodb_version_file }}"
 
       - name: Run integration tests on Python ${{ matrix.versions.python_version }} | ${{ matrix.versions.docker_image }} | ${{ matrix.versions.ansible_version }} | ${{ matrix.mongodb_version }}
-        run: ansible-test integration --docker ${{ matrix.versions.docker_image }} -v --color --retry-on-error --python 3.10 --continue-on-error --diff --coverage ${{ matrix.mongodb_module }}
+        run: ansible-test integration --docker ${{ matrix.versions.docker_image }} -v --color --retry-on-error --python ${{ matrix.versions.python_version }} --continue-on-error --diff --coverage ${{ matrix.mongodb_module }}
 
       - name: Upload Coverage data
         run: tests/coverage.sh

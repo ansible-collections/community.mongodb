@@ -17,6 +17,7 @@
       - ansible_os_family == "RedHat"
       - ansible_distribution != "Amazon"
       - ansible_distribution != "Fedora"
+    retries: 5
 
   - name: Install redhat packages
     ansible.builtin.package:
