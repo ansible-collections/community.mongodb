@@ -67,7 +67,7 @@ jobs:
 
       - name: Install requirements
         run: |
-          pip install ansible-dev-tools molecule-plugins[docker] testinfra>=7.0.0 pytest-ansible>=1.3.4
+          pip install ansible molecule[docker] docker yamllint ansible-lint
 
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
