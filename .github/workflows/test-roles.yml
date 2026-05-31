@@ -67,7 +67,7 @@ jobs:
 
       - name: Install requirements
         run: |
-          pip install molecule molecule-docker pytest-testinfra
+          pip install molecule
 
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
