@@ -23,6 +23,9 @@ provisioner:
   name: ansible
 verifier:
   name: testinfra
+  options:
+    # pytest-ansible conflicts with --connection
+    p: "no:pytest-ansible"
 scenario:
   test_sequence:
     - dependency
