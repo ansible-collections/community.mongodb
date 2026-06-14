@@ -13,7 +13,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: ansible_collections/community/mongodb
 
@@ -34,7 +34,7 @@ jobs:
           driver: docker
 
       - name: Install mongodb-mongosh
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -156,12 +156,12 @@ jobs:
                     --eval "db.adminCommand('listDatabases')"
 
       - name: Set up Python 3.13
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
       - name: Install ansible-base devel
-        uses: nick-invision/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -180,7 +180,7 @@ jobs:
         working-directory: ansible_collections/community/mongodb
 
       - name: Install pymongo
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
