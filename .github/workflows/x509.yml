@@ -161,7 +161,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install ansible-base devel
-        uses: nick-invision/retry@v4
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
