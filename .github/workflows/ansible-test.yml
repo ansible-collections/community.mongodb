@@ -33,17 +33,17 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.versions.python_version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.versions.python_version }}
 
       - name: Install ansible-base (${{ matrix.versions.ansible_version }})
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -78,24 +78,24 @@ jobs:
             ansible_version: "devel"
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.versions.python_version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.versions.python_version }}
 
       - name: Install ansible-base (${{ matrix.versions.ansible_version }})
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install https://github.com/ansible/ansible/archive/${{ matrix.versions.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Install mongodb
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -109,14 +109,14 @@ jobs:
             sudo apt-get install -y mongodb-org
 
       - name: Install dateutil
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install python-dateutil
 
       - name: Install python libs
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
@@ -135,7 +135,7 @@ jobs:
       - name: Generate coverage report.
         run: ansible-test coverage xml -v --requirements --group-by command --group-by version
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
 
@@ -153,7 +153,7 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: ansible_collections/community/mongodb
 
@@ -209,31 +209,31 @@ jobs:
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: ansible_collections/community/mongodb
 
       - name: Set up Python ${{ matrix.versions.python_version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.versions.python_version }}
 
       - name: Install ansible-base (${{ matrix.versions.ansible_version }})
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: pip install https://github.com/ansible/ansible/archive/${{ matrix.versions.ansible_version }}.tar.gz --disable-pip-version-check
 
       - name: Install community.general
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
           command: ansible-galaxy collection install 'community.general' -p ansible_collections/
 
       - name: Install community.crypto
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 3
           max_attempts: 3
