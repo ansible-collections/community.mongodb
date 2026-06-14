@@ -24,6 +24,10 @@ jobs:
             ansible_version: "stable-2.18"
           - python_version: "3.12"
             ansible_version: "stable-2.19"
+          - python_version: "3.12"
+            ansible_version: "stable-2.20"
+          - python_version: "3.12"
+            ansible_version: "stable-2.21"
           - python_version: "3.13"
             ansible_version: "devel"
     steps:
