@@ -1,6 +1,6 @@
 namespace: community
 name: mongodb
-version: 1.7.12
+version: 1.8.0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
