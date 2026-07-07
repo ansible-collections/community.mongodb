@@ -16,6 +16,8 @@ description:
   - Wrapper around the replSetMaintenance command.
   - Performs no actions against a PRIMARY member.
   - When enabled SECONDARY members will not service reads.
+  - This module sets the connection option directConnection to true and 
+    this means multiple hosts cannot be specified in login_hosts.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 

@@ -16,6 +16,8 @@ description:
   - This module should only be used with MongoDB 3.6 and above.
   - Old MongoDB versions should use an alternative method.
   - Consult U(https://docs.mongodb.com/manual/tutorial/change-oplog-size) for further info.
+  - This module sets the connection option directConnection to true and 
+    this means multiple hosts cannot be specified in login_hosts.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
