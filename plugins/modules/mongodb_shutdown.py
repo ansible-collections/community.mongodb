@@ -13,6 +13,8 @@ module: mongodb_shutdown
 short_description: Cleans up all database resources and then terminates the mongod/mongos process.
 description:
   - Cleans up all database resources and then terminates the process.
+  - This module sets the connection option directConnection to true and 
+    this means multiple hosts cannot be specified in login_hosts.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 

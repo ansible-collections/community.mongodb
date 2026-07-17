@@ -16,6 +16,8 @@ description:
   - The module expects all replicaset nodes to be PRIMARY, SECONDARY or ARBITER.
   - Will wait until a timeout for the replicaset state to converge if required.
   - Can also be used to lookup the current PRIMARY member (see examples).
+  - This module sets the connection option directConnection to true and 
+    this means multiple hosts cannot be specified in login_hosts.
 author: Rhys Campbell (@rhysmeister)
 version_added: "1.0.0"
 
