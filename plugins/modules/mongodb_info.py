@@ -104,7 +104,7 @@ parameters:
 from uuid import UUID
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils._text import to_native
+from ansible.module_utils.common.text.converters import to_native
 from ansible.module_utils.six import iteritems  # pylint: disable=ansible-bad-import-from
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     convert_bson_values_recur,
