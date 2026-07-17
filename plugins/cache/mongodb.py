@@ -54,7 +54,7 @@ from ansible import constants as C
 from ansible.errors import AnsibleError
 from ansible.plugins.cache import BaseCacheModule
 from ansible.utils.display import Display
-from ansible.module_utils._text import to_native
+from ansible.module_utils.common.text.converters import to_native
 
 pymongo_missing = False
 
