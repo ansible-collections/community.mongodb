@@ -1,7 +1,8 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
+import configparser
+
 from ansible.module_utils.basic import missing_required_lib  # pylint: disable=unused-import:
-from ansible.module_utils.six.moves import configparser
 from ansible.module_utils.common.text.converters import to_native
 import traceback
 import os

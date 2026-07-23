@@ -154,7 +154,6 @@ RETURN = """
 
 import datetime
 
-from ansible.module_utils.six import string_types, integer_types  # pylint: disable=ansible-bad-import-from
 from ansible.module_utils.common.text.converters import to_native
 from ansible.errors import AnsibleError
 from ansible.plugins.lookup import LookupBase
@@ -200,9 +199,9 @@ class LookupModule(LookupBase):
     def convert_mongo_result_to_valid_json(self, result):
         if result is None:
             return result
-        if isinstance(result, integer_types + (float, bool)):
+        if isinstance(result, (int, float, bool)):
             return result
-        if isinstance(result, string_types):
+        if isinstance(result, str):
             return result
         elif isinstance(result, list):
             new_list = []
