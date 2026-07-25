@@ -47,9 +47,9 @@ mongodb_value:
   type: <DATA TYPE>
 '''
 
+import configparser
+
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six import binary_type, text_type
-from ansible.module_utils.six.moves import configparser
 from ansible.module_utils.common.text.converters import to_native
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     check_compatibility,

@@ -105,7 +105,6 @@ from uuid import UUID
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.six import iteritems  # pylint: disable=ansible-bad-import-from
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     convert_bson_values_recur,
     get_mongodb_client,
@@ -189,7 +188,7 @@ class MongoDbInfo():
         # Gather info about databases and their total size:
         self.info['databases'], self.info['total_size'] = self.get_db_info()
 
-        for dbname, val in iteritems(self.info['databases']):
+        for dbname, val in self.info['databases'].items():
             # Gather info about users for each database:
             self.info['users'].update(self.get_users_info(dbname))
 
@@ -212,7 +211,7 @@ class MongoDbInfo():
         roles_dict = {}
         for elem in result:
             roles_dict[elem['role']] = {}
-            for key, val in iteritems(elem):
+            for key, val in elem.items():
                 if key in ['role', 'db']:
                     continue
 
@@ -234,7 +233,7 @@ class MongoDbInfo():
         users_dict = {}
         for elem in result:
             users_dict[elem['user']] = {}
-            for key, val in iteritems(elem):
+            for key, val in elem.items():
                 if key in ['user', 'db']:
                     continue
 
@@ -257,7 +256,7 @@ class MongoDbInfo():
         db_dict = {}
         for elem in result:
             db_dict[elem['name']] = {}
-            for key, val in iteritems(elem):
+            for key, val in elem.items():
                 if key == 'name':
                     continue
 

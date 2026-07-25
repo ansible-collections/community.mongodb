@@ -222,7 +222,6 @@ import traceback
 
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
-from ansible.module_utils.six import binary_type, text_type  # pylint: disable=ansible-bad-import-from
 from ansible.module_utils.common.text.converters import to_native, to_bytes
 from ansible_collections.community.mongodb.plugins.module_utils.mongodb_common import (
     missing_required_lib,
@@ -348,7 +347,7 @@ def check_if_roles_changed(uinfo, roles, db_name):
 def make_sure_roles_are_a_list_of_dict(roles, db_name):
     output = list()
     for role in roles:
-        if isinstance(role, (binary_type, text_type)):
+        if isinstance(role, (bytes, str)):
             new_role = {"role": role, "db": db_name}
             output.append(new_role)
         else:
