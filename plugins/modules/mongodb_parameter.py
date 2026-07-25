@@ -17,7 +17,7 @@ module: mongodb_parameter
 short_description: Change an administrative parameter on a MongoDB server
 description:
   - Change an administrative parameter on a MongoDB server.
-  - This module sets the connection option directConnection to true and 
+  - This module sets the connection option directConnection to true and
     this means multiple hosts cannot be specified in login_hosts.
 version_added: "1.0.0"
 
