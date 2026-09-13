@@ -86,7 +86,7 @@
     group: root
     mode: '0755'
   when: 
-    - ansible_facts.distribution == "Debian"
+    - ansible_facts.distribution in ['Debian', 'Ubuntu']
 
 - name: Create override.conf to disable ConditionVirtualization for systemd-timesyncd.service
   copy:
@@ -98,7 +98,7 @@
     group: root
     mode: '0644'
   when: 
-    - ansible_facts.distribution == "Debian"
+    - ansible_facts.distribution in ['Debian', 'Ubuntu']
   register: timesync
 
 - name: Reload systemd manager configuration

@@ -35,7 +35,7 @@ Role Variables
 * `mongodb_logrotate_template`: Jinja template for the logrotate configuration. Default `mongodb.logrotate.j2`.
 * `mongodb_systemd_service_override`: Content of a file to override systemd configuration.
 
-IMPORTANT NOTE: It is expected that `mongodb_admin_user` & `mongodb_admin_pwd` values be overridden in your own file protected by Ansible Vault. These values are primary included here for Molecule/Travis CI integration. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
+IMPORTANT NOTE: It is expected that `mongodb_admin_user`, `mongodb_admin_pwd` and `openssl_keyfile_content` values be overridden in your own file protected by Ansible Vault. These values are primary included here for Molecule/Travis CI integration. Any production environments should protect these values. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
 
 Dependencies
 ------------

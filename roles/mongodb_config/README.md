@@ -30,6 +30,8 @@ replicaset: When enabled add a replication section to the configuration. Default
 * `mongodb_certificate_key_file`: Path to the PEM-file containing the certficate and private key.
 * `mongodb_certificate_ca_file`:  Path to the CA-file.
 
+IMPORTANT NOTE: It is expected that the `openssl_keyfile_content` value be overridden in your own file protected by Ansible Vault. This value is primarily included here for Molecule/Travis CI integration. Any production environments should protect this value. For more information see [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
+
 Dependencies
 ------------
 

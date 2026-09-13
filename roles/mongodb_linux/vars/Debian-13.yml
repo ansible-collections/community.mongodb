@@ -1,0 +1,5 @@
+---
+# Packages for Debian 13
+ntp_service: ntpsec.service
+ntp_package: ntpsec
+gnu_c_lib: libc6

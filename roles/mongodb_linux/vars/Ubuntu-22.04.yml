@@ -1,0 +1,5 @@
+---
+# Packages for Ubuntu
+ntp_service: systemd-timesyncd
+ntp_package: systemd-timesyncd
+gnu_c_lib: libc6
