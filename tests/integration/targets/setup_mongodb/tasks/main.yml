@@ -16,6 +16,13 @@
   when:
     - ansible_distribution == 'Ubuntu'
 
+- name: Update apt cache after repository addition
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 0
+  when:
+    - ansible_distribution == 'Ubuntu'
+
 - name: Ensure mongod package is installed
   apt:
     name: '{{ mongodb_packages.mongod }}'
