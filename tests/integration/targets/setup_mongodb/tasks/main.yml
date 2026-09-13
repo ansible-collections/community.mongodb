@@ -10,7 +10,7 @@
 
 - name: Add MongoDB repository into sources list
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/mongodb.gpg] {{ apt.repo_base }}"
+    repo: "{{ apt.repo }}"
     state: present
     update_cache: true
   when:
