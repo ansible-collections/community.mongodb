@@ -1,19 +1,27 @@
 - import_tasks: iproute.yml
 
-- name: Import MongoDB public GPG Key
-  apt_key:
+- name: Download MongoDB public GPG Key
+  ansible.builtin.get_url:
     url: "{{ apt.key_url }}"
-    state: "present"
+    dest: /etc/apt/keyrings/mongodb.gpg
+    mode: '0644'
   when:
-  - ansible_distribution == 'Ubuntu'
+    - ansible_distribution == 'Ubuntu'
 
 - name: Add MongoDB repository into sources list
-  apt_repository:
-    repo: '{{ apt.repo }}'
+  ansible.builtin.apt_repository:
+    repo: "{{ apt.repo }}"
     state: present
     update_cache: true
   when:
-  - ansible_distribution == 'Ubuntu'
+    - ansible_distribution == 'Ubuntu'
+
+- name: Update apt cache after repository addition
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 0
+  when:
+    - ansible_distribution == 'Ubuntu'
 
 - name: Ensure mongod package is installed
   apt:
