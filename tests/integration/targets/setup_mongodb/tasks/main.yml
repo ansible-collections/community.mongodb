@@ -5,45 +5,47 @@
     path: /etc/apt/keyrings
     state: directory
     mode: '0755'
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible['os_family'] == 'Debian'
 
 - name: Download MongoDB public GPG key
   ansible.builtin.get_url:
     url: "{{ apt.key_url }}"
     dest: /etc/apt/keyrings/mongodb.asc
     mode: '0644'
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible['os_family'] == 'Debian'
+
+- name: Convert GPG key to binary format
+  shell: |
+    gpg --dearmor < /usr/share/keyrings/mongodb-server-8.0.gpg.asc > /usr/share/keyrings/mongodb-server-8.0.gpg
+  when: ansible['os_family'] == 'Debian'
 
 - name: Add MongoDB repository
   ansible.builtin.apt_repository:
-    repo: "{{ apt.repo }} signed-by=/etc/apt/keyrings/mongodb.asc"
+    repo: "{{ apt.repo }}"
     state: present
     update_cache: true
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible['os_family'] == 'Debian'
 
 - name: Ensure mongod package is installed
   apt:
     name: '{{ mongodb_packages.mongod }}'
     state: present
     force: true
-  when:
-  - ansible_distribution == 'Ubuntu'
+  when: ansible['os_family'] == 'Debian'
 
 - name: Ensure mongos package is installed
   ansible.builtin.apt:
     name: '{{ mongodb_packages.mongos }}'
     state: present
     force: true
-  when:
-  - ansible_distribution == 'Ubuntu'
+  when: ansible['os_family'] == 'Debian'
 
 - name: Ensure mongo client is installed
   ansible.builtin.apt:
     name: '{{ mongodb_packages.mongo }}'
     state: present
     force: true
-  when:
-  - ansible_distribution == 'Ubuntu'
+  when: ansible['os_family'] == 'Debian' 
 
 - name: Add MongopDB repo
   yum_repository:
@@ -53,7 +55,7 @@
     gpgcheck: '{{ yum.gpgcheck }}'
     gpgkey: '{{ yum.gpgkey }}'
   when:
-  - ansible_os_family == "RedHat"
+  - ansible['os_family'] == "RedHat"
   - not ansible_distribution == "Fedora"
 
 - name: Another url for Fedora based systems
@@ -72,13 +74,13 @@
     state: present
   register: monogd_installed_packages
   notify: Remove mongod installed packages
-  when: ansible_os_family == "RedHat"
+  when: ansible['os_family'] == "RedHat"
 
 - name: Ensure mongos package is installed
   ansible.builtin.yum:
     name: '{{ mongodb_packages.mongos }}'
     state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible['os_family'] == "RedHat"
 
 - name: Ensure mongo client is installed
   ansible.builtin.yum:
