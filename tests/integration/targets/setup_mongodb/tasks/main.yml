@@ -14,11 +14,6 @@
     mode: '0644'
   when: ansible_facts['os_family'] == 'Debian'
 
-- name: Convert GPG key to binary format
-  shell: |
-    gpg --dearmor < /usr/share/keyrings/mongodb-server-8.0.gpg.asc > /usr/share/keyrings/mongodb-server-8.0.gpg
-  when: ansible_facts['os_family'] == 'Debian'
-
 - name: Add MongoDB repository
   ansible.builtin.apt_repository:
     repo: "{{ apt.repo }}"
