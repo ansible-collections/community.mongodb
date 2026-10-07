@@ -5,7 +5,7 @@
     path: /etc/apt/keyrings
     state: directory
     mode: '0755'
-  when: ç'os_family'] == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
 
 - name: Download MongoDB public GPG key
   ansible.builtin.get_url:
