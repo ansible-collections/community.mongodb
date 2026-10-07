@@ -1,4 +1,4 @@
-- import_tasks: ansible.builtin.iproute.yml
+- ansible.builtin.import_tasks: iproute.yml
 
 - name: Create APT keyrings directory
   ansible.builtin.file:
