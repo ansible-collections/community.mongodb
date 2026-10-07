@@ -2,7 +2,7 @@ mongodb_version: '6.0'
 apt:
   #keyserver: keyserver.ubuntu.com
   #keyserver_id: 9DA31620334BD75D9DCB49F368818C72E52529D4
-  key_url: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc"
+  key_url: "https://pgp.mongodb.com/server-{{ mongodb_version.split('.')[0] }}.asc"
   repo: deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu {{ansible_distribution_release}}/mongodb-org/{{mongodb_version}}
     multiverse
 mongodb_packages:
