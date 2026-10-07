@@ -1,11 +1,11 @@
 - name: remove mongodb pip packages
-  pip:
+  ansible.builtin.pip:
     name: '{{ pip_packages }}'
     state: absent
 
 # Sometimes mongod pulls down a load of python2 stuff
 - name: Remove mongod installed packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ item.split('Installed:')[1] }}"
     state: absent
   with_items: "{{ monogd_installed_packages.results | select('search', 'Installed:') | list | reject('search', 'openssl-libs') | list }}"

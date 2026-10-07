@@ -1,19 +1,25 @@
-- import_tasks: iproute.yml
+- import_tasks: ansible.builtin.iproute.yml
 
-- name: Import MongoDB public GPG Key
-  apt_key:
+- name: Create APT keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Download MongoDB public GPG key
+  ansible.builtin.get_url:
     url: "{{ apt.key_url }}"
-    state: "present"
-  when:
-  - ansible_distribution == 'Ubuntu'
+    dest: /etc/apt/keyrings/mongodb.asc
+    mode: '0644'
+  when: ansible_distribution == 'Ubuntu'
 
-- name: Add MongoDB repository into sources list
-  apt_repository:
-    repo: '{{ apt.repo }}'
+- name: Add MongoDB repository
+  ansible.builtin.apt_repository:
+    repo: "{{ apt.repo }} signed-by=/etc/apt/keyrings/mongodb.asc"
     state: present
     update_cache: true
-  when:
-  - ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Ensure mongod package is installed
   apt:
@@ -24,7 +30,7 @@
   - ansible_distribution == 'Ubuntu'
 
 - name: Ensure mongos package is installed
-  apt:
+  ansible.builtin.apt:
     name: '{{ mongodb_packages.mongos }}'
     state: present
     force: true
@@ -32,7 +38,7 @@
   - ansible_distribution == 'Ubuntu'
 
 - name: Ensure mongo client is installed
-  apt:
+  ansible.builtin.apt:
     name: '{{ mongodb_packages.mongo }}'
     state: present
     force: true
@@ -51,7 +57,7 @@
   - not ansible_distribution == "Fedora"
 
 - name: Another url for Fedora based systems
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: '{{ yum.name }}'
     description: '{{ yum.description }}'
     baseurl: '{{ yum.fedoraurl }}'
@@ -61,7 +67,7 @@
   - ansible_distribution == "Fedora"
 
 - name: Ensure mongod package is installed
-  yum:
+  ansible.builtin.yum:
     name: '{{ mongodb_packages.mongod }}'
     state: present
   register: monogd_installed_packages
@@ -69,25 +75,25 @@
   when: ansible_os_family == "RedHat"
 
 - name: Ensure mongos package is installed
-  yum:
+  ansible.builtin.yum:
     name: '{{ mongodb_packages.mongos }}'
     state: present
   when: ansible_os_family == "RedHat"
 
 - name: Ensure mongo client is installed
-  yum:
+  ansible.builtin.yum:
     name: '{{ mongodb_packages.mongo }}'
     state: present
   when: ansible_os_family == "RedHat"
 
 - name: Ensure mongodb-mongosh package is installed
-  package:
+  ansible.builtin.package:
     name: mongodb-mongosh
     state: present
   when: mongodb_version[0] | int >= 5
 
 - name: Install pip packages
-  pip:
+  ansible.builtin.pip:
     name: '{{ pip_packages }}'
     state: present
   notify: remove mongodb pip packages
