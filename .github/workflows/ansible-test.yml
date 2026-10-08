@@ -182,6 +182,8 @@ jobs:
           # https://github.com/ansible-collections/community.mongodb/actions/runs/17740301799/job/50412355202?pr=718
         mongodb_module: ${{ fromJson(needs.integration_matrix.outputs.matrix) }}
         versions:
+          # pinned to ubuntu2404 as default is now ubuntu2604
+          # and MongoDB do not yet provide all packages in their repos
           - python_version: "3.10"
             ansible_version: "stable-2.15"
             #docker_image: "default"
