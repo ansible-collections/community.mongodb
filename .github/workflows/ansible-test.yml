@@ -184,13 +184,13 @@ jobs:
             docker_image: "ubuntu2404"
           - python_version: "3.12"
             ansible_version: "stable-2.20"
-            docker_image: "default"
+            docker_image: "ubuntu2404"
           - python_version: "3.12"
             ansible_version: "stable-2.21"
-            docker_image: "default"
-          - python_version: "3.13"
+            docker_image: "ubuntu2404"
+          - python_version: "3.12"
             ansible_version: "devel"
-            docker_image: "default" # use newer iamge for devel
+            docker_image: "ubuntu2404"
     steps:
 
       - name: Check out code
