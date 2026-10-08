@@ -188,7 +188,7 @@ jobs:
           - python_version: "3.12"
             ansible_version: "stable-2.21"
             docker_image: "ubuntu2404"
-          - python_version: "3.12"
+          - python_version: "3.13"
             ansible_version: "devel"
             docker_image: "ubuntu2404"
     steps:
