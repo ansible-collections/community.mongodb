@@ -3,8 +3,11 @@ apt:
   #keyserver: keyserver.ubuntu.com
   #keyserver_id: 9DA31620334BD75D9DCB49F368818C72E52529D4
   key_url: "https://pgp.mongodb.com/server-{{ mongodb_version }}.asc"
-  repo: deb [ arch=amd64 signed-by=/etc/apt/keyrings/mongodb.asc ] https://repo.mongodb.org/apt/ubuntu {{ansible_distribution_release}}/mongodb-org/{{mongodb_version}}
-    multiverse
+  repo: >
+    deb {{ '[arch=amd64,arm64 signed-by=/etc/apt/keyrings/mongodb.asc]' if ansible_facts['distribution'] == 'Ubuntu' else '[signed-by=/etc/apt/keyrings/mongodb.asc]' }}
+    https://repo.mongodb.org/apt/{{ ansible_facts['distribution']|lower }} 
+    {{ ansible_facts['distribution_release'] }}/mongodb-org/{{ mongodb_version }} 
+    {{ 'multiverse' if ansible_facts['distribution'] == 'Ubuntu' else 'main' }}
 mongodb_packages:
   mongod: mongodb-org-server
   mongos: mongodb-org-mongos
