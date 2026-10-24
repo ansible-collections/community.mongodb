@@ -1,9 +1,9 @@
 - name: Install iproute for RedHat
-  dnf:
+  ansible.builtin.dnf:
     name: "iproute"
   when: ansible_os_family == "RedHat"
 
 - name: Install iproute2 for Debian
-  apt:
+  ansible.builtin.apt:
     name: "iproute2"
   when: ansible_os_family == "Debian"

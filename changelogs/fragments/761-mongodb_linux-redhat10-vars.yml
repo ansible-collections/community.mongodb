@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - 761 - mongodb_linux - Add a RedHat-10 vars file so EL10 hosts install chrony
+    instead of the legacy ntp package.
