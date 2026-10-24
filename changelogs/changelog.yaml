@@ -413,4 +413,13 @@ releases:
       - name: mongodb_atlas_oidc_user
         description: Manage OIDC database users in Atlas. (743)
       - name: mongodb_atlas_org_invite
-        description: Manage Atlas organization user invitations. (743)      
+        description: Manage Atlas organization user invitations. (743)
+  1.8.1:
+    release_summary: |
+      This release is a maintenance release.
+    changes:
+      - Replace deprecated module_utils._text imports (750)
+      - Adds note about directConnection to module description (749)
+      - Documentation updates. (755) (754)
+      - mongodb_linux - Add modern Debian support. (756)
+      - mongodb_linux - Adds vars file to support RHEL10 and clones. (761)
