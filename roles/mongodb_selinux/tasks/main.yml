@@ -26,6 +26,38 @@
     - "pkg"
     - "setup"
 
+# EL10 removed the mongod policy module from selinux-policy-targeted, so the
+# custom module below cannot resolve mongod_t there. Detect the policy and
+# skip the module cleanly when it is absent.
+- name: Check whether the distribution ships a mongod SELinux policy
+  ansible.builtin.command: semodule -l
+  register: mongodb_semodule_list
+  changed_when: false
+  tags:
+    - "setup"
+    - "mongodb"
+    - "linux"
+
+- name: Set mongod policy availability
+  ansible.builtin.set_fact:
+    mongodb_selinux_mongod_policy: "{{ mongodb_semodule_list.stdout_lines | select('match', '^mongod') | list | length > 0 }}"
+  tags:
+    - "setup"
+    - "mongodb"
+    - "linux"
+
+- name: Warn when the distribution has no mongod SELinux policy
+  ansible.builtin.debug:
+    msg: >-
+      This distribution does not ship a mongod SELinux policy (RHEL 10 removed
+      it from selinux-policy-targeted): skipping the mongodb_cgroup_memory
+      module, mongod will run unconfined.
+  when: not mongodb_selinux_mongod_policy
+  tags:
+    - "setup"
+    - "mongodb"
+    - "linux"
+
 - name: Copy custom MongoDB SeLinux Policy to Host
   ansible.builtin.copy:
     content: |
@@ -43,6 +75,7 @@
       allow mongod_t cgroup_t:file { getattr open read };
     dest: /root/mongodb_cgroup_memory.te
   register: mongodb_policy
+  when: mongodb_selinux_mongod_policy
   tags:
     - "setup"
     - "mongodb"
@@ -50,7 +83,7 @@
 
 - name: Compile & Install MongoDB Policy
   ansible.builtin.script: files/compile_mongodb_selinux.sh
-  when: mongodb_policy.changed
+  when: mongodb_policy is changed
   tags:
     - "setup"
     - "mongodb"

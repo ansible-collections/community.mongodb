@@ -1,0 +1,6 @@
+---
+minor_changes:
+  - 764 - mongodb_selinux - Skip the custom mongodb_cgroup_memory module when
+    the distribution does not ship a mongod SELinux policy (RHEL 10 removed it
+    from selinux-policy-targeted), and add a RedHat-10 vars file with EL10
+    package names.
