@@ -1,8 +1,13 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
+import contextlib
+import io
+import json
 import unittest
 import sys
 import os
+from unittest import mock
+from ansible.module_utils.testing import patch_module_args
 path = os.path.dirname(os.path.realpath(__file__))
 path = "{0}/../../plugins/modules".format(path)
 sys.path.append(path)
@@ -211,12 +216,6 @@ class TestMongoDBUserMethods(unittest.TestCase):
         )
 
     def _run_main(self, args, existing_user):
-        import contextlib
-        import io
-        import json
-        from unittest import mock
-        from ansible.module_utils.testing import patch_module_args
-
         stdout = io.StringIO()
         with patch_module_args(args), \
                 mock.patch.object(mongodb_user, 'pymongo_found', True), \

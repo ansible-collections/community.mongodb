@@ -108,10 +108,26 @@
     transform: "raw"
   register: append_user_replaced_roles
 
+- name: Count the roles of the user after replacing them
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: test
+    eval: "db.getUser('append_user').roles.length"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: append_user_replaced_roles_count
+
 - assert:
     that:
     - append_user_replaced.changed
+    - "'read' in append_user_replaced_roles.transformed_output | string"
+    - "'readWrite' not in append_user_replaced_roles.transformed_output | string"
     - "'clusterMonitor' not in append_user_replaced_roles.transformed_output | string"
+    - "append_user_replaced_roles_count.transformed_output | string | trim == '1'"
 
 - name: Remove the append test user
   community.mongodb.mongodb_user:
