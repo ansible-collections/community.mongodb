@@ -178,6 +178,9 @@
 - name: Import tasks for issue 709
   import_tasks: 709.yml
 
+- name: Import tasks for issue 739
+  import_tasks: 739.yml
+
 - name: Drop users in test db
   community.mongodb.mongodb_user:
     login_user: '{{ mongodb_admin_user }}'

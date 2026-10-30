@@ -1,0 +1,141 @@
+# Tests for the append option (https://github.com/ansible-collections/community.mongodb/issues/739)
+- name: Create a user with a single role
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: test
+    name: append_user
+    password: secret
+    roles: read
+    state: present
+    update_password: on_create
+  register: append_user_created
+
+- assert:
+    that:
+    - append_user_created.changed
+
+- name: Add roles to the user with append
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: test
+    name: append_user
+    password: secret
+    roles:
+      - readWrite
+      - db: admin
+        role: clusterMonitor
+    append: true
+    state: present
+    update_password: on_create
+  register: append_user_appended
+
+- assert:
+    that:
+    - append_user_appended.changed
+
+- name: Re-run append with a role the user already has
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: test
+    name: append_user
+    password: secret
+    roles: readWrite
+    append: true
+    state: present
+    update_password: on_create
+  register: append_user_idempotent
+
+- assert:
+    that:
+    - not append_user_idempotent.changed
+
+- name: Get the roles of the user
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: test
+    eval: "printjson(db.getUser('append_user').roles)"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: append_user_roles
+
+- assert:
+    that:
+    - "'read' in append_user_roles.transformed_output | string"
+    - "'readWrite' in append_user_roles.transformed_output | string"
+    - "'clusterMonitor' in append_user_roles.transformed_output | string"
+
+- name: Without append the roles are replaced
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: test
+    name: append_user
+    password: secret
+    roles: read
+    state: present
+    update_password: on_create
+  register: append_user_replaced
+
+- name: Get the roles of the user after replacing them
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: test
+    eval: "printjson(db.getUser('append_user').roles)"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: append_user_replaced_roles
+
+- name: Count the roles of the user after replacing them
+  mongodb_shell:
+    login_host: "{{ current_replicaset }}/localhost"
+    login_port: 3001
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    login_database: admin
+    db: test
+    eval: "db.getUser('append_user').roles.length"
+    mongo_cmd: "auto"
+    transform: "raw"
+  register: append_user_replaced_roles_count
+
+- assert:
+    that:
+    - append_user_replaced.changed
+    - "'read' in append_user_replaced_roles.transformed_output | string"
+    - "'readWrite' not in append_user_replaced_roles.transformed_output | string"
+    - "'clusterMonitor' not in append_user_replaced_roles.transformed_output | string"
+    - "append_user_replaced_roles_count.transformed_output | string | trim == '1'"
+
+- name: Remove the append test user
+  community.mongodb.mongodb_user:
+    login_user: '{{ mongodb_admin_user }}'
+    login_password: '{{ mongodb_admin_password }}'
+    login_database: admin
+    login_port: 3001
+    replica_set: '{{ current_replicaset }}'
+    database: test
+    name: append_user
+    state: absent
