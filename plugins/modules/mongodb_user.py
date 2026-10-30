@@ -55,6 +55,15 @@ options:
           'dbAdminAnyDatabase'
       - "Or the following dictionary '{ db: DATABASE_NAME, role: ROLE_NAME }'."
       - "This param requires pymongo 2.5+. If it is a string, mongodb 2.4+ is also required. If it is a dictionary, mongo 2.6+ is required."
+      - By default the user ends up with exactly these roles, so roles not listed here are removed. Use C(append=true) to keep them.
+  append:
+    description:
+      - If C(true), add the roles given in I(roles) to the roles the user already has instead of replacing them.
+      - If C(false), the user ends up with exactly the roles given in I(roles).
+      - Has no effect when the user does not exist yet.
+    type: bool
+    default: false
+    version_added: 1.9.0
   authentication_restrictions:
     type: list
     elements: raw
@@ -156,6 +165,18 @@ EXAMPLES = '''
     replica_set: belcher
     password: 12345
     roles: readWriteAnyDatabase
+    state: present
+
+- name: Grant the read role on the reporting database to bob, keeping the roles bob already has
+  community.mongodb.mongodb_user:
+    database: burgers
+    name: bob
+    password: 12345
+    roles:
+      - db: reporting
+        role: read
+    append: true
+    update_password: on_create
     state: present
 
 # add a user 'oplog_reader' with read only access to the 'local' database on the replica_set 'belcher'. This is useful for oplog access (MONGO_OPLOG_URL).
@@ -355,6 +376,18 @@ def make_sure_roles_are_a_list_of_dict(roles, db_name):
     return output
 
 
+def merge_roles(uinfo, roles, db_name):
+    """Return the user's current roles followed by the requested roles it does not have yet."""
+    merged = list(uinfo.get('roles', []))
+    current = set((role.get('role'), role.get('db')) for role in merged)
+    for role in make_sure_roles_are_a_list_of_dict(roles, db_name):
+        key = (role.get('role'), role.get('db'))
+        if key not in current:
+            merged.append(role)
+            current.add(key)
+    return merged
+
+
 def normalize_authentication_restrictions(authentication_restrictions):
     normalized = []
     for restriction in authentication_restrictions or []:
@@ -387,6 +420,7 @@ def main():
         password=dict(aliases=['pass'], no_log=True),
         replica_set=dict(default=None),
         roles=dict(default=None, type='list', elements='raw'),
+        append=dict(default=False, type='bool'),
         authentication_restrictions=dict(default=[], type='list', elements='raw', aliases=['authenticationRestrictions']),
         state=dict(default='present', choices=['absent', 'present']),
         update_password=dict(default="always", choices=["always", "on_create"], no_log=False),
@@ -416,6 +450,7 @@ def main():
     user = module.params['name']
     password = module.params['password']
     roles = module.params['roles'] or []
+    append = module.params['append']
     authentication_restrictions = module.params['authentication_restrictions'] or []
     state = module.params['state']
     update_password = module.params['update_password']
@@ -442,8 +477,20 @@ def main():
                 module.exit_json(changed=False, user=user, skipped=True, msg="The path in create_for_localhost_exception exists.")
 
         try:
+            uinfo = False
+            if update_password != 'always' or append:
+                try:
+                    uinfo = user_find(client, user, db_name)
+                except Exception as excep:
+                    # Same as in user_add: the localhost exception does not allow
+                    # usersInfo, so treat the user as new.
+                    if append and hasattr(excep, 'code') and excep.code == 13:  # 13=Unauthorized
+                        uinfo = False
+                    else:
+                        raise
+            if append and uinfo:
+                roles = merge_roles(uinfo, roles, db_name)
             if update_password != 'always':
-                uinfo = user_find(client, user, db_name)
                 if uinfo:
                     password = None
                     if (not check_if_roles_changed(uinfo, roles, db_name) and

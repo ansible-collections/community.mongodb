@@ -169,6 +169,141 @@ class TestMongoDBUserMethods(unittest.TestCase):
             db.calls[0],
         )
 
+    def test_merge_roles_appends_missing_roles(self):
+        uinfo = {
+            'roles': [
+                {'db': 'foo', 'role': 'read'},
+                {'db': 'admin', 'role': 'clusterMonitor'},
+            ]
+        }
+        roles = [
+            'read',
+            'readWrite',
+            {'db': 'bar', 'role': 'read'},
+        ]
+
+        self.assertEqual(
+            [
+                {'db': 'foo', 'role': 'read'},
+                {'db': 'admin', 'role': 'clusterMonitor'},
+                {'role': 'readWrite', 'db': 'foo'},
+                {'db': 'bar', 'role': 'read'},
+            ],
+            mongodb_user.merge_roles(uinfo, roles, 'foo'),
+        )
+
+    def test_merge_roles_keeps_existing_roles_when_nothing_is_new(self):
+        uinfo = {
+            'roles': [
+                {'db': 'foo', 'role': 'read'},
+                {'db': 'bar', 'role': 'readWrite'},
+            ]
+        }
+        merged = mongodb_user.merge_roles(uinfo, ['read'], 'foo')
+
+        self.assertEqual(uinfo['roles'], merged)
+        self.assertFalse(mongodb_user.check_if_roles_changed(uinfo, merged, 'foo'))
+
+    def test_merge_roles_without_existing_roles(self):
+        self.assertEqual(
+            [{'role': 'read', 'db': 'foo'}],
+            mongodb_user.merge_roles({}, ['read'], 'foo'),
+        )
+
+    def _run_main(self, args, existing_user):
+        import contextlib
+        import io
+        import json
+        from unittest import mock
+        from ansible.module_utils.testing import patch_module_args
+
+        stdout = io.StringIO()
+        with patch_module_args(args), \
+                mock.patch.object(mongodb_user, 'pymongo_found', True), \
+                mock.patch.object(mongodb_user, 'get_mongodb_client', return_value=mock.MagicMock()), \
+                mock.patch.object(mongodb_user, 'mongo_auth', side_effect=lambda module, client, **kwargs: client), \
+                mock.patch.object(mongodb_user, 'user_find', return_value=existing_user), \
+                mock.patch.object(mongodb_user, 'user_add') as user_add, \
+                contextlib.redirect_stdout(stdout):
+            with self.assertRaises(SystemExit):
+                mongodb_user.main()
+        return json.loads(stdout.getvalue()), user_add
+
+    def test_main_append_adds_roles_to_existing_user(self):
+        existing_user = {
+            'user': 'bob',
+            'db': 'foo',
+            'roles': [{'db': 'foo', 'role': 'read'}],
+        }
+        result, user_add = self._run_main({
+            'database': 'foo',
+            'name': 'bob',
+            'roles': ['readWrite'],
+            'append': True,
+            'update_password': 'on_create',
+        }, existing_user)
+
+        self.assertTrue(result['changed'])
+        user_add.assert_called_once()
+        self.assertEqual(
+            [{'db': 'foo', 'role': 'read'}, {'role': 'readWrite', 'db': 'foo'}],
+            user_add.call_args[0][5],
+        )
+
+    def test_main_append_is_idempotent_when_user_has_roles(self):
+        existing_user = {
+            'user': 'bob',
+            'db': 'foo',
+            'roles': [{'db': 'foo', 'role': 'read'}, {'db': 'bar', 'role': 'readWrite'}],
+        }
+        result, user_add = self._run_main({
+            'database': 'foo',
+            'name': 'bob',
+            'roles': ['read'],
+            'append': True,
+            'update_password': 'on_create',
+        }, existing_user)
+
+        self.assertFalse(result['changed'])
+        user_add.assert_not_called()
+
+    def test_main_without_append_replaces_roles(self):
+        existing_user = {
+            'user': 'bob',
+            'db': 'foo',
+            'roles': [{'db': 'foo', 'role': 'read'}],
+        }
+        result, user_add = self._run_main({
+            'database': 'foo',
+            'name': 'bob',
+            'roles': ['readWrite'],
+            'update_password': 'on_create',
+        }, existing_user)
+
+        self.assertTrue(result['changed'])
+        self.assertEqual(['readWrite'], user_add.call_args[0][5])
+
+    def test_main_append_always_mode_keeps_existing_roles(self):
+        existing_user = {
+            'user': 'bob',
+            'db': 'foo',
+            'roles': [{'db': 'admin', 'role': 'clusterMonitor'}],
+        }
+        result, user_add = self._run_main({
+            'database': 'foo',
+            'name': 'bob',
+            'password': 'secret',
+            'roles': ['read'],
+            'append': True,
+        }, existing_user)
+
+        self.assertTrue(result['changed'])
+        self.assertEqual('secret', user_add.call_args[0][4])
+        self.assertEqual(
+            [{'db': 'admin', 'role': 'clusterMonitor'}, {'role': 'read', 'db': 'foo'}],
+            user_add.call_args[0][5],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
